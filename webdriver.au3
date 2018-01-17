@@ -24,6 +24,7 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
+
 #ce
 #EndRegion Many thanks to:
 
