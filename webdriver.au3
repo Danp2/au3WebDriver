@@ -1,3 +1,4 @@
+#Include-once
 #include <array.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 
@@ -97,7 +98,7 @@ Global $_WD_DEBUG = True 		; Trace to console and show web driver app
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#new-session
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDCreateSession($sDesiredCapabilities='{}')
@@ -142,7 +143,7 @@ EndFunc   ;==>_WDCreateSession
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#delete-session
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDDeleteSession($sSession)
@@ -177,7 +178,7 @@ EndFunc
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#status
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDStatus()
@@ -213,7 +214,8 @@ EndFunc   ;==>_WDStatus
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#get-timeouts
+;                  https://w3c.github.io/webdriver/webdriver-spec.html#set-timeouts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDTimeouts($sSession, $sTimeouts = '')
@@ -258,7 +260,7 @@ EndFunc
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigate-to
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDNavigate($sSession, $sURL)
@@ -301,7 +303,7 @@ EndFunc   ;==>_WDNavigate
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigation
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDAction($sSession, $sCommand)
@@ -359,7 +361,7 @@ EndFunc
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#command-contexts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDWindow($sSession, $sCommand, $sOption)
@@ -461,7 +463,7 @@ EndFunc
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#element-retrieval
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDFindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
@@ -523,7 +525,8 @@ EndFunc   ;==>_WDFindElement
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#element-state
+;                  https://w3c.github.io/webdriver/webdriver-spec.html#element-interaction
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDElementAction($sSession, $sElement, $sCommand, $sOption='')
@@ -604,7 +607,7 @@ EndFunc   ;==>_WDElementAction
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDExecuteScript($sSession, $sScript, $aArguments)
@@ -636,7 +639,7 @@ EndFunc   ;==>_WDExecuteScript
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDAlert($sSession, $sCommand)
@@ -680,7 +683,7 @@ EndFunc   ;==>_WDAlert
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#getting-page-source
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDGetSource($sSession)
@@ -727,7 +730,7 @@ EndFunc   ;==>_WDGetSource
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#cookies
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WDCookies($sSession,  $sCommand, $sOption = '')
