@@ -24,7 +24,6 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
-
 #ce
 #EndRegion Many thanks to:
 
@@ -391,6 +390,7 @@ Func _WDWindow($sSession, $sCommand, $sOption)
 
 		Case 'switch'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window", $sOption)
+			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
 				$sResult = $sResponse
