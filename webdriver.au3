@@ -364,7 +364,7 @@ EndFunc
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#command-contexts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDWindow($sSession, $sCommand, $sOption)
+Func _WDWindow($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WDWindow"
 	Local $sResponse, $sJSON, $sResult = ""
 
@@ -929,7 +929,8 @@ EndFunc
 ; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
-; Return values .: String representing handle of new tab
+; Return values .: Success      - String representing handle of new tab
+;                  Failure      - blank string
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -938,6 +939,7 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_NewTab($sSession, $lSwitch = True)
+	Local Const $sFuncName = "_WD_NewTab"
 	Local $sTabHandle = ''
 
 	_WDExecuteScript($sSession, 'window.open()', '{}')
