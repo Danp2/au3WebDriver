@@ -957,6 +957,61 @@ Func _WD_NewTab($sSession, $lSwitch = True)
 	Return $sTabHandle
 EndFunc
 
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_Attach
+; Description ...: Helper function to attach to existing browser tab
+; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = 'title'])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sString             - String to search for
+;                  $sMode               - [optional] One of the following search modes:
+;                               | Title (Default)
+;                               | URL
+; Return values .: Success      - String representing handle of matching tab
+;                  Failure      - blank string
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_Attach($sSession, $sString, $sMode = 'title')
+	Local Const $sFuncName = "_WD_Attach"
+	Local $sTabHandle = '', $lFound = False
+
+	Local $sCurrentTab = _WDWindow($sSession, 'window')
+	Local $aHandles = _WDWindow($sSession, 'handles')
+
+	$sMode = StringLower($sMode)
+
+	For $sTab In $aHandles
+
+		_WDWindow($sSession, 'Switch', '{"handle":"' & $sTab & '"}')
+
+		Switch $sMode
+			Case "title", "url"
+				If StringInStr(_WDAction($sSession, $sMode), $sString) > 0 Then
+					$lFound = True
+					$sTabHandle = $sTab
+					ExitLoop
+				EndIf
+
+			Case Else
+				SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL) $sOption=>" & $sMode))
+				Return ""
+		EndSwitch
+	Next
+
+	If Not $lFound Then
+		; Restore prior active tab
+		_WDWindow($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
+		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch))
+	EndIf
+
+	Return $sTabHandle
+EndFunc
+
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Get
 ; Description ...: Submit GET request to WD console app
