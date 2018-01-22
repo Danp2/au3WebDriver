@@ -1,5 +1,5 @@
 # Introduction
-This UDF will allow you to interact with any browser that supports the [W3C WebDriver specifications](https://w3c.github.io/webdriver/webdriver-spec.html#new-session). Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
+This UDF will allow you to interact with any browser that supports the [W3C WebDriver specifications](https://www.w3.org/TR/webdriver/). Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
 
 # Requirements
 - JSON UDF https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
