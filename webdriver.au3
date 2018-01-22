@@ -29,7 +29,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.1b-1"
+Global Const $__WDVERSION = "0.1.0.2"
 
 Global Const $_WD_LOCATOR_ByID 					= "id"
 Global Const $_WD_LOCATOR_ByName 				= "name"
@@ -925,6 +925,7 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
+; Description ...: Helper function to create new tab using Javascript
 ; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
