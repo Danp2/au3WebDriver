@@ -923,6 +923,37 @@ Func _WDShutdown()
 EndFunc
 
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_NewTab
+; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
+; Return values .: String representing handle of new tab
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_NewTab($sSession, $lSwitch = True)
+	Local $sTabHandle = ''
+
+	_WDExecuteScript($sSession, 'window.open()', '{}')
+
+	If @error = $_WD_ERROR_Success Then
+		Local $aHandles = _WDWindow($sSession, 'handles', '')
+
+		$sTabHandle = $aHandles[UBound($aHandles) - 1]
+
+		If $lSwitch Then
+			_WDWindow($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
+		EndIf
+	EndIf
+
+	Return $sTabHandle
+EndFunc
+
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Get
 ; Description ...: Submit GET request to WD console app
