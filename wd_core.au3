@@ -2,9 +2,35 @@
 #include <array.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 
+#Region Description
+; ==============================================================================
+; UDF ...........: WD_Core.au3
+; Description ...: A UDF for Web Driver automation
+; Requirement ...: JSON UDF
+;                  https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+;
+;                  WebDriver for desired browser
+;                  Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
+;                  FireFox WebDriver https://github.com/mozilla/geckodriver/releases
+;
+; Author(s) .....: Dan Pollak
+; AutoIt Version : v3.3.14.2
+; ==============================================================================
+#cs
+	V0.1.0.2
+	- Fixed: _WDWindow
+	- Changed: Error constants (mLipok)
+	- Added: Links to W3C documentation
+	- Added: _WD_NewTab function
+
+	V0.1.0.1
+	- Initial release
+#ce
+#EndRegion Description
+
 #Region Copyright
 #cs
-	* WebDriver.au3
+	* WD_Core.au3
 	*
 	* This program is free software; you can redistribute it and/or
 	* modify it under the terms of the GNU General Public License
@@ -28,6 +54,7 @@
 #ce
 #EndRegion Many thanks to:
 
+
 #Region Global Constants
 Global Const $__WDVERSION = "0.1.0.2"
 
@@ -39,6 +66,8 @@ Global Const $_WD_LOCATOR_ByXPath 				= "xpath"
 Global Const $_WD_LOCATOR_ByLinkText			= "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText		= "partial link text"
 Global Const $_WD_LOCATOR_ByTagName				= "tag name"
+
+Global Const $_WD_DefaultTimeout				= 300000 ; 5 Minutes
 
 Global Enum _
         $_WD_ERROR_Success = 0, _        ; No error
@@ -947,94 +976,6 @@ Func _WDShutdown()
 EndFunc
 
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_NewTab
-; Description ...: Helper function to create new tab using Javascript
-; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
-; Return values .: Success      - String representing handle of new tab
-;                  Failure      - blank string
-; Author ........: Dan Pollak
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_NewTab($sSession, $lSwitch = True)
-	Local Const $sFuncName = "_WD_NewTab"
-	Local $sTabHandle = ''
-
-	_WDExecuteScript($sSession, 'window.open()', '{}')
-
-	If @error = $_WD_ERROR_Success Then
-		Local $aHandles = _WDWindow($sSession, 'handles', '')
-
-		$sTabHandle = $aHandles[UBound($aHandles) - 1]
-
-		If $lSwitch Then
-			_WDWindow($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
-		EndIf
-	EndIf
-
-	Return $sTabHandle
-EndFunc
-
-
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_Attach
-; Description ...: Helper function to attach to existing browser tab
-; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = 'title'])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sString             - String to search for
-;                  $sMode               - [optional] One of the following search modes:
-;                               | Title (Default)
-;                               | URL
-; Return values .: Success      - String representing handle of matching tab
-;                  Failure      - blank string
-; Author ........: Dan Pollak
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_Attach($sSession, $sString, $sMode = 'title')
-	Local Const $sFuncName = "_WD_Attach"
-	Local $sTabHandle = '', $lFound = False
-
-	Local $sCurrentTab = _WDWindow($sSession, 'window')
-	Local $aHandles = _WDWindow($sSession, 'handles')
-
-	$sMode = StringLower($sMode)
-
-	For $sTab In $aHandles
-
-		_WDWindow($sSession, 'Switch', '{"handle":"' & $sTab & '"}')
-
-		Switch $sMode
-			Case "title", "url"
-				If StringInStr(_WDAction($sSession, $sMode), $sString) > 0 Then
-					$lFound = True
-					$sTabHandle = $sTab
-					ExitLoop
-				EndIf
-
-			Case Else
-				SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL) $sOption=>" & $sMode))
-				Return ""
-		EndSwitch
-	Next
-
-	If Not $lFound Then
-		; Restore prior active tab
-		_WDWindow($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch))
-	EndIf
-
-	Return $sTabHandle
-EndFunc
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Get
@@ -1091,6 +1032,7 @@ EndFunc   ;==>__WD_Get
 ;                  Failure      - Response from web driver and set @ERROR
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1120,7 +1062,11 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	If $_WD_HTTPRESULT <> 200 Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+		If $_WD_HTTPRESULT = 408 Then
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText))
+		Else
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+		EndIf
 	EndIf
 
 	Return $sResponseText
