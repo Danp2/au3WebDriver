@@ -1,14 +1,14 @@
-#AutoIt3Wrapper_Version=B
 #include "webdriver.au3"
 
 Local Enum $eFireFox = 0, _
 			$eChrome
 
-Local $aTestSuite[5][2] = [["TestTimeouts", True], ["TestNavigation", True], ["TestElements", True], ["TestScript", True], ["TestCookies", True]]
+Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", True]]
 
 Local Const $_TestType = $eChrome
 Local $sDesiredCapabilities
 Local $iIndex
+Local $sSession
 
 $_WD_DEBUG = True
 
@@ -24,7 +24,6 @@ EndSwitch
 _WDStartup()
 
 $sSession = _WDCreateSession($sDesiredCapabilities)
-$sStatus = _WDStatus()
 
 For $iIndex = 0 To UBound($aTestSuite, $UBOUND_ROWS) - 1
 	If $aTestSuite[$iIndex][1] Then
@@ -35,11 +34,8 @@ For $iIndex = 0 To UBound($aTestSuite, $UBOUND_ROWS) - 1
 	EndIf
 Next
 
-Exit
-
 _WDDeleteSession($sSession)
 _WDShutdown()
-
 
 
 Func TestTimeouts()
@@ -70,8 +66,6 @@ Func TestElements()
 
 	$sElement2 = _WDFindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
 
-	;ConsoleWrite("$selement = " & $selement & @CRLF)
-
 	_WDElementAction($sSession, $sElement, 'value', "testing 123")
 	_WDElementAction($sSession, $sElement, 'text')
 	_WDElementAction($sSession, $sElement, 'clear')
@@ -98,20 +92,27 @@ EndFunc
 Func TestCookies()
 	_WDNavigate($sSession, "http://google.com")
 	_WDCookies($sSession, 'Get', 'NID')
-	_WDCookies($sSession, 'Delete', 'NID1')
+EndFunc
+
+Func TestAlerts()
+	ConsoleWrite('Alert Detected => ' & _WDAlert($sSession, 'status') & @CRLF)
+	_WDExecuteScript($sSession, "alert('testing 123')", "{}")
+	ConsoleWrite('Alert Detected => ' & _WDAlert($sSession, 'status') & @CRLF)
+	ConsoleWrite('Text Detected => ' & _WDAlert($sSession, 'gettext') & @CRLF)
+	_WDAlert($sSession, 'sendtext', 'new text')
+	ConsoleWrite('Text Detected => ' & _WDAlert($sSession, 'gettext') & @CRLF)
+	_WDAlert($sSession, 'Dismiss')
+
 EndFunc
 
 
 Func SetupGecko()
 _WDOption('Driver', 'geckodriver.exe')
 _WDOption('DriverParams', '--log trace')
-;_WDOption('DriverParams', "--connect-existing --marionette-port 2828")
 _WDOption('Port', 4444)
 
 $sDesiredCapabilities = '{"desiredCapabilities":{"javascriptEnabled":true,"nativeEvents":true,"acceptInsecureCerts":true}}'
 EndFunc
-
-
 
 Func SetupChrome()
 _WDOption('Driver', 'chromedriver.exe')
@@ -120,4 +121,3 @@ _WDOption('DriverParams', '--log-path=' & @ScriptDir & '\chrome.log')
 
 $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"chromeOptions": {"w3c": true }}}}'
 EndFunc
-

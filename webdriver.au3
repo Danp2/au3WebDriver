@@ -630,7 +630,11 @@ EndFunc   ;==>_WDExecuteScript
 ;                  $sCommand            - one of the following actions:
 ;                               | dismiss
 ;                               | accept
-; Return values .: None
+;                               | gettext
+;                               | sendtext
+;                               | status
+; Return values .: Success      - Requested data returned by web driver
+;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_InvalidDataType
@@ -642,19 +646,39 @@ EndFunc   ;==>_WDExecuteScript
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDAlert($sSession, $sCommand)
+Func _WDAlert($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WDAlert"
-	Local $iErr
+	Local $sResponse, $iErr, $sJSON, $sResult = ''
 
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
 		Case 'dismiss', 'accept'
-			Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/" & $sCommand, '{}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/" & $sCommand, '{}')
 			$iErr = @error
 
+		Case 'gettext'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text")
+			$iErr = @error
+
+			If $iErr = $_WD_ERROR_Success Then
+				$sJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($sJSON, "[value]")
+			EndIf
+
+		Case 'sendtext'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text", '{"text":"' & $sOption & '"}')
+			$iErr = @error
+
+		Case 'status'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text")
+			$iErr = @error
+
+			$sResult = ($iErr = $_WD_ERROR_Success)
+			$iErr = $_WD_ERROR_Success
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
 	If $_WD_DEBUG Then
@@ -665,7 +689,7 @@ Func _WDAlert($sSession, $sCommand)
 		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), $_WD_HTTPRESULT)
 	EndIf
 
-	Return ""
+	Return $sResult
 EndFunc   ;==>_WDAlert
 
 
