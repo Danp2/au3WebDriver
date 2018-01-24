@@ -1,11 +1,12 @@
-#include "webdriver.au3"
+#include "wd_core.au3"
+#include "wd_helper.au3"
 
 Local Enum $eFireFox = 0, _
 			$eChrome
 
-Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", True]]
+Local $aTestSuite[][2] = [["TestTimeouts", True], ["TestNavigation", True], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", True]]
 
-Local Const $_TestType = $eChrome
+Local Const $_TestType = $eFireFox
 Local $sDesiredCapabilities
 Local $iIndex
 Local $sSession
@@ -40,7 +41,7 @@ _WDShutdown()
 
 Func TestTimeouts()
 	_WDTimeouts($sSession)
-	_WDTimeouts($sSession, '{"script":10000,"pageLoad":200000,"implicit":30}')
+	_WDTimeouts($sSession, '{"pageLoad":200}')
 	_WDTimeouts($sSession)
 EndFunc
 
