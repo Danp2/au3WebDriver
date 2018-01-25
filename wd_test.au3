@@ -4,7 +4,7 @@
 Local Enum $eFireFox = 0, _
 			$eChrome
 
-Local $aTestSuite[][2] = [["TestTimeouts", True], ["TestNavigation", True], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", True]]
+Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", True], ["TestCookies", False], ["TestAlerts", True]]
 
 Local Const $_TestType = $eFireFox
 Local $sDesiredCapabilities
@@ -41,7 +41,7 @@ _WDShutdown()
 
 Func TestTimeouts()
 	_WDTimeouts($sSession)
-	_WDTimeouts($sSession, '{"pageLoad":200}')
+	_WDTimeouts($sSession, '{"pageLoad":2000}')
 	_WDTimeouts($sSession)
 EndFunc
 
@@ -86,7 +86,7 @@ Func TestElements()
 EndFunc
 
 Func TestScript()
-	_WDExecuteScript($sSession, 'alert()', "")
+	_WDExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
 	_WDAlert($sSession, 'Dismiss')
 EndFunc
 
@@ -97,7 +97,7 @@ EndFunc
 
 Func TestAlerts()
 	ConsoleWrite('Alert Detected => ' & _WDAlert($sSession, 'status') & @CRLF)
-	_WDExecuteScript($sSession, "alert('testing 123')", "{}")
+	_WDExecuteScript($sSession, "alert('testing 123')")
 	ConsoleWrite('Alert Detected => ' & _WDAlert($sSession, 'status') & @CRLF)
 	ConsoleWrite('Text Detected => ' & _WDAlert($sSession, 'gettext') & @CRLF)
 	_WDAlert($sSession, 'sendtext', 'new text')
