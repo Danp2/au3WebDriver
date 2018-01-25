@@ -2,9 +2,43 @@
 #include <array.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 
+#Region Description
+; ==============================================================================
+; UDF ...........: WD_Core.au3
+; Description ...: A UDF for Web Driver automation
+; Requirement ...: JSON UDF
+;                  https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+;
+;                  WebDriver for desired browser
+;                  Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
+;                  FireFox WebDriver https://github.com/mozilla/geckodriver/releases
+;
+; Author(s) .....: Dan Pollak
+; AutoIt Version : v3.3.14.2
+; ==============================================================================
+#cs
+	V0.1.0.3
+	- Fixed: Error constants
+	- Changed: Renamed UDF files
+	- Changed: Expanded _WDAlert functionality
+	- Changed: Check for timeout in __WD_Post
+	- Changed: Support parameters in _WDExecuteScript
+	- Added: _WD_Attach function
+
+	V0.1.0.2
+	- Fixed: _WDWindow
+	- Changed: Error constants (mLipok)
+	- Added: Links to W3C documentation
+	- Added: _WD_NewTab function
+
+	V0.1.0.1
+	- Initial release
+#ce
+#EndRegion Description
+
 #Region Copyright
 #cs
-	* WebDriver.au3
+	* WD_Core.au3
 	*
 	* This program is free software; you can redistribute it and/or
 	* modify it under the terms of the GNU General Public License
@@ -28,8 +62,9 @@
 #ce
 #EndRegion Many thanks to:
 
+
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.2"
+Global Const $__WDVERSION = "0.1.0.3"
 
 Global Const $_WD_LOCATOR_ByID 					= "id"
 Global Const $_WD_LOCATOR_ByName 				= "name"
@@ -40,6 +75,8 @@ Global Const $_WD_LOCATOR_ByLinkText			= "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText		= "partial link text"
 Global Const $_WD_LOCATOR_ByTagName				= "tag name"
 
+Global Const $_WD_DefaultTimeout				= 300000 ; 5 Minutes
+
 Global Enum _
         $_WD_ERROR_Success = 0, _        ; No error
         $_WD_ERROR_GeneralError, _       ; General error
@@ -48,7 +85,6 @@ Global Enum _
         $_WD_ERROR_InvalidValue, _       ; Invalid value in function-call
         $_WD_ERROR_SendRecv, _           ; Send / Recv Error
         $_WD_ERROR_Timeout, _            ; Connection / Send / Recv timeout
-        $_WD_ERROR___UNUSED, _           ;
         $_WD_ERROR_NoMatch, _            ; No match for _WDAction-find/search _WDGetElement...
         $_WD_ERROR_RetValue, _           ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
         $_WD_ERROR_Exception, _          ; Exception from web driver
@@ -61,10 +97,10 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUTNER] = [ _
         "Socket Error", _
         "Invalid data type", _
         "Invalid value", _
+        "Send / Recv error", _
         "Timeout", _
         "No match", _
         "Error return value", _
-        "Error TCPSend / TCPRecv", _
         "Webdriver Exception", _
         "Invalid Expression" _
         ]
@@ -274,7 +310,7 @@ Func _WDNavigate($sSession, $sURL)
 	EndIf
 
 	If $iErr Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
+		SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
 		Return 0
 	EndIf
 
@@ -349,7 +385,12 @@ EndFunc
 ; Description ...:
 ; Syntax ........: _WDWindow($sSession, $sCommand, $sOption)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sCommand            - a string value.
+;                  $sCommand            - one of the following actions:
+;                               | Window
+;                               | Handles
+;                               | Maximize
+;                               | Minimize
+;                               | Fullscreen
 ;                  $sOption             - a string value.
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
@@ -364,7 +405,7 @@ EndFunc
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#command-contexts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDWindow($sSession, $sCommand, $sOption)
+Func _WDWindow($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WDWindow"
 	Local $sResponse, $sJSON, $sResult = ""
 
@@ -600,8 +641,8 @@ EndFunc   ;==>_WDElementAction
 ; Description ...: Execute Javascipt commands
 ; Syntax ........: _WDExecuteScript($sSession, $sScript, $aArguments)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sScript             - a string value.
-;                  $aArguments          - an array of unknowns.
+;                  $sScript             - Javascript command(s) to run
+;                  $aArguments          - String of arguments in JSON format
 ; Return values .: None
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -610,9 +651,13 @@ EndFunc   ;==>_WDElementAction
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDExecuteScript($sSession, $sScript, $aArguments)
+Func _WDExecuteScript($sSession, $sScript, $sArguments="[]")
 	Local Const $sFuncName = "_WDExecuteScript"
-	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/execute/sync", '{"script":"' & $sScript & '", "args":[]}')
+	Local $sResponse, $sData
+
+	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
+
+	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/execute/sync", $sData)
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
@@ -630,7 +675,11 @@ EndFunc   ;==>_WDExecuteScript
 ;                  $sCommand            - one of the following actions:
 ;                               | dismiss
 ;                               | accept
-; Return values .: None
+;                               | gettext
+;                               | sendtext
+;                               | status
+; Return values .: Success      - Requested data returned by web driver
+;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_InvalidDataType
@@ -642,19 +691,39 @@ EndFunc   ;==>_WDExecuteScript
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDAlert($sSession, $sCommand)
+Func _WDAlert($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WDAlert"
-	Local $iErr
+	Local $sResponse, $iErr, $sJSON, $sResult = ''
 
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
 		Case 'dismiss', 'accept'
-			Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/" & $sCommand, '{}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/" & $sCommand, '{}')
 			$iErr = @error
 
+		Case 'gettext'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text")
+			$iErr = @error
+
+			If $iErr = $_WD_ERROR_Success Then
+				$sJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($sJSON, "[value]")
+			EndIf
+
+		Case 'sendtext'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text", '{"text":"' & $sOption & '"}')
+			$iErr = @error
+
+		Case 'status'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text")
+			$iErr = @error
+
+			$sResult = ($iErr = $_WD_ERROR_Success)
+			$iErr = $_WD_ERROR_Success
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
 	If $_WD_DEBUG Then
@@ -665,7 +734,7 @@ Func _WDAlert($sSession, $sCommand)
 		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), $_WD_HTTPRESULT)
 	EndIf
 
-	Return ""
+	Return $sResult
 EndFunc   ;==>_WDAlert
 
 
@@ -923,37 +992,6 @@ Func _WDShutdown()
 EndFunc
 
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_NewTab
-; Description ...: Helper function to create new tab using Javascript
-; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
-; Return values .: String representing handle of new tab
-; Author ........: Dan Pollak
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_NewTab($sSession, $lSwitch = True)
-	Local $sTabHandle = ''
-
-	_WDExecuteScript($sSession, 'window.open()', '{}')
-
-	If @error = $_WD_ERROR_Success Then
-		Local $aHandles = _WDWindow($sSession, 'handles', '')
-
-		$sTabHandle = $aHandles[UBound($aHandles) - 1]
-
-		If $lSwitch Then
-			_WDWindow($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
-		EndIf
-	EndIf
-
-	Return $sTabHandle
-EndFunc
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Get
@@ -1010,6 +1048,7 @@ EndFunc   ;==>__WD_Get
 ;                  Failure      - Response from web driver and set @ERROR
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1039,7 +1078,11 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	If $_WD_HTTPRESULT <> 200 Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+		If $_WD_HTTPRESULT = 408 Then
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText))
+		Else
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+		EndIf
 	EndIf
 
 	Return $sResponseText
