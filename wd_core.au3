@@ -17,6 +17,14 @@
 ; AutoIt Version : v3.3.14.2
 ; ==============================================================================
 #cs
+	V0.1.0.3
+	- Fixed: Error constants
+	- Changed: Renamed UDF files
+	- Changed: Expanded _WDAlert functionality
+	- Changed: Check for timeout in __WD_Post
+	- Changed: Support parameters in _WDExecuteScript
+	- Added: _WD_Attach function
+
 	V0.1.0.2
 	- Fixed: _WDWindow
 	- Changed: Error constants (mLipok)
@@ -56,7 +64,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.2"
+Global Const $__WDVERSION = "0.1.0.3"
 
 Global Const $_WD_LOCATOR_ByID 					= "id"
 Global Const $_WD_LOCATOR_ByName 				= "name"
@@ -77,7 +85,6 @@ Global Enum _
         $_WD_ERROR_InvalidValue, _       ; Invalid value in function-call
         $_WD_ERROR_SendRecv, _           ; Send / Recv Error
         $_WD_ERROR_Timeout, _            ; Connection / Send / Recv timeout
-        $_WD_ERROR___UNUSED, _           ;
         $_WD_ERROR_NoMatch, _            ; No match for _WDAction-find/search _WDGetElement...
         $_WD_ERROR_RetValue, _           ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
         $_WD_ERROR_Exception, _          ; Exception from web driver
@@ -90,10 +97,10 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUTNER] = [ _
         "Socket Error", _
         "Invalid data type", _
         "Invalid value", _
+        "Send / Recv error", _
         "Timeout", _
         "No match", _
         "Error return value", _
-        "Error TCPSend / TCPRecv", _
         "Webdriver Exception", _
         "Invalid Expression" _
         ]
@@ -303,7 +310,7 @@ Func _WDNavigate($sSession, $sURL)
 	EndIf
 
 	If $iErr Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
+		SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
 		Return 0
 	EndIf
 
@@ -378,7 +385,12 @@ EndFunc
 ; Description ...:
 ; Syntax ........: _WDWindow($sSession, $sCommand, $sOption)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sCommand            - a string value.
+;                  $sCommand            - one of the following actions:
+;                               | Window
+;                               | Handles
+;                               | Maximize
+;                               | Minimize
+;                               | Fullscreen
 ;                  $sOption             - a string value.
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
@@ -629,8 +641,8 @@ EndFunc   ;==>_WDElementAction
 ; Description ...: Execute Javascipt commands
 ; Syntax ........: _WDExecuteScript($sSession, $sScript, $aArguments)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sScript             - a string value.
-;                  $aArguments          - an array of unknowns.
+;                  $sScript             - Javascript command(s) to run
+;                  $aArguments          - String of arguments in JSON format
 ; Return values .: None
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -639,9 +651,13 @@ EndFunc   ;==>_WDElementAction
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDExecuteScript($sSession, $sScript, $aArguments)
+Func _WDExecuteScript($sSession, $sScript, $sArguments="[]")
 	Local Const $sFuncName = "_WDExecuteScript"
-	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/execute/sync", '{"script":"' & $sScript & '", "args":[]}')
+	Local $sResponse, $sData
+
+	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
+
+	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/execute/sync", $sData)
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
