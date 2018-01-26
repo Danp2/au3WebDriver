@@ -17,6 +17,9 @@
 ; AutoIt Version : v3.3.14.2
 ; ==============================================================================
 #cs
+	V0.1.0.4
+	- Changed: Renamed core UDF functions
+
 	V0.1.0.3
 	- Fixed: Error constants
 	- Changed: Renamed UDF files
@@ -38,20 +41,29 @@
 
 #Region Copyright
 #cs
-	* WD_Core.au3
+ 	* WD_Core.au3
 	*
-	* This program is free software; you can redistribute it and/or
-	* modify it under the terms of the GNU General Public License
-	* as published by the Free Software Foundation; either version 2
-	* of the License, or any later version.
+	* MIT License
 	*
-	* This program is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	* GNU General Public License for more details.
+	* Copyright (c) 2018 Dan Pollak
 	*
-	* You should have received a copy of the GNU General Public License
-	* along with this program; if not, see <https://www.gnu.org/licenses/>.
+	* Permission is hereby granted, free of charge, to any person obtaining a copy
+	* of this software and associated documentation files (the "Software"), to deal
+	* in the Software without restriction, including without limitation the rights
+	* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	* copies of the Software, and to permit persons to whom the Software is
+	* furnished to do so, subject to the following conditions:
+	*
+	* The above copyright notice and this permission notice shall be included in all
+	* copies or substantial portions of the Software.
+	*
+	* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	* SOFTWARE.
 #ce
 #EndRegion Copyright
 
@@ -121,9 +133,9 @@ Global $_WD_DEBUG = True 		; Trace to console and show web driver app
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDCreateSession
+; Name ..........: _WD_CreateSession
 ; Description ...: Request new session from web driver
-; Syntax ........: _WDCreateSession([$sDesiredCapabilities = '{}'])
+; Syntax ........: _WD_CreateSession([$sDesiredCapabilities = '{}'])
 ; Parameters ....: $sDesiredCapabilities- [optional] a string value. Default is '{}'.
 ; Return values .: Success      - Session ID to be used in future requests to web driver session
 ;                  Failure      - Empty string
@@ -137,8 +149,8 @@ Global $_WD_DEBUG = True 		; Trace to console and show web driver app
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#new-session
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDCreateSession($sDesiredCapabilities='{}')
-	Local Const $sFuncName = "_WDCreateSession"
+Func _WD_CreateSession($sDesiredCapabilities='{}')
+	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = ""
 
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sDesiredCapabilities)
@@ -166,9 +178,9 @@ EndFunc   ;==>_WDCreateSession
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDDeleteSession
+; Name ..........: _WD_DeleteSession
 ; Description ...:  Delete existing session
-; Syntax ........: _WDDeleteSession($sSession)
+; Syntax ........: _WD_DeleteSession($sSession)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ; Return values .: Success      - 1
 ;                  Failure      - 0
@@ -182,8 +194,8 @@ EndFunc   ;==>_WDCreateSession
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#delete-session
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDDeleteSession($sSession)
-	Local Const $sFuncName = "_WDDeleteSession"
+Func _WD_DeleteSession($sSession)
+	Local Const $sFuncName = "_WD_DeleteSession"
 
 	Local $sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error
@@ -201,9 +213,9 @@ Func _WDDeleteSession($sSession)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDStatus
+; Name ..........: _WD_Status
 ; Description ...: Get current web driver state
-; Syntax ........: _WDStatus()
+; Syntax ........: _WD_Status()
 ; Parameters ....:
 ; Return values .: Success      - Raw JSON response from web driver
 ;                  Failure      - 0
@@ -217,8 +229,8 @@ EndFunc
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#status
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDStatus()
-	Local Const $sFuncName = "_WDStatus"
+Func _WD_Status()
+	Local Const $sFuncName = "_WD_Status"
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
 	Local $iErr = @error
 
@@ -232,13 +244,13 @@ Func _WDStatus()
 	EndIf
 
 	Return $sResponse
-EndFunc   ;==>_WDStatus
+EndFunc   ;==>_WD_Status
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDTimeouts
+; Name ..........: _WD_Timeouts
 ; Description ...:  Set or retrieve the session timeout parameters
-; Syntax ........: _WDTimeouts($sSession[, $sTimeouts = ''])
+; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sTimeouts           - [optional] a string value. Default is ''.
 ; Return values .: Success      - Raw return value from web driver in JSON format
@@ -254,8 +266,8 @@ EndFunc   ;==>_WDStatus
 ;                  https://w3c.github.io/webdriver/webdriver-spec.html#set-timeouts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDTimeouts($sSession, $sTimeouts = '')
-	Local Const $sFuncName = "_WDTimeouts"
+Func _WD_Timeouts($sSession, $sTimeouts = '')
+	Local Const $sFuncName = "_WD_Timeouts"
 	Local $sResponse, $sURL
 
 	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/timeouts"
@@ -282,9 +294,9 @@ EndFunc
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDNavigate
+; Name ..........: _WD_Navigate
 ; Description ...: Navigate to the designated URL
-; Syntax ........: _WDNavigate($sSession, $sURL)
+; Syntax ........: _WD_Navigate($sSession, $sURL)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sURL                - Destination URL
 ; Return values .: Success      - 1
@@ -299,8 +311,8 @@ EndFunc
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigate-to
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDNavigate($sSession, $sURL)
-	Local Const $sFuncName = "_WDNavigate"
+Func _WD_Navigate($sSession, $sURL)
+	Local Const $sFuncName = "_WD_Navigate"
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 
 	Local $iErr = @error
@@ -319,9 +331,9 @@ EndFunc   ;==>_WDNavigate
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDAction
+; Name ..........: _WD_Action
 ; Description ...: Perform various interactions with the web driver session
-; Syntax ........: _WDAction($sSession, $sCommand)
+; Syntax ........: _WD_Action($sSession, $sCommand)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | refresh
@@ -342,10 +354,9 @@ EndFunc   ;==>_WDNavigate
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigation
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDAction($sSession, $sCommand)
-	Local Const $sFuncName = "_WDAction"
+Func _WD_Action($sSession, $sCommand)
+	Local Const $sFuncName = "_WD_Action"
 	Local $sResponse, $sResult = "", $iErr, $sJSON
-
 
 	$sCommand = StringLower($sCommand)
 
@@ -381,9 +392,9 @@ Func _WDAction($sSession, $sCommand)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDWindow
+; Name ..........: _WD_Window
 ; Description ...:
-; Syntax ........: _WDWindow($sSession, $sCommand, $sOption)
+; Syntax ........: _WD_Window($sSession, $sCommand, $sOption)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | Window
@@ -405,8 +416,8 @@ EndFunc
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#command-contexts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDWindow($sSession, $sCommand, $sOption = '')
-	Local Const $sFuncName = "_WDWindow"
+Func _WD_Window($sSession, $sCommand, $sOption = '')
+	Local Const $sFuncName = "_WD_Window"
 	Local $sResponse, $sJSON, $sResult = ""
 
 	$sCommand = StringLower($sCommand)
@@ -486,12 +497,12 @@ EndFunc
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDFindElement
+; Name ..........: _WD_FindElement
 ; Description ...: Find element(s) by designated strategy
-; Syntax ........: _WDFindElement($sSession, $sStrategy, $sSelector[, $sStartElement = ""[, $lMultiple = False]])
+; Syntax ........: _WD_FindElement($sSession, $sStrategy, $sSelector[, $sStartElement = ""[, $lMultiple = False]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sStrategy           - a string value.
-;                  $sSelector           - a string value.
+;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector           - Value to find
 ;                  $sStartElement       - [optional] a string value. Default is "".
 ;                  $lMultiple           - [optional] an unknown value. Default is False.
 ; Return values .: Success      - Element ID(s) returned by web driver
@@ -507,8 +518,8 @@ EndFunc
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#element-retrieval
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDFindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
-	Local Const $sFuncName = "_WDGetElement"
+Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
+	Local Const $sFuncName = "_WD_FindElement"
 	Local $sCmd, $sElement, $sResponse, $sResult, $iErr, $Obj, $Obj2, $sKey, $sErr
 
 	$sCmd = ($lMultiple) ? 'elements' : 'element'
@@ -549,9 +560,9 @@ EndFunc   ;==>_WDFindElement
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDElementAction
+; Name ..........: _WD_ElementAction
 ; Description ...: Perform action on desginated element
-; Syntax ........: _WDElementAction($sSession, $sElement, $sCommand[, $sOption = ''])
+; Syntax ........: _WD_ElementAction($sSession, $sElement, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sElement            - Element ID from _WDFindElement
 ;                  $sCommand            - Action to be performed
@@ -570,8 +581,8 @@ EndFunc   ;==>_WDFindElement
 ;                  https://w3c.github.io/webdriver/webdriver-spec.html#element-interaction
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDElementAction($sSession, $sElement, $sCommand, $sOption='')
-	Local Const $sFuncName = "_WDElementAction"
+Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
+	Local Const $sFuncName = "_WD_ElementAction"
 	Local $sResponse, $sResult = '', $iErr
 
 	$sCommand = StringLower($sCommand)
@@ -633,13 +644,13 @@ Func _WDElementAction($sSession, $sElement, $sCommand, $sOption='')
 	EndIf
 
 	Return $sResult
-EndFunc   ;==>_WDElementAction
+EndFunc   ;==>_WD_ElementAction
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDExecuteScript
+; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands
-; Syntax ........: _WDExecuteScript($sSession, $sScript, $aArguments)
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript, $aArguments)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sScript             - Javascript command(s) to run
 ;                  $aArguments          - String of arguments in JSON format
@@ -651,8 +662,8 @@ EndFunc   ;==>_WDElementAction
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDExecuteScript($sSession, $sScript, $sArguments="[]")
-	Local Const $sFuncName = "_WDExecuteScript"
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments="[]")
+	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData
 
 	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
@@ -664,13 +675,13 @@ Func _WDExecuteScript($sSession, $sScript, $sArguments="[]")
 	EndIf
 
 	Return $sResponse
-EndFunc   ;==>_WDExecuteScript
+EndFunc   ;==>_WD_ExecuteScript
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDAlert
+; Name ..........: _WD_Alert
 ; Description ...: Respond to user prompt
-; Syntax ........: _WDAlert($sSession, $sCommand)
+; Syntax ........: _WD_Alert($sSession, $sCommand)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | dismiss
@@ -691,8 +702,8 @@ EndFunc   ;==>_WDExecuteScript
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDAlert($sSession, $sCommand, $sOption = '')
-	Local Const $sFuncName = "_WDAlert"
+Func _WD_Alert($sSession, $sCommand, $sOption = '')
+	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $sJSON, $sResult = ''
 
 	$sCommand = StringLower($sCommand)
@@ -735,13 +746,13 @@ Func _WDAlert($sSession, $sCommand, $sOption = '')
 	EndIf
 
 	Return $sResult
-EndFunc   ;==>_WDAlert
+EndFunc   ;==>_WD_Alert
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDGetSource
+; Name ..........: _WD_GetSource
 ; Description ...: Get page source
-; Syntax ........: _WDGetSource($sSession)
+; Syntax ........: _WD_GetSource($sSession)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ; Return values .: Success      - Source code from page
 ;                  Failure      - ""
@@ -755,8 +766,8 @@ EndFunc   ;==>_WDAlert
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#getting-page-source
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDGetSource($sSession)
-	Local Const $sFuncName = "_WDGetSource"
+Func _WD_GetSource($sSession)
+	Local Const $sFuncName = "_WD_GetSource"
 	Local $sResponse, $iErr, $sResult = "", $sJSON
 
 	$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/source")
@@ -776,12 +787,12 @@ Func _WDGetSource($sSession)
 	EndIf
 
 	Return $sResult
-EndFunc   ;==>_WDGetSource
+EndFunc   ;==>_WD_GetSource
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDCookies
+; Name ..........: _WD_Cookies
 ; Description ...:
-; Syntax ........: _WDCookies($sSession, $sCommand[, $sOption = ''])
+; Syntax ........: _WD_Cookies($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | Get
@@ -802,8 +813,8 @@ EndFunc   ;==>_WDGetSource
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#cookies
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDCookies($sSession,  $sCommand, $sOption = '')
-	Local Const $sFuncName = "_WDGetCookies"
+Func _WD_Cookies($sSession,  $sCommand, $sOption = '')
+	Local Const $sFuncName = "_WD_Cookies"
 
 	Local $sResult, $sResponse, $sJSON, $iErr
 
@@ -847,14 +858,14 @@ Func _WDCookies($sSession,  $sCommand, $sOption = '')
 	EndIf
 
 	Return $sResult
-EndFunc   ;==>_WDCookies
+EndFunc   ;==>_WD_Cookies
 
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDOption
-; Description ...: Sets and get options for the webdriver.au3
-; Syntax ........: _WDOption($sOption[, $vValue = ""])
+; Name ..........: _WD_Option
+; Description ...: Sets and get options for the web driver UDF
+; Syntax ........: _WD_Option($sOption[, $vValue = ""])
 ; Parameters ....: $sOption             - a string value.
 ;                  $vValue              - [optional] a variant value. Default is "".
 ; Parameter(s): .: $sOption     - Driver
@@ -880,8 +891,8 @@ EndFunc   ;==>_WDCookies
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDOption($sOption, $vValue = "")
-	Local Const $sFuncName = "_WDOption"
+Func _WD_Option($sOption, $vValue = "")
+	Local Const $sFuncName = "_WD_Option"
 
 	Switch $sOption
 		Case "Driver"
@@ -917,12 +928,12 @@ Func _WDOption($sOption, $vValue = "")
 	EndSwitch
 
 	Return 1
-EndFunc   ;==>_WDOption
+EndFunc   ;==>_WD_Option
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDStartup
+; Name ..........: _WD_Startup
 ; Description ...: Launch the designated web driver console app
-; Syntax ........: _WDStartup()
+; Syntax ........: _WD_Startup()
 ; Parameters ....: None
 ; Return values .: Success      - PID for the WD console
 ;                  Failure      - 0
@@ -937,8 +948,8 @@ EndFunc   ;==>_WDOption
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDStartup()
-	Local Const $sFuncName = "_WDStartup"
+Func _WD_Startup()
+	Local Const $sFuncName = "_WD_Startup"
 
 	If $_WD_DRIVER = "" Then
 	   SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set." & @CRLF))
@@ -975,9 +986,9 @@ EndFunc
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WDShutdown
+; Name ..........: _WD_Shutdown
 ; Description ...: Kill the web driver console app
-; Syntax ........: _WDShutdown()
+; Syntax ........: _WD_Shutdown()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Dan Pollak
@@ -987,7 +998,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WDShutdown()
+Func _WD_Shutdown()
 	__WD_CloseDriver()
 EndFunc
 
