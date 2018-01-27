@@ -4,9 +4,9 @@
 Local Enum $eFireFox = 0, _
 			$eChrome
 
-Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", True], ["TestCookies", False], ["TestAlerts", True]]
+Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", True], ["TestScript", False], ["TestCookies", False], ["TestAlerts", False]]
 
-Local Const $_TestType = $eFireFox
+Local Const $_TestType = $eChrome
 Local $sDesiredCapabilities
 Local $iIndex
 Local $sSession
@@ -22,9 +22,10 @@ Switch $_TestType
 
 EndSwitch
 
-_WDStartup()
+_WD_Startup()
 
-$sSession = _WDCreateSession($sDesiredCapabilities)
+$sSession = _WD_CreateSession($sDesiredCapabilities)
+
 
 For $iIndex = 0 To UBound($aTestSuite, $UBOUND_ROWS) - 1
 	If $aTestSuite[$iIndex][1] Then
@@ -35,90 +36,92 @@ For $iIndex = 0 To UBound($aTestSuite, $UBOUND_ROWS) - 1
 	EndIf
 Next
 
-_WDDeleteSession($sSession)
-_WDShutdown()
+_WD_DeleteSession($sSession)
+_WD_Shutdown()
 
 
 Func TestTimeouts()
-	_WDTimeouts($sSession)
-	_WDTimeouts($sSession, '{"pageLoad":2000}')
-	_WDTimeouts($sSession)
+	_WD_Timeouts($sSession)
+	_WD_Timeouts($sSession, '{"pageLoad":2000}')
+	_WD_Timeouts($sSession)
 EndFunc
 
 Func TestNavigation()
-	_WDNavigate($sSession, "http://google.com")
-	ConsoleWrite("URL=" & _WDAction($sSession, 'url') & @CRLF)
-	_WDAction($sSession, "back")
-	ConsoleWrite("URL=" & _WDAction($sSession, 'url') & @CRLF)
-	_WDAction($sSession, "forward")
-	ConsoleWrite("URL=" & _WDAction($sSession, 'url') & @CRLF)
-	ConsoleWrite("Title=" & _WDAction($sSession, 'title') & @CRLF)
+	_WD_Navigate($sSession, "http://google.com")
+	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	_WD_Action($sSession, "back")
+	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	_WD_Action($sSession, "forward")
+	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	ConsoleWrite("Title=" & _WD_Action($sSession, 'title') & @CRLF)
 EndFunc
 
-;_WDWindow($sSession, 'frame', '{"id":null}')
-
+;_WDWindow($sSession, 'frame', '{"id":nullelse
 Func TestElements()
-	_WDNavigate($sSession, "http://google.com")
-	$sElement = _WDFindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib1']")
+	_WD_Navigate($sSession, "http://google.com")
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib1']")
 
 	If @error = $_WD_ERROR_NoMatch Then
-		$sElement = _WDFindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
+		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
 	EndIf
 
-	$sElement2 = _WDFindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
+	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
 
-	_WDElementAction($sSession, $sElement, 'value', "testing 123")
-	_WDElementAction($sSession, $sElement, 'text')
-	_WDElementAction($sSession, $sElement, 'clear')
-	_WDElementAction($sSession, $sElement, 'value', "abc xyz")
-	_WDElementAction($sSession, $sElement, 'text')
-	_WDElementAction($sSession, $sElement, 'clear')
-	_WDElementAction($sSession, $sElement, 'value', "fujimo")
-	_WDElementAction($sSession, $sElement, 'text')
-	_WDElementAction($sSession, $sElement, 'click')
+	_ArrayDisplay($aElements)
 
-	_WDElementAction($sSession, $sElement, 'Attribute', 'test')
+	_WD_ElementAction($sSession, $sElement, 'value', "testing 123")
+	_WD_ElementAction($sSession, $sElement, 'text')
+	_WD_ElementAction($sSession, $sElement, 'clear')
+	_WD_ElementAction($sSession, $sElement, 'value', "abc xyz")
+	_WD_ElementAction($sSession, $sElement, 'text')
+	_WD_ElementAction($sSession, $sElement, 'clear')
+	_WD_ElementAction($sSession, $sElement, 'value', "fujimo")
+	_WD_ElementAction($sSession, $sElement, 'text')
+	_WD_ElementAction($sSession, $sElement, 'click')
 
-	$sElement = _WDFindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
-	$sValue = _WDElementAction($sSession, $sElement, 'property', 'value')
+	_WD_ElementAction($sSession, $sElement, 'Attribute', 'text')
+
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
+	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
 
 	ConsoleWrite('value = ' & $sValue & @CRLF)
+
 EndFunc
 
 Func TestScript()
-	_WDExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
-	_WDAlert($sSession, 'Dismiss')
+	_WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
+	_WD_Alert($sSession, 'Dismiss')
 EndFunc
 
 Func TestCookies()
-	_WDNavigate($sSession, "http://google.com")
-	_WDCookies($sSession, 'Get', 'NID')
+	_WD_Navigate($sSession, "http://google.com")
+	_WD_Cookies($sSession, 'Get', 'NID')
 EndFunc
 
 Func TestAlerts()
-	ConsoleWrite('Alert Detected => ' & _WDAlert($sSession, 'status') & @CRLF)
-	_WDExecuteScript($sSession, "alert('testing 123')")
-	ConsoleWrite('Alert Detected => ' & _WDAlert($sSession, 'status') & @CRLF)
-	ConsoleWrite('Text Detected => ' & _WDAlert($sSession, 'gettext') & @CRLF)
-	_WDAlert($sSession, 'sendtext', 'new text')
-	ConsoleWrite('Text Detected => ' & _WDAlert($sSession, 'gettext') & @CRLF)
-	_WDAlert($sSession, 'Dismiss')
+	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
+	_WD_ExecuteScript($sSession, "alert('testing 123')")
+	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
+	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
+	_WD_Alert($sSession, 'sendtext', 'new text')
+	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
+	_WD_Alert($sSession, 'Dismiss')
 
 EndFunc
 
 
 Func SetupGecko()
-_WDOption('Driver', 'geckodriver.exe')
-_WDOption('DriverParams', '--log trace')
-_WDOption('Port', 4444)
+_WD_Option('Driver', 'geckodriver.exe')
+_WD_Option('DriverParams', '--log trace')
+_WD_Option('Port', 4444)
 
 $sDesiredCapabilities = '{"desiredCapabilities":{"javascriptEnabled":true,"nativeEvents":true,"acceptInsecureCerts":true}}'
 EndFunc
 
 Func SetupChrome()
-_WDOption('Driver', 'chromedriver.exe')
-_WDOption('Port', 9515)
-_WDOption('DriverParams', '--log-path=' & @ScriptDir & '\chrome.log')
+_WD_Option('Driver', 'chromedriver.exe')
+_WD_Option('Port', 9515)
+_WD_Option('DriverParams', '--log-path=' & @ScriptDir & '\chrome.log')
 
 $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"chromeOptions": {"w3c": true }}}}'
 EndFunc
