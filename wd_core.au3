@@ -77,7 +77,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.3"
+Global Const $__WDVERSION = "0.1.0.4"
 
 Global Const $_WD_LOCATOR_ByID 					= "id"
 Global Const $_WD_LOCATOR_ByName 				= "name"
