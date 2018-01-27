@@ -19,6 +19,7 @@
 #cs
 	V0.1.0.4
 	- Changed: Renamed core UDF functions
+	- Changed: _WD_FindElement now returns multiple elements as an array instead of raw JSON
 
 	V0.1.0.3
 	- Fixed: Error constants
@@ -520,7 +521,8 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
 	Local Const $sFuncName = "_WD_FindElement"
-	Local $sCmd, $sElement, $sResponse, $sResult, $iErr, $Obj, $Obj2, $sKey, $sErr
+	Local $sCmd, $sElement, $sResponse, $sResult, $iErr, $Obj2, $sErr
+	Local $oJson, $oValues, $sKey, $iRow, $aElements[0]
 
 	$sCmd = ($lMultiple) ? 'elements' : 'element'
 	$sElement = ($sStartElement == "") ? "" : "/element/" & $sStartElement
@@ -530,13 +532,23 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $lMultiple Then
-			$sResult = $sResponse
-		Else
-			$Obj = Json_Decode($sResponse)
-			$Obj2 = Json_Get($Obj, "[value]")
-			$sKey = Json_ObjGetKeys($Obj2)[0]
 
-			$sResult = Json_Get($Obj, "[value][" & $sKey & "]")
+			$oJson = Json_Decode($sResponse)
+			$oValues = Json_Get($oJson, '[value]')
+			$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
+
+			Dim $aElements[UBound($oValues)]
+
+			For $oValue In $oValues
+				$aElements[$iRow] = Json_Get($oValue, $sKey)
+				$iRow += 1
+			Next
+		Else
+			$oJson = Json_Decode($sResponse)
+			$Obj2 = Json_Get($oJson, "[value]")
+			$sKey = Json_ObjGetKeys($oJson)[0]
+
+			$sResult = Json_Get($oJson, "[value][" & $sKey & "]")
 		EndIf
 	EndIf
 
@@ -546,8 +558,8 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 
 	If $iErr Then
 		If $_WD_HTTPRESULT = 404 Then
-			$Obj = Json_Decode($sResponse)
-			$sErr = Json_Get($Obj, "[value][error]")
+			$oJson = Json_Decode($sResponse)
+			$sErr = Json_Get($oJson, "[value][error]")
 
 			SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch, $sErr), $_WD_HTTPRESULT)
 		Else
@@ -555,7 +567,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 		EndIf
 	EndIf
 
-	Return $sResult
+	Return ($lMultiple) ? $aElements : $sResult
 EndFunc   ;==>_WDFindElement
 
 
