@@ -139,7 +139,7 @@ EndFunc
 ; Description ...: Simulate a mouse click on a link with text matching the provided string
 ; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $lPartial = True])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sText               - a string value.
+;                  $sText               - Text to find in link
 ;                  $lPartial            - [optional] Search by partial text? Default is True.
 ; Return values .: Success      - None
 ;                  Failure      - Sets @error to non-zero
@@ -157,12 +157,12 @@ EndFunc
 Func _WD_LinkClickByText($sSession, $sText, $lPartial = True)
 	Local Const $sFuncName = "_WD_LinkClickByText"
 
-	Local $sElement = _WDFindElement($sSession, ($lPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
+	Local $sElement = _WD_FindElement($sSession, ($lPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
 
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		_WDElementAction($sSession, $sElement, 'click')
+		_WD_ElementAction($sSession, $sElement, 'click')
 	Else
 		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
 	EndIf
