@@ -56,15 +56,15 @@ Func _WD_NewTab($sSession, $lSwitch = True)
 	Local Const $sFuncName = "_WD_NewTab"
 	Local $sTabHandle = ''
 
-	_WDExecuteScript($sSession, 'window.open()', '{}')
+	_WD_ExecuteScript($sSession, 'window.open()', '{}')
 
 	If @error = $_WD_ERROR_Success Then
-		Local $aHandles = _WDWindow($sSession, 'handles', '')
+		Local $aHandles = _WD_Window($sSession, 'handles', '')
 
 		$sTabHandle = $aHandles[UBound($aHandles) - 1]
 
 		If $lSwitch Then
-			_WDWindow($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
+			_WD_Window($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
 		EndIf
 	EndIf
 
@@ -95,25 +95,25 @@ Func _WD_Attach($sSession, $sString, $sMode = 'title')
 	Local Const $sFuncName = "_WD_Attach"
 	Local $sTabHandle = '', $lFound = False
 
-	Local $sCurrentTab = _WDWindow($sSession, 'window')
-	Local $aHandles = _WDWindow($sSession, 'handles')
+	Local $sCurrentTab = _WD_Window($sSession, 'window')
+	Local $aHandles = _WD_Window($sSession, 'handles')
 
 	$sMode = StringLower($sMode)
 
 	For $sHandle In $aHandles
 
-		_WDWindow($sSession, 'Switch', '{"handle":"' & $sHandle & '"}')
+		_WD_Window($sSession, 'Switch', '{"handle":"' & $sHandle & '"}')
 
 		Switch $sMode
 			Case "title", "url"
-				If StringInStr(_WDAction($sSession, $sMode), $sString) > 0 Then
+				If StringInStr(_WD_Action($sSession, $sMode), $sString) > 0 Then
 					$lFound = True
 					$sTabHandle = $sHandle
 					ExitLoop
 				EndIf
 
 			Case 'html'
-				If StringInStr(_WDGetSource($sSession), $sString) > 0 Then
+				If StringInStr(_WD_GetSource($sSession), $sString) > 0 Then
 					$lFound = True
 					$sTabHandle = $sHandle
 					ExitLoop
@@ -127,7 +127,7 @@ Func _WD_Attach($sSession, $sString, $sMode = 'title')
 
 	If Not $lFound Then
 		; Restore prior active tab
-		_WDWindow($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
+		_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
 		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch))
 	EndIf
 
