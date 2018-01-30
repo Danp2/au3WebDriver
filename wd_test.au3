@@ -6,7 +6,7 @@ Local Enum $eFireFox = 0, _
 
 Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", True], ["TestScript", False], ["TestCookies", False], ["TestAlerts", False]]
 
-Local Const $_TestType = $eChrome
+Local Const $_TestType = $eFireFox
 Local $sDesiredCapabilities
 Local $iIndex
 Local $sSession

@@ -1,6 +1,7 @@
 #Include-once
 #include <array.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+#include <WinHttp.au3> ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
 #Region Description
 ; ==============================================================================
@@ -17,6 +18,9 @@
 ; AutoIt Version : v3.3.14.2
 ; ==============================================================================
 #cs
+	V0.1.0.5
+	- Changed: Switched to using _WinHttp functions
+
 	V0.1.0.4
 	- Changed: Renamed core UDF functions
 	- Changed: _WD_FindElement now returns multiple elements as an array instead of raw JSON
@@ -1034,27 +1038,40 @@ EndFunc
 ; ===============================================================================================================================
 Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
+	Local $iResult, $sResponseText
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
 	EndIf
 
-	$_WD_OHTTP.Open("GET", $sURL, False)
-	$_WD_OHTTP.SetRequestHeader("Content-Type", "application/json;charset=utf-8")
-	$_WD_OHTTP.Send()
+	$_WD_HTTPRESULT = 0
 
-    ; wait until response is ready
-    $_WD_OHTTP.WaitForResponse(5)
+	Local $aURL = _WinHttpCrackUrl($sURL)
 
-    $_WD_HTTPRESULT = $_WD_OHTTP.Status
-    Local $sResponseText = $_WD_OHTTP.ResponseText
+	; Initialize and get session handle
+	Local $hOpen = _WinHttpOpen()
+
+	; Get connection handle
+	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
+
+	 If @error Then
+		 $_WD_HTTPRESULT = @error
+		$iResult = $_WD_ERROR_SocketError
+	 Else
+		$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6])
+
+		If @error Then
+			$_WD_HTTPRESULT = @error
+			$iResult = $_WD_ERROR_SendRecv
+		EndIf
+	 EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $sResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT <> 200 Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+	If $iResult Then
+		SetError(__WD_Error($sFuncName, $iResult, $sResponseText))
 	EndIf
 
 	Return $sResponseText
@@ -1081,27 +1098,40 @@ EndFunc   ;==>__WD_Get
 ; ===============================================================================================================================
 Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
+	Local $iResult, $sResponseText
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData & @CRLF)
 	EndIf
 
-	$_WD_OHTTP.Open("POST", $sURL, False)
-	$_WD_OHTTP.SetRequestHeader("Content-Type", "application/json;charset=utf-8")
-	$_WD_OHTTP.Send($sData)
+	Local $aURL = _WinHttpCrackUrl($sURL)
 
-    ; wait until response is ready
-    $_WD_OHTTP.WaitForResponse(5)
+	$_WD_HTTPRESULT = 0
 
-	$_WD_HTTPRESULT = $_WD_OHTTP.Status
-    Local $sResponseText = $_WD_OHTTP.ResponseText
+	; Initialize and get session handle
+	Local $hOpen = _WinHttpOpen()
+
+	; Get connection handle
+	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
+
+	 If @error Then
+		 $_WD_HTTPRESULT = @error
+		$iResult = $_WD_ERROR_SocketError
+	 Else
+		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], -1, $sData)
+
+		If @error Then
+			$_WD_HTTPRESULT = @error
+			$iResult = $_WD_ERROR_SendRecv
+		EndIf
+	 EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT <> 200 Then
-		If $_WD_HTTPRESULT = 408 Then
+	If $iResult Then
+		If $iResult = 408 Then
 			SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText))
 		Else
 			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
@@ -1130,25 +1160,69 @@ EndFunc   ;==>__WD_Post
 ; ===============================================================================================================================
 Func __WD_Delete($sURL)
 	Local Const $sFuncName = "__WD_Delete"
-	$_WD_OHTTP.Open("DELETE", $sURL, False)
-	$_WD_OHTTP.SetRequestHeader("Content-Type", "application/json;charset=utf-8")
-	$_WD_OHTTP.Send()
 
-    ; wait until response is ready
-    $_WD_OHTTP.WaitForResponse(5)
+	Local $iResult, $sResponseText
 
-    $_WD_HTTPRESULT = $_WD_OHTTP.Status
-    Local $sResponseText = $_WD_OHTTP.ResponseText
+	If $_WD_DEBUG Then
+		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
+	EndIf
+
+	Local $aURL = _WinHttpCrackUrl($sURL)
+
+	$_WD_HTTPRESULT = 0
+
+	; Initialize and get session handle
+	Local $hOpen = _WinHttpOpen()
+
+	; Get connection handle
+	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
+
+	 If @error Then
+		 $_WD_HTTPRESULT = @error
+		$iResult = $_WD_ERROR_SocketError
+	 Else
+		$sResponseText = _WinHttpSimpleRequest($hConnect, "DELETE", $aURL[6])
+
+		If @error Then
+			$_WD_HTTPRESULT = @error
+			$iResult = $_WD_ERROR_SendRecv
+		EndIf
+	 EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT <> 200 Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+	If $iResult Then
+		If $iResult = 408 Then
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText))
+		Else
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+		EndIf
 	EndIf
 
 	Return $sResponseText
+
+
+;~ $_WD_OHTTP.Open("DELETE", $sURL, False)
+;~ 	$_WD_OHTTP.SetRequestHeader("Content-Type", "application/json;charset=utf-8")
+;~ 	$_WD_OHTTP.Send()
+
+;~     ; wait until response is ready
+;~     $_WD_OHTTP.WaitForResponse(5)
+
+;~     $_WD_HTTPRESULT = $_WD_OHTTP.Status
+;~     Local $sResponseText = $_WD_OHTTP.ResponseText
+
+;~ 	If $_WD_DEBUG Then
+;~ 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
+;~ 	EndIf
+
+;~ 	If $_WD_HTTPRESULT <> 200 Then
+;~ 		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+;~ 	EndIf
+
+;~ 	Return $sResponseText
 EndFunc   ;==>__WD_Delete
 
 
