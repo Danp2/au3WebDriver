@@ -20,6 +20,7 @@
 #cs
 	V0.1.0.5
 	- Changed: Switched to using _WinHttp functions
+	- Added: _WD_LinkClickByText
 
 	V0.1.0.4
 	- Changed: Renamed core UDF functions
