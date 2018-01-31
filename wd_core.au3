@@ -1,6 +1,7 @@
 #Include-once
 #include <array.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+#include <WinHttp.au3> ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
 #Region Description
 ; ==============================================================================
@@ -17,6 +18,9 @@
 ; AutoIt Version : v3.3.14.2
 ; ==============================================================================
 #cs
+	V0.1.0.5
+	- Changed: Switched to using _WinHttp functions
+
 	V0.1.0.4
 	- Changed: Renamed core UDF functions
 	- Changed: _WD_FindElement now returns multiple elements as an array instead of raw JSON
@@ -409,7 +413,7 @@ EndFunc
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_InvalidDataType
-;                  @EXTENDED    - WinHTTP status code; Return values .: None
+;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -530,7 +534,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sElement & "/" & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
 	$iErr = @error
 
-	If $iErr = $_WD_ERROR_Success Then
+	If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
 		If $lMultiple Then
 
 			$oJson = Json_Decode($sResponse)
@@ -546,7 +550,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 		Else
 			$oJson = Json_Decode($sResponse)
 			$Obj2 = Json_Get($oJson, "[value]")
-			$sKey = Json_ObjGetKeys($oJson)[0]
+			$sKey = Json_ObjGetKeys($Obj2)[0]
 
 			$sResult = Json_Get($oJson, "[value][" & $sKey & "]")
 		EndIf
@@ -556,15 +560,14 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	If $iErr Then
-		If $_WD_HTTPRESULT = 404 Then
-			$oJson = Json_Decode($sResponse)
-			$sErr = Json_Get($oJson, "[value][error]")
+	If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
+		$oJson = Json_Decode($sResponse)
+		$sErr = Json_Get($oJson, "[value][error]")
 
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch, $sErr), $_WD_HTTPRESULT)
-		Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
-		EndIf
+		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch, $sErr), $_WD_HTTPRESULT)
+
+	ElseIf $iErr Then
+		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
 	EndIf
 
 	Return ($lMultiple) ? $aElements : $sResult
@@ -605,7 +608,8 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = Json_Get($sResponse, "[value]")
+				$oJson = Json_Decode($sResponse)
+				$sResult = Json_Get($oJson, "[value]")
 			EndIf
 
 		Case 'active'
@@ -613,7 +617,8 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = Json_Get($sResponse, "[value]")
+				$oJson = Json_Decode($sResponse)
+				$sResult = Json_Get($oJson, "[value]")
 			EndIf
 
 		Case 'attribute', 'property', 'css'
@@ -621,7 +626,8 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = Json_Get($sResponse, "[value]")
+				$oJson = Json_Decode($sResponse)
+				$sResult = Json_Get($oJson, "[value]")
 			EndIf
 
 		Case 'clear', 'click'
@@ -742,8 +748,9 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text")
 			$iErr = @error
 
-			$sResult = ($iErr = $_WD_ERROR_Success)
-			$iErr = $_WD_ERROR_Success
+			If $iErr = $_WD_ERROR_Success Then
+				$sResult = ($_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND) ? False : True
+			EndIf
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
@@ -1034,27 +1041,43 @@ EndFunc
 ; ===============================================================================================================================
 Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
+	Local $iResult, $sResponseText
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
 	EndIf
 
-	$_WD_OHTTP.Open("GET", $sURL, False)
-	$_WD_OHTTP.SetRequestHeader("Content-Type", "application/json;charset=utf-8")
-	$_WD_OHTTP.Send()
+	$_WD_HTTPRESULT = 0
 
-    ; wait until response is ready
-    $_WD_OHTTP.WaitForResponse(5)
+	Local $aURL = _WinHttpCrackUrl($sURL)
 
-    $_WD_HTTPRESULT = $_WD_OHTTP.Status
-    Local $sResponseText = $_WD_OHTTP.ResponseText
+	; Initialize and get session handle
+	Local $hOpen = _WinHttpOpen()
+
+	; Get connection handle
+	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
+
+	 If @error Then
+		$iResult = $_WD_ERROR_SocketError
+	 Else
+		$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6])
+		$_WD_HTTPRESULT = @extended
+
+		If @error Then
+			$iResult = $_WD_ERROR_SendRecv
+		EndIf
+	 EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $sResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT <> 200 Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+	If $iResult Then
+		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText))
+		Else
+			SetError(__WD_Error($sFuncName, $iResult, $sResponseText))
+		EndIf
 	EndIf
 
 	Return $sResponseText
@@ -1067,7 +1090,7 @@ EndFunc   ;==>__WD_Get
 ; Syntax ........: __WD_Post($sURL, $sData)
 ; Parameters ....: $sURL                - a string value.
 ;                  $sData               - a string value.
- ; Return Value ..: Success      - Response from web driver
+; Return Value ..: Success      - Response from web driver
 ;                  Failure      - Response from web driver and set @ERROR
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
@@ -1081,31 +1104,39 @@ EndFunc   ;==>__WD_Get
 ; ===============================================================================================================================
 Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
+	Local $iResult, $sResponseText
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData & @CRLF)
 	EndIf
 
-	$_WD_OHTTP.Open("POST", $sURL, False)
-	$_WD_OHTTP.SetRequestHeader("Content-Type", "application/json;charset=utf-8")
-	$_WD_OHTTP.Send($sData)
+	Local $aURL = _WinHttpCrackUrl($sURL)
 
-    ; wait until response is ready
-    $_WD_OHTTP.WaitForResponse(5)
+	$_WD_HTTPRESULT = 0
 
-	$_WD_HTTPRESULT = $_WD_OHTTP.Status
-    Local $sResponseText = $_WD_OHTTP.ResponseText
+	; Initialize and get session handle
+	Local $hOpen = _WinHttpOpen()
+
+	; Get connection handle
+	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
+
+	 If @error Then
+		$iResult = $_WD_ERROR_SocketError
+	 Else
+		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], -1, $sData)
+		$_WD_HTTPRESULT = @extended
+
+		If @error Then
+			$iResult = (@extended = $HTTP_STATUS_REQUEST_TIMEOUT) ? $_WD_ERROR_Timeout : $_WD_ERROR_SendRecv
+		EndIf
+	 EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT <> 200 Then
-		If $_WD_HTTPRESULT = 408 Then
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText))
-		Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
-		EndIf
+	If $iResult Then
+		SetError(__WD_Error($sFuncName, $iResult, $sResponseText))
 	EndIf
 
 	Return $sResponseText
@@ -1130,22 +1161,44 @@ EndFunc   ;==>__WD_Post
 ; ===============================================================================================================================
 Func __WD_Delete($sURL)
 	Local Const $sFuncName = "__WD_Delete"
-	$_WD_OHTTP.Open("DELETE", $sURL, False)
-	$_WD_OHTTP.SetRequestHeader("Content-Type", "application/json;charset=utf-8")
-	$_WD_OHTTP.Send()
 
-    ; wait until response is ready
-    $_WD_OHTTP.WaitForResponse(5)
+	Local $iResult, $sResponseText
 
-    $_WD_HTTPRESULT = $_WD_OHTTP.Status
-    Local $sResponseText = $_WD_OHTTP.ResponseText
+	If $_WD_DEBUG Then
+		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
+	EndIf
+
+	Local $aURL = _WinHttpCrackUrl($sURL)
+
+	$_WD_HTTPRESULT = 0
+
+	; Initialize and get session handle
+	Local $hOpen = _WinHttpOpen()
+
+	; Get connection handle
+	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
+
+	 If @error Then
+		$iResult = $_WD_ERROR_SocketError
+	 Else
+		$sResponseText = _WinHttpSimpleRequest($hConnect, "DELETE", $aURL[6])
+		$_WD_HTTPRESULT = @extended
+
+		If @error Then
+			$iResult = $_WD_ERROR_SendRecv
+		EndIf
+	 EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT <> 200 Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+	If $iResult Then
+		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText))
+		Else
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText))
+		EndIf
 	EndIf
 
 	Return $sResponseText
