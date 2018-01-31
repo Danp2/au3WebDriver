@@ -3,6 +3,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 
 # Requirements
 - JSON UDF https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+- WinHTTP UDF https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
 - WebDriver for desired browser
 	- Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
