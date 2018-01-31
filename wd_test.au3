@@ -4,7 +4,7 @@
 Local Enum $eFireFox = 0, _
 			$eChrome
 
-Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", True], ["TestScript", False], ["TestCookies", False], ["TestAlerts", False]]
+Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", True]]
 
 Local Const $_TestType = $eFireFox
 Local $sDesiredCapabilities
@@ -25,7 +25,6 @@ EndSwitch
 _WD_Startup()
 
 $sSession = _WD_CreateSession($sDesiredCapabilities)
-
 
 For $iIndex = 0 To UBound($aTestSuite, $UBOUND_ROWS) - 1
 	If $aTestSuite[$iIndex][1] Then
@@ -58,6 +57,8 @@ EndFunc
 
 ;_WDWindow($sSession, 'frame', '{"id":nullelse
 Func TestElements()
+	Local $sElement
+
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib1']")
 
@@ -70,12 +71,18 @@ Func TestElements()
 	_ArrayDisplay($aElements)
 
 	_WD_ElementAction($sSession, $sElement, 'value', "testing 123")
+	Sleep(500)
+
 	_WD_ElementAction($sSession, $sElement, 'text')
 	_WD_ElementAction($sSession, $sElement, 'clear')
+	Sleep(500)
 	_WD_ElementAction($sSession, $sElement, 'value', "abc xyz")
+	Sleep(500)
 	_WD_ElementAction($sSession, $sElement, 'text')
 	_WD_ElementAction($sSession, $sElement, 'clear')
+	Sleep(500)
 	_WD_ElementAction($sSession, $sElement, 'value', "fujimo")
+	Sleep(500)
 	_WD_ElementAction($sSession, $sElement, 'text')
 	_WD_ElementAction($sSession, $sElement, 'click')
 
@@ -105,6 +112,7 @@ Func TestAlerts()
 	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
 	_WD_Alert($sSession, 'sendtext', 'new text')
 	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
+	Sleep(5000)
 	_WD_Alert($sSession, 'Dismiss')
 
 EndFunc
