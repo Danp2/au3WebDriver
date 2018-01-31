@@ -9,24 +9,32 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 	- Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
 	- FireFox WebDriver  https://github.com/mozilla/geckodriver/releases
 
-# Function List	
-- _WDStartup()
-- _WDShutdown()
-- _WDStatus()
-- _WDCreateSession($sDesiredCapabilities='{}')
-- _WDDeleteSession($sSession)
-- _WDNavigate($sSession, $sURL)
-- _WDAction($sSession, $sCommand)
-- _WDWindow($sSession, $sCommand, $sOption)
-- _WDFindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
-- _WDElementAction($sSession, $sElement, $sCommand, $sOption='')
-- _WDExecuteScript($sSession, $sScript, $aArguments)
-- _WDAlert($sSession, $sCommand)
-- _WDGetSource($sSession)
-- _WDCookies($sSession,  $sCommand, $sOption = '')
-- _WDTimeouts($sSession, $sTimeouts = '')
-- _WDOption($sOption, $vValue = "")
+# Function List
 
- 
- # Source Code
- You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
+## Core Functions
+
+- _WD_CreateSession($sDesiredCapabilities='{}')
+- _WD_DeleteSession($sSession)
+- _WD_Status()
+- _WD_Timeouts($sSession, $sTimeouts = '')
+- _WD_Navigate($sSession, $sURL)
+- _WD_Action($sSession, $sCommand)
+- _WD_Window($sSession, $sCommand, $sOption = '')
+- _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
+- _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
+- _WD_ExecuteScript($sSession, $sScript, $sArguments="[]")
+- _WD_Alert($sSession, $sCommand, $sOption = '')
+- _WD_GetSource($sSession)
+- _WD_Cookies($sSession,  $sCommand, $sOption = '')
+- _WD_Option($sOption, $vValue = "")
+- _WD_Startup()
+- _WD_Shutdown()
+
+## Helper Functions
+
+- _WD_NewTab($sSession, $lSwitch = True)
+- _WD_Attach($sSession, $sString, $sMode = 'title')
+- _WD_LinkClickByText($sSession, $sText, $lPartial = True)
+
+# Source Code
+You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
