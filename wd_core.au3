@@ -18,7 +18,7 @@
 ; AutoIt Version : v3.3.14.2
 ; ==============================================================================
 #cs
-	V0.1.0.5
+	V0.1.0.6
 	- Fixed: Missing variable declarations
 	- Changed:
 
