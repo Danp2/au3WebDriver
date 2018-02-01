@@ -19,6 +19,10 @@
 ; ==============================================================================
 #cs
 	V0.1.0.5
+	- Fixed: Missing variable declarations
+	- Changed:
+
+	V0.1.0.5
 	- Changed: Switched to using _WinHttp functions
 	- Added: _WD_LinkClickByText
 
@@ -82,7 +86,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.5"
+Global Const $__WDVERSION = "0.1.0.6"
 
 Global Const $_WD_LOCATOR_ByID 					= "id"
 Global Const $_WD_LOCATOR_ByName 				= "name"
