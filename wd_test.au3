@@ -57,7 +57,7 @@ EndFunc
 
 ;_WDWindow($sSession, 'frame', '{"id":nullelse
 Func TestElements()
-	Local $sElement
+	Local $sElement, $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib1']")

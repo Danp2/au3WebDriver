@@ -19,6 +19,10 @@
 ; ==============================================================================
 #cs
 	V0.1.0.5
+	- Fixed: Missing variable declarations
+	- Changed:
+
+	V0.1.0.5
 	- Changed: Switched to using _WinHttp functions
 	- Added: _WD_LinkClickByText
 
@@ -82,7 +86,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.5"
+Global Const $__WDVERSION = "0.1.0.6"
 
 Global Const $_WD_LOCATOR_ByID 					= "id"
 Global Const $_WD_LOCATOR_ByName 				= "name"
@@ -107,9 +111,9 @@ Global Enum _
         $_WD_ERROR_RetValue, _           ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
         $_WD_ERROR_Exception, _          ; Exception from web driver
         $_WD_ERROR_InvalidExpression, _  ; Invalid expression in XPath query or RegEx
-        $_WD_ERROR_COUTNER ;
+        $_WD_ERROR_COUNTER ;
 
-Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUTNER] = [ _
+Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
         "Success", _
         "General Error", _
         "Socket Error", _
@@ -424,7 +428,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Window"
-	Local $sResponse, $sJSON, $sResult = ""
+	Local $sResponse, $sJSON, $sResult = "", $iErr
 
 	$sCommand = StringLower($sCommand)
 
@@ -599,7 +603,7 @@ EndFunc   ;==>_WDFindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
 	Local Const $sFuncName = "_WD_ElementAction"
-	Local $sResponse, $sResult = '', $iErr
+	Local $sResponse, $sResult = '', $iErr, $oJson
 
 	$sCommand = StringLower($sCommand)
 
