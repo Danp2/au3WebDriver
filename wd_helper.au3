@@ -84,6 +84,10 @@ EndFunc
 ;                               | HTML
 ; Return values .: Success      - String representing handle of matching tab
 ;                  Failure      - blank string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_InvalidDataType
+;                  				- $_WD_ERROR_NoMatch
+;                  				- $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -98,37 +102,41 @@ Func _WD_Attach($sSession, $sString, $sMode = 'title')
 	Local $sCurrentTab = _WD_Window($sSession, 'window')
 	Local $aHandles = _WD_Window($sSession, 'handles')
 
-	$sMode = StringLower($sMode)
+	If @error = $_WD_ERROR_Success Then
+		$sMode = StringLower($sMode)
 
-	For $sHandle In $aHandles
+		For $sHandle In $aHandles
 
-		_WD_Window($sSession, 'Switch', '{"handle":"' & $sHandle & '"}')
+			_WD_Window($sSession, 'Switch', '{"handle":"' & $sHandle & '"}')
 
-		Switch $sMode
-			Case "title", "url"
-				If StringInStr(_WD_Action($sSession, $sMode), $sString) > 0 Then
-					$lFound = True
-					$sTabHandle = $sHandle
-					ExitLoop
-				EndIf
+			Switch $sMode
+				Case "title", "url"
+					If StringInStr(_WD_Action($sSession, $sMode), $sString) > 0 Then
+						$lFound = True
+						$sTabHandle = $sHandle
+						ExitLoop
+					EndIf
 
-			Case 'html'
-				If StringInStr(_WD_GetSource($sSession), $sString) > 0 Then
-					$lFound = True
-					$sTabHandle = $sHandle
-					ExitLoop
-				EndIf
+				Case 'html'
+					If StringInStr(_WD_GetSource($sSession), $sString) > 0 Then
+						$lFound = True
+						$sTabHandle = $sHandle
+						ExitLoop
+					EndIf
 
-			Case Else
-				SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sOption=>" & $sMode))
-				Return ""
-		EndSwitch
-	Next
+				Case Else
+					SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sOption=>" & $sMode))
+					Return ""
+			EndSwitch
+		Next
 
-	If Not $lFound Then
-		; Restore prior active tab
-		_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch))
+		If Not $lFound Then
+			; Restore prior active tab
+			_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch))
+		EndIf
+	Else
+		SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError))
 	EndIf
 
 	Return $sTabHandle
