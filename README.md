@@ -38,3 +38,6 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 
 # Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
+
+# Discussion Thread on Autoit Forums
+https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version
