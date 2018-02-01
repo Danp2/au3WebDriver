@@ -20,7 +20,7 @@
 #cs
 	V0.1.0.6
 	- Fixed: Missing variable declarations
-	- Changed:
+	- Changed: _WD_Attach error handling
 
 	V0.1.0.5
 	- Changed: Switched to using _WinHttp functions
