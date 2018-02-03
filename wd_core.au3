@@ -9,13 +9,18 @@
 ; Description ...: A UDF for Web Driver automation
 ; Requirement ...: JSON UDF
 ;                  https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+;                  WinHTTP UDF
+;                  https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 ;
 ;                  WebDriver for desired browser
 ;                  Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
 ;                  FireFox WebDriver https://github.com/mozilla/geckodriver/releases
 ;
+;                  Discussion Thread on Autoit Forums
+;                  https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version
+;
 ; Author(s) .....: Dan Pollak
-; AutoIt Version : v3.3.14.2
+; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
 	V0.1.0.6
@@ -81,6 +86,7 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
+	- Michał Lipok for all his feedbackgit / suggestions
 #ce
 #EndRegion Many thanks to:
 
@@ -343,7 +349,7 @@ EndFunc   ;==>_WDNavigate
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Action
 ; Description ...: Perform various interactions with the web driver session
-; Syntax ........: _WD_Action($sSession, $sCommand)
+; Syntax ........: _WD_Action($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | refresh
@@ -351,6 +357,9 @@ EndFunc   ;==>_WDNavigate
 ;                               | forward
 ;                               | url
 ;                               | title
+;                               | actions
+;                               | release
+;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -362,9 +371,10 @@ EndFunc   ;==>_WDNavigate
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigation
+;                  https://w3c.github.io/webdriver/webdriver-spec.html#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Action($sSession, $sCommand)
+Func _WD_Action($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Action"
 	Local $sResponse, $sResult = "", $iErr, $sJSON
 
@@ -384,8 +394,16 @@ Func _WD_Action($sSession, $sCommand)
 				$sResult = Json_Get($sJSON, "[value]")
 			EndIf
 
+		Case 'actions'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
+			$iErr = @error
+
+		Case 'release'
+			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/actions", & $sOption)
+			$iErr = @error
+
 		case Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title) $sCommand=>" & $sCommand))
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title|Actions|Release) $sCommand=>" & $sCommand))
 			Return ""
 
 	EndSwitch
@@ -403,8 +421,8 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Window
-; Description ...:
-; Syntax ........: _WD_Window($sSession, $sCommand, $sOption)
+; Description ...: Perform interactions related to the current window
+; Syntax ........: _WD_Window($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | Window
@@ -412,7 +430,13 @@ EndFunc
 ;                               | Maximize
 ;                               | Minimize
 ;                               | Fullscreen
-;                  $sOption             - a string value.
+;                               | Normal
+;                               | Screemshot
+;                               | Close
+;                               | Switch
+;                               | Frame
+;                               | Parent
+;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -490,7 +514,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			EndIf
 
 		case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen:Normal|Screenshot|Close|Switch|Frame|Parent) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -704,7 +728,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Alert
 ; Description ...: Respond to user prompt
-; Syntax ........: _WD_Alert($sSession, $sCommand)
+; Syntax ........: _WD_Alert($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | dismiss
@@ -712,6 +736,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                               | gettext
 ;                               | sendtext
 ;                               | status
+;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
