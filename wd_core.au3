@@ -23,6 +23,12 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.7
+	- Changed: Add $sOption parameter to _WD_Action
+ 	- Changed: Implemented "Actions" command in _WD_Action
+	- Changed: Improved error handling in _WD_FindElement
+	- Added: _WD_WaitElement
+
 	V0.1.0.6
 	- Fixed: Missing variable declarations
 	- Changed: _WD_Attach error handling
@@ -92,7 +98,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.6"
+Global Const $__WDVERSION = "0.1.0.7"
 
 Global Const $_WD_LOCATOR_ByID 					= "id"
 Global Const $_WD_LOCATOR_ByName 				= "name"
