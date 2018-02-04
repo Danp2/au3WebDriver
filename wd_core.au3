@@ -103,7 +103,7 @@ Global Const $_WD_LOCATOR_ByLinkText			= "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText		= "partial link text"
 Global Const $_WD_LOCATOR_ByTagName				= "tag name"
 
-Global Const $_WD_DefaultTimeout				= 300000 ; 5 Minutes
+Global Const $_WD_DefaultTimeout				= 10000 ; 10 seconds
 
 Global Enum _
         $_WD_ERROR_Success = 0, _        ; No error
@@ -358,7 +358,6 @@ EndFunc   ;==>_WDNavigate
 ;                               | url
 ;                               | title
 ;                               | actions
-;                               | release
 ;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
@@ -376,17 +375,18 @@ EndFunc   ;==>_WDNavigate
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Action"
-	Local $sResponse, $sResult = "", $iErr, $sJSON
+	Local $sResponse, $sResult = "", $iErr, $sJSON, $sURL
 
+	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
 		Case 'back', 'forward', 'refresh'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, '{}')
+			$sResponse = __WD_Post($sURL, '{}')
 			$iErr = @error
 
 		Case 'url', 'title'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+			$sResponse = __WD_Get($sURL)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -395,15 +395,16 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 			EndIf
 
 		Case 'actions'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
-			$iErr = @error
+			If $sOption <> '' Then
+				$sResponse = __WD_Post($sURL, $sOption)
+			Else
+				$sResponse = __WD_Delete($sURL)
+			EndIf
 
-		Case 'release'
-			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/actions", & $sOption)
 			$iErr = @error
 
 		case Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title|Actions|Release) $sCommand=>" & $sCommand))
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title|Actions) $sCommand=>" & $sCommand))
 			Return ""
 
 	EndSwitch
@@ -563,25 +564,35 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sElement & "/" & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
 	$iErr = @error
 
-	If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-		If $lMultiple Then
+	If $iErr = $_WD_ERROR_Success Then
+		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+			If $lMultiple Then
 
+				$oJson = Json_Decode($sResponse)
+				$oValues = Json_Get($oJson, '[value]')
+				$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
+
+				Dim $aElements[UBound($oValues)]
+
+				For $oValue In $oValues
+					$aElements[$iRow] = Json_Get($oValue, $sKey)
+					$iRow += 1
+				Next
+			Else
+				$oJson = Json_Decode($sResponse)
+				$Obj2 = Json_Get($oJson, "[value]")
+				$sKey = Json_ObjGetKeys($Obj2)[0]
+
+				$sResult = Json_Get($oJson, "[value][" & $sKey & "]")
+			EndIf
+
+		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
 			$oJson = Json_Decode($sResponse)
-			$oValues = Json_Get($oJson, '[value]')
-			$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
+			$sErr = Json_Get($oJson, "[value][error]")
+			$iErr = ($sErr == 'no such element') ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
 
-			Dim $aElements[UBound($oValues)]
-
-			For $oValue In $oValues
-				$aElements[$iRow] = Json_Get($oValue, $sKey)
-				$iRow += 1
-			Next
 		Else
-			$oJson = Json_Decode($sResponse)
-			$Obj2 = Json_Get($oJson, "[value]")
-			$sKey = Json_ObjGetKeys($Obj2)[0]
-
-			$sResult = Json_Get($oJson, "[value][" & $sKey & "]")
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
 
@@ -589,14 +600,8 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-		$oJson = Json_Decode($sResponse)
-		$sErr = Json_Get($oJson, "[value][error]")
-
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch, $sErr), $_WD_HTTPRESULT)
-
-	ElseIf $iErr Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
+	If $iErr Then
+		SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
 	EndIf
 
 	Return ($lMultiple) ? $aElements : $sResult
@@ -1125,6 +1130,7 @@ EndFunc   ;==>__WD_Get
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_Timeout
+;                  				- $_WD_ERROR_SocketError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1134,7 +1140,7 @@ EndFunc   ;==>__WD_Get
 ; ===============================================================================================================================
 Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
-	Local $iResult, $sResponseText
+	Local $iResult, $sResponseText, $iErr
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData & @CRLF)
@@ -1154,10 +1160,11 @@ Func __WD_Post($sURL, $sData)
 		$iResult = $_WD_ERROR_SocketError
 	 Else
 		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], -1, $sData)
+		$iErr = @error
 		$_WD_HTTPRESULT = @extended
 
-		If @error Then
-			$iResult = (@extended = $HTTP_STATUS_REQUEST_TIMEOUT) ? $_WD_ERROR_Timeout : $_WD_ERROR_SendRecv
+		If $iErr Then
+			$iResult = ($_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT) ? $_WD_ERROR_Timeout : $_WD_ERROR_SendRecv
 		EndIf
 	 EndIf
 
