@@ -208,17 +208,21 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 
 	Local $hWaitTimer = TimerInit()
 
-	While Not $bAbort
+	While 1
 		_WD_FindElement($sSession, $sStrategy, $sSelector)
 		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success Then
 			$iResult = 1
-			$bAbort = True
+			ExitLoop
 
-		ElseIf (TimerDiff($hWaitTimer) > $iTimeout) Then
-			$iErr = $_WD_ERROR_Timeout
-			$bAbort = True
+		ElseIf $iErr = $_WD_ERROR_NoMatch Then
+			If (TimerDiff($hWaitTimer) > $iTimeout) Then
+				$iErr = $_WD_ERROR_Timeout
+				ExitLoop
+			EndIf
+		Else
+			ExitLoop
 		EndIf
 
 		Sleep(1000)
