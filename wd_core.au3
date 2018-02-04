@@ -9,13 +9,18 @@
 ; Description ...: A UDF for Web Driver automation
 ; Requirement ...: JSON UDF
 ;                  https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+;                  WinHTTP UDF
+;                  https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 ;
 ;                  WebDriver for desired browser
 ;                  Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
 ;                  FireFox WebDriver https://github.com/mozilla/geckodriver/releases
 ;
+;                  Discussion Thread on Autoit Forums
+;                  https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version
+;
 ; Author(s) .....: Dan Pollak
-; AutoIt Version : v3.3.14.2
+; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
 	V0.1.0.6
@@ -81,6 +86,7 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
+	- Michał Lipok for all his feedbackgit / suggestions
 #ce
 #EndRegion Many thanks to:
 
@@ -97,7 +103,7 @@ Global Const $_WD_LOCATOR_ByLinkText			= "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText		= "partial link text"
 Global Const $_WD_LOCATOR_ByTagName				= "tag name"
 
-Global Const $_WD_DefaultTimeout				= 300000 ; 5 Minutes
+Global Const $_WD_DefaultTimeout				= 10000 ; 10 seconds
 
 Global Enum _
         $_WD_ERROR_Success = 0, _        ; No error
@@ -343,7 +349,7 @@ EndFunc   ;==>_WDNavigate
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Action
 ; Description ...: Perform various interactions with the web driver session
-; Syntax ........: _WD_Action($sSession, $sCommand)
+; Syntax ........: _WD_Action($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | refresh
@@ -351,6 +357,8 @@ EndFunc   ;==>_WDNavigate
 ;                               | forward
 ;                               | url
 ;                               | title
+;                               | actions
+;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -362,21 +370,23 @@ EndFunc   ;==>_WDNavigate
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigation
+;                  https://w3c.github.io/webdriver/webdriver-spec.html#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Action($sSession, $sCommand)
+Func _WD_Action($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Action"
-	Local $sResponse, $sResult = "", $iErr, $sJSON
+	Local $sResponse, $sResult = "", $iErr, $sJSON, $sURL
 
+	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
 		Case 'back', 'forward', 'refresh'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, '{}')
+			$sResponse = __WD_Post($sURL, '{}')
 			$iErr = @error
 
 		Case 'url', 'title'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+			$sResponse = __WD_Get($sURL)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -384,8 +394,17 @@ Func _WD_Action($sSession, $sCommand)
 				$sResult = Json_Get($sJSON, "[value]")
 			EndIf
 
+		Case 'actions'
+			If $sOption <> '' Then
+				$sResponse = __WD_Post($sURL, $sOption)
+			Else
+				$sResponse = __WD_Delete($sURL)
+			EndIf
+
+			$iErr = @error
+
 		case Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title) $sCommand=>" & $sCommand))
+			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title|Actions) $sCommand=>" & $sCommand))
 			Return ""
 
 	EndSwitch
@@ -403,8 +422,8 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Window
-; Description ...:
-; Syntax ........: _WD_Window($sSession, $sCommand, $sOption)
+; Description ...: Perform interactions related to the current window
+; Syntax ........: _WD_Window($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | Window
@@ -412,7 +431,13 @@ EndFunc
 ;                               | Maximize
 ;                               | Minimize
 ;                               | Fullscreen
-;                  $sOption             - a string value.
+;                               | Normal
+;                               | Screemshot
+;                               | Close
+;                               | Switch
+;                               | Frame
+;                               | Parent
+;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -490,7 +515,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			EndIf
 
 		case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen:Normal|Screenshot|Close|Switch|Frame|Parent) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -539,25 +564,35 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sElement & "/" & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
 	$iErr = @error
 
-	If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-		If $lMultiple Then
+	If $iErr = $_WD_ERROR_Success Then
+		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+			If $lMultiple Then
 
+				$oJson = Json_Decode($sResponse)
+				$oValues = Json_Get($oJson, '[value]')
+				$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
+
+				Dim $aElements[UBound($oValues)]
+
+				For $oValue In $oValues
+					$aElements[$iRow] = Json_Get($oValue, $sKey)
+					$iRow += 1
+				Next
+			Else
+				$oJson = Json_Decode($sResponse)
+				$Obj2 = Json_Get($oJson, "[value]")
+				$sKey = Json_ObjGetKeys($Obj2)[0]
+
+				$sResult = Json_Get($oJson, "[value][" & $sKey & "]")
+			EndIf
+
+		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
 			$oJson = Json_Decode($sResponse)
-			$oValues = Json_Get($oJson, '[value]')
-			$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
+			$sErr = Json_Get($oJson, "[value][error]")
+			$iErr = ($sErr == 'no such element') ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
 
-			Dim $aElements[UBound($oValues)]
-
-			For $oValue In $oValues
-				$aElements[$iRow] = Json_Get($oValue, $sKey)
-				$iRow += 1
-			Next
 		Else
-			$oJson = Json_Decode($sResponse)
-			$Obj2 = Json_Get($oJson, "[value]")
-			$sKey = Json_ObjGetKeys($Obj2)[0]
-
-			$sResult = Json_Get($oJson, "[value][" & $sKey & "]")
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
 
@@ -565,14 +600,8 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-		$oJson = Json_Decode($sResponse)
-		$sErr = Json_Get($oJson, "[value][error]")
-
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch, $sErr), $_WD_HTTPRESULT)
-
-	ElseIf $iErr Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
+	If $iErr Then
+		SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT)
 	EndIf
 
 	Return ($lMultiple) ? $aElements : $sResult
@@ -704,7 +733,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Alert
 ; Description ...: Respond to user prompt
-; Syntax ........: _WD_Alert($sSession, $sCommand)
+; Syntax ........: _WD_Alert($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | dismiss
@@ -712,6 +741,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                               | gettext
 ;                               | sendtext
 ;                               | status
+;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -1100,6 +1130,7 @@ EndFunc   ;==>__WD_Get
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_Timeout
+;                  				- $_WD_ERROR_SocketError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1109,7 +1140,7 @@ EndFunc   ;==>__WD_Get
 ; ===============================================================================================================================
 Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
-	Local $iResult, $sResponseText
+	Local $iResult, $sResponseText, $iErr
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData & @CRLF)
@@ -1129,10 +1160,11 @@ Func __WD_Post($sURL, $sData)
 		$iResult = $_WD_ERROR_SocketError
 	 Else
 		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], -1, $sData)
+		$iErr = @error
 		$_WD_HTTPRESULT = @extended
 
-		If @error Then
-			$iResult = (@extended = $HTTP_STATUS_REQUEST_TIMEOUT) ? $_WD_ERROR_Timeout : $_WD_ERROR_SendRecv
+		If $iErr Then
+			$iResult = ($_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT) ? $_WD_ERROR_Timeout : $_WD_ERROR_SendRecv
 		EndIf
 	 EndIf
 
