@@ -33,6 +33,7 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
+	- Michał Lipok for all his feedbackgit / suggestions
 #ce
 #EndRegion Many thanks to:
 
@@ -174,4 +175,55 @@ Func _WD_LinkClickByText($sSession, $sText, $lPartial = True)
 	Else
 		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
 	EndIf
+EndFunc
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_WaitElement
+; Description ...: Wait for a element to be found  in the current tab before returning
+; Syntax ........: _WD_WaitElement($sSession, $sElement, $sStrategy, $sSelector[, $iDelay = 0[, $iTimeout = -1]])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector           - Value to find
+;                  $iDelay              - [optional] Milliseconds to wait before checking status
+;                  $iTimeout            - [optional] Period of time to wait before exiting function (default = 300000 ms aka 5 min)
+; Return values .: Success      - 1
+;                  Failure      - 0 and sets the @error flag to non-zero
+;                  @error       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Timeout
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout = -1)
+	Local Const $sFuncName = "_WD_WaitElement"
+	Local $bAbort = False, $iErr, $iResult
+
+	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
+
+	Sleep($iDelay)
+
+	Local $hWaitTimer = TimerInit()
+
+	While Not $bAbort
+		_WD_FindElement($sSession, $sStrategy, $sSelector)
+		$iErr = @error
+
+		If $iErr = $_WD_ERROR_Success Then
+			$iResult = 1
+			$bAbort = True
+
+		ElseIf (TimerDiff($hWaitTimer) > $iTimeout) Then
+			$iErr = $_WD_ERROR_Timeout
+			$bAbort = True
+		EndIf
+
+		Sleep(1000)
+	WEnd
+
+	SetError(__WD_Error($sFuncName, $iErr))
+	Return $iResult
 EndFunc
