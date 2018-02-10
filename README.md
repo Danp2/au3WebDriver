@@ -6,9 +6,9 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - WinHTTP UDF https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
 - WebDriver for desired browser
-	- Chrome WebDriver [download](https://sites.google.com/a/chromium.org/chromedriver/downloads) [status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)
-	- FireFox WebDriver [download](https://github.com/mozilla/geckodriver/releases) [status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status)
-	- Edge WebDriver [download](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) [status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver#w3c-webdriver-specification-supporthttpsw3cgithubiowebdriverwebdriver-spechtml)
+	- Chrome	[[download](https://sites.google.com/a/chromium.org/chromedriver/downloads)]	[[status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)]
+	- FireFox	[[download](https://github.com/mozilla/geckodriver/releases)]	[[status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status)]
+	- Edge	[[download](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)]	[[status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver#w3c-webdriver-specification-supporthttpsw3cgithubiowebdriverwebdriver-spechtml)]
 
 
 # Function List
