@@ -24,6 +24,15 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.8
+	- Changed: Improve error handling in _WD_Attach
+	- Fixed: Missing "window" in URL for _WD_Window
+	- Fixed: Header entry for _WD_Option
+	- Added: Reference to Edge driver
+	- Fixed: _WD_Window implementation of Maximize, Minimize, Fullscreen, & Screenshot
+	- Removed: Normal option from _WD_Window
+	- Added: Rect option to _WD_Window
+
 	V0.1.0.7
 	- Changed: Add $sOption parameter to _WD_Action
 	- Changed: Implemented "Actions" command in _WD_Action
@@ -99,7 +108,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.7"
+Global Const $__WDVERSION = "0.1.0.8"
 
 Global Const $_WD_LOCATOR_ByID = "id"
 Global Const $_WD_LOCATOR_ByName = "name"
@@ -438,7 +447,7 @@ EndFunc   ;==>_WD_Action
 ;                               | Maximize
 ;                               | Minimize
 ;                               | Fullscreen
-;                               | Normal
+;                               | Rect
 ;                               | Screemshot
 ;                               | Close
 ;                               | Switch
@@ -483,8 +492,29 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 				$sResult = Json_Get($sJSON, "[value]")
 			EndIf
 
-		Case 'maximize', 'minimize', 'fullscreen', 'normal', 'screenshot'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
+		Case 'maximize', 'minimize', 'fullscreen'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
+			$iErr = @error
+
+			If $iErr = $_WD_ERROR_Success Then
+				$sResult = $sResponse
+			EndIf
+
+		Case 'rect'
+			If $sOption = '' Then
+				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
+			Else
+				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
+			EndIf
+
+			$iErr = @error
+
+			If $iErr = $_WD_ERROR_Success Then
+				$sResult = $sResponse
+			EndIf
+
+		Case 'screenshot'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sCommand)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -522,7 +552,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			EndIf
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen:Normal|Screenshot|Close|Switch|Frame|Parent) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen|Rect|Screenshot|Close|Switch|Frame|Parent) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
