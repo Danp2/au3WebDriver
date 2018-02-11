@@ -1,4 +1,4 @@
-#Include-once
+#include-once
 #include <array.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include <WinHttp.au3> ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
@@ -15,6 +15,7 @@
 ;                  WebDriver for desired browser
 ;                  Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
 ;                  FireFox WebDriver https://github.com/mozilla/geckodriver/releases
+;                  Edge WebDriver https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 ;
 ;                  Discussion Thread on Autoit Forums
 ;                  https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version
@@ -25,7 +26,7 @@
 #cs
 	V0.1.0.7
 	- Changed: Add $sOption parameter to _WD_Action
- 	- Changed: Implemented "Actions" command in _WD_Action
+	- Changed: Implemented "Actions" command in _WD_Action
 	- Changed: Improved error handling in _WD_FindElement
 	- Added: _WD_WaitElement
 
@@ -62,7 +63,7 @@
 
 #Region Copyright
 #cs
- 	* WD_Core.au3
+	* WD_Core.au3
 	*
 	* MIT License
 	*
@@ -100,57 +101,57 @@
 #Region Global Constants
 Global Const $__WDVERSION = "0.1.0.7"
 
-Global Const $_WD_LOCATOR_ByID 					= "id"
-Global Const $_WD_LOCATOR_ByName 				= "name"
-Global Const $_WD_LOCATOR_ByClassName 			= "class name"
-Global Const $_WD_LOCATOR_ByCSSSelector 		= "css selector"
-Global Const $_WD_LOCATOR_ByXPath 				= "xpath"
-Global Const $_WD_LOCATOR_ByLinkText			= "link text"
-Global Const $_WD_LOCATOR_ByPartialLinkText		= "partial link text"
-Global Const $_WD_LOCATOR_ByTagName				= "tag name"
+Global Const $_WD_LOCATOR_ByID = "id"
+Global Const $_WD_LOCATOR_ByName = "name"
+Global Const $_WD_LOCATOR_ByClassName = "class name"
+Global Const $_WD_LOCATOR_ByCSSSelector = "css selector"
+Global Const $_WD_LOCATOR_ByXPath = "xpath"
+Global Const $_WD_LOCATOR_ByLinkText = "link text"
+Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
+Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
-Global Const $_WD_DefaultTimeout				= 10000 ; 10 seconds
+Global Const $_WD_DefaultTimeout = 10000 ; 10 seconds
 
 Global Enum _
-        $_WD_ERROR_Success = 0, _        ; No error
-        $_WD_ERROR_GeneralError, _       ; General error
-        $_WD_ERROR_SocketError, _        ; No socket
-        $_WD_ERROR_InvalidDataType, _    ; Invalid data type (IP, URL, Port ...)
-        $_WD_ERROR_InvalidValue, _       ; Invalid value in function-call
-        $_WD_ERROR_SendRecv, _           ; Send / Recv Error
-        $_WD_ERROR_Timeout, _            ; Connection / Send / Recv timeout
-        $_WD_ERROR_NoMatch, _            ; No match for _WDAction-find/search _WDGetElement...
-        $_WD_ERROR_RetValue, _           ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
-        $_WD_ERROR_Exception, _          ; Exception from web driver
-        $_WD_ERROR_InvalidExpression, _  ; Invalid expression in XPath query or RegEx
-        $_WD_ERROR_COUNTER ;
+		$_WD_ERROR_Success = 0, _ ; No error
+		$_WD_ERROR_GeneralError, _ ; General error
+		$_WD_ERROR_SocketError, _ ; No socket
+		$_WD_ERROR_InvalidDataType, _ ; Invalid data type (IP, URL, Port ...)
+		$_WD_ERROR_InvalidValue, _ ; Invalid value in function-call
+		$_WD_ERROR_SendRecv, _ ; Send / Recv Error
+		$_WD_ERROR_Timeout, _ ; Connection / Send / Recv timeout
+		$_WD_ERROR_NoMatch, _ ; No match for _WDAction-find/search _WDGetElement...
+		$_WD_ERROR_RetValue, _ ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
+		$_WD_ERROR_Exception, _ ; Exception from web driver
+		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
+		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
-        "Success", _
-        "General Error", _
-        "Socket Error", _
-        "Invalid data type", _
-        "Invalid value", _
-        "Send / Recv error", _
-        "Timeout", _
-        "No match", _
-        "Error return value", _
-        "Webdriver Exception", _
-        "Invalid Expression" _
-        ]
+		"Success", _
+		"General Error", _
+		"Socket Error", _
+		"Invalid data type", _
+		"Invalid value", _
+		"Send / Recv error", _
+		"Timeout", _
+		"No match", _
+		"Error return value", _
+		"Webdriver Exception", _
+		"Invalid Expression" _
+		]
 #EndRegion Global Constants
 
 
 #Region Global Variables
-Global $_WD_DRIVER = "" 		; Path to web driver executable
-Global $_WD_DRIVER_PARAMS = "" 	; Parameters to pass to web driver executable
+Global $_WD_DRIVER = "" ; Path to web driver executable
+Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
-Global $_WD_PORT = 0 			; Port used for web driver communication
+Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
-Global $_WD_HTTPRESULT			; Result of last WinHTTP request
+Global $_WD_HTTPRESULT ; Result of last WinHTTP request
 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
-Global $_WD_DEBUG = True 		; Trace to console and show web driver app
+Global $_WD_DEBUG = True ; Trace to console and show web driver app
 
 #EndRegion Global Variables
 
@@ -171,7 +172,7 @@ Global $_WD_DEBUG = True 		; Trace to console and show web driver app
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#new-session
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CreateSession($sDesiredCapabilities='{}')
+Func _WD_CreateSession($sDesiredCapabilities = '{}')
 	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = ""
 
@@ -196,7 +197,7 @@ Func _WD_CreateSession($sDesiredCapabilities='{}')
 	EndIf
 
 	Return $sSession
-EndFunc   ;==>_WDCreateSession
+EndFunc   ;==>_WD_CreateSession
 
 
 ; #FUNCTION# ====================================================================================================================
@@ -232,7 +233,7 @@ Func _WD_DeleteSession($sSession)
 	EndIf
 
 	Return 1
-EndFunc
+EndFunc   ;==>_WD_DeleteSession
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Status
@@ -312,7 +313,7 @@ Func _WD_Timeouts($sSession, $sTimeouts = '')
 	EndIf
 
 	Return $sResponse
-EndFunc
+EndFunc   ;==>_WD_Timeouts
 
 
 ; #FUNCTION# ====================================================================================================================
@@ -349,7 +350,7 @@ Func _WD_Navigate($sSession, $sURL)
 	EndIf
 
 	Return 1
-EndFunc   ;==>_WDNavigate
+EndFunc   ;==>_WD_Navigate
 
 
 ; #FUNCTION# ====================================================================================================================
@@ -409,7 +410,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 
 			$iErr = @error
 
-		case Else
+		Case Else
 			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title|Actions) $sCommand=>" & $sCommand))
 			Return ""
 
@@ -424,7 +425,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 	EndIf
 
 	Return $sResult
-EndFunc
+EndFunc   ;==>_WD_Action
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Window
@@ -483,7 +484,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			EndIf
 
 		Case 'maximize', 'minimize', 'fullscreen', 'normal', 'screenshot'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -520,7 +521,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 				$sResult = $sResponse
 			EndIf
 
-		case Else
+		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen:Normal|Screenshot|Close|Switch|Frame|Parent) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
@@ -534,7 +535,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 	EndIf
 
 	Return $sResult
-EndFunc
+EndFunc   ;==>_WD_Window
 
 
 ; #FUNCTION# ====================================================================================================================
@@ -611,7 +612,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 	EndIf
 
 	Return ($lMultiple) ? $aElements : $sResult
-EndFunc   ;==>_WDFindElement
+EndFunc   ;==>_WD_FindElement
 
 
 ; #FUNCTION# ====================================================================================================================
@@ -636,7 +637,7 @@ EndFunc   ;==>_WDFindElement
 ;                  https://w3c.github.io/webdriver/webdriver-spec.html#element-interaction
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
+Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_ElementAction"
 	Local $sResponse, $sResult = '', $iErr, $oJson
 
@@ -671,7 +672,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
 			EndIf
 
 		Case 'clear', 'click'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '"}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '"}')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -681,14 +682,14 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption='')
 		Case 'value'
 			Local $sSplitValue = "[" & StringTrimRight(StringRegExpReplace($sOption, '.', '"$0",'), 1) & "]"
 
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & $sOption & '", "value":' & $sSplitValue &'}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & $sOption & '", "value":' & $sSplitValue & '}')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
 				$sResult = $sResponse
 			EndIf
 
-		case Else
+		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Active|Attribute|Property|CSS|Clear|Click|Value) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
@@ -720,13 +721,13 @@ EndFunc   ;==>_WD_ElementAction
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments="[]")
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]")
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData
 
 	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
 
-	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/execute/sync", $sData)
+	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/sync", $sData)
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
@@ -769,11 +770,11 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 
 	Switch $sCommand
 		Case 'dismiss', 'accept'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/" & $sCommand, '{}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, '{}')
 			$iErr = @error
 
 		Case 'gettext'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text")
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -782,11 +783,11 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			EndIf
 
 		Case 'sendtext'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text", '{"text":"' & $sOption & '"}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
 		Case 'status'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession &  "/alert/text")
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -873,7 +874,7 @@ EndFunc   ;==>_WD_GetSource
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#cookies
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Cookies($sSession,  $sCommand, $sOption = '')
+Func _WD_Cookies($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Cookies"
 
 	Local $sResult, $sResponse, $sJSON, $iErr
@@ -905,7 +906,7 @@ Func _WD_Cookies($sSession,  $sCommand, $sOption = '')
 			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
 			$iErr = @error
 
-		case Else
+		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(GetAll|Get|Add|Delete) $sCommand=>" & $sCommand), "")
 	EndSwitch
 
@@ -928,22 +929,16 @@ EndFunc   ;==>_WD_Cookies
 ; Syntax ........: _WD_Option($sOption[, $vValue = ""])
 ; Parameters ....: $sOption             - a string value.
 ;                  $vValue              - [optional] a variant value. Default is "".
-; Parameter(s): .: $sOption     - Driver
-;                               |DriverParams
-;                               |BaseURL
-;                               |Port
-;                  $vValue      - Optional: (Default = "") : if noe value is given, the current value is returned
-;                               | SearchMode 0 = SubString, 1 = Compare
-;                               | LoadWaitTimeOut (int / min. 1000)
-;                               | LoadWaitStop (bool) stop loading after LoadWaitTimeOut
-;                               | ComTrace (bool)
-;                               | ErrorMsgBox (bool)
+; Parameter(s): .: $sOption     - Driver - Full path name to web driver executable
+;                               |DriverParams - Parameters to pass to web driver executable
+;                               |BaseURL - IP address used for web driver communication
+;                               |Port - Port used for web driver communication
+;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Value ..: Success      - 1 / current value
 ;                  Failure      - 0
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_InvalidDataType
-;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1012,7 +1007,7 @@ Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
 
 	If $_WD_DRIVER = "" Then
-	   SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set." & @CRLF))
+		SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set." & @CRLF))
 		Return 0
 	EndIf
 
@@ -1022,10 +1017,8 @@ Func _WD_Startup()
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
-	Local $lShow = $_WD_DEBUG ? @SW_SHOW : @SW_HIDE
-
 	If $_WD_DEBUG Then
-		ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSTYPE & " " & @OSBuild & " " & @OSServicePack & @CRLF)
+		ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		ConsoleWrite("_WDStartup: AutoIt:" & @TAB & @AutoItVersion & @CRLF)
 		ConsoleWrite("_WDStartup: WD.au3:" & @TAB & $__WDVERSION & @CRLF)
 		ConsoleWrite("_WDStartup: Driver:" & @TAB & $_WD_DRIVER & @CRLF)
@@ -1035,14 +1028,14 @@ Func _WD_Startup()
 		ConsoleWrite('_WDStartup: ' & $sCommand & @CRLF)
 	EndIf
 
-	Local $pid = Run($sCommand, "",$_WD_DEBUG ? @SW_SHOW : @SW_HIDE)
+	Local $pid = Run($sCommand, "", $_WD_DEBUG ? @SW_SHOW : @SW_HIDE)
 
 	If @error Then
 		SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "Error launching web driver!"))
 	EndIf
 
 	Return ($pid)
-EndFunc
+EndFunc   ;==>_WD_Startup
 
 
 ; #FUNCTION# ====================================================================================================================
@@ -1060,7 +1053,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_Shutdown()
 	__WD_CloseDriver()
-EndFunc
+EndFunc   ;==>_WD_Shutdown
 
 
 
@@ -1098,16 +1091,16 @@ Func __WD_Get($sURL)
 	; Get connection handle
 	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
 
-	 If @error Then
+	If @error Then
 		$iResult = $_WD_ERROR_SocketError
-	 Else
+	Else
 		$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6])
 		$_WD_HTTPRESULT = @extended
 
 		If @error Then
 			$iResult = $_WD_ERROR_SendRecv
 		EndIf
-	 EndIf
+	EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $sResponseText=" & $sResponseText & @CRLF)
@@ -1162,9 +1155,9 @@ Func __WD_Post($sURL, $sData)
 	; Get connection handle
 	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
 
-	 If @error Then
+	If @error Then
 		$iResult = $_WD_ERROR_SocketError
-	 Else
+	Else
 		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], -1, $sData)
 		$iErr = @error
 		$_WD_HTTPRESULT = @extended
@@ -1172,7 +1165,7 @@ Func __WD_Post($sURL, $sData)
 		If $iErr Then
 			$iResult = ($_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT) ? $_WD_ERROR_Timeout : $_WD_ERROR_SendRecv
 		EndIf
-	 EndIf
+	EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
@@ -1221,16 +1214,16 @@ Func __WD_Delete($sURL)
 	; Get connection handle
 	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
 
-	 If @error Then
+	If @error Then
 		$iResult = $_WD_ERROR_SocketError
-	 Else
+	Else
 		$sResponseText = _WinHttpSimpleRequest($hConnect, "DELETE", $aURL[6])
 		$_WD_HTTPRESULT = @extended
 
 		If @error Then
 			$iResult = $_WD_ERROR_SendRecv
 		EndIf
-	 EndIf
+	EndIf
 
 	If $_WD_DEBUG Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
@@ -1300,6 +1293,6 @@ Func __WD_CloseDriver()
 	Local $sFile = StringRegExpReplace($_WD_DRIVER, "^.*\\(.*)$", "$1")
 
 	If ProcessExists($sFile) Then
-		ProcessClose ($sFile)
+		ProcessClose($sFile)
 	EndIf
-EndFunc
+EndFunc   ;==>__WD_CloseDriver
