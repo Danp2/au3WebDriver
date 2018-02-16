@@ -236,3 +236,57 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 	SetError(__WD_Error($sFuncName, $iErr))
 	Return $iResult
 EndFunc
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetMouseElement
+; Description ...: Retrieves reference to element below mouse pointer
+; Syntax ........: _WD_GetMouseElement($sSession)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Return values .: Element ID returned by web driver
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://stackoverflow.com/questions/24538450/get-element-currently-under-mouse-without-using-mouse-events
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetMouseElement($sSession)
+	Local $sResponse, $sJSON, $sElement
+	Local $sScript = "return Array.from(document.querySelectorAll(':hover')).pop()"
+
+	$sResponse = _WD_ExecuteScript($sSession, $sScript, '')
+	$sJSON = Json_Decode($sResponse)
+	$sElement = Json_Get($sJSON, "[value][ELEMENT]")
+
+	Return $sElement
+EndFunc
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetElementFromPoint
+; Description ...:
+; Syntax ........: _WD_GetElementFromPoint($sSession, $iX, $iY)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $iX                  - an integer value.
+;                  $iY                  - an integer value.
+; Return values .: Success      - Element ID returned by web driver
+;                  Failure      - blank string
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetElementFromPoint($sSession, $iX, $iY)
+	Local $sResponse, $sElement, $sJSON
+    Local $sScript = "return document.elementFromPoint(arguments[0], arguments[1]);"
+	Local $sParams = $iX & ", " & $iY
+
+	$sResponse = _WD_ExecuteScript($sSession, $sScript, $sParams)
+	$sJSON = Json_Decode($sResponse)
+	$sElement = Json_Get($sJSON, "[value][ELEMENT]")
+
+	Return $sElement
+EndFunc
