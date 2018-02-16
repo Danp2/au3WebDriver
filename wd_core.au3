@@ -393,8 +393,8 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Action"
 	Local $sResponse, $sResult = "", $iErr, $sJSON, $sURL
 
-	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
 	$sCommand = StringLower($sCommand)
+	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
 
 	Switch $sCommand
 		Case 'back', 'forward', 'refresh'
@@ -607,14 +607,19 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 
 				$oJson = Json_Decode($sResponse)
 				$oValues = Json_Get($oJson, '[value]')
-				$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
 
-				Dim $aElements[UBound($oValues)]
+				If UBound($oValues) > 0 Then
+					$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
 
-				For $oValue In $oValues
-					$aElements[$iRow] = Json_Get($oValue, $sKey)
-					$iRow += 1
-				Next
+					Dim $aElements[UBound($oValues)]
+
+					For $oValue In $oValues
+						$aElements[$iRow] = Json_Get($oValue, $sKey)
+						$iRow += 1
+					Next
+				Else
+					$iErr = $_WD_ERROR_NoMatch
+				EndIf
 			Else
 				$oJson = Json_Decode($sResponse)
 				$Obj2 = Json_Get($oJson, "[value]")
