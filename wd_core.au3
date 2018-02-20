@@ -24,6 +24,12 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.9
+	- Changed: Force command parameter to lowercase in _WD_Action
+	- Changed: Enhanced error checking in _WD_FindElement
+	- Added: _WD_GetMouseElement
+	- Added: _WD_GetElementFromPoint
+
 	V0.1.0.8
 	- Changed: Improve error handling in _WD_Attach
 	- Fixed: Missing "window" in URL for _WD_Window
@@ -108,7 +114,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.8"
+Global Const $__WDVERSION = "0.1.0.9"
 
 Global Const $_WD_LOCATOR_ByID = "id"
 Global Const $_WD_LOCATOR_ByName = "name"
