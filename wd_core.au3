@@ -806,6 +806,7 @@ EndFunc   ;==>_WD_ExecuteScript
 Func _WD_Alert($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $sJSON, $sResult = ''
+	Local $aNoAlertResults[2] = [$HTTP_STATUS_NOT_FOUND, $HTTP_STATUS_BAD_REQUEST]
 
 	$sCommand = StringLower($sCommand)
 
@@ -832,7 +833,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = ($_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND) ? False : True
+				$sResult = (_ArraySearch($aNoAlertResults, $_WD_HTTPRESULT)) ? False : True
 			EndIf
 
 		Case Else
