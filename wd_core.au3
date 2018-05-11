@@ -816,7 +816,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, '{}')
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) Then
+			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
 				$iErr = $_WD_ERROR_NoAlert
 			EndIf
 
@@ -825,7 +825,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				If _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) Then
+				If _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
 					$sResult = ""
 					$iErr = $_WD_ERROR_NoAlert
 				Else
@@ -838,7 +838,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) Then
+			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
 				$iErr = $_WD_ERROR_NoAlert
 			EndIf
 
@@ -847,7 +847,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = (_ArraySearch($aNoAlertResults, $_WD_HTTPRESULT)) ? False : True
+				$sResult = (_ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0) ? False : True
 			EndIf
 
 		Case Else
@@ -864,6 +864,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 
 	Return $sResult
 EndFunc   ;==>_WD_Alert
+
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetSource
