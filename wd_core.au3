@@ -139,6 +139,7 @@ Global Enum _
 		$_WD_ERROR_RetValue, _ ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
 		$_WD_ERROR_Exception, _ ; Exception from web driver
 		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
+		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
 		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
@@ -806,6 +807,7 @@ EndFunc   ;==>_WD_ExecuteScript
 Func _WD_Alert($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $sJSON, $sResult = ''
+	Local $aNoAlertResults[2] = [$HTTP_STATUS_NOT_FOUND, $HTTP_STATUS_BAD_REQUEST]
 
 	$sCommand = StringLower($sCommand)
 
@@ -814,25 +816,38 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, '{}')
 			$iErr = @error
 
+			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
+				$iErr = $_WD_ERROR_NoAlert
+			EndIf
+
 		Case 'gettext'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($sJSON, "[value]")
+				If _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
+					$sResult = ""
+					$iErr = $_WD_ERROR_NoAlert
+				Else
+					$sJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($sJSON, "[value]")
+				EndIf
 			EndIf
 
 		Case 'sendtext'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
+			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
+				$iErr = $_WD_ERROR_NoAlert
+			EndIf
+
 		Case 'status'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = ($_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND) ? False : True
+				$sResult = (_ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0) ? False : True
 			EndIf
 
 		Case Else
