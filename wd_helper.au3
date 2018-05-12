@@ -69,7 +69,7 @@ Func _WD_NewTab($sSession, $lSwitch = True)
 		EndIf
 	EndIf
 
-	Return $sTabHandle
+	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
 EndFunc
 
 
@@ -103,7 +103,7 @@ Func _WD_Attach($sSession, $sString, $sMode = 'title')
 	$sCurrentTab = _WD_Window($sSession, 'window')
 
 	If @error <> $_WD_ERROR_Success Then
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError))
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError), 0, $sTabHandle)
 	Else
 		$aHandles = _WD_Window($sSession, 'handles')
 
@@ -130,22 +130,21 @@ Func _WD_Attach($sSession, $sString, $sMode = 'title')
 						EndIf
 
 					Case Else
-						SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sOption=>" & $sMode))
-						Return ""
+						Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sOption=>" & $sMode), 0, $sTabHandle)
 				EndSwitch
 			Next
 
 			If Not $lFound Then
 				; Restore prior active tab
 				_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
-				SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch))
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, $sTabHandle)
 			EndIf
 		Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError))
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError), 0, $sTabHandle)
 		EndIf
 	EndIf
 
-	Return $sTabHandle
+	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
@@ -177,9 +176,16 @@ Func _WD_LinkClickByText($sSession, $sText, $lPartial = True)
 
 	If $iErr = $_WD_ERROR_Success Then
 		_WD_ElementAction($sSession, $sElement, 'click')
+		$iErr = @error
+
+		If $iErr <> $_WD_ERROR_Success Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), $_WD_HTTPRESULT)
+		EndIf
 	Else
-		SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
 	EndIf
+	
+	Return SetError($_WD_ERROR_Success)
 EndFunc
 
 
@@ -232,9 +238,8 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 
 		Sleep(1000)
 	WEnd
-
-	SetError(__WD_Error($sFuncName, $iErr))
-	Return $iResult
+	
+	Return SetError(__WD_Error($sFuncName, $iErr), $iResult)
 EndFunc
 
 
@@ -259,7 +264,7 @@ Func _WD_GetMouseElement($sSession)
 	$sJSON = Json_Decode($sResponse)
 	$sElement = Json_Get($sJSON, "[value][ELEMENT]")
 
-	Return $sElement
+	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
 
@@ -288,5 +293,5 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	$sJSON = Json_Decode($sResponse)
 	$sElement = Json_Get($sJSON, "[value][ELEMENT]")
 
-	Return $sElement
+	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
