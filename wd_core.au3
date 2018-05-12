@@ -1298,40 +1298,40 @@ Func __WD_Delete($sURL)
 EndFunc   ;==>__WD_Delete
 
 
-; #INTERNAL_USE_ONLY# ==========================================================
+; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
 ; Description ...: Writes Error to the console and show message-boxes if the script is compiled
-; AutoIt Version : V3.3.0.0
-; Syntax ........: __WD_Error($sWhere, ByRef $i_WD_ERROR[, $sMessage = ""])
-; Parameter(s): .: $i_WD_ERROR  - Error Const
-;                  $sMessage    - Optional: (Default = "") : Additional Information
-; Return Value ..: Success      - Error Const from $i_WD_ERROR
-; Author(s) .....: Thorsten Willert
-; Date ..........: Sat Jul 18 11:52:36 CEST 2009
-; ==============================================================================
+; Syntax ........: __WD_Error($sWhere, $i_WD_ERROR[, $sMessage = ""])
+; Parameters ....: $sWhere              - Name of calling routine
+;                  $i_WD_ERROR          - Error constant
+;                  $sMessage            - [optional] (Default = "") : Additional Information
+; Return values .: Success      - Error Const from $i_WD_ERROR
+; Author ........: Thorsten Willert, Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = "")
-	Local $sOut, $sMsg
+	Local $sMsg
 	Sleep(200)
 
-	If $sMessage = "" Then
-		$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR] & @CRLF
-		ConsoleWrite($sMsg)
-		If @Compiled Then
-			If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then MsgBox(16, "WebDriver.au3 Error:", $sMsg)
-			DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
-		EndIf
+	$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR] & @CRLF
 
-	Else
-		$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR] & ": " & $sMessage & @CRLF
-		ConsoleWrite($sMsg)
-		If @Compiled Then
-			If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then MsgBox(16, "WebDriver.au3 Error:", $sMsg)
-			DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
-		EndIf
+	If $sMessage <> "" Then
+		$sMsg = $sMsg & ": " & $sMessage & @CRLF
+	EndIf
+
+	ConsoleWrite($sMsg)
+	If @Compiled Then
+		If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
+		DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
 	EndIf
 
 	Return $i_WD_ERROR
 EndFunc   ;==>__WD_Error
+
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CloseDriver
