@@ -153,7 +153,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"No match", _
 		"Error return value", _
 		"Webdriver Exception", _
-		"Invalid Expression" _
+		"Invalid Expression", _
+		"No alert present" _
 		]
 #EndRegion Global Constants
 
