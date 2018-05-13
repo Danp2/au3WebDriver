@@ -24,6 +24,13 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.10
+	- Changed: Add support for non-standard error codes in _WD_Alert
+	- Changed: Detect non-present alert in _WD_Alert
+	- Changed: __WD_Error coding
+	- Fixed: Correctly set function error codes
+	- Added: _WD_LastHTTPResult
+
 	V0.1.0.9
 	- Changed: Force command parameter to lowercase in _WD_Action
 	- Changed: Enhanced error checking in _WD_FindElement
@@ -114,7 +121,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.9"
+Global Const $__WDVERSION = "0.1.0.10"
 
 Global Const $_WD_LOCATOR_ByID = "id"
 Global Const $_WD_LOCATOR_ByName = "name"
