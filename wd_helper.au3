@@ -290,3 +290,21 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 
 	Return $sElement
 EndFunc
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_LastHTTPResult
+; Description ...: Return the result of the last WinHTTP request
+; Syntax ........: _WD_LastHTTPResult()
+; Parameters ....: None
+; Return values .: Result of last WinHTTP request
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_LastHTTPResult()
+	Return $_WD_HTTPRESULT
+EndFunc
