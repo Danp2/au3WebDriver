@@ -184,7 +184,7 @@ Func _WD_LinkClickByText($sSession, $sText, $lPartial = True)
 	Else
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
 	EndIf
-	
+
 	Return SetError($_WD_ERROR_Success)
 EndFunc
 
@@ -238,7 +238,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 
 		Sleep(1000)
 	WEnd
-	
+
 	Return SetError(__WD_Error($sFuncName, $iErr), $iResult)
 EndFunc
 

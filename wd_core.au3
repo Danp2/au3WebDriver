@@ -436,7 +436,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse, $sResult)
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Action
 
 ; #FUNCTION# ====================================================================================================================
@@ -567,7 +567,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)			
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Window
 
 
@@ -737,7 +737,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse, $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), $_WD_HTTPRESULT, "")
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
@@ -771,7 +771,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]")
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	Return 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
 
@@ -855,7 +855,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse, $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), $_WD_HTTPRESULT, "")
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
@@ -896,7 +896,7 @@ Func _WD_GetSource($sSession)
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse, $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), $_WD_HTTPRESULT, "")
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
@@ -967,7 +967,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = '')
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse, $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), $_WD_HTTPRESULT, "")
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
@@ -1319,7 +1319,7 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = "")
 	EndIf
 
 	Return $i_WD_ERROR
-EndFunc   ;==>__WD_Error
+EndFunc ;==>__WD_Error
 
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
