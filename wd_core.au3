@@ -646,7 +646,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, ($lMultiple) ? $aElements : $sResult)
@@ -1026,7 +1026,7 @@ Func _WD_Option($sOption, $vValue = "")
 			EndIf
 			$_WD_PORT = $vValue
 		Case Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
@@ -1156,7 +1156,7 @@ Func __WD_Get($sURL)
 		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 		Else
-			SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
+			Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 		EndIf
 	EndIf
 
@@ -1279,7 +1279,7 @@ Func __WD_Delete($sURL)
 		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 		Else
-			SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 		EndIf
 	EndIf
 
@@ -1306,13 +1306,13 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = "")
 	Local $sMsg
 	Sleep(200)
 
-	$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR] & @CRLF
+	$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR]
 
 	If $sMessage <> "" Then
-		$sMsg = $sMsg & ": " & $sMessage & @CRLF
+		$sMsg = $sMsg & ": " & $sMessage
 	EndIf
 
-	ConsoleWrite($sMsg)
+	ConsoleWrite($sMsg & @CRLF)
 	If @Compiled Then
 		If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
 		DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
