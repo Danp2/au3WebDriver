@@ -55,7 +55,6 @@ Func TestNavigation()
 	ConsoleWrite("Title=" & _WD_Action($sSession, 'title') & @CRLF)
 EndFunc
 
-;_WDWindow($sSession, 'frame', '{"id":nullelse
 Func TestElements()
 	Local $sElement, $aElements, $sValue
 
@@ -129,7 +128,7 @@ EndFunc
 Func SetupChrome()
 _WD_Option('Driver', 'chromedriver.exe')
 _WD_Option('Port', 9515)
-_WD_Option('DriverParams', '--log-path=' & @ScriptDir & '\chrome.log')
+_WD_Option('DriverParams', '--log-path="' & @ScriptDir & '\chrome.log"')
 
 $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"chromeOptions": {"w3c": true }}}}'
 EndFunc
