@@ -313,3 +313,148 @@ EndFunc
 Func _WD_LastHTTPResult()
 	Return $_WD_HTTPRESULT
 EndFunc
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetFrameCount
+; Description ...: This will return how many frames/iframes are in your current window/frame. It will not traverse to nested frames.
+; Syntax ........: _WD_GetFrameCount()
+; Parameters ....:
+; Return values .: Success      - Numeric count of frames, 0 or positive number
+;                  Failure      - ""
+; Author ........: Decibel
+; Modified ......: 2018-04-27
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetFrameCount($sSession)
+    Local $sResponse, $sJSON, $iValue
+
+    $sResponse = _WD_ExecuteScript($sSession, "return window.frames.length")
+    $sJSON = Json_Decode($sResponse)
+    $iValue = Json_Get($sJSON, "[value]")
+
+    Return Number($iValue)
+EndFunc ;==>_WD_GetFrameCount
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_IsWindowTop
+; Description ...: This will return a boolean of the session being at the top level, or in a frame(s).
+; Syntax ........: _WD_IsWindowTop()
+; Parameters ....:
+; Return values .: Success      - Boolean response
+;                  Failure      - ""
+; Author ........: Decibel
+; Modified ......: 2018-04-27
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.w3schools.com/jsref/prop_win_top.asp
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_IsWindowTop($sSession)
+    Local $sResponse, $sJSON
+    Local $blnResult
+
+    $sResponse = _WD_ExecuteScript($sSession, "return window.top == window.self")
+    $sJSON = Json_Decode($sResponse)
+    $blnResult = Json_Get($sJSON, "[value]")
+
+    Return $blnResult
+EndFunc ;==>_WD_IsWindowTop
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_FrameEnter
+; Description ...: This will enter the specified frame for subsequent WebDriver operations.
+; Syntax ........: _WD_FrameEnter($sIndexOrID)
+; Parameters ....:
+; Return values .: Success      - True
+;                  Failure      - WD Response error message (E.g. "no such frame")
+; Author ........: Decibel
+; Modified ......: 2018-04-27
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_FrameEnter($sSession, $sIndexOrID)
+    Local $sOption
+    Local $sResponse, $sJSON
+    Local $sValue
+
+    ;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
+    If IsInt($sIndexOrID) = True Then
+        $sOption = '{"id":' & $sIndexOrID & '}'
+    Else
+		$sOption = '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $sIndexOrID & '"}}'
+    EndIf
+
+    $sResponse = _WD_Window($sSession, "frame", $sOption)
+    $sJSON = Json_Decode($sResponse)
+    $sValue = Json_Get($sJSON, "[value]")
+
+    ;*** Evaluate the response
+    If $sValue <> Null Then
+        $sValue = Json_Get($sJSON, "[value][error]")
+    Else
+        $sValue = True
+    EndIf
+
+    Return $sValue
+EndFunc ;==>_WD_FrameEnter
+
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_FrameLeave
+; Description ...: This will leave the current frame, to its parent, not necessarily the Top, for subsequent WebDriver operations.
+; Syntax ........: _WD_FrameLeave()
+; Parameters ....:
+; Return values .: Success      True
+;                  Failure      - WD Response error message (E.g. "chrome not reachable")
+; Author ........: Decibel
+; Modified ......: 2018-04-27
+; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
+; Related .......:
+; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_FrameLeave($sSession)
+    Local $sOption
+    Local $sResponse, $sJSON, $asJSON
+    Local $sValue
+
+    $sOption = '{}'
+
+    $sResponse = _WD_Window($sSession, "parent", $sOption)
+    ;Chrome--
+    ;   Good: '{"value":null}'
+    ;   Bad: '{"value":{"error":"chrome not reachable"....
+    ;Firefox--
+    ;   Good: '{"value": {}}'
+    ;   Bad: '{"value":{"error":"unknown error","message":"Failed to decode response from marionette","stacktrace":""}}'
+
+    $sJSON = Json_Decode($sResponse)
+    $sValue = Json_Get($sJSON, "[value]")
+
+    ;*** Is this something besides a Chrome PASS?
+    If $sValue <> Null Then
+        ;*** Check for a nested JSON object
+        If Json_IsObject($sValue) = True Then
+            $asJSON = Json_ObjGetKeys($sValue)
+
+            ;*** Is this an empty nested object
+            If UBound($asJSON) = 0 Then ;Firefox PASS
+                $sValue = True
+            Else ;Chrome and Firefox FAIL
+                $sValue = $asJSON[0] & ":" & Json_Get($sJSON, "[value][" & $asJSON[0] & "]")
+            EndIf
+        EndIf
+    Else ;Chrome PASS
+        $sValue = True
+    EndIf
+
+    Return $sValue
+EndFunc ;==>_WD_FrameLeave
