@@ -4,7 +4,7 @@
 Local Enum $eFireFox = 0, _
 			$eChrome
 
-Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", True]]
+Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", False],["TestFrames", True]]
 
 Local Const $_TestType = $eFireFox
 Local $sDesiredCapabilities
@@ -113,6 +113,19 @@ Func TestAlerts()
 	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
 	Sleep(5000)
 	_WD_Alert($sSession, 'Dismiss')
+
+EndFunc
+
+Func TestFrames()
+	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_frame_cols")
+	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
+	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
+;	_WD_Window($sSession, "frame", '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}')
+	_WD_FrameEnter($sSession, $sElement)
+	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	_WD_FrameLeave($sSession)
+	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 
 EndFunc
 
