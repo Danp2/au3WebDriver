@@ -115,13 +115,15 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
-	- Michał Lipok for all his feedbackgit / suggestions
+	- Michał Lipok for all his feedback / suggestions
 #ce
 #EndRegion Many thanks to:
 
 
 #Region Global Constants
 Global Const $__WDVERSION = "0.1.0.10"
+
+Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 
 Global Const $_WD_LOCATOR_ByID = "id"
 Global Const $_WD_LOCATOR_ByName = "name"
@@ -619,7 +621,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 				$oValues = Json_Get($oJson, '[value]')
 
 				If UBound($oValues) > 0 Then
-					$sKey = "[" & Json_ObjGetKeys($oValues[0])[0] & "]"
+					$sKey = "[" & $_WD_ELEMENT_ID & "]"
 
 					Dim $aElements[UBound($oValues)]
 
@@ -632,10 +634,10 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 				EndIf
 			Else
 				$oJson = Json_Decode($sResponse)
-				$Obj2 = Json_Get($oJson, "[value]")
-				$sKey = Json_ObjGetKeys($Obj2)[0]
+									   
+									 
 
-				$sResult = Json_Get($oJson, "[value][" & $sKey & "]")
+				$sResult = Json_Get($oJson, "[value][" & $_WD_ELEMENT_ID & "]")
 			EndIf
 
 		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
