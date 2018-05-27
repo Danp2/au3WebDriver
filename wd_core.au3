@@ -634,8 +634,6 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 				EndIf
 			Else
 				$oJson = Json_Decode($sResponse)
-									   
-									 
 
 				$sResult = Json_Get($oJson, "[value][" & $_WD_ELEMENT_ID & "]")
 			EndIf
@@ -760,7 +758,9 @@ EndFunc   ;==>_WD_ElementAction
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sScript             - Javascript command(s) to run
 ;                  $aArguments          - String of arguments in JSON format
-; Return values .: None
+; Return values .: Raw response from web driver
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -780,7 +780,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]")
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
+	Return SetError(($_WD_HTTPRESULT) ? $_WD_ERROR_GeneralError : $_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
 
