@@ -262,8 +262,8 @@ Func _WD_GetMouseElement($sSession)
 
 	$sResponse = _WD_ExecuteScript($sSession, $sScript, '')
 	$sJSON = Json_Decode($sResponse)
-	$sElement = Json_Get($sJSON, "[value][ELEMENT]")
-
+	$sElement = Json_Get($sJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+	
 	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
@@ -291,8 +291,8 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 
 	$sResponse = _WD_ExecuteScript($sSession, $sScript, $sParams)
 	$sJSON = Json_Decode($sResponse)
-	$sElement = Json_Get($sJSON, "[value][ELEMENT]")
-
+	$sElement = Json_Get($sJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+	
 	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
