@@ -24,6 +24,15 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.11
+	- Changed: Modified _WD_FindElement to use new global constant
+	- Fixed: _WD_GetMouseElement JSON processing
+	- Fixed: _WD_GetElementFromPoint JSON processing
+	- Added: _WD_GetFrameCount (Decibel)
+	- Added: _WD_IsWindowTop   (Decibel)
+	- Added: _WD_FrameEnter    (Decibel)
+	- Added: _WD_FrameLeave    (Decibel)
+
 	V0.1.0.10
 	- Changed: Add support for non-standard error codes in _WD_Alert
 	- Changed: Detect non-present alert in _WD_Alert
