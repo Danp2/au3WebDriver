@@ -789,7 +789,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]")
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	Return SetError(($_WD_HTTPRESULT) ? $_WD_ERROR_GeneralError : $_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
+	Return SetError(($_WD_HTTPRESULT <> $HTTP_STATUS_OK) ? $_WD_ERROR_GeneralError : $_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
 
