@@ -24,6 +24,12 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.12
+	- Changed: Modified _WD_NewTab with timeout parameter
+	- Fixed: Correctly set @error in _WD_ExecuteScript
+	- Added: _WD_HighlightElement (Danyfirex)
+	- Added: _WD_HighlightElements (Danyfirex)
+
 	V0.1.0.11
 	- Changed: Modified _WD_FindElement to use new global constant
 	- Fixed: _WD_GetMouseElement JSON processing
