@@ -197,7 +197,7 @@ EndFunc
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
-;                  $iTimeout            - [optional] Period of time to wait before exiting function (default = 300000 ms aka 5 min)
+;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ; Return values .: Success      - 1
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
@@ -292,7 +292,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	$sResponse = _WD_ExecuteScript($sSession, $sScript, $sParams)
 	$sJSON = Json_Decode($sResponse)
 	$sElement = Json_Get($sJSON, "[value][" & $_WD_ELEMENT_ID & "]")
-	
+
 	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
