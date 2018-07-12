@@ -41,6 +41,12 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_GetMouseElement($sSession)
 - _WD_GetElementFromPoint($sSession, $iX, $iY)
 - _WD_LastHTTPResult()
+- _WD_GetFrameCount()
+- _WD_IsWindowTop()
+- _WD_FrameEnter($sIndexOrID)
+- _WD_FrameLeave()
+- _WD_HighlightElement
+- _WD_HighlightElements
 
 # Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
