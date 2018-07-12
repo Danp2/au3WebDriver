@@ -41,11 +41,15 @@
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
 ; Description ...: Helper function to create new tab using Javascript
-; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True])
+; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True[, $iTimeout = -1]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
+;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ; Return values .: Success      - String representing handle of new tab
 ;                  Failure      - blank string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_GeneralError
+;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -53,20 +57,44 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_NewTab($sSession, $lSwitch = True)
+Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
 	Local Const $sFuncName = "_WD_NewTab"
-	Local $sTabHandle = ''
+	Local $sTabHandle = '', $iErr, $sLastTabHandle, $hWaitTimer, $sTempHandle
+
+	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
+
+	; Get handle to current last tab
+	Local $aHandles = _WD_Window($sSession, 'handles')
+	$sLastTabHandle = $aHandles[UBound($aHandles) - 1]
+
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+	EndIf
 
 	_WD_ExecuteScript($sSession, 'window.open()', '{}')
 
-	If @error = $_WD_ERROR_Success Then
-		Local $aHandles = _WD_Window($sSession, 'handles', '')
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+	EndIf
 
-		$sTabHandle = $aHandles[UBound($aHandles) - 1]
+	$hWaitTimer = TimerInit()
 
-		If $lSwitch Then
-			_WD_Window($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
+	While 1
+		$aHandles = _WD_Window($sSession, 'handles')
+		$sTempHandle = $aHandles[UBound($aHandles) - 1]
+
+		If $sTempHandle <> $sLastTabHandle Then
+			$sTabHandle = $sTempHandle
+			ExitLoop
 		EndIf
+
+		If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
+
+		Sleep(10)
+	WEnd
+
+	If $lSwitch Then
+		_WD_Window($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
@@ -263,7 +291,7 @@ Func _WD_GetMouseElement($sSession)
 	$sResponse = _WD_ExecuteScript($sSession, $sScript, '')
 	$sJSON = Json_Decode($sResponse)
 	$sElement = Json_Get($sJSON, "[value][" & $_WD_ELEMENT_ID & "]")
-	
+
 	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
