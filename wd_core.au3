@@ -140,9 +140,6 @@ Global Const $__WDVERSION = "0.1.0.10"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 
-Global Const $_WD_LOCATOR_ByID = "id"
-Global Const $_WD_LOCATOR_ByName = "name"
-Global Const $_WD_LOCATOR_ByClassName = "class name"
 Global Const $_WD_LOCATOR_ByCSSSelector = "css selector"
 Global Const $_WD_LOCATOR_ByXPath = "xpath"
 Global Const $_WD_LOCATOR_ByLinkText = "link text"
