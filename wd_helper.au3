@@ -33,7 +33,7 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
-	- Michał Lipok for all his feedbackgit / suggestions
+	- Michał Lipok for all his feedback / suggestions
 #ce
 #EndRegion Many thanks to:
 
@@ -405,8 +405,6 @@ Func _WD_FrameEnter($sSession, $sIndexOrID)
     Return $sValue
 EndFunc ;==>_WD_FrameEnter
 
-
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameLeave
 ; Description ...: This will leave the current frame, to its parent, not necessarily the Top, for subsequent WebDriver operations.
@@ -458,3 +456,62 @@ Func _WD_FrameLeave($sSession)
 
     Return $sValue
 EndFunc ;==>_WD_FrameLeave
+
+; #FUNCTION# ===========================================================================================================
+; Name ..........: _WD_HighlightElement
+; Description ...:
+; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = 1])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sElement            - Element ID from _WDFindElement
+;                  $iMethod             - [optional] an integer value. Default is 1.
+;                  1=style -> Highlight border dotted red
+;                  2=style -> Highlight yellow rounded box
+;                  3=style -> Highlight yellow rounded box + border  dotted red
+; Return values .: Success      - True
+;                  Failure      - False
+; Author ........: Danyfirex
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_HighlightElement($sSession, $sElement, $iMethod = 1)
+    Local Const $aMethod[] = ["border: 2px dotted red", _
+            "background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
+            "border:2px dotted  red;background: #FFFF66; border-radius: 5px; padding-left: 3px;"]
+    If $iMethod < 1 Or $iMethod > 3 Then $iMethod = 1
+	Local $sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+    Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod - 1] & "'; return true;", $sJsonElement)
+    Local $sJSON = Json_Decode($sResponse)
+    Local $sResult = Json_Get($sJSON, "[value]")
+    Return ($sResult = "true" ? SetError(0, 0, $sResult) : SetError(1, 0, False))
+EndFunc   ;==>_WD_HighlightElement
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_HighlightElements
+; Description ...:
+; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = 1])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $aElements           - an array of Elements ID from _WDFindElement
+;                  $iMethod             - [optional] an integer value. Default is 1.
+;                  1=style -> Highlight border dotted red
+;                  2=style -> Highlight yellow rounded box
+;                  3=style -> Highlight yellow rounded box + border  dotted red
+; Return values .: Success      - True
+;                  Failure      - False
+;                  @Extended Number of Highlighted Elements
+; Author ........: Danyfirex
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_HighlightElements($sSession, $aElements, $iMethod = 1)
+    Local $iHighlightedElements = 0
+    For $i = 0 To UBound($aElements) - 1
+        $iHighlightedElements += (__WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
+    Next
+    Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError(1, 0, False))
+EndFunc   ;==>_WD_HighlightElements
