@@ -511,7 +511,7 @@ EndFunc   ;==>_WD_HighlightElement
 Func _WD_HighlightElements($sSession, $aElements, $iMethod = 1)
     Local $iHighlightedElements = 0
     For $i = 0 To UBound($aElements) - 1
-        $iHighlightedElements += (__WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
+        $iHighlightedElements += (_WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
     Next
     Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError(1, 0, False))
 EndFunc   ;==>_WD_HighlightElements
