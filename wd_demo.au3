@@ -4,9 +4,9 @@
 Local Enum $eFireFox = 0, _
 			$eChrome
 
-Local $aTestSuite[][2] = [["TestTimeouts", False], ["TestNavigation", False], ["TestElements", False], ["TestScript", False], ["TestCookies", False], ["TestAlerts", False],["TestFrames", True]]
+Local $aDemoSuite[][2] = [["DemoTimeouts", False], ["DemoNavigation", False], ["DemoElements", False], ["DemoScript", False], ["DemoCookies", False], ["DemoAlerts", False],["DemoFrames", False], ["DemoActions", True]]
 
-Local Const $_TestType = $eFireFox
+Local Const $_TestType = $eChrome
 Local $sDesiredCapabilities
 Local $iIndex
 Local $sSession
@@ -26,12 +26,12 @@ _WD_Startup()
 
 $sSession = _WD_CreateSession($sDesiredCapabilities)
 
-For $iIndex = 0 To UBound($aTestSuite, $UBOUND_ROWS) - 1
-	If $aTestSuite[$iIndex][1] Then
-		ConsoleWrite("Running: " & $aTestSuite[$iIndex][0] & @CRLF)
-		Call($aTestSuite[$iIndex][0])
+For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
+	If $aDemoSuite[$iIndex][1] Then
+		ConsoleWrite("Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+		Call($aDemoSuite[$iIndex][0])
 	Else
-		ConsoleWrite("Bypass: " & $aTestSuite[$iIndex][0] & @CRLF)
+		ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
 	EndIf
 Next
 
@@ -39,13 +39,13 @@ _WD_DeleteSession($sSession)
 _WD_Shutdown()
 
 
-Func TestTimeouts()
+Func DemoTimeouts()
 	_WD_Timeouts($sSession)
 	_WD_Timeouts($sSession, '{"pageLoad":2000}')
 	_WD_Timeouts($sSession)
 EndFunc
 
-Func TestNavigation()
+Func DemoNavigation()
 	_WD_Navigate($sSession, "http://google.com")
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
 	_WD_Action($sSession, "back")
@@ -55,7 +55,7 @@ Func TestNavigation()
 	ConsoleWrite("Title=" & _WD_Action($sSession, 'title') & @CRLF)
 EndFunc
 
-Func TestElements()
+Func DemoElements()
 	Local $sElement, $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
@@ -94,17 +94,17 @@ Func TestElements()
 
 EndFunc
 
-Func TestScript()
+Func DemoScript()
 	_WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
 	_WD_Alert($sSession, 'Dismiss')
 EndFunc
 
-Func TestCookies()
+Func DemoCookies()
 	_WD_Navigate($sSession, "http://google.com")
 	_WD_Cookies($sSession, 'Get', 'NID')
 EndFunc
 
-Func TestAlerts()
+Func DemoAlerts()
 	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
 	_WD_ExecuteScript($sSession, "alert('testing 123')")
 	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
@@ -116,7 +116,7 @@ Func TestAlerts()
 
 EndFunc
 
-Func TestFrames()
+Func DemoFrames()
 	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_frame_cols")
 	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
@@ -127,6 +127,25 @@ Func TestFrames()
 	_WD_FrameLeave($sSession)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 
+EndFunc
+
+Func DemoActions()
+	Local $sElement, $aElements, $sValue
+
+	_WD_Navigate($sSession, "http://google.com")
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
+
+ConsoleWrite("$sElement = " & $sElement & @CRLF)
+
+	$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,"x":0,"y":0,"type":"pointerMove","origin":{"ELEMENT":"'
+	$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}},{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}]}]}'
+
+ConsoleWrite("$sAction = " & $sAction & @CRLF)
+
+	_WD_Action($sSession, "actions", $sAction)
+	sleep(5000)
+	_WD_Action($sSession, "actions")
+	sleep(5000)
 EndFunc
 
 
