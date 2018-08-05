@@ -220,12 +220,13 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
 ; Description ...: Wait for a element to be found  in the current tab before returning
-; Syntax ........: _WD_WaitElement($sSession, $sElement, $sStrategy, $sSelector[, $iDelay = 0[, $iTimeout = -1]])
+; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = 0[, $iTimeout = -1[, $lVisible = False]]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
+;                  $lVisible            - [optional] Check visibility of element?
 ; Return values .: Success      - 1
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
@@ -237,9 +238,9 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout = -1)
+Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout = -1, $lVisible = False)
 	Local Const $sFuncName = "_WD_WaitElement"
-	Local $bAbort = False, $iErr, $iResult
+	Local $bAbort = False, $iErr, $iResult, $sElement, $lIsVisible = True
 
 	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
 
@@ -248,19 +249,25 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 	Local $hWaitTimer = TimerInit()
 
 	While 1
-		_WD_FindElement($sSession, $sStrategy, $sSelector)
+		$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success Then
-			$iResult = 1
-			ExitLoop
+			If $lVisible Then
+				$lIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+			EndIf
 
-		ElseIf $iErr = $_WD_ERROR_NoMatch Then
-			If (TimerDiff($hWaitTimer) > $iTimeout) Then
-				$iErr = $_WD_ERROR_Timeout
+			If $lIsVisible = True Then
+				$iResult = 1
 				ExitLoop
 			EndIf
-		Else
+
+		ElseIf $iErr <> $_WD_ERROR_NoMatch Then
+			ExitLoop
+		EndIf
+
+		If (TimerDiff($hWaitTimer) > $iTimeout) Then
+			$iErr = $_WD_ERROR_Timeout
 			ExitLoop
 		EndIf
 
@@ -396,7 +403,7 @@ EndFunc ;==>_WD_IsWindowTop
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameEnter
 ; Description ...: This will enter the specified frame for subsequent WebDriver operations.
-; Syntax ........: _WD_FrameEnter($sIndexOrID)
+; Syntax ........: _WD_FrameEnter($sSession, $sIndexOrID)
 ; Parameters ....:
 ; Return values .: Success      - True
 ;                  Failure      - WD Response error message (E.g. "no such frame")
