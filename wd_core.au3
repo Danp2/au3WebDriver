@@ -701,7 +701,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
-		Case 'name', 'rect', 'text', 'selected', 'enabled'
+		Case 'name', 'rect', 'text', 'selected', 'enabled', 'displayed'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand)
 			$iErr = @error
 
@@ -747,7 +747,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 			EndIf
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Active|Attribute|Property|CSS|Clear|Click|Value) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
