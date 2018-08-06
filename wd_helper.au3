@@ -240,7 +240,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout = -1, $lVisible = False)
 	Local Const $sFuncName = "_WD_WaitElement"
-	Local $bAbort = False, $iErr, $iResult, $sElement, $lIsVisible = True
+	Local $bAbort = False, $iErr, $iResult = 0, $sElement, $lIsVisible = True
 
 	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
 
@@ -274,7 +274,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 		Sleep(1000)
 	WEnd
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iResult)
 EndFunc
 
 
