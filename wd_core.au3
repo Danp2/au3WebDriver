@@ -24,6 +24,13 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.13
+	- Fixed: Remove unsupported locator constants
+	- Fixed: Return value of _WD_WaitElement
+	- Changed: Add support for 'displayed' option in _WD_ElementAction (BigDaddyO)
+	- Changed: Add $lVisible parameter to _WD_WaitElement
+	- Changed: $_WD_DEBUG now defaults to $_WD_DEBUG_Info
+
 	V0.1.0.12
 	- Changed: Modified _WD_NewTab with timeout parameter
 	- Fixed: Correctly set @error in _WD_ExecuteScript
@@ -149,6 +156,11 @@ Global Const $_WD_LOCATOR_ByTagName = "tag name"
 Global Const $_WD_DefaultTimeout = 10000 ; 10 seconds
 
 Global Enum _
+		$_WD_DEBUG_None = 0, _ ; No logging to console
+		$_WD_DEBUG_Error,    _ ; Error logging to console
+		$_WD_DEBUG_Info        ; Full logging to console
+
+Global Enum _
 		$_WD_ERROR_Success = 0, _ ; No error
 		$_WD_ERROR_GeneralError, _ ; General error
 		$_WD_ERROR_SocketError, _ ; No socket
@@ -189,7 +201,7 @@ Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
 Global $_WD_HTTPRESULT ; Result of last WinHTTP request
 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
-Global $_WD_DEBUG = True ; Trace to console and show web driver app
+Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 
 #EndRegion Global Variables
 
@@ -217,7 +229,7 @@ Func _WD_CreateSession($sDesiredCapabilities = '{}')
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sDesiredCapabilities)
 	Local $iErr = @error
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -261,7 +273,7 @@ Func _WD_DeleteSession($sSession)
 	Local $sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -294,7 +306,7 @@ Func _WD_Status()
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
 	Local $iErr = @error
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -339,7 +351,7 @@ Func _WD_Timeouts($sSession, $sTimeouts = '')
 
 	Local $iErr = @error
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -375,7 +387,7 @@ Func _WD_Navigate($sSession, $sURL)
 
 	Local $iErr = @error
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -449,7 +461,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 
 	EndSwitch
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -580,7 +592,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 
 	EndSwitch
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -660,7 +672,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -751,7 +763,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 
 	EndSwitch
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -788,7 +800,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]")
 
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/sync", $sData)
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -871,7 +883,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -912,7 +924,7 @@ Func _WD_GetSource($sSession)
 		$sResult = Json_Get($sJSON, "[value]")
 	EndIf
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -983,7 +995,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = '')
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(GetAll|Get|Add|Delete) $sCommand=>" & $sCommand), "")
 	EndSwitch
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
@@ -1084,7 +1096,7 @@ Func _WD_Startup()
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		ConsoleWrite("_WDStartup: AutoIt:" & @TAB & @AutoItVersion & @CRLF)
 		ConsoleWrite("_WDStartup: WD.au3:" & @TAB & $__WDVERSION & @CRLF)
@@ -1095,7 +1107,7 @@ Func _WD_Startup()
 		ConsoleWrite('_WDStartup: ' & $sCommand & @CRLF)
 	EndIf
 
-	Local $pid = Run($sCommand, "", $_WD_DEBUG ? @SW_SHOW : @SW_HIDE)
+	Local $pid = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 
 	If @error Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "Error launching web driver!"), 0, 0)
@@ -1144,7 +1156,7 @@ Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult, $sResponseText
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
 	EndIf
 
@@ -1169,7 +1181,7 @@ Func __WD_Get($sURL)
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $sResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
@@ -1208,7 +1220,7 @@ Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
 	Local $iResult, $sResponseText, $iErr
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData & @CRLF)
 	EndIf
 
@@ -1234,7 +1246,7 @@ Func __WD_Post($sURL, $sData)
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
@@ -1267,7 +1279,7 @@ Func __WD_Delete($sURL)
 
 	Local $iResult, $sResponseText
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
 	EndIf
 
@@ -1292,7 +1304,7 @@ Func __WD_Delete($sURL)
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
 	EndIf
 
@@ -1325,19 +1337,27 @@ EndFunc   ;==>__WD_Delete
 ; ===============================================================================================================================
 Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = "")
 	Local $sMsg
-	Sleep(200)
 
-	$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR]
+	Switch $_WD_DEBUG
+		Case $_WD_DEBUG_None
 
-	If $sMessage <> "" Then
-		$sMsg = $sMsg & ": " & $sMessage
-	EndIf
+		Case $_WD_DEBUG_Error
+			If $i_WD_ERROR <> $_WD_ERROR_Success Then ContinueCase
 
-	ConsoleWrite($sMsg & @CRLF)
-	If @Compiled Then
-		If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
-		DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
-	EndIf
+		Case $_WD_DEBUG_Info
+			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR]
+
+			If $sMessage <> "" Then
+				$sMsg = $sMsg & ": " & $sMessage
+			EndIf
+
+			ConsoleWrite($sMsg & @CRLF)
+
+			If @Compiled Then
+				If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
+				DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
+			EndIf
+	EndSwitch
 
 	Return $i_WD_ERROR
 EndFunc ;==>__WD_Error
