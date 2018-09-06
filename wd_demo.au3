@@ -6,12 +6,12 @@ Local Enum $eFireFox = 0, _
 
 Local $aDemoSuite[][2] = [["DemoTimeouts", False], ["DemoNavigation", False], ["DemoElements", False], ["DemoScript", False], ["DemoCookies", False], ["DemoAlerts", False],["DemoFrames", False], ["DemoActions", True]]
 
-Local Const $_TestType = $eChrome
+Local Const $_TestType = $eFireFox
 Local $sDesiredCapabilities
 Local $iIndex
 Local $sSession
 
-$_WD_DEBUG = True
+$_WD_DEBUG = $_WD_DEBUG_Info
 
 Switch $_TestType
 	Case $eFireFox
@@ -133,7 +133,7 @@ Func DemoActions()
 	Local $sElement, $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '//input[@id="lst-ib"]')
 
 ConsoleWrite("$sElement = " & $sElement & @CRLF)
 
