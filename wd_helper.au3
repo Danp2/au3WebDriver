@@ -65,6 +65,11 @@ Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
 
 	; Get handle to current last tab
 	Local $aHandles = _WD_Window($sSession, 'handles')
+
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+	EndIf
+
 	$sLastTabHandle = $aHandles[UBound($aHandles) - 1]
 
 	If @error <> $_WD_ERROR_Success Then
