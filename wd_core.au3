@@ -24,6 +24,11 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.14
+	- Fixed: Improve error handling in _WD_NewTab
+	- Fixed: Screenshot option in _WD_Window
+	- Fixed: Close handles in __WD_Get, __WD_Post, __WD_Delete
+
 	V0.1.0.13
 	- Fixed: Remove unsupported locator constants
 	- Fixed: Return value of _WD_WaitElement
@@ -143,7 +148,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.10"
+Global Const $__WDVERSION = "0.1.0.14"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 
