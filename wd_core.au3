@@ -550,7 +550,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			EndIf
 
 		Case 'screenshot'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sCommand)
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
