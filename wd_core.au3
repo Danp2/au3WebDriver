@@ -1181,6 +1181,9 @@ Func __WD_Get($sURL)
 		EndIf
 	EndIf
 
+	_WinHttpCloseHandle($hConnect)
+	_WinHttpCloseHandle($hOpen)
+
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $sResponseText=" & $sResponseText & @CRLF)
 	EndIf
@@ -1246,6 +1249,9 @@ Func __WD_Post($sURL, $sData)
 		EndIf
 	EndIf
 
+	_WinHttpCloseHandle($hConnect)
+	_WinHttpCloseHandle($hOpen)
+
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
 	EndIf
@@ -1303,6 +1309,9 @@ Func __WD_Delete($sURL)
 			$iResult = $_WD_ERROR_SendRecv
 		EndIf
 	EndIf
+
+	_WinHttpCloseHandle($hConnect)
+	_WinHttpCloseHandle($hOpen)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
