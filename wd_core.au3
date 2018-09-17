@@ -24,6 +24,12 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.15
+	- Fixed: __WD_Post now suppports Unicode text
+	- Changed: Add support for Unicode text to _WD_ElementAction's "value" option
+	- Changed: Add support for BinaryFormat option to _WD_Option
+	- Added: _WD_LoadWait
+
 	V0.1.0.14
 	- Fixed: Improve error handling in _WD_NewTab
 	- Fixed: Screenshot option in _WD_Window
@@ -148,7 +154,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.14"
+Global Const $__WDVERSION = "0.1.0.15"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 
