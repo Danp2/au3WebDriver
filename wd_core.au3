@@ -204,6 +204,7 @@ Global $_WD_BASE_URL = "HTTP://127.0.0.1"
 Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
 Global $_WD_HTTPRESULT ; Result of last WinHTTP request
+Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
@@ -1022,6 +1023,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |DriverParams - Parameters to pass to web driver executable
 ;                               |BaseURL - IP address used for web driver communication
 ;                               |Port - Port used for web driver communication
+;                               |BinaryFormat - Format used to store binary data
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Value ..: Success      - 1 / current value
 ;                  Failure      - 0
@@ -1063,8 +1065,15 @@ Func _WD_Option($sOption, $vValue = "")
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_PORT = $vValue
+		Case "BinaryFormat"
+			If $vValue == "" Then Return $_WD_BFORMAT
+			If Not IsInt($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_BFORMAT = $vValue
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
