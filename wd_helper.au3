@@ -555,3 +555,66 @@ Func _WD_HighlightElements($sSession, $aElements, $iMethod = 1)
     Next
     Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError(1, 0, False))
 EndFunc   ;==>_WD_HighlightElements
+
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_LoadWait
+; Description ...: Wait for a browser page load to complete before returning
+; Syntax ........: _WD_LoadWait($sSession[, $iDelay = 0[, $iTimeout = -1[, $sElement = '']]])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $iDelay              - [optional] Milliseconds to wait before checking status
+;                  $iTimeout            - [optional] Period of time to wait before exiting function
+;                  $sElement            - [optional] Element ID to confirm DOM invalidation
+; Return values .: Success      - 1
+;                  Failure      - 0 and sets the @error flag to non-zero
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_LoadWait($sSession, $iDelay = 0, $iTimeout = -1, $sElement = '')
+	Local Const $sFuncName = "_WD_LoadWait"
+	Local $iErr, $sResponse, $sJSON, $sReadyState
+
+	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
+
+	If $iDelay Then Sleep($iDelay)
+
+	Local $hLoadWaitTimer = TimerInit()
+
+	While True
+		If $sElement <> '' Then
+			_WD_ElementAction($sSession, $sElement, 'name')
+
+			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
+		Else
+			$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
+			$iErr = @error
+
+			If $iErr Then
+				ExitLoop
+			EndIf
+
+			$sJSON = Json_Decode($sResponse)
+			$sReadyState = Json_Get($sJSON, "[value]")
+
+			If $sReadyState = 'complete' Then ExitLoop
+		EndIf
+
+		If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
+			$iErr = $_WD_ERROR_Timeout
+			ExitLoop
+		EndIf
+
+		Sleep(100)
+	WEnd
+
+	If $iErr Then
+		Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, 0)
+	EndIf
+
+	Return SetError($_WD_ERROR_Success, 0, 1)
+EndFunc
