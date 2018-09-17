@@ -756,6 +756,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 
 		Case 'value'
 			Local $sSplitValue = "[" & StringTrimRight(StringRegExpReplace($sOption, '.', '"$0",'), 1) & "]"
+			Local $sSplitValue = "[" & StringTrimRight(StringRegExpReplace($sOption, '\\u[[:alnum:]]{4}|.', '"$0",'), 1) & "]"
 
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & $sOption & '", "value":' & $sSplitValue & '}')
 			$iErr = @error
@@ -1255,6 +1256,7 @@ Func __WD_Post($sURL, $sData)
 		$iResult = $_WD_ERROR_SocketError
 	Else
 		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], -1, $sData)
+		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], Default, StringToBinary($sData, $_WD_BFORMAT))
 		$iErr = @error
 		$_WD_HTTPRESULT = @extended
 
