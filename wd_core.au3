@@ -790,10 +790,11 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript, $aArguments)
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = "[]"[, $lAsync = False]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sScript             - Javascript command(s) to run
-;                  $aArguments          - String of arguments in JSON format
+;                  $sArguments          - [optional] String of arguments in JSON format
+;                  $lAsync              - [optional] Perform request asyncronously? Default is False.
 ; Return values .: Raw response from web driver
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_GeneralError
@@ -804,13 +805,14 @@ EndFunc   ;==>_WD_ElementAction
 ; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]")
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]", $lAsync = False)
 	Local Const $sFuncName = "_WD_ExecuteScript"
-	Local $sResponse, $sData
+	Local $sResponse, $sData, $sCmd
 
 	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
+	$sCmd = ($lAsync) ? 'async' : 'sync'
 
-	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/sync", $sData)
+	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
