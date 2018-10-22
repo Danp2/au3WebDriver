@@ -2,7 +2,8 @@
 #include "wd_helper.au3"
 
 Local Enum $eFireFox = 0, _
-			$eChrome
+			$eChrome, _
+			$eEdge
 
 Local $aDemoSuite[][2] = [["DemoTimeouts", False], ["DemoNavigation", False], ["DemoElements", False], ["DemoScript", False], ["DemoCookies", False], ["DemoAlerts", False],["DemoFrames", False], ["DemoActions", True]]
 
@@ -19,6 +20,9 @@ Switch $_TestType
 
 	Case $eChrome
 		SetupChrome()
+
+	Case $eEdge
+		SetupEdge()
 
 EndSwitch
 
@@ -163,4 +167,12 @@ _WD_Option('Port', 9515)
 _WD_Option('DriverParams', '--log-path="' & @ScriptDir & '\chrome.log"')
 
 $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"chromeOptions": {"w3c": true }}}}'
+EndFunc
+
+Func SetupEdge()
+_WD_Option('Driver', 'MicrosoftWebDriver.exe')
+_WD_Option('Port', 17556)
+_WD_Option('DriverParams', '--verbose')
+
+$sDesiredCapabilities = '{"capabilities":{}}'
 EndFunc
