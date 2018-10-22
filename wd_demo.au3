@@ -5,9 +5,11 @@ Local Enum $eFireFox = 0, _
 			$eChrome, _
 			$eEdge
 
-Local $aDemoSuite[][2] = [["DemoTimeouts", False], ["DemoNavigation", False], ["DemoElements", False], ["DemoScript", False], ["DemoCookies", False], ["DemoAlerts", False],["DemoFrames", False], ["DemoActions", True]]
+Local $aDemoSuite[][2] = [["DemoTimeouts", False], ["DemoNavigation", True], ["DemoElements", True], ["DemoScript", False], ["DemoCookies", False], ["DemoAlerts", False],["DemoFrames", False], ["DemoActions", False]]
 
-Local Const $_TestType = $eFireFox
+Local Const $_TestType = $eChrome
+Local Const $sElementSelector = "//input[@name='q']"
+
 Local $sDesiredCapabilities
 Local $iIndex
 Local $sSession
@@ -28,16 +30,22 @@ EndSwitch
 
 _WD_Startup()
 
+If @error <> $_WD_ERROR_Success Then
+	Exit -1
+EndIf
+
 $sSession = _WD_CreateSession($sDesiredCapabilities)
 
-For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
-	If $aDemoSuite[$iIndex][1] Then
-		ConsoleWrite("Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-		Call($aDemoSuite[$iIndex][0])
-	Else
-		ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
-	EndIf
-Next
+If @error = $_WD_ERROR_Success Then
+	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
+		If $aDemoSuite[$iIndex][1] Then
+			ConsoleWrite("Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			Call($aDemoSuite[$iIndex][0])
+		Else
+			ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
+		EndIf
+	Next
+EndIf
 
 _WD_DeleteSession($sSession)
 _WD_Shutdown()
@@ -51,22 +59,27 @@ EndFunc
 
 Func DemoNavigation()
 	_WD_Navigate($sSession, "http://google.com")
+	_WD_NewTab($sSession)
+	_WD_Navigate($sSession, "http://yahoo.com")
+	_WD_NewTab($sSession)
+	_WD_Navigate($sSession, "http://bing.com")
+
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
-	_WD_Action($sSession, "back")
+	_WD_Attach($sSession, "google.com", "URL")
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
-	_WD_Action($sSession, "forward")
+	_WD_Attach($sSession, "yahoo.com", "URL")
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
-	ConsoleWrite("Title=" & _WD_Action($sSession, 'title') & @CRLF)
+
 EndFunc
 
 Func DemoElements()
 	Local $sElement, $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib1']")
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='q1']")
 
 	If @error = $_WD_ERROR_NoMatch Then
-		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
+		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	EndIf
 
 	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
@@ -89,9 +102,16 @@ Func DemoElements()
 	_WD_ElementAction($sSession, $sElement, 'text')
 	_WD_ElementAction($sSession, $sElement, 'click')
 
+    $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='btnK']")
+    ConsoleWrite("Button Ref: " & $sButton & @CRLF)
+    ConsoleWrite("Befor Click" & @CRLF)
+    _WD_ElementAction($sSession, $sButton, 'click')    ;<
+    Sleep(2000)
+    ConsoleWrite("After Click" & @CRLF)
+
 	_WD_ElementAction($sSession, $sElement, 'Attribute', 'text')
 
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@id='lst-ib']")
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
 
 	ConsoleWrite('value = ' & $sValue & @CRLF)
@@ -106,6 +126,12 @@ EndFunc
 Func DemoCookies()
 	_WD_Navigate($sSession, "http://google.com")
 	_WD_Cookies($sSession, 'Get', 'NID')
+
+	Local $sName = "Testname"
+	Local $sValue ="TestValue"
+	Local $sCookie = '{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
+	_WD_Cookies($sSession, 'add', $sCookie)
+	_WD_Cookies($sSession, 'Get', $sName)
 EndFunc
 
 Func DemoAlerts()
@@ -125,7 +151,6 @@ Func DemoFrames()
 	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
-;	_WD_Window($sSession, "frame", '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}')
 	_WD_FrameEnter($sSession, $sElement)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 	_WD_FrameLeave($sSession)
@@ -137,7 +162,7 @@ Func DemoActions()
 	Local $sElement, $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '//input[@id="lst-ib"]')
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 
 ConsoleWrite("$sElement = " & $sElement & @CRLF)
 
