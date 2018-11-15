@@ -24,6 +24,10 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.16
+	- Changed: Add async support to _WD_ExecuteScript
+	- Fixed: Set element value in _WD_ElementAction
+
 	V0.1.0.15
 	- Fixed: __WD_Post now suppports Unicode text
 	- Changed: Add support for Unicode text to _WD_ElementAction's "value" option
@@ -154,7 +158,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.15"
+Global Const $__WDVERSION = "0.1.0.16"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 
