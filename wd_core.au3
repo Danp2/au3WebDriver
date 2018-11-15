@@ -640,7 +640,7 @@ EndFunc   ;==>_WD_Window
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
 	Local Const $sFuncName = "_WD_FindElement"
-	Local $sCmd, $sElement, $sResponse, $sResult, $iErr, $Obj2, $sErr
+	Local $sCmd, $sElement, $sResponse, $sResult, $iErr, $sErr
 	Local $oJson, $oValues, $sKey, $iRow, $aElements[0]
 
 	$sCmd = ($lMultiple) ? 'elements' : 'element'
@@ -976,7 +976,7 @@ Func _WD_GetSource($sSession)
 Func _WD_Cookies($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Cookies"
 
-	Local $sResult, $sResponse, $sJSON, $iErr
+	Local $sResult, $sResponse, $iErr
 
 	$sCommand = StringLower($sCommand)
 
@@ -1112,8 +1112,6 @@ Func _WD_Startup()
 	EndIf
 
 	__WD_CloseDriver()
-
-	Local $sCommand = $_WD_DRIVER & " " & $_WD_DRIVER_PARAMS
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
