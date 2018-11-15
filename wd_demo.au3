@@ -5,9 +5,17 @@ Local Enum $eFireFox = 0, _
 			$eChrome, _
 			$eEdge
 
-Local $aDemoSuite[][2] = [["DemoTimeouts", False], ["DemoNavigation", True], ["DemoElements", True], ["DemoScript", False], ["DemoCookies", False], ["DemoAlerts", False],["DemoFrames", False], ["DemoActions", False]]
+Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
+						["DemoNavigation", False], _
+						["DemoElements", True], _
+						["DemoScript", False], _
+						["DemoCookies", False], _
+						["DemoAlerts", False], _
+						["DemoFrames", False], _
+						["DemoActions", False], _
+						["DemoWindows", False]]
 
-Local Const $_TestType = $eChrome
+Local Const $_TestType = $eFireFox
 Local Const $sElementSelector = "//input[@name='q']"
 
 Local $sDesiredCapabilities
@@ -69,7 +77,6 @@ Func DemoNavigation()
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
 	_WD_Attach($sSession, "yahoo.com", "URL")
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
-
 EndFunc
 
 Func DemoElements()
@@ -104,7 +111,7 @@ Func DemoElements()
 
     $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='btnK']")
     ConsoleWrite("Button Ref: " & $sButton & @CRLF)
-    ConsoleWrite("Befor Click" & @CRLF)
+    ConsoleWrite("Before Click" & @CRLF)
     _WD_ElementAction($sSession, $sButton, 'click')    ;<
     Sleep(2000)
     ConsoleWrite("After Click" & @CRLF)
@@ -177,6 +184,18 @@ ConsoleWrite("$sAction = " & $sAction & @CRLF)
 	sleep(5000)
 EndFunc
 
+Func DemoWindows()
+	Local $sResponse, $sResult, $sJSON, $sImage
+
+	_WD_Navigate($sSession, "http://google.com")
+	$sResponse = _WD_Window($sSession, 'screenshot')
+	$sJSON = Json_Decode($sResponse)
+	$sResult = Json_Get($sJSON, "[value]")
+
+	$sImage = BinaryToString(base64($sResult, False))
+	ConsoleWrite($sImage & @CRLF)
+
+EndFunc
 
 Func SetupGecko()
 _WD_Option('Driver', 'geckodriver.exe')
@@ -201,3 +220,38 @@ _WD_Option('DriverParams', '--verbose')
 
 $sDesiredCapabilities = '{"capabilities":{}}'
 EndFunc
+
+;==============================================================================================================================
+; Function:         base64($vCode [, $bEncode = True [, $bUrl = False]])
+;
+; Description:      Decode or Encode $vData using Microsoft.XMLDOM to Base64Binary or Base64Url.
+;                   IMPORTANT! Encoded base64url is without @LF after 72 lines. Some websites may require this.
+;
+; Parameter(s):     $vData      - string or integer | Data to encode or decode.
+;                   $bEncode    - boolean           | True - encode, False - decode.
+;                   $bUrl       - boolean           | True - output is will decoded or encoded using base64url shema.
+;
+; Return Value(s):  On Success - Returns output data
+;                   On Failure - Returns 1 - Failed to create object.
+;
+; Author (s):       (Ghads on Wordpress.com), Ascer
+;===============================================================================================================================
+Func base64($vCode, $bEncode = True, $bUrl = False)
+
+    Local $oDM = ObjCreate("Microsoft.XMLDOM")
+    If Not IsObj($oDM) Then Return SetError(1, 0, 1)
+
+    Local $oEL = $oDM.createElement("Tmp")
+    $oEL.DataType = "bin.base64"
+
+    If $bEncode then
+        $oEL.NodeTypedValue = Binary($vCode)
+        If Not $bUrl Then Return $oEL.Text
+        Return StringReplace(StringReplace(StringReplace($oEL.Text, "+", "-"),"/", "_"), @LF, "")
+    Else
+        If $bUrl Then $vCode = StringReplace(StringReplace($vCode, "-", "+"), "_", "/")
+        $oEL.Text = $vCode
+        Return $oEL.NodeTypedValue
+    EndIf
+
+EndFunc ;==>base64
