@@ -761,9 +761,8 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 			EndIf
 
 		Case 'value'
-			Local $sSplitValue = "[" & StringTrimRight(StringRegExpReplace($sOption, '\\u[[:alnum:]]{4}|.', '"$0",'), 1) & "]"
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & $sOption & '"}')
 
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & $sOption & '", "value":' & $sSplitValue & '}')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
