@@ -26,7 +26,10 @@
 #cs
 	V0.1.0.16
 	- Changed: Add async support to _WD_ExecuteScript
+	- Changed: Add debug info to _WD_GetMouseElement
 	- Fixed: Set element value in _WD_ElementAction
+	- Fixed: Prevent premature exit in _WD_WaitElement
+	- Fixed: ChromeDriver now uses goog:chromeOptions
 
 	V0.1.0.15
 	- Fixed: __WD_Post now suppports Unicode text
