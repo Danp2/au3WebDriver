@@ -59,7 +59,7 @@
 ; ===============================================================================================================================
 Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
 	Local Const $sFuncName = "_WD_NewTab"
-	Local $sTabHandle = '', $iErr, $sLastTabHandle, $hWaitTimer, $sTempHandle
+	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $sTempHandle
 
 	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
 
