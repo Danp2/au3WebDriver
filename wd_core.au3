@@ -235,7 +235,7 @@ Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#new-session
+; Link ..........: https://www.w3.org/TR/webdriver#new-session
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CreateSession($sDesiredCapabilities = '{}')
@@ -280,7 +280,7 @@ EndFunc   ;==>_WD_CreateSession
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#delete-session
+; Link ..........: https://www.w3.org/TR/webdriver#delete-session
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_DeleteSession($sSession)
@@ -314,7 +314,7 @@ EndFunc   ;==>_WD_DeleteSession
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#status
+; Link ..........: https://www.w3.org/TR/webdriver#status
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Status()
@@ -349,8 +349,8 @@ EndFunc   ;==>_WD_Status
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#get-timeouts
-;                  https://w3c.github.io/webdriver/webdriver-spec.html#set-timeouts
+; Link ..........: https://www.w3.org/TR/webdriver#get-timeouts
+;                  https://www.w3.org/TR/webdriver#set-timeouts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Timeouts($sSession, $sTimeouts = '')
@@ -394,7 +394,7 @@ EndFunc   ;==>_WD_Timeouts
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigate-to
+; Link ..........: https://www.w3.org/TR/webdriver#navigate-to
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Navigate($sSession, $sURL)
@@ -438,8 +438,8 @@ EndFunc   ;==>_WD_Navigate
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#navigation
-;                  https://w3c.github.io/webdriver/webdriver-spec.html#actions
+; Link ..........: https://www.w3.org/TR/webdriver#navigation
+;                  https://www.w3.org/TR/webdriver#actions
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = '')
@@ -516,7 +516,7 @@ EndFunc   ;==>_WD_Action
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#command-contexts
+; Link ..........: https://www.w3.org/TR/webdriver#command-contexts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = '')
@@ -639,7 +639,7 @@ EndFunc   ;==>_WD_Window
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#element-retrieval
+; Link ..........: https://www.w3.org/TR/webdriver#element-retrieval
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
@@ -718,8 +718,8 @@ EndFunc   ;==>_WD_FindElement
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#element-state
-;                  https://w3c.github.io/webdriver/webdriver-spec.html#element-interaction
+; Link ..........: https://www.w3.org/TR/webdriver#element-state
+;                  https://www.w3.org/TR/webdriver#element-interaction
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
@@ -805,7 +805,7 @@ EndFunc   ;==>_WD_ElementAction
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#executing-script
+; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]", $lAsync = False)
@@ -847,7 +847,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#user-prompts
+; Link ..........: https://www.w3.org/TR/webdriver#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Alert($sSession, $sCommand, $sOption = '')
@@ -926,7 +926,7 @@ EndFunc   ;==>_WD_Alert
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#getting-page-source
+; Link ..........: https://www.w3.org/TR/webdriver#getting-page-source
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetSource($sSession)
@@ -973,7 +973,7 @@ Func _WD_GetSource($sSession)
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://w3c.github.io/webdriver/webdriver-spec.html#cookies
+; Link ..........: https://www.w3.org/TR/webdriver#cookies
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Cookies($sSession, $sCommand, $sOption = '')
