@@ -210,7 +210,7 @@ _WD_Option('Driver', 'chromedriver.exe')
 _WD_Option('Port', 9515)
 _WD_Option('DriverParams', '--log-path="' & @ScriptDir & '\chrome.log"')
 
-$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"chromeOptions": {"w3c": true }}}}'
+$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true }}}}'
 EndFunc
 
 Func SetupEdge()
