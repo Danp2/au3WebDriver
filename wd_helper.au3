@@ -267,8 +267,8 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 				ExitLoop
 			EndIf
 
-		ElseIf $iErr <> $_WD_ERROR_NoMatch Then
-			ExitLoop
+;~ 		ElseIf $iErr <> $_WD_ERROR_NoMatch Then
+;~ 			ExitLoop
 		EndIf
 
 		If (TimerDiff($hWaitTimer) > $iTimeout) Then
