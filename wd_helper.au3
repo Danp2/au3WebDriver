@@ -297,6 +297,7 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetMouseElement($sSession)
+	Local Const $sFuncName = "_WD_GetMouseElement"
 	Local $sResponse, $sJSON, $sElement
 	Local $sScript = "return Array.from(document.querySelectorAll(':hover')).pop()"
 
@@ -304,7 +305,12 @@ Func _WD_GetMouseElement($sSession)
 	$sJSON = Json_Decode($sResponse)
 	$sElement = Json_Get($sJSON, "[value][" & $_WD_ELEMENT_ID & "]")
 
-	Return SetError($_WD_ERROR_Success, 0, $sElement)
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & $sElement & @CRLF)
+		ConsoleWrite($sFuncName & ': ' & IsObj($sElement) & @CRLF)
+	EndIf
+
+Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
 
