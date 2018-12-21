@@ -24,6 +24,9 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.17
+	- Changed: Add 'Screenshot' option to _WD_ElementAction
+
 	V0.1.0.16
 	- Changed: Add async support to _WD_ExecuteScript
 	- Changed: Add debug info to _WD_GetMouseElement
@@ -732,7 +735,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
-		Case 'name', 'rect', 'text', 'selected', 'enabled', 'displayed'
+		Case 'name', 'rect', 'text', 'selected', 'enabled', 'displayed', 'screenshot'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand)
 			$iErr = @error
 
@@ -777,7 +780,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 			EndIf
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value|Screenshot) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
