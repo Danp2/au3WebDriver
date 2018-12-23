@@ -1181,7 +1181,7 @@ EndFunc   ;==>_WD_Shutdown
 ; ===============================================================================================================================
 Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
-	Local $iResult, $sResponseText
+	Local $iResult = $_WD_ERROR_Success, $sResponseText
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
@@ -1201,9 +1201,10 @@ Func __WD_Get($sURL)
 		$iResult = $_WD_ERROR_SocketError
 	Else
 		$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6])
+		$iErr = @error
 		$_WD_HTTPRESULT = @extended
 
-		If @error Then
+		If $iErr Then
 			$iResult = $_WD_ERROR_SendRecv
 		EndIf
 	EndIf
@@ -1212,7 +1213,7 @@ Func __WD_Get($sURL)
 	_WinHttpCloseHandle($hOpen)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $sResponseText=" & $sResponseText & @CRLF)
+		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText,100) & "..." & @CRLF)
 	EndIf
 
 	If $iResult Then
