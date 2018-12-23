@@ -730,7 +730,7 @@ EndFunc   ;==>_WD_FindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_ElementAction"
-	Local $sResponse, $sResult = '', $iErr, $oJson
+	Local $sResponse, $sResult = '', $iErr, $oJson, $sErr
 
 	$sCommand = StringLower($sCommand)
 
@@ -739,57 +739,56 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				$oJson = Json_Decode($sResponse)
-				$sResult = Json_Get($oJson, "[value]")
-			EndIf
-
 		Case 'active'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sCommand)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				$oJson = Json_Decode($sResponse)
-				$sResult = Json_Get($oJson, "[value]")
-			EndIf
 
 		Case 'attribute', 'property', 'css'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand & "/" & $sOption)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				$oJson = Json_Decode($sResponse)
-				$sResult = Json_Get($oJson, "[value]")
-			EndIf
-
 		Case 'clear', 'click'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '"}')
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
-			EndIf
-
 		Case 'value'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & $sOption & '"}')
-
 			$iErr = @error
-
-			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
-			EndIf
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value|Screenshot) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
+	If $iErr = $_WD_ERROR_Success Then
+		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+
+			Switch $sCommand
+				Case 'clear', 'click', 'value'
+					$sResult = $sResponse
+
+				Case Else
+					$oJson = Json_Decode($sResponse)
+					$sResult = Json_Get($oJson, "[value]")
+			EndSwitch
+
+		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
+			$oJson = Json_Decode($sResponse)
+			$sErr = Json_Get($oJson, "[value][error]")
+			$iErr = ($sErr == $WD_Element_Stale) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
+
+		Else
+			$iErr = $_WD_ERROR_Exception
+		EndIf
+	EndIf
+
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse,100) & "..." & @CRLF)
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, "")
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
