@@ -26,6 +26,9 @@
 #cs
 	V0.1.0.17
 	- Changed: Add 'Screenshot' option to _WD_ElementAction
+	- Changed: Extract JSON value when taking screenshot in _WD_Window
+	- Changed: Rework coding of _WD_ElementAction
+	- Fixed: Error handling in __WD_Get
 
 	V0.1.0.16
 	- Changed: Add async support to _WD_ExecuteScript
@@ -164,7 +167,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.16"
+Global Const $__WDVERSION = "0.1.0.17"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 
@@ -210,6 +213,10 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Invalid Expression", _
 		"No alert present" _
 		]
+
+Global Const $WD_Element_NotFound = "no such element"
+Global Const $WD_Element_Stale = "stale element reference"
+
 #EndRegion Global Constants
 
 
@@ -506,7 +513,7 @@ EndFunc   ;==>_WD_Action
 ;                               | Minimize
 ;                               | Fullscreen
 ;                               | Rect
-;                               | Screemshot
+;                               | Screenshot
 ;                               | Close
 ;                               | Switch
 ;                               | Frame
@@ -576,7 +583,8 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
+				$sJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($sJSON, "[value]")
 			EndIf
 
 		Case 'close'
@@ -615,7 +623,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, 100) & "..." & @CRLF)
 	EndIf
 
 	If $iErr Then
@@ -687,7 +695,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
 			$oJson = Json_Decode($sResponse)
 			$sErr = Json_Get($oJson, "[value][error]")
-			$iErr = ($sErr == 'no such element') ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
+			$iErr = ($sErr == $WD_Element_NotFound) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
 
 		Else
 			$iErr = $_WD_ERROR_Exception
@@ -717,6 +725,7 @@ EndFunc   ;==>_WD_FindElement
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_NoMatch
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_InvalidDataType
 ;                  @EXTENDED    - WinHTTP status code
@@ -742,7 +751,6 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 		Case 'active'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sCommand)
 			$iErr = @error
-
 
 		Case 'attribute', 'property', 'css'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand & "/" & $sOption)
