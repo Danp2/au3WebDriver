@@ -51,7 +51,7 @@
 ;                  				- $_WD_ERROR_GeneralError
 ;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: 01/12/2019
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -59,22 +59,39 @@
 ; ===============================================================================================================================
 Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
 	Local Const $sFuncName = "_WD_NewTab"
-	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $sTempHandle
+	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $iTabIndex, $aTemp
 
 	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
 
-	; Get handle to current last tab
 	Local $aHandles = _WD_Window($sSession, 'handles')
 
-	If @error <> $_WD_ERROR_Success Then
+	If @error <> $_WD_ERROR_Success Or Not IsArray($aHandles) Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 	EndIf
 
-	$sLastTabHandle = $aHandles[UBound($aHandles) - 1]
+	$iTabCount = UBound($aHandles)
 
-	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+	; Get handle to current last tab
+	$sLastTabHandle = $aHandles[$iTabCount - 1]
+
+	; Get handle for current tab
+	Local $sCurrentTabHandle = _WD_Window($sSession, 'window')
+
+	If @error = $_WD_ERROR_Success Then
+		; Search for current tab handle in array of tab handles. If not found,
+		; then make the current tab handle equal to the last tab
+		$iTabIndex = _ArraySearch($aHandles, $sCurrentTabHandle)
+
+		If @error Then
+			$sCurrentTabHandle = $sLastTabHandle
+			$iTabIndex = $iTabCount - 1
+		EndIf
+	Else
+		_WD_Window($sSession, 'Switch', '{"handle":"' & $sLastTabHandle & '"}')
+		$sCurrentTabHandle = $sLastTabHandle
+		$iTabIndex = $iTabCount - 1
 	EndIf
+
 
 	_WD_ExecuteScript($sSession, 'window.open()', '{}')
 
@@ -85,11 +102,10 @@ Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
 	$hWaitTimer = TimerInit()
 
 	While 1
-		$aHandles = _WD_Window($sSession, 'handles')
-		$sTempHandle = $aHandles[UBound($aHandles) - 1]
+ 		$aTemp = _WD_Window($sSession, 'handles')
 
-		If $sTempHandle <> $sLastTabHandle Then
-			$sTabHandle = $sTempHandle
+		If UBound($aTemp) > $iTabCount Then
+			$sTabHandle = $aTemp[$iTabIndex + 1]
 			ExitLoop
 		EndIf
 
@@ -100,6 +116,8 @@ Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
 
 	If $lSwitch Then
 		_WD_Window($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
+	Else
+		_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
@@ -561,8 +579,6 @@ Func _WD_HighlightElements($sSession, $aElements, $iMethod = 1)
     Next
     Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError(1, 0, False))
 EndFunc   ;==>_WD_HighlightElements
-
-
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LoadWait
