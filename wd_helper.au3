@@ -640,3 +640,101 @@ Func _WD_LoadWait($sSession, $iDelay = 0, $iTimeout = -1, $sElement = '')
 
 	Return SetError($_WD_ERROR_Success, 0, 1)
 EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_Screenshot
+; Description ...:
+; Syntax ........: _WD_Screenshot($sSession[, $sElement = ''[, $nOutputType = 1]])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sElement            - [optional] Element ID from _WDFindElement
+;                  $nOutputType         - [optional] One of the following output types:
+;                               | 1 - String (Default)
+;                               | 2 - Binary
+;                               | 3 - Base64
+
+; Return values .: None
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_Screenshot($sSession, $sElement = '', $nOutputType = 1)
+	Local Const $sFuncName = "_WD_Screenshot"
+	Local $sResponse, $sJSON, $sResult, $bDecode
+
+	If $sElement = '' Then
+		$sResponse = _WD_Window($sSession, 'Screenshot')
+		$iErr = @error
+	Else
+		$sResponse = _WD_ElementAction($sSession, $sElement, 'Screenshot')
+		$iErr = @error
+	EndIf
+
+	If $iErr = $_WD_ERROR_Success Then
+		Switch $nOutputType
+			Case 1 ; String
+				$sResult = BinaryToString(_Base64Decode($sResponse))
+
+			Case 2 ; Binary
+				$sResult = _Base64Decode($sResponse)
+
+			Case 3 ; Base64
+
+		EndSwitch
+	Else
+		$sResult = ''
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Base64Decode
+; Description ...:
+; Syntax ........: _Base64Decode($input_string)
+; Parameters ....: $input_string        - string to be decoded
+; Return values .: Decoded string
+; Author ........: trancexx
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/81332-_base64encode-_base64decode/
+; Example .......: No
+; ===============================================================================================================================
+Func _Base64Decode($input_string)
+
+    Local $struct = DllStructCreate("int")
+
+    $a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
+            "str", $input_string, _
+            "int", 0, _
+            "int", 1, _
+            "ptr", 0, _
+            "ptr", DllStructGetPtr($struct, 1), _
+            "ptr", 0, _
+            "ptr", 0)
+
+    If @error Or Not $a_Call[0] Then
+        Return SetError(1, 0, "") ; error calculating the length of the buffer needed
+    EndIf
+
+    Local $a = DllStructCreate("byte[" & DllStructGetData($struct, 1) & "]")
+
+    $a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
+            "str", $input_string, _
+            "int", 0, _
+            "int", 1, _
+            "ptr", DllStructGetPtr($a), _
+            "ptr", DllStructGetPtr($struct, 1), _
+            "ptr", 0, _
+            "ptr", 0)
+
+    If @error Or Not $a_Call[0] Then
+        Return SetError(2, 0, ""); error decoding
+    EndIf
+
+    Return DllStructGetData($a, 1)
+
+EndFunc   ;==>_Base64Decode
