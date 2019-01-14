@@ -1225,7 +1225,7 @@ EndFunc   ;==>_WD_Shutdown
 ; ===============================================================================================================================
 Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
-	Local $iResult = $_WD_ERROR_Success, $sResponseText
+	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
@@ -1317,7 +1317,8 @@ Func __WD_Post($sURL, $sData)
 		$_WD_HTTPRESULT = @extended
 
 		If $iErr Then
-			$iResult = ($_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT) ? $_WD_ERROR_Timeout : $_WD_ERROR_SendRecv
+			$iResult = $_WD_ERROR_SendRecv
+
 		EndIf
 	EndIf
 
@@ -1329,7 +1330,11 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	If $iResult Then
-		Return 	SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
+		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
+		Else
+			Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
+		EndIf
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponseText)
