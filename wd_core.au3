@@ -29,6 +29,9 @@
 	- Changed: Extract JSON value when taking screenshot in _WD_Window
 	- Changed: Rework coding of _WD_ElementAction
 	- Fixed: Error handling in __WD_Get
+	- Fixed: _WD_NewTab failed in some situations
+   - Fixed: _WD_Window error handling
+	_ Added: _WD_Screenshot
 
 	V0.1.0.16
 	- Changed: Add async support to _WD_ExecuteScript
