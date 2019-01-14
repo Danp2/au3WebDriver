@@ -544,8 +544,12 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($sJSON, "[value]")
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($sJSON, "[value]")
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'handles'
@@ -553,8 +557,12 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($sJSON, "[value]")
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($sJSON, "[value]")
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'maximize', 'minimize', 'fullscreen'
@@ -562,7 +570,11 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sResult = $sResponse
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'rect'
@@ -575,7 +587,11 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sResult = $sResponse
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'screenshot'
@@ -583,8 +599,12 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($sJSON, "[value]")
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($sJSON, "[value]")
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'close'
@@ -592,7 +612,11 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sResult = $sResponse
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'switch'
@@ -600,21 +624,33 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sResult = $sResponse
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'frame'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame", $sOption)
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sResult = $sResponse
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case 'parent'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame/parent", $sOption)
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
+				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+					$sResult = $sResponse
+				Else
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 
 		Case Else
