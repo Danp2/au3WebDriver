@@ -45,6 +45,8 @@
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
+;                  $sURL                - [optional] URL to be loaded in new tab
+;                  $sFeatures           - [optional] Comma-separated list of requested features of the new tab
 ; Return values .: Success      - String representing handle of new tab
 ;                  Failure      - blank string
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -57,7 +59,7 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
+Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1, $sURL = "", $sFeatures = "")
 	Local Const $sFuncName = "_WD_NewTab"
 	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $iTabIndex, $aTemp
 
@@ -92,8 +94,7 @@ Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1)
 		$iTabIndex = $iTabCount - 1
 	EndIf
 
-
-	_WD_ExecuteScript($sSession, 'window.open()', '{}')
+	_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
 
 	If @error <> $_WD_ERROR_Success Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
