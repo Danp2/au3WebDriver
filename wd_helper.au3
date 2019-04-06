@@ -692,6 +692,56 @@ Func _WD_Screenshot($sSession, $sElement = '', $nOutputType = 1)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_jQuerify
+; Description ...: Inject jQuery library into current session
+; Syntax ........: _WD_jQuerify($sSession)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Return values .: None
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_jQuerify($sSession)
+Local $jQueryLoader = _
+"(function(jqueryUrl, callback) {" & _
+"    if (typeof jqueryUrl != 'string') {" & _
+"        jqueryUrl = 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';" & _
+"    }" & _
+"    if (typeof jQuery == 'undefined') {" & _
+"        var script = document.createElement('script');" & _
+"        var head = document.getElementsByTagName('head')[0];" & _
+"        var done = false;" & _
+"        script.onload = script.onreadystatechange = (function() {" & _
+"            if (!done && (!this.readyState || this.readyState == 'loaded' " & _
+"                    || this.readyState == 'complete')) {" & _
+"                done = true;" & _
+"                script.onload = script.onreadystatechange = null;" & _
+"                head.removeChild(script);" & _
+"                callback();" & _
+"            }" & _
+"        });" & _
+"        script.src = jqueryUrl;" & _
+"        head.appendChild(script);" & _
+"    }" & _
+"    else {" & _
+"        jQuery.noConflict();" & _
+"        callback();" & _
+"    }" & _
+"})(arguments[0], arguments[arguments.length - 1]);"
+
+_WD_ExecuteScript($sSession, $jQueryLoader, "[]", True)
+
+Do
+	Sleep(250)
+	_WD_ExecuteScript($sSession, "jQuery")
+Until @error = $_WD_ERROR_Success
+
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
 ; Syntax ........: _Base64Decode($input_string)
