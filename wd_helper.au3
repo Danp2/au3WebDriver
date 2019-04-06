@@ -742,6 +742,33 @@ Until @error = $_WD_ERROR_Success
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_ElementOptionSelect
+; Description ...: Find and click on an option from a Select element
+; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = ""])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector           - Value to find
+;                  $sStartElement       - [optional] Element ID of element to use as starting point
+; Return values .: None
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_NoMatch
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = "")
+    Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+
+    If @error = $_WD_ERROR_Success Then
+        _WD_ElementAction($sSession, $sElement, 'click')
+    EndIf
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
 ; Syntax ........: _Base64Decode($input_string)
