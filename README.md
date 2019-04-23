@@ -34,7 +34,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 
 ## Helper Functions
 
-- _WD_NewTab($sSession, $lSwitch = True)
+- _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1, $sURL = "", $sFeatures = "")
 - _WD_Attach($sSession, $sString, $sMode = 'title')
 - _WD_LinkClickByText($sSession, $sText, $lPartial = True)
 - _WD_WaitElement($sSession, $sElement, $sStrategy, $sSelector[, $iDelay = 0[, $iTimeout = -1]])
@@ -47,6 +47,8 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_FrameLeave()
 - _WD_HighlightElement($sSession, $sElement[, $iMethod = 1])
 - _WD_HighlightElements($sSession, $aElements[, $iMethod = 1])
+- _WD_jQuerify($sSession)
+- WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = "")
 
 # Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
