@@ -24,6 +24,11 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.18
+	- Changed: Add optional parameters to _WD_NewTab for URL and Features
+	- Added: _WD_jQuerify
+	- Added: _WD_ElementOptionSelect
+
 	V0.1.0.17
 	- Changed: Add 'Screenshot' option to _WD_ElementAction
 	- Changed: Extract JSON value when taking screenshot in _WD_Window
