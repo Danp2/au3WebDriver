@@ -707,6 +707,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lM
 
 	$sCmd = ($lMultiple) ? 'elements' : 'element'
 	$sElement = ($sStartElement == "") ? "" : "/element/" & $sStartElement
+	$sSelector = __WD_EscapeString($sSelector)
 
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sElement & "/" & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
 	$iErr = @error
@@ -868,6 +869,8 @@ EndFunc   ;==>_WD_ElementAction
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]", $lAsync = False)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
+
+	$sScript = __WD_EscapeString($sScript)
 
 	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
 	$sCmd = ($lAsync) ? 'async' : 'sync'
@@ -1460,7 +1463,7 @@ EndFunc ;==>__WD_Error
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CloseDriver
 ; Description ...: Shutdown web driver console if it exists
-; Syntax ........: __WDKillDriver()
+; Syntax ........: __WD_CloseDriver()
 ; Parameters ....:
 ; Return values .: None
 ; Author ........: Dan Pollak
@@ -1495,7 +1498,6 @@ EndFunc   ;==>__WD_CloseDriver
 ; ===============================================================================================================================
 Func __WD_EscapeString($sData)
 	Local $sEscaped = StringRegExpReplace($sData, "([""])", "\\$1")
-	ConsoleWrite("==> Escaped: " & $sEscaped & @crlf)
 	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
 EndFunc
 
