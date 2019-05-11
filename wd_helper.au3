@@ -769,6 +769,44 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_ConsoleVisible
+; Description ...: Control visibility of the webdriver console app
+; Syntax ........: _WD_ConsoleVisible([$lVisible = False])
+; Parameters ....: $lVisible            - [optional] Set to true to hide the console
+; Return values .: None
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_ConsoleVisible($lVisible = False)
+	Local $sFile = StringRegExpReplace($_WD_DRIVER, "^.*\\(.*)$", "$1")
+	Local $pid, $pid2, $hWnd = 0
+
+	$pid = ProcessExists($sFile)
+
+	If $pid Then
+		$aWinList=WinList("[CLASS:ConsoleWindowClass]")
+
+		For $i=1 To $aWinList[0][0]
+			$pid2 = WinGetProcess($aWinList[$i][1])
+
+			If $pid2 = $pid Then
+				$hWnd=$aWinList[$i][1]
+				ExitLoop
+			EndIf
+		Next
+
+		If $hWnd<>0 Then
+			WinSetState($hWnd, "", $lVisible ? @SW_SHOW : @SW_HIDE)
+		EndIf
+	EndIf
+
+EndFunc   ;==>_WD_ConsoleVisible
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
 ; Syntax ........: _Base64Decode($input_string)
