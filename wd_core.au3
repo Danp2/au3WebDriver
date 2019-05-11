@@ -24,6 +24,11 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.19
+	- Added: _WD_ConsoleVisible
+	- Added: __WD_EscapeString
+	- Changed: Escape double quotes in string passed to _WD_FindElement, _WD_ExecuteScript
+
 	V0.1.0.18
 	- Changed: Add optional parameters to _WD_NewTab for URL and Features
 	- Added: _WD_jQuerify
