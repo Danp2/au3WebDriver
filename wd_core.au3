@@ -1477,3 +1477,29 @@ Func __WD_CloseDriver()
 		ProcessClose($sFile)
 	EndIf
 EndFunc   ;==>__WD_CloseDriver
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_EscapeString
+; Description ...: Escapes both single and double quotation marks
+; Syntax ........: __WD_EscapeString($sData)
+; Parameters ....: $sData               - the string to be escaped
+; Return Value ..: Success      - Escaped string
+;                  @ERROR       - $_WD_ERROR_Success
+; Return values .: None
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_EscapeString($sData)
+	Local $sEscaped = StringRegExpReplace($sData, "([""])", "\\$1")
+	ConsoleWrite("==> Escaped: " & $sEscaped & @crlf)
+	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
+EndFunc
+
+Func __WD_TranslateQuotes($sData)
+	Local $sResult = StringReplace($sData, '"' , "'")
+	Return SetError($_WD_ERROR_Success, 0, $sResult)
+EndFunc
