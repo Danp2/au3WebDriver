@@ -241,6 +241,7 @@ Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
 Global $_WD_HTTPRESULT ; Result of last WinHTTP request
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
+Global $_WD_ESCAPE_CHARS = '"' ; Characters to escape
 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
@@ -1502,7 +1503,7 @@ EndFunc   ;==>__WD_CloseDriver
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_EscapeString($sData)
-	Local $sEscaped = StringRegExpReplace($sData, "([""])", "\\$1")
+	Local $sEscaped = StringRegExpReplace($sData, "([" & $_WD_ESCAPE_CHARS & "])", "\\$1")
 	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
 EndFunc
 
