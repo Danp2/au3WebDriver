@@ -557,39 +557,13 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($sJSON, "[value]")
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
-
 		Case 'handles'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($sJSON, "[value]")
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
-
 		Case 'maximize', 'minimize', 'fullscreen'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
 			$iErr = @error
-
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sResult = $sResponse
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
 
 		Case 'rect'
 			If $sOption = '' Then
@@ -600,77 +574,52 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sResult = $sResponse
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
-
 		Case 'screenshot'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
 			$iErr = @error
-
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($sJSON, "[value]")
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
 
 		Case 'close'
 			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window")
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sResult = $sResponse
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
-
 		Case 'switch'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window", $sOption)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sResult = $sResponse
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
-
 		Case 'frame'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame", $sOption)
-
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sResult = $sResponse
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
+			$iErr = @error
 
 		Case 'parent'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame/parent", $sOption)
-
-			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-					$sResult = $sResponse
-				Else
-					$iErr = $_WD_ERROR_Exception
-				EndIf
-			EndIf
+			$iErr = @error
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen|Rect|Screenshot|Close|Switch|Frame|Parent) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
+
+	If $iErr = $_WD_ERROR_Success Then
+		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+
+			Switch $sCommand
+				Case 'maximize', 'minimize', 'fullscreen', 'close', 'switch', 'frame', 'parent'
+					$sResult = $sResponse
+
+				Case Else
+					$oJson = Json_Decode($sResponse)
+					$sResult = Json_Get($oJson, "[value]")
+			EndSwitch
+
+		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
+			$oJson = Json_Decode($sResponse)
+			$sErr = Json_Get($oJson, "[value][error]")
+			$iErr = ($sErr == $WD_Element_Stale) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
+
+		Else
+			$iErr = $_WD_ERROR_Exception
+		EndIf
+	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, 100) & "..." & @CRLF)
