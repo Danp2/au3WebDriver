@@ -28,6 +28,7 @@
 	- Added: _WD_ConsoleVisible
 	- Added: __WD_EscapeString
 	- Changed: Escape double quotes in string passed to _WD_FindElement, _WD_ExecuteScript
+	- Changed: _WD_Window with 'rect' command now returns Dictionary object instead of raw JSON string
 
 	V0.1.0.18
 	- Changed: Add optional parameters to _WD_NewTab for URL and Features
