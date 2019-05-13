@@ -549,7 +549,7 @@ EndFunc   ;==>_WD_Action
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Window"
-	Local $sResponse, $sJSON, $sResult = "", $iErr
+	Local $sResponse, $oJSON, $sResult = "", $iErr
 
 	$sCommand = StringLower($sCommand)
 
