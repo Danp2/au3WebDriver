@@ -24,6 +24,11 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+	V0.1.0.20
+	- Fixed: Escape string passed to _WD_ElementAction when setting element's value
+   - Fixed: Return value from _WD_Window should be "" on error
+   - Fixed: Current tab handling in _WDAttach
+   
 	V0.1.0.19
 	- Added: _WD_ConsoleVisible
 	- Added: __WD_EscapeString
