@@ -762,7 +762,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
 			$iErr = @error
 
 		Case 'value'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & $sOption & '"}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & __WD_EscapeString($sOption) & '"}')
 			$iErr = @error
 
 		Case Else
