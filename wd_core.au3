@@ -627,7 +627,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
