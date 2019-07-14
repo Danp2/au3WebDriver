@@ -942,7 +942,7 @@ EndFunc   ;==>_WD_Alert
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://www.w3.org/TR/webdriver#getting-page-source
+; Link ..........: https://www.w3.org/TR/webdriver#get-page-source
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetSource($sSession)
@@ -1439,7 +1439,7 @@ EndFunc   ;==>__WD_CloseDriver
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_EscapeString
-; Description ...: Escapes both single and double quotation marks
+; Description ...: Escapes designated characters in string
 ; Syntax ........: __WD_EscapeString($sData)
 ; Parameters ....: $sData               - the string to be escaped
 ; Return Value ..: Success      - Escaped string
