@@ -28,7 +28,7 @@
 	- Fixed: Escape string passed to _WD_ElementAction when setting element's value
    - Fixed: Return value from _WD_Window should be "" on error
    - Fixed: Current tab handling in _WDAttach
-   
+
 	V0.1.0.19
 	- Added: _WD_ConsoleVisible
 	- Added: __WD_EscapeString
@@ -186,7 +186,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.19"
+Global Const $__WDVERSION = "0.1.0.20"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 
