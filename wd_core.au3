@@ -975,7 +975,7 @@ Func _WD_GetSource($sSession)
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Cookies
-; Description ...:
+; Description ...: Gets, sets, or deletes the session's cookies
 ; Syntax ........: _WD_Cookies($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
