@@ -27,7 +27,7 @@
 	V0.1.0.20
 	- Fixed: Escape string passed to _WD_ElementAction when setting element's value
    - Fixed: Return value from _WD_Window should be "" on error
-   - Fixed: Current tab handling in _WDAttach
+   - Fixed: Current tab handling in _WD_Attach
 
 	V0.1.0.19
 	- Added: _WD_ConsoleVisible
@@ -189,6 +189,7 @@
 Global Const $__WDVERSION = "0.1.0.20"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
+Global Const $_WD_EmptyDict  = "{}"
 
 Global Const $_WD_LOCATOR_ByCSSSelector = "css selector"
 Global Const $_WD_LOCATOR_ByXPath = "xpath"
@@ -271,7 +272,7 @@ Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CreateSession($sDesiredCapabilities = '{}')
+Func _WD_CreateSession($sDesiredCapabilities = $_WD_EmptyDict)
 	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = ""
 
@@ -484,7 +485,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 
 	Switch $sCommand
 		Case 'back', 'forward', 'refresh'
-			$sResponse = __WD_Post($sURL, '{}')
+			$sResponse = __WD_Post($sURL, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'url', 'title'
@@ -554,7 +555,7 @@ EndFunc   ;==>_WD_Action
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Window"
-	Local $sResponse, $oJSON, $sResult = "", $iErr
+	Local $sResponse, $oJSON, $sResult = "", $iErr, $sErr
 
 	$sCommand = StringLower($sCommand)
 
@@ -880,7 +881,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 
 	Switch $sCommand
 		Case 'dismiss', 'accept'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, '{}')
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
