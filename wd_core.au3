@@ -569,7 +569,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 		Case 'maximize', 'minimize', 'fullscreen'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'rect'
