@@ -1413,7 +1413,7 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = "")
 			ConsoleWrite($sMsg & @CRLF)
 
 			If @Compiled Then
-				If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
+				If $_WD_ERROR_MSGBOX And $i_WD_ERROR <> $_WD_ERROR_Success And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
 				DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
 			EndIf
 	EndSwitch
