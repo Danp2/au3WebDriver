@@ -24,6 +24,10 @@
 ; AutoIt Version : v3.3.14.3
 ; ==============================================================================
 #cs
+   v0.1.0.21
+   - Fixed: 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window 
+   - Fixed: Prevent runtime error dialog from appearing when function call succeeded
+
 	V0.1.0.20
 	- Fixed: Escape string passed to _WD_ElementAction when setting element's value
    - Fixed: Return value from _WD_Window should be "" on error
