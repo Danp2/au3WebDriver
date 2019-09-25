@@ -805,6 +805,48 @@ Func _WD_ConsoleVisible($lVisible = False)
 EndFunc   ;==>_WD_ConsoleVisible
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetShadowRoot
+; Description ...:
+; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector           - Value to find
+;                  $sStartElement       - [optional] a string value. Default is "".
+; Return values .: Success      - Element ID returned by web driver
+;                  Failure      - ""
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_NoMatch
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
+	Local Const $sFuncName = "_WD_GetShadowRoot"
+
+	Local $sResponse, $sResult, $sJsonElement, $oJson
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $iErr = @error
+
+	If $iErr = $_WD_ERROR_Success Then
+		$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+		$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].shadowRoot", $sJsonElement)
+		$oJson = Json_Decode($sResponse)
+		$sResult  = Json_Get($oJson, "[value][" & $_WD_ELEMENT_ID & "]")
+    EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
 ; Syntax ........: _Base64Decode($input_string)
