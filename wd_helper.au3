@@ -71,7 +71,7 @@ Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1, $sURL = "", $sFeatur
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 	EndIf
 
-	$iTabCount = UBound($aHandles)
+	Local $iTabCount = UBound($aHandles)
 
 	; Get handle to current last tab
 	$sLastTabHandle = $aHandles[$iTabCount - 1]
@@ -262,7 +262,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout = -1, $lVisible = False)
 	Local Const $sFuncName = "_WD_WaitElement"
-	Local $bAbort = False, $iErr, $iResult = 0, $sElement, $lIsVisible = True
+	Local $iErr, $iResult = 0, $sElement, $lIsVisible = True
 
 	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
 
@@ -661,7 +661,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = '', $nOutputType = 1)
 	Local Const $sFuncName = "_WD_Screenshot"
-	Local $sResponse, $sJSON, $sResult, $bDecode
+	Local $sResponse, $sResult, $iErr
 
 	If $sElement = '' Then
 		$sResponse = _WD_Window($sSession, 'Screenshot')
@@ -781,7 +781,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_ConsoleVisible($lVisible = False)
 	Local $sFile = StringRegExpReplace($_WD_DRIVER, "^.*\\(.*)$", "$1")
-	Local $pid, $pid2, $hWnd = 0
+	Local $pid, $pid2, $hWnd = 0, $aWinList
 
 	$pid = ProcessExists($sFile)
 
@@ -821,7 +821,7 @@ Func _Base64Decode($input_string)
 
     Local $struct = DllStructCreate("int")
 
-    $a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
+    Local $a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
             "str", $input_string, _
             "int", 0, _
             "int", 1, _
