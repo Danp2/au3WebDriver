@@ -21,7 +21,7 @@
 ;                  https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version
 ;
 ; Author(s) .....: Dan Pollak
-; AutoIt Version : v3.3.14.3
+; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
    v0.1.0.21
@@ -1148,6 +1148,7 @@ Func _WD_Startup()
 		ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		ConsoleWrite("_WDStartup: AutoIt:" & @TAB & @AutoItVersion & @CRLF)
 		ConsoleWrite("_WDStartup: WD.au3:" & @TAB & $__WDVERSION & @CRLF)
+		ConsoleWrite("_WDStartup: WinHTTP:" & @TAB & __WinHttpVer() & @CRLF)
 		ConsoleWrite("_WDStartup: Driver:" & @TAB & $_WD_DRIVER & @CRLF)
 		ConsoleWrite("_WDStartup: Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
 		ConsoleWrite("_WDStartup: Port:" & @TAB & $_WD_PORT & @CRLF)
