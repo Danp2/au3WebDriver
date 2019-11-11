@@ -850,6 +850,67 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
 EndFunc
 
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_SelectUploadFile
+; Description ...:
+; Syntax ........: _WD_SelectUploadFile($sSession, $sStrategy, $sSelector, $sFilename[, $sTitle[, $sButton]])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector           - Value to find
+;                  $sFilename           - String representing full path of file to upload
+;                  $sTitle              - [optional]
+;                  $sButton             - [optional]
+; Return values .: Success      - 1
+;                  Failure      - 0
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_NoMatch
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_SelectUploadFile($sSession, $sStrategy, $sSelector, $sFilename, $sTitle = Default, $sButton = Default)
+	Local Const $sFuncName = "_WD_SelectUploadFile"
+
+	Local $sResponse, $sResult, $sJsonElement, $oJson
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+	Local $iErr = @error, $hChoose
+
+    If IsKeyword($sTitle) = $KEYWORD_DEFAULT Then $sTitle = "[REGEXPTITLE:(?i)(^Open$|^File Upload$)]"
+    If IsKeyword($sButton) = $KEYWORD_DEFAULT Then $sButton = "[CLASS:Button; TEXT:&Open]"
+
+	If $iErr = $_WD_ERROR_Success Then
+		$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+		$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].click()", $sJsonElement)
+
+		; Find Windows dialog
+		$hChoose = WinWaitActive($sTitle, "", 5)
+
+		If $hChoose Then
+			Sleep(2000)
+			ControlSetText($hChoose, "", "Edit1", $sFilename)
+			ControlClick($hChoose, "", $sButton)
+		EndIf
+
+		$sResponse  = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement)
+		$oJson = Json_Decode($sResponse)
+		$sResult  = Json_Get($oJson, "[value]")
+
+    EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & $sResult & " file(s) selected" & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
+EndFunc
+
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
