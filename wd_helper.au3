@@ -277,6 +277,10 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 		If $iErr = $_WD_ERROR_Success Then
 			If $lVisible Then
 				$lIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+ 
+				If @error Then
+					$lIsVisible = False
+				EndIf               
 			EndIf
 
 			If $lIsVisible = True Then
