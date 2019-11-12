@@ -277,10 +277,10 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout =
 		If $iErr = $_WD_ERROR_Success Then
 			If $lVisible Then
 				$lIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
- 
+
 				If @error Then
 					$lIsVisible = False
-				EndIf               
+				EndIf
 			EndIf
 
 			If $lIsVisible = True Then
@@ -388,8 +388,10 @@ EndFunc
 ; Syntax ........: _WD_GetFrameCount()
 ; Parameters ....:
 ; Return values .: Success      - Numeric count of frames, 0 or positive number
-;                  Failure      - ""
-; Author ........: Decibel
+;                  Failure      - blank string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+; Author ........: Decibel, Danp2
 ; Modified ......: 2018-04-27
 ; Remarks .......:
 ; Related .......:
@@ -397,13 +399,19 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetFrameCount($sSession)
+    Local Const $sFuncName = "_WD_GetFrameCount"
     Local $sResponse, $sJSON, $iValue
 
     $sResponse = _WD_ExecuteScript($sSession, "return window.frames.length")
+
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
+	EndIf
+
     $sJSON = Json_Decode($sResponse)
     $iValue = Json_Get($sJSON, "[value]")
 
-    Return Number($iValue)
+    Return SetError($_WD_ERROR_Success, 0, Number($iValue))
 EndFunc ;==>_WD_GetFrameCount
 
 
@@ -414,6 +422,8 @@ EndFunc ;==>_WD_GetFrameCount
 ; Parameters ....:
 ; Return values .: Success      - Boolean response
 ;                  Failure      - ""
+ ;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception                                                   
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......:
@@ -422,14 +432,20 @@ EndFunc ;==>_WD_GetFrameCount
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_IsWindowTop($sSession)
+	Local Const $sFuncName = "_WD_IsWindowTop"                                           
     Local $sResponse, $sJSON
     Local $blnResult
 
     $sResponse = _WD_ExecuteScript($sSession, "return window.top == window.self")
+
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
+	EndIf
+
     $sJSON = Json_Decode($sResponse)
     $blnResult = Json_Get($sJSON, "[value]")
 
-    Return $blnResult
+    Return SetError($_WD_ERROR_Success, 0, $blnResult)
 EndFunc ;==>_WD_IsWindowTop
 
 ; #FUNCTION# ====================================================================================================================
@@ -439,6 +455,8 @@ EndFunc ;==>_WD_IsWindowTop
 ; Parameters ....:
 ; Return values .: Success      - True
 ;                  Failure      - WD Response error message (E.g. "no such frame")
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception                                                    
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......:
@@ -447,6 +465,7 @@ EndFunc ;==>_WD_IsWindowTop
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $sIndexOrID)
+	Local Const $sFuncName = "_WD_FrameEnter"                                          
     Local $sOption
     Local $sResponse, $sJSON
     Local $sValue
@@ -459,6 +478,11 @@ Func _WD_FrameEnter($sSession, $sIndexOrID)
     EndIf
 
     $sResponse = _WD_Window($sSession, "frame", $sOption)
+
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
+	EndIf
+
     $sJSON = Json_Decode($sResponse)
     $sValue = Json_Get($sJSON, "[value]")
 
@@ -469,7 +493,8 @@ Func _WD_FrameEnter($sSession, $sIndexOrID)
         $sValue = True
     EndIf
 
-    Return $sValue
+    Return SetError($_WD_ERROR_Success, 0, $sValue)
+    
 EndFunc ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
@@ -487,6 +512,7 @@ EndFunc ;==>_WD_FrameEnter
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
+	Local Const $sFuncName = "_WD_FrameLeave"                                          
     Local $sOption
     Local $sResponse, $sJSON, $asJSON
     Local $sValue
@@ -494,6 +520,11 @@ Func _WD_FrameLeave($sSession)
     $sOption = '{}'
 
     $sResponse = _WD_Window($sSession, "parent", $sOption)
+
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
+	EndIf
+
     ;Chrome--
     ;   Good: '{"value":null}'
     ;   Bad: '{"value":{"error":"chrome not reachable"....
@@ -521,7 +552,7 @@ Func _WD_FrameLeave($sSession)
         $sValue = True
     EndIf
 
-    Return $sValue
+	Return SetError($_WD_ERROR_Success, 0, $sValue)
 EndFunc ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
