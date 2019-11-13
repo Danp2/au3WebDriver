@@ -883,27 +883,28 @@ EndFunc
 
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_SelectUploadFile
+; Name ..........: _WD_SelectFiles
 ; Description ...:
-; Syntax ........: _WD_SelectUploadFile($sSession, $sStrategy, $sSelector, $sFilename)
+; Syntax ........: _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
-;                  $sFilename           - Full path of file to upload
-; Return values .: Success      - 1
-;                  Failure      - 0
+;                  $sFilename           - Full path of file(s) to upload (use newline character to separate files)
+;
+; Return values .: Number of selected files
+;
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_NoMatch
 ;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: If $sFilename is empty, then prior selection is cleared
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_SelectUploadFile($sSession, $sStrategy, $sSelector, $sFilename)
+Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectUploadFile"
 
 	Local $sResponse, $sResult, $sJsonElement, $oJson
@@ -911,14 +912,21 @@ Func _WD_SelectUploadFile($sSession, $sStrategy, $sSelector, $sFilename)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		$sResult = _WD_ElementAction($sSession, $sElement, 'value', $sFilename)
-		$iErr = @error
+		If $sFilename <> "" Then
+			$sResponse = _WD_ElementAction($sSession, $sElement, 'value', $sFilename)
+			$iErr = @error
+		Else
+			$sResponse = _WD_ElementAction($sSession, $sElement, 'clear')
+			$iErr = @error
+		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
 			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
 			$sResponse  = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement)
 			$oJson = Json_Decode($sResponse)
 			$sResult  = Json_Get($oJson, "[value]")
+		Else
+			$sResult = "0"
 		EndIf
 	EndIf
 
