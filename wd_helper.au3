@@ -727,9 +727,14 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_jQuerify
 ; Description ...: Inject jQuery library into current session
-; Syntax ........: _WD_jQuerify($sSession)
+; Syntax ........: _WD_jQuerify($sSession[, $sjQueryFile = Default[, $iTimeout = Default]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                : $sjQueryFile         - [optional] Path or URL to jQuery source file
+;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ; Return values .: None
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Timeout
+;                  				- $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -737,40 +742,67 @@ EndFunc
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_jQuerify($sSession)
-Local $jQueryLoader = _
-"(function(jqueryUrl, callback) {" & _
-"    if (typeof jqueryUrl != 'string') {" & _
-"        jqueryUrl = 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';" & _
-"    }" & _
-"    if (typeof jQuery == 'undefined') {" & _
-"        var script = document.createElement('script');" & _
-"        var head = document.getElementsByTagName('head')[0];" & _
-"        var done = false;" & _
-"        script.onload = script.onreadystatechange = (function() {" & _
-"            if (!done && (!this.readyState || this.readyState == 'loaded' " & _
-"                    || this.readyState == 'complete')) {" & _
-"                done = true;" & _
-"                script.onload = script.onreadystatechange = null;" & _
-"                head.removeChild(script);" & _
-"                callback();" & _
-"            }" & _
-"        });" & _
-"        script.src = jqueryUrl;" & _
-"        head.appendChild(script);" & _
-"    }" & _
-"    else {" & _
-"        jQuery.noConflict();" & _
-"        callback();" & _
-"    }" & _
-"})(arguments[0], arguments[arguments.length - 1]);"
+Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
+	Local Const $sFuncName = "_WD_jQuerify"
 
-_WD_ExecuteScript($sSession, $jQueryLoader, "[]", True)
+	If $sjQueryFile = Default Then
+		$sjQueryFile = ""
+	Else
+		$sjQueryFile = '"' & StringReplace($sjQueryFile, "\", "/") & '"' ; wrap in double quotes and replace backslashes
+	EndIf
 
-Do
-	Sleep(250)
-	_WD_ExecuteScript($sSession, "jQuery")
-Until @error = $_WD_ERROR_Success
+	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
+
+	Local $jQueryLoader = _
+	"(function(jqueryUrl, callback) {" & _
+	"    if (typeof jqueryUrl != 'string') {" & _
+	"        jqueryUrl = 'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js';" & _
+	"    }" & _
+	"    if (typeof jQuery == 'undefined') {" & _
+	"        var script = document.createElement('script');" & _
+	"        var head = document.getElementsByTagName('head')[0];" & _
+	"        var done = false;" & _
+	"        script.onload = script.onreadystatechange = (function() {" & _
+	"            if (!done && (!this.readyState || this.readyState == 'loaded' " & _
+	"                    || this.readyState == 'complete')) {" & _
+	"                done = true;" & _
+	"                script.onload = script.onreadystatechange = null;" & _
+	"                head.removeChild(script);" & _
+	"                callback();" & _
+	"            }" & _
+	"        });" & _
+	"        script.src = jqueryUrl;" & _
+	"        head.appendChild(script);" & _
+	"    }" & _
+	"    else {" & _
+	"        jQuery.noConflict();" & _
+	"        callback();" & _
+	"    }" & _
+	"})(arguments[0], arguments[arguments.length - 1]);"
+
+	_WD_ExecuteScript($sSession, $jQueryLoader, $sjQueryFile, True)
+
+	If @error = $_WD_ERROR_Success Then
+		Local $hWaitTimer = TimerInit()
+
+		Do
+			If TimerDiff($hWaitTimer) > $iTimeout Then
+				SetError($_WD_ERROR_Timeout)
+				ExitLoop
+			EndIf
+
+			Sleep(250)
+			_WD_ExecuteScript($sSession, "jQuery")
+		Until @error = $_WD_ERROR_Success
+	EndIf
+
+	Local $iErr = @error
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr))
 
 EndFunc
 
