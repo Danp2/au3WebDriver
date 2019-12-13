@@ -24,6 +24,14 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.2.0.1
+	- Added: _WD_GetShadowRoot
+	- Added: _WD_SelectFiles
+	- Fixed: Additional error checking in _WD_WaitElement
+	- Fixed: Standardize coding of frame related functions
+	- Changed: Added backslash to list of characters to escape
+	- Changed: Modified _WD_jQuerify with additional parameters for timeout / alternate jQuery source
+
    v0.1.0.21
    - Fixed: 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window 
    - Fixed: Prevent runtime error dialog from appearing when function call succeeded
@@ -190,7 +198,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.1.0.21"
+Global Const $__WDVERSION = "0.2.0.1"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
