@@ -59,4 +59,4 @@ You will always be able to find the latest version in the GitHub Repo  https://g
 
 
 # Discussion Thread on Autoit Forums
-https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version
+https://www.autoitscript.com/forum/topic/201106-webdriver-udf-help-support-ii/
