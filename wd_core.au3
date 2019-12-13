@@ -1464,7 +1464,8 @@ EndFunc   ;==>__WD_CloseDriver
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_EscapeString($sData)
-	Local $sEscaped = StringRegExpReplace($sData, "([" & $_WD_ESCAPE_CHARS & "])", "\\$1")
+	Local $sRegEx = "([" & $_WD_ESCAPE_CHARS & "])"
+	Local $sEscaped = StringRegExpReplace($sData, $sRegEx, "\\$1")
 	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
 EndFunc
 
