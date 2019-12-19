@@ -1202,6 +1202,8 @@ EndFunc   ;==>_WD_Shutdown
 ;                  Failure      - Response from web driver and set @ERROR
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidValue
+;                  				- $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1221,26 +1223,38 @@ Func __WD_Get($sURL)
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
-	; Initialize and get session handle
-	Local $hOpen = _WinHttpOpen()
+	If IsArray($aURL) Then
+		; Initialize and get session handle
+		Local $hOpen = _WinHttpOpen()
 
-	; Get connection handle
-	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
+		; Get connection handle
+		Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
 
-	If @error Then
-		$iResult = $_WD_ERROR_SocketError
-	Else
-		$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6])
-		$iErr = @error
-		$_WD_HTTPRESULT = @extended
+		If @error Then
+			$iResult = $_WD_ERROR_SocketError
+		Else
+			Switch $aURL[1]
+				Case $INTERNET_SCHEME_HTTP
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6])
+				Case $INTERNET_SCHEME_HTTPS
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6])
+				Case Else
+					SetError($_WD_ERROR_InvalidValue)
+			EndSwitch
 
-		If $iErr Then
-			$iResult = $_WD_ERROR_SendRecv
+			$iErr = @error
+			$_WD_HTTPRESULT = @extended
+
+			If $iErr Then
+				$iResult = $_WD_ERROR_SendRecv
+			EndIf
 		EndIf
-	EndIf
 
-	_WinHttpCloseHandle($hConnect)
-	_WinHttpCloseHandle($hOpen)
+		_WinHttpCloseHandle($hConnect)
+		_WinHttpCloseHandle($hOpen)
+	Else
+		$iResult = $_WD_ERROR_InvalidValue
+	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText,100) & "..." & @CRLF)
