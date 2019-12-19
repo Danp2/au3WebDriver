@@ -970,6 +970,49 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 EndFunc
 
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_IsLatestRelease
+; Description ...: Compares local UDF version to latest release on Github
+; Syntax ........: _WD_IsLatestRelease()
+; Parameters ....: None
+; Return values .: Success      - True if values match, otherwise False
+;                  Failure      - Null
+;
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidValue
+;                  				- $_WD_ERROR_InvalidDataType
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_IsLatestRelease()
+	Local Const $sFuncName = "_WD_IsLatestRelease"
+	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
+
+	Local $lResult
+	Local $sResult = __WD_Get($sGitURL)
+	Local $iErr = @error
+
+	If $iErr = $_WD_ERROR_Success Then
+		Local $aLatestWDVersion = StringRegExp($sResult, '<a href="/Danp2/WebDriver/releases/tag/(.*)">', 1)
+		Local $sLatestWDVersion = $aLatestWDVersion[0]
+
+		$lResult = ($__WDVERSION == $sLatestWDVersion)
+	Else
+		$lResult = Null
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & $lResult & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $lResult)
+
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
