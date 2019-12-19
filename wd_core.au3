@@ -1284,6 +1284,7 @@ EndFunc   ;==>__WD_Get
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_Timeout
 ;                  				- $_WD_ERROR_SocketError
+;                  				- $_WD_ERROR_InvalidValue
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1299,31 +1300,43 @@ Func __WD_Post($sURL, $sData)
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData & @CRLF)
 	EndIf
 
-	Local $aURL = _WinHttpCrackUrl($sURL)
-
 	$_WD_HTTPRESULT = 0
 
-	; Initialize and get session handle
-	Local $hOpen = _WinHttpOpen()
-
-	; Get connection handle
-	Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $_WD_PORT)
+	Local $aURL = _WinHttpCrackUrl($sURL)
 
 	If @error Then
-		$iResult = $_WD_ERROR_SocketError
+		$iResult = $_WD_ERROR_InvalidValue
 	Else
-		$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], Default, StringToBinary($sData, $_WD_BFORMAT))
-		$iErr = @error
-		$_WD_HTTPRESULT = @extended
+		; Initialize and get session handle
+		Local $hOpen = _WinHttpOpen()
 
-		If $iErr Then
-			$iResult = $_WD_ERROR_SendRecv
+		; Get connection handle
+		Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
 
+		If @error Then
+			$iResult = $_WD_ERROR_SocketError
+		Else
+			Switch $aURL[1]
+				Case $INTERNET_SCHEME_HTTP
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], Default, StringToBinary($sData, $_WD_BFORMAT))
+				Case $INTERNET_SCHEME_HTTPS
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "POST", $aURL[6], Default, StringToBinary($sData, $_WD_BFORMAT))
+				Case Else
+					SetError($_WD_ERROR_InvalidValue)
+			EndSwitch
+
+			$iErr = @error
+			$_WD_HTTPRESULT = @extended
+
+			If $iErr Then
+				$iResult = $_WD_ERROR_SendRecv
+
+			EndIf
 		EndIf
-	EndIf
 
-	_WinHttpCloseHandle($hConnect)
-	_WinHttpCloseHandle($hOpen)
+		_WinHttpCloseHandle($hConnect)
+		_WinHttpCloseHandle($hOpen)
+	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
