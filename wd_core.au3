@@ -1374,7 +1374,7 @@ EndFunc   ;==>__WD_Post
 Func __WD_Delete($sURL)
 	Local Const $sFuncName = "__WD_Delete"
 
-	Local $iResult, $sResponseText
+	Local $iResult, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
