@@ -61,9 +61,19 @@ _WD_Shutdown()
 
 
 Func DemoTimeouts()
-	_WD_Timeouts($sSession)
+	; Retrieve current settings and save
+	Local $sResponse = _WD_Timeouts($sSession)
+	Local $oJSON = Json_Decode($sResponse)
+	Local $sTimouts = Json_Encode(Json_Get($oJSON, "[value]"))
+
+	; Set page load timeout
 	_WD_Timeouts($sSession, '{"pageLoad":2000}')
+
+	; Retrieve current settings
 	_WD_Timeouts($sSession)
+
+	; Restore initial settings
+	_WD_Timeouts($sSession, $sTimouts)
 EndFunc
 
 Func DemoNavigation()
