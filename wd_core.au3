@@ -435,6 +435,7 @@ EndFunc   ;==>_WD_Timeouts
 ;                  Failure      - 0
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_Timeout
 ;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -454,7 +455,7 @@ Func _WD_Navigate($sSession, $sURL)
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, 1)
@@ -1247,6 +1248,9 @@ Func __WD_Get($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
+			; Remove $HTTP_STATUS_REQUEST_TIMEOUT check once Chromedriver is updated
+			ElseIf $_WD_HTTPRESULT =  $HTTP_STATUS_SERVER_ERROR Or $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
 
@@ -1261,11 +1265,7 @@ Func __WD_Get($sURL)
 	EndIf
 
 	If $iResult Then
-		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
-		Else
-			Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
-		EndIf
+		Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
@@ -1330,7 +1330,9 @@ Func __WD_Post($sURL, $sData)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-
+			; Remove $HTTP_STATUS_REQUEST_TIMEOUT check once Chromedriver is updated
+			ElseIf $_WD_HTTPRESULT =  $HTTP_STATUS_SERVER_ERROR Or $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
 
@@ -1343,11 +1345,7 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	If $iResult Then
-		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
-		Else
-			Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
-		EndIf
+		Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponseText)
@@ -1410,6 +1408,9 @@ Func __WD_Delete($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
+			; Remove $HTTP_STATUS_REQUEST_TIMEOUT check once Chromedriver is updated
+			ElseIf $_WD_HTTPRESULT =  $HTTP_STATUS_SERVER_ERROR Or $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
 
@@ -1422,11 +1423,7 @@ Func __WD_Delete($sURL)
 	EndIf
 
 	If $iResult Then
-		If $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
-		Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
-		EndIf
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
