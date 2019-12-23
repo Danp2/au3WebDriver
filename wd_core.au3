@@ -1476,8 +1476,8 @@ EndFunc ;==>__WD_Error
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CloseDriver
 ; Description ...: Shutdown web driver console if it exists
-; Syntax ........: __WD_CloseDriver()
-; Parameters ....:
+; Syntax ........: __WD_CloseDriver([$sDriver = Default])
+; Parameters ....: $sDriver             - [optional] Web driver console to shutdown. Default is $_WD_DRIVER
 ; Return values .: None
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -1486,8 +1486,10 @@ EndFunc ;==>__WD_Error
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_CloseDriver()
-	Local $sFile = StringRegExpReplace($_WD_DRIVER, "^.*\\(.*)$", "$1")
+Func __WD_CloseDriver($sDriver = Default)
+	If $sDriver = Default Then $sDriver = $_WD_DRIVER
+
+	Local $sFile = StringRegExpReplace($sDriver, "^.*\\(.*)$", "$1")
 
 	If ProcessExists($sFile) Then
 		ProcessClose($sFile)
