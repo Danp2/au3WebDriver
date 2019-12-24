@@ -24,6 +24,15 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.2.0.2
+	- Added: _WD_IsLatestRelease
+	- Added: _WD_UpdateDriver
+	- Changed: __WD_Get and __WD_Put updated to detect invalid URL
+	- Changed: __WD_Get and __WD_Put updabed to handle both HTTP and HTTPS requests
+	- Changed: __WD_CloseDriver - Optional parameter to indicate driver to close
+	- Fixed: __WD_Put and __WD_Delete use correct port
+	- Fixed: Timeout detection / handling
+
 	v0.2.0.1
 	- Added: _WD_GetShadowRoot
 	- Added: _WD_SelectFiles
@@ -33,7 +42,7 @@
 	- Changed: Modified _WD_jQuerify with additional parameters for timeout / alternate jQuery source
 
    v0.1.0.21
-   - Fixed: 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window 
+   - Fixed: 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window
    - Fixed: Prevent runtime error dialog from appearing when function call succeeded
 
 	V0.1.0.20
@@ -198,7 +207,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.2.0.1"
+Global Const $__WDVERSION = "0.2.0.2"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
