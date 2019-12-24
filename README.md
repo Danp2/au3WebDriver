@@ -53,6 +53,8 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_Screenshot($sSession, $sElement = '', $nOutputType = 1)
 - _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 - _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
+- _WD_IsLatestRelease()
+- _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $lFlag64 = Default[, $lForce = Default]]])
 
 # Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
