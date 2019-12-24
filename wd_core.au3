@@ -25,6 +25,10 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.2.0.3
+	- Fixed: Missing include file
+	- Fixed: _WD_Execute timeout detection / handling
+
 	v0.2.0.2
 	- Added: _WD_IsLatestRelease
 	- Added: _WD_UpdateDriver
@@ -32,7 +36,7 @@
 	- Changed: __WD_Get and __WD_Put updabed to handle both HTTP and HTTPS requests
 	- Changed: __WD_CloseDriver - Optional parameter to indicate driver to close
 	- Fixed: __WD_Put and __WD_Delete use correct port
-	- Fixed: Timeout detection / handling
+	- Fixed: _WD_Navigate timeout detection / handling
 
 	v0.2.0.1
 	- Added: _WD_GetShadowRoot
@@ -208,7 +212,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.2.0.2"
+Global Const $__WDVERSION = "0.2.0.3"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
