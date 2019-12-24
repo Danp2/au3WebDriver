@@ -843,7 +843,10 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $lAsync              - [optional] Perform request asyncronously? Default is False.
 ; Return values .: Raw response from web driver
 ;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_GeneralError
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_Timeout
+;                  				- $_WD_ERROR_SocketError
+;                  				- $_WD_ERROR_InvalidValue
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -862,11 +865,20 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]", $lAsync = False)
 
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 
+	Local $iErr = @error
+
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	Return SetError(($_WD_HTTPRESULT <> $HTTP_STATUS_OK) ? $_WD_ERROR_GeneralError : $_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
+	If $iErr Then
+		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResponse)
+	EndIf
+
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
+
+
+;~ 	Return SetError(($_WD_HTTPRESULT <> $HTTP_STATUS_OK) ? $_WD_ERROR_GeneralError : $_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
 
