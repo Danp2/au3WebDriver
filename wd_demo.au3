@@ -195,18 +195,30 @@ ConsoleWrite("$sAction = " & $sAction & @CRLF)
 EndFunc
 
 Func DemoWindows()
-	Local $sResponse, $sResult, $sJSON, $sImage, $hFileOpen
+	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2
 
+	$sHnd1 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
 	_WD_Navigate($sSession, "http://google.com")
-	$sResponse = _WD_Window($sSession, 'screenshot')
-	$sJSON = Json_Decode($sResponse)
-	$sResult = Json_Get($sJSON, "[value]")
 
-;	$sImage = BinaryToString(base64($sResult, False, True))
-	$bDecode = _Base64Decode($sResult)
+	_WD_NewTab($sSession)
+	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
+	_WD_Navigate($sSession, "http://yahoo.com")
+
+	_WD_Window($sSession, "switch", $sHnd1)
+	$sResponse = _WD_Window($sSession, 'screenshot')
+	$bDecode = _Base64Decode($sResponse)
 	$sDecode = BinaryToString($bDecode)
 
-	$hFileOpen = FileOpen("testing.png", $FO_BINARY + $FO_OVERWRITE)
+	$hFileOpen = FileOpen("Screen1.png", $FO_BINARY + $FO_OVERWRITE)
+	FileWrite($hFileOpen, $sDecode)
+	FileClose($hFileOpen)
+
+	_WD_Window($sSession, "switch", $sHnd2)
+	$sResponse = _WD_Window($sSession, 'screenshot')
+	$bDecode = _Base64Decode($sResponse)
+	$sDecode = BinaryToString($bDecode)
+
+	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $sDecode)
 	FileClose($hFileOpen)
 EndFunc
