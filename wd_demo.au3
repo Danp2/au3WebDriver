@@ -66,11 +66,16 @@ Func DemoTimeouts()
 	Local $oJSON = Json_Decode($sResponse)
 	Local $sTimouts = Json_Encode(Json_Get($oJSON, "[value]"))
 
+	_WD_Navigate($sSession, "http://google.com")
+
 	; Set page load timeout
 	_WD_Timeouts($sSession, '{"pageLoad":2000}')
 
 	; Retrieve current settings
 	_WD_Timeouts($sSession)
+
+	; This should timeout
+	_WD_Navigate($sSession, "http://yahoo.com")
 
 	; Restore initial settings
 	_WD_Timeouts($sSession, $sTimouts)
