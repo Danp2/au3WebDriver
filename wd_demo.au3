@@ -98,46 +98,54 @@ Func DemoElements()
 	Local $sElement, $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='q1']")
 
-	If @error = $_WD_ERROR_NoMatch Then
-		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
-	EndIf
+	; Locate a single element
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 
+	; Locate multiple matching elements
 	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
+	_ArrayDisplay($aElements, "Found Elements")
 
-	_ArrayDisplay($aElements)
-
+	; Set element's contents
 	_WD_ElementAction($sSession, $sElement, 'value', "testing 123")
 	Sleep(500)
 
-	_WD_ElementAction($sSession, $sElement, 'text')
+	; Retrieve then clear contents
+	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
 	_WD_ElementAction($sSession, $sElement, 'clear')
 	Sleep(500)
+
 	_WD_ElementAction($sSession, $sElement, 'value', "abc xyz")
 	Sleep(500)
-	_WD_ElementAction($sSession, $sElement, 'text')
+
+	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
 	_WD_ElementAction($sSession, $sElement, 'clear')
 	Sleep(500)
+
 	_WD_ElementAction($sSession, $sElement, 'value', "fujimo")
 	Sleep(500)
-	_WD_ElementAction($sSession, $sElement, 'text')
+	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
+
+	; Click input element
 	_WD_ElementAction($sSession, $sElement, 'click')
 
+	; Click search button
     $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='btnK']")
-    ConsoleWrite("Button Ref: " & $sButton & @CRLF)
-    ConsoleWrite("Before Click" & @CRLF)
-    _WD_ElementAction($sSession, $sButton, 'click')    ;<
-    Sleep(2000)
-    ConsoleWrite("After Click" & @CRLF)
-
-	_WD_ElementAction($sSession, $sElement, 'Attribute', 'text')
+    _WD_ElementAction($sSession, $sButton, 'click')
+    _WD_LoadWait($sSession, 2000)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
-
 	ConsoleWrite('value = ' & $sValue & @CRLF)
 
+	; Take element screenshot
+	$sResponse = _WD_ElementAction($sSession, $sElement, 'screenshot')
+	$bDecode = _Base64Decode($sResponse)
+	$sDecode = BinaryToString($bDecode)
+
+	$hFileOpen = FileOpen("Element.png", $FO_BINARY + $FO_OVERWRITE)
+	FileWrite($hFileOpen, $sDecode)
+	FileClose($hFileOpen)
 EndFunc
 
 Func DemoScript()
