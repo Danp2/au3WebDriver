@@ -1,10 +1,18 @@
 #include "wd_core.au3"
 #include "wd_helper.au3"
-#include <FileConstants.au3>
+#include <GuiComboBoxEx.au3>
+#include <GUIConstantsEx.au3>
+#include <ButtonConstants.au3>
+#include <WindowsConstants.au3>
 
-Local Enum $eFireFox = 0, _
-			$eChrome, _
-			$eEdge
+Local Const $sElementSelector = "//input[@name='q']"
+
+Local $sDesiredCapabilities, $iIndex, $sSession
+Local $lProcess = False
+
+Local $aBrowsers[][2] = [["Firefox", SetupGecko], _
+						["Chrome", SetupChrome], _
+						["Edge", SetupEdge]]
 
 Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
 						["DemoNavigation", True], _
@@ -16,26 +24,72 @@ Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
 						["DemoActions", False], _
 						["DemoWindows", False]]
 
-Local Const $_TestType = $eChrome
-Local Const $sElementSelector = "//input[@name='q']"
+Local $aDebugLevel[][2] = [["None", $_WD_DEBUG_None], _
+							["Error", $_WD_DEBUG_Error], _
+							["Full", $_WD_DEBUG_Info]]
 
-Local $sDesiredCapabilities
-Local $iIndex
-Local $sSession
+Local $iSpacing = 50
+Local $iCount = UBound($aDemoSuite)
+Local $aCheckboxes[$iCount]
 
-$_WD_DEBUG = $_WD_DEBUG_Info
+Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
 
-Switch $_TestType
-	Case $eFireFox
-		SetupGecko()
+GUICtrlCreateLabel("Browser", 15, 12)
+Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
+Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
+GUICtrlSetData($idBrowsers, $sData)
+GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
 
-	Case $eChrome
-		SetupChrome()
+GUICtrlCreateLabel("Demos", 15, 52)
+For $i = 0 To $iCount - 1
+    $aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
+	If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
+Next
 
-	Case $eEdge
-		SetupEdge()
+Local $iPos = $iSpacing + 20 * ($iCount + 1)
+GUICtrlCreateLabel("Debug", 15, $iPos + 2)
+Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
+GUICtrlSetData($idDebugging, $sData)
+GUICtrlSetData($idDebugging, "Full")
+Local $idButton = GUICtrlCreateButton("Run Demo!", 60, $iPos + 40, 85, 25)
 
-EndSwitch
+GUISetState(@SW_SHOW)
+
+    While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+            Case $GUI_EVENT_CLOSE
+                ExitLoop
+
+			Case $idBrowsers
+
+			Case $idDebugging
+
+            Case $idButton
+                $lProcess = True
+				ExitLoop
+
+		   Case Else
+				For $i = 0 To $iCount - 1
+					If $aCheckboxes[$i] = $nMsg Then
+						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
+						ExitLoop
+
+					EndIf
+
+				Next
+        EndSwitch
+    WEnd
+
+; Set debug level
+$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
+
+; Execute browser setup routine for user's browser selection
+Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
+
+GUIDelete($hGUI)
+If Not $lProcess Then Exit
 
 _WD_Startup()
 
@@ -48,22 +102,40 @@ $sSession = _WD_CreateSession($sDesiredCapabilities)
 If @error = $_WD_ERROR_Success Then
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 		If $aDemoSuite[$iIndex][1] Then
-			ConsoleWrite("Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
 			Call($aDemoSuite[$iIndex][0])
+			ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
 		Else
 			ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
 		EndIf
 	Next
 EndIf
 
+MsgBox($MB_ICONINFORMATION, "Demo complete!", "Click ok to shutdown the browser and console")
+
 _WD_DeleteSession($sSession)
 _WD_Shutdown()
 
 
 Func DemoTimeouts()
-	_WD_Timeouts($sSession)
+	; Retrieve current settings and save
+	Local $sResponse = _WD_Timeouts($sSession)
+	Local $oJSON = Json_Decode($sResponse)
+	Local $sTimouts = Json_Encode(Json_Get($oJSON, "[value]"))
+
+	_WD_Navigate($sSession, "http://google.com")
+
+	; Set page load timeout
 	_WD_Timeouts($sSession, '{"pageLoad":2000}')
+
+	; Retrieve current settings
 	_WD_Timeouts($sSession)
+
+	; This should timeout
+	_WD_Navigate($sSession, "http://yahoo.com")
+
+	; Restore initial settings
+	_WD_Timeouts($sSession, $sTimouts)
 EndFunc
 
 Func DemoNavigation()
@@ -83,46 +155,54 @@ Func DemoElements()
 	Local $sElement, $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='q1']")
 
-	If @error = $_WD_ERROR_NoMatch Then
-		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
-	EndIf
+	; Locate a single element
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 
+	; Locate multiple matching elements
 	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
+	_ArrayDisplay($aElements, "Found Elements")
 
-	_ArrayDisplay($aElements)
-
+	; Set element's contents
 	_WD_ElementAction($sSession, $sElement, 'value', "testing 123")
 	Sleep(500)
 
-	_WD_ElementAction($sSession, $sElement, 'text')
+	; Retrieve then clear contents
+	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
 	_WD_ElementAction($sSession, $sElement, 'clear')
 	Sleep(500)
+
 	_WD_ElementAction($sSession, $sElement, 'value', "abc xyz")
 	Sleep(500)
-	_WD_ElementAction($sSession, $sElement, 'text')
+
+	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
 	_WD_ElementAction($sSession, $sElement, 'clear')
 	Sleep(500)
+
 	_WD_ElementAction($sSession, $sElement, 'value', "fujimo")
 	Sleep(500)
-	_WD_ElementAction($sSession, $sElement, 'text')
+	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
+
+	; Click input element
 	_WD_ElementAction($sSession, $sElement, 'click')
 
+	; Click search button
     $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='btnK']")
-    ConsoleWrite("Button Ref: " & $sButton & @CRLF)
-    ConsoleWrite("Before Click" & @CRLF)
-    _WD_ElementAction($sSession, $sButton, 'click')    ;<
-    Sleep(2000)
-    ConsoleWrite("After Click" & @CRLF)
-
-	_WD_ElementAction($sSession, $sElement, 'Attribute', 'text')
+    _WD_ElementAction($sSession, $sButton, 'click')
+    _WD_LoadWait($sSession, 2000)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
-
 	ConsoleWrite('value = ' & $sValue & @CRLF)
 
+	; Take element screenshot
+	$sResponse = _WD_ElementAction($sSession, $sElement, 'screenshot')
+	$bDecode = _Base64Decode($sResponse)
+	$sDecode = BinaryToString($bDecode)
+
+	$hFileOpen = FileOpen("Element.png", $FO_BINARY + $FO_OVERWRITE)
+	FileWrite($hFileOpen, $sDecode)
+	FileClose($hFileOpen)
 EndFunc
 
 Func DemoScript()
@@ -185,18 +265,30 @@ ConsoleWrite("$sAction = " & $sAction & @CRLF)
 EndFunc
 
 Func DemoWindows()
-	Local $sResponse, $sResult, $sJSON, $sImage, $hFileOpen
+	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2
 
+	$sHnd1 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
 	_WD_Navigate($sSession, "http://google.com")
-	$sResponse = _WD_Window($sSession, 'screenshot')
-	$sJSON = Json_Decode($sResponse)
-	$sResult = Json_Get($sJSON, "[value]")
 
-;	$sImage = BinaryToString(base64($sResult, False, True))
-	$bDecode = _Base64Decode($sResult)
+	_WD_NewTab($sSession)
+	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
+	_WD_Navigate($sSession, "http://yahoo.com")
+
+	_WD_Window($sSession, "switch", $sHnd1)
+	$sResponse = _WD_Window($sSession, 'screenshot')
+	$bDecode = _Base64Decode($sResponse)
 	$sDecode = BinaryToString($bDecode)
 
-	$hFileOpen = FileOpen("testing.png", $FO_BINARY + $FO_OVERWRITE)
+	$hFileOpen = FileOpen("Screen1.png", $FO_BINARY + $FO_OVERWRITE)
+	FileWrite($hFileOpen, $sDecode)
+	FileClose($hFileOpen)
+
+	_WD_Window($sSession, "switch", $sHnd2)
+	$sResponse = _WD_Window($sSession, 'screenshot')
+	$bDecode = _Base64Decode($sResponse)
+	$sDecode = BinaryToString($bDecode)
+
+	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $sDecode)
 	FileClose($hFileOpen)
 EndFunc
