@@ -1,10 +1,18 @@
 #include "wd_core.au3"
 #include "wd_helper.au3"
-#include <FileConstants.au3>
+#include <GuiComboBoxEx.au3>
+#include <GUIConstantsEx.au3>
+#include <ButtonConstants.au3>
+#include <WindowsConstants.au3>
 
-Local Enum $eFireFox = 0, _
-			$eChrome, _
-			$eEdge
+Local Const $sElementSelector = "//input[@name='q']"
+
+Local $sDesiredCapabilities, $iIndex, $sSession
+Local $lProcess = False
+
+Local $aBrowsers[][2] = [["Firefox", SetupGecko], _
+						["Chrome", SetupChrome], _
+						["Edge", SetupEdge]]
 
 Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
 						["DemoNavigation", True], _
@@ -16,26 +24,72 @@ Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
 						["DemoActions", False], _
 						["DemoWindows", False]]
 
-Local Const $_TestType = $eChrome
-Local Const $sElementSelector = "//input[@name='q']"
+Local $aDebugLevel[][2] = [["None", $_WD_DEBUG_None], _
+							["Error", $_WD_DEBUG_Error], _
+							["Full", $_WD_DEBUG_Info]]
 
-Local $sDesiredCapabilities
-Local $iIndex
-Local $sSession
+Local $iSpacing = 50
+Local $iCount = UBound($aDemoSuite)
+Local $aCheckboxes[$iCount]
 
-$_WD_DEBUG = $_WD_DEBUG_Info
+Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
 
-Switch $_TestType
-	Case $eFireFox
-		SetupGecko()
+GUICtrlCreateLabel("Browser", 15, 12)
+Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
+Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
+GUICtrlSetData($idBrowsers, $sData)
+GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
 
-	Case $eChrome
-		SetupChrome()
+GUICtrlCreateLabel("Demos", 15, 52)
+For $i = 0 To $iCount - 1
+    $aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
+	If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
+Next
 
-	Case $eEdge
-		SetupEdge()
+Local $iPos = $iSpacing + 20 * ($iCount + 1)
+GUICtrlCreateLabel("Debug", 15, $iPos + 2)
+Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
+GUICtrlSetData($idDebugging, $sData)
+GUICtrlSetData($idDebugging, "Full")
+Local $idButton = GUICtrlCreateButton("Run Demo!", 60, $iPos + 40, 85, 25)
 
-EndSwitch
+GUISetState(@SW_SHOW)
+
+    While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+            Case $GUI_EVENT_CLOSE
+                ExitLoop
+
+			Case $idBrowsers
+
+			Case $idDebugging
+
+            Case $idButton
+                $lProcess = True
+				ExitLoop
+
+		   Case Else
+				For $i = 0 To $iCount - 1
+					If $aCheckboxes[$i] = $nMsg Then
+						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
+						ExitLoop
+
+					EndIf
+
+				Next
+        EndSwitch
+    WEnd
+
+; Set debug level
+$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
+
+; Execute browser setup routine for user's browser selection
+Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
+
+GUIDelete($hGUI)
+If Not $lProcess Then Exit
 
 _WD_Startup()
 
@@ -48,13 +102,16 @@ $sSession = _WD_CreateSession($sDesiredCapabilities)
 If @error = $_WD_ERROR_Success Then
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 		If $aDemoSuite[$iIndex][1] Then
-			ConsoleWrite("Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
 			Call($aDemoSuite[$iIndex][0])
+			ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
 		Else
 			ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
 		EndIf
 	Next
 EndIf
+
+MsgBox($MB_ICONINFORMATION, "Demo complete!", "Click ok to shutdown the browser and console")
 
 _WD_DeleteSession($sSession)
 _WD_Shutdown()
