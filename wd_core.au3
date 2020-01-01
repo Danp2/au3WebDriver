@@ -273,6 +273,7 @@ Global $_WD_BASE_URL = "HTTP://127.0.0.1"
 Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
 Global $_WD_HTTPRESULT ; Result of last WinHTTP request
+Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
 Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
 
@@ -321,6 +322,9 @@ Func _WD_CreateSession($sDesiredCapabilities = $_WD_EmptyDict)
 	Else
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
 	EndIf
+
+	; Save response details for future use
+	$_WD_SESSION_DETAILS = $sResponse
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sSession)
 EndFunc   ;==>_WD_CreateSession
