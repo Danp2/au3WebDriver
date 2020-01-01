@@ -33,7 +33,7 @@
 	- Added: _WD_IsLatestRelease
 	- Added: _WD_UpdateDriver
 	- Changed: __WD_Get and __WD_Put updated to detect invalid URL
-	- Changed: __WD_Get and __WD_Put updabed to handle both HTTP and HTTPS requests
+	- Changed: __WD_Get and __WD_Put updated to handle both HTTP and HTTPS requests
 	- Changed: __WD_CloseDriver - Optional parameter to indicate driver to close
 	- Fixed: __WD_Put and __WD_Delete use correct port
 	- Fixed: _WD_Navigate timeout detection / handling
@@ -310,11 +310,11 @@ Func _WD_CreateSession($sDesiredCapabilities = $_WD_EmptyDict)
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $sJSON = Json_Decode($sResponse)
-		$sSession = Json_Get($sJSON, "[value][sessionId]")
+		Local $oJSON = Json_Decode($sResponse)
+		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
-			Local $sMessage = Json_Get($sJSON, "[value][message]")
+			Local $sMessage = Json_Get($oJSON, "[value][message]")
 
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sMessage), $_WD_HTTPRESULT, "")
 		EndIf
@@ -505,7 +505,7 @@ EndFunc   ;==>_WD_Navigate
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Action"
-	Local $sResponse, $sResult = "", $iErr, $sJSON, $sURL
+	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURL
 
 	$sCommand = StringLower($sCommand)
 	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
@@ -520,8 +520,8 @@ Func _WD_Action($sSession, $sCommand, $sOption = '')
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($sJSON, "[value]")
+				$oJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($oJSON, "[value]")
 			EndIf
 
 		Case 'actions'
@@ -554,30 +554,35 @@ EndFunc   ;==>_WD_Action
 ; Description ...: Perform interactions related to the current window
 ; Syntax ........: _WD_Window($sSession, $sCommand[, $sOption = ''])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sCommand            - one of the following actions:
-;                               | Window
-;                               | Handles
-;                               | Maximize
-;                               | Minimize
-;                               | Fullscreen
-;                               | Rect
-;                               | Screenshot
-;                               | Close
-;                               | Switch
-;                               | Frame
-;                               | Parent
-;                  $sOption             - [optional] a string value. Default is ''.
+;
+;                  $sCommand  - one of the following actions:
+;                               | Window - Get current tab's window handle
+;                               | Handles - Get all window handles
+;                               | Maximize - Maximize window
+;                               | Minimize - Minimize window
+;                               | Fullscreen - Set window to fullscreen
+;                               | Rect - Get or set the window's size & position
+;                               | Screenshot - Take screenshot of window
+;                               | Close - Close current tab
+;                               | Switch - Switch to designated tab
+;                               | Frame - Switch to frame
+;                               | Parent - Switch to parent frame
+;
+;                  $sOption   - [optional] a string value. Default is ''.
+;
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
+;
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_InvalidDataType
 ;                  @EXTENDED    - WinHTTP status code
+;
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://www.w3.org/TR/webdriver#command-contexts
+; Link ..........: https://www.w3.org/TR/webdriver/#contexts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = '')
@@ -767,7 +772,7 @@ EndFunc   ;==>_WD_FindElement
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........: https://www.w3.org/TR/webdriver#element-state
+; Link ..........: https://www.w3.org/TR/webdriver/#state
 ;                  https://www.w3.org/TR/webdriver#element-interaction
 ; Example .......: No
 ; ===============================================================================================================================
@@ -913,7 +918,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; ===============================================================================================================================
 Func _WD_Alert($sSession, $sCommand, $sOption = '')
 	Local Const $sFuncName = "_WD_Alert"
-	Local $sResponse, $iErr, $sJSON, $sResult = ''
+	Local $sResponse, $iErr, $oJSON, $sResult = ''
 	Local $aNoAlertResults[2] = [$HTTP_STATUS_NOT_FOUND, $HTTP_STATUS_BAD_REQUEST]
 
 	$sCommand = StringLower($sCommand)
@@ -936,8 +941,8 @@ Func _WD_Alert($sSession, $sCommand, $sOption = '')
 					$sResult = ""
 					$iErr = $_WD_ERROR_NoAlert
 				Else
-					$sJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($sJSON, "[value]")
+					$oJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($oJSON, "[value]")
 				EndIf
 			EndIf
 
@@ -992,14 +997,14 @@ EndFunc   ;==>_WD_Alert
 ; ===============================================================================================================================
 Func _WD_GetSource($sSession)
 	Local Const $sFuncName = "_WD_GetSource"
-	Local $sResponse, $iErr, $sResult = "", $sJSON
+	Local $sResponse, $iErr, $sResult = "", $oJSON
 
 	$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/source")
 	$iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		$sJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($sJSON, "[value]")
+		$oJSON = Json_Decode($sResponse)
+		$sResult = Json_Get($oJSON, "[value]")
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then

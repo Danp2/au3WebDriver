@@ -319,12 +319,12 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_GetMouseElement($sSession)
 	Local Const $sFuncName = "_WD_GetMouseElement"
-	Local $sResponse, $sJSON, $sElement
+	Local $sResponse, $oJSON, $sElement
 	Local $sScript = "return Array.from(document.querySelectorAll(':hover')).pop()"
 
 	$sResponse = _WD_ExecuteScript($sSession, $sScript, '')
-	$sJSON = Json_Decode($sResponse)
-	$sElement = Json_Get($sJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+	$oJSON = Json_Decode($sResponse)
+	$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sElement & @CRLF)
@@ -352,13 +352,13 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
-	Local $sResponse, $sElement, $sJSON
+	Local $sResponse, $sElement, $oJSON
     Local $sScript = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sParams = $iX & ", " & $iY
 
 	$sResponse = _WD_ExecuteScript($sSession, $sScript, $sParams)
-	$sJSON = Json_Decode($sResponse)
-	$sElement = Json_Get($sJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+	$oJSON = Json_Decode($sResponse)
+	$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
 
 	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
@@ -400,7 +400,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_GetFrameCount($sSession)
     Local Const $sFuncName = "_WD_GetFrameCount"
-    Local $sResponse, $sJSON, $iValue
+    Local $sResponse, $oJSON, $iValue
 
     $sResponse = _WD_ExecuteScript($sSession, "return window.frames.length")
 
@@ -408,8 +408,8 @@ Func _WD_GetFrameCount($sSession)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
-    $sJSON = Json_Decode($sResponse)
-    $iValue = Json_Get($sJSON, "[value]")
+    $oJSON = Json_Decode($sResponse)
+    $iValue = Json_Get($oJSON, "[value]")
 
     Return SetError($_WD_ERROR_Success, 0, Number($iValue))
 EndFunc ;==>_WD_GetFrameCount
@@ -423,7 +423,7 @@ EndFunc ;==>_WD_GetFrameCount
 ; Return values .: Success      - Boolean response
 ;                  Failure      - ""
  ;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception                                                   
+;                  				- $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......:
@@ -432,8 +432,8 @@ EndFunc ;==>_WD_GetFrameCount
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_IsWindowTop($sSession)
-	Local Const $sFuncName = "_WD_IsWindowTop"                                           
-    Local $sResponse, $sJSON
+	Local Const $sFuncName = "_WD_IsWindowTop"
+    Local $sResponse, $oJSON
     Local $blnResult
 
     $sResponse = _WD_ExecuteScript($sSession, "return window.top == window.self")
@@ -442,8 +442,8 @@ Func _WD_IsWindowTop($sSession)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
-    $sJSON = Json_Decode($sResponse)
-    $blnResult = Json_Get($sJSON, "[value]")
+    $oJSON = Json_Decode($sResponse)
+    $blnResult = Json_Get($oJSON, "[value]")
 
     Return SetError($_WD_ERROR_Success, 0, $blnResult)
 EndFunc ;==>_WD_IsWindowTop
@@ -456,7 +456,7 @@ EndFunc ;==>_WD_IsWindowTop
 ; Return values .: Success      - True
 ;                  Failure      - WD Response error message (E.g. "no such frame")
 ;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception                                                    
+;                  				- $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......:
@@ -465,9 +465,9 @@ EndFunc ;==>_WD_IsWindowTop
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $sIndexOrID)
-	Local Const $sFuncName = "_WD_FrameEnter"                                          
+	Local Const $sFuncName = "_WD_FrameEnter"
     Local $sOption
-    Local $sResponse, $sJSON
+    Local $sResponse, $oJSON
     Local $sValue
 
     ;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
@@ -483,18 +483,18 @@ Func _WD_FrameEnter($sSession, $sIndexOrID)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
-    $sJSON = Json_Decode($sResponse)
-    $sValue = Json_Get($sJSON, "[value]")
+    $oJSON = Json_Decode($sResponse)
+    $sValue = Json_Get($oJSON, "[value]")
 
     ;*** Evaluate the response
     If $sValue <> Null Then
-        $sValue = Json_Get($sJSON, "[value][error]")
+        $sValue = Json_Get($oJSON, "[value][error]")
     Else
         $sValue = True
     EndIf
 
     Return SetError($_WD_ERROR_Success, 0, $sValue)
-    
+
 EndFunc ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
@@ -512,9 +512,9 @@ EndFunc ;==>_WD_FrameEnter
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
-	Local Const $sFuncName = "_WD_FrameLeave"                                          
+	Local Const $sFuncName = "_WD_FrameLeave"
     Local $sOption
-    Local $sResponse, $sJSON, $asJSON
+    Local $sResponse, $oJSON, $asJSON
     Local $sValue
 
     $sOption = '{}'
@@ -532,8 +532,8 @@ Func _WD_FrameLeave($sSession)
     ;   Good: '{"value": {}}'
     ;   Bad: '{"value":{"error":"unknown error","message":"Failed to decode response from marionette","stacktrace":""}}'
 
-    $sJSON = Json_Decode($sResponse)
-    $sValue = Json_Get($sJSON, "[value]")
+    $oJSON = Json_Decode($sResponse)
+    $sValue = Json_Get($oJSON, "[value]")
 
     ;*** Is this something besides a Chrome PASS?
     If $sValue <> Null Then
@@ -545,7 +545,7 @@ Func _WD_FrameLeave($sSession)
             If UBound($asJSON) = 0 Then ;Firefox PASS
                 $sValue = True
             Else ;Chrome and Firefox FAIL
-                $sValue = $asJSON[0] & ":" & Json_Get($sJSON, "[value][" & $asJSON[0] & "]")
+                $sValue = $asJSON[0] & ":" & Json_Get($oJSON, "[value][" & $asJSON[0] & "]")
             EndIf
         EndIf
     Else ;Chrome PASS
@@ -581,8 +581,8 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = 1)
     If $iMethod < 1 Or $iMethod > 3 Then $iMethod = 1
 	Local $sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
     Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod - 1] & "'; return true;", $sJsonElement)
-    Local $sJSON = Json_Decode($sResponse)
-    Local $sResult = Json_Get($sJSON, "[value]")
+    Local $oJSON = Json_Decode($sResponse)
+    Local $sResult = Json_Get($oJSON, "[value]")
     Return ($sResult = "true" ? SetError(0, 0, $sResult) : SetError(1, 0, False))
 EndFunc   ;==>_WD_HighlightElement
 
@@ -633,7 +633,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; ===============================================================================================================================
 Func _WD_LoadWait($sSession, $iDelay = 0, $iTimeout = -1, $sElement = '')
 	Local Const $sFuncName = "_WD_LoadWait"
-	Local $iErr, $sResponse, $sJSON, $sReadyState
+	Local $iErr, $sResponse, $oJSON, $sReadyState
 
 	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
 
@@ -654,8 +654,8 @@ Func _WD_LoadWait($sSession, $iDelay = 0, $iTimeout = -1, $sElement = '')
 				ExitLoop
 			EndIf
 
-			$sJSON = Json_Decode($sResponse)
-			$sReadyState = Json_Get($sJSON, "[value]")
+			$oJSON = Json_Decode($sResponse)
+			$sReadyState = Json_Get($oJSON, "[value]")
 
 			If $sReadyState = 'complete' Then ExitLoop
 		EndIf
