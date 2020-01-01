@@ -59,11 +59,14 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1, $sURL = "", $sFeatures = "")
+Func _WD_NewTab($sSession, $lSwitch = Default, $iTimeout = Default, $sURL = Default, $sFeatures = Default)
 	Local Const $sFuncName = "_WD_NewTab"
 	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $iTabIndex, $aTemp
 
-	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
+	If $lSwitch = Default Then $lSwitch = True
+	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
+	If $sURL = Default Then $sURL = ''
+	If $sFeatures = Default Then $sFeatures = ''
 
 	Local $aHandles = _WD_Window($sSession, 'handles')
 
@@ -148,9 +151,11 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Attach($sSession, $sString, $sMode = 'title')
+Func _WD_Attach($sSession, $sString, $sMode = Default)
 	Local Const $sFuncName = "_WD_Attach"
 	Local $sTabHandle = '', $lFound = False, $sCurrentTab = '', $aHandles
+
+	If $sMode = Default Then $sMode = 'title'
 
 	$aHandles = _WD_Window($sSession, 'handles')
 
@@ -217,8 +222,10 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LinkClickByText($sSession, $sText, $lPartial = True)
+Func _WD_LinkClickByText($sSession, $sText, $lPartial = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
+
+	If $lPartial = Default Then $lPartial = True
 
 	Local $sElement = _WD_FindElement($sSession, ($lPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
 
@@ -260,11 +267,13 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = 0, $iTimeout = -1, $lVisible = False)
+Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $lVisible = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $iResult = 0, $sElement, $lIsVisible = True
 
-	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
+	If $iDelay = Default Then $iDelay = 0
+	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
+	If $lVisible = Default Then $lVisible = False
 
 	Sleep($iDelay)
 
@@ -574,11 +583,14 @@ EndFunc ;==>_WD_FrameLeave
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_HighlightElement($sSession, $sElement, $iMethod = 1)
+Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
     Local Const $aMethod[] = ["border: 2px dotted red", _
             "background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
             "border:2px dotted  red;background: #FFFF66; border-radius: 5px; padding-left: 3px;"]
+
+	If $iMethod = Default Then $iMethod = 1
     If $iMethod < 1 Or $iMethod > 3 Then $iMethod = 1
+
 	Local $sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
     Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod - 1] & "'; return true;", $sJsonElement)
     Local $oJSON = Json_Decode($sResponse)
@@ -606,8 +618,11 @@ EndFunc   ;==>_WD_HighlightElement
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_HighlightElements($sSession, $aElements, $iMethod = 1)
+Func _WD_HighlightElements($sSession, $aElements, $iMethod = Default)
     Local $iHighlightedElements = 0
+
+	If $iMethod = Default Then $iMethod = 1
+
     For $i = 0 To UBound($aElements) - 1
         $iHighlightedElements += (_WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
     Next
@@ -631,11 +646,13 @@ EndFunc   ;==>_WD_HighlightElements
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LoadWait($sSession, $iDelay = 0, $iTimeout = -1, $sElement = '')
+Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local $iErr, $sResponse, $oJSON, $sReadyState
 
-	If $iTimeout = -1 Then $iTimeout = $_WD_DefaultTimeout
+	If $iDelay = Default Then $iDelay = 0
+	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
+	If $sElement = Default Then $sElement = ""
 
 	If $iDelay Then Sleep($iDelay)
 
@@ -694,9 +711,12 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Screenshot($sSession, $sElement = '', $nOutputType = 1)
+Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
 	Local $sResponse, $sResult, $iErr
+
+	If $sElement = Default Then $sElement = ""
+	If $nOutputType = Default Then $nOutputType = 1
 
 	If $sElement = '' Then
 		$sResponse = _WD_Window($sSession, 'Screenshot')
@@ -825,8 +845,10 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = "")
+Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
     Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+
+	If $sStartElement = Default Then $sStartElement = ""
 
     If @error = $_WD_ERROR_Success Then
         _WD_ElementAction($sSession, $sElement, 'click')
@@ -846,9 +868,11 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ConsoleVisible($lVisible = False)
+Func _WD_ConsoleVisible($lVisible = Default)
 	Local $sFile = StringRegExpReplace($_WD_DRIVER, "^.*\\(.*)$", "$1")
 	Local $pid, $pid2, $hWnd = 0, $aWinList
+
+	If $lVisible = Default Then $lVisible = False
 
 	$pid = ProcessExists($sFile)
 
@@ -892,12 +916,15 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
+Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_GetShadowRoot"
-
 	Local $sResponse, $sResult, $sJsonElement, $oJson
+
+	If $sStartElement = Default Then $sStartElement = ""
+
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
 	Local $iErr = @error
+
 
 	If $iErr = $_WD_ERROR_Success Then
 		$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'

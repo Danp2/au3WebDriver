@@ -299,9 +299,11 @@ Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CreateSession($sDesiredCapabilities = $_WD_EmptyDict)
+Func _WD_CreateSession($sDesiredCapabilities = Default)
 	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = ""
+
+	If $sDesiredCapabilities = Default Then $sDesiredCapabilities = $_WD_EmptyDict
 
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sDesiredCapabilities)
 	Local $iErr = @error
@@ -417,9 +419,11 @@ EndFunc   ;==>_WD_Status
 ;                  https://www.w3.org/TR/webdriver#set-timeouts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Timeouts($sSession, $sTimeouts = '')
+Func _WD_Timeouts($sSession, $sTimeouts = Default)
 	Local Const $sFuncName = "_WD_Timeouts"
 	Local $sResponse, $sURL
+
+	If $sTimeouts = Default Then $sTimeouts = ''
 
 	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/timeouts"
 
@@ -507,9 +511,11 @@ EndFunc   ;==>_WD_Navigate
 ;                  https://www.w3.org/TR/webdriver#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Action($sSession, $sCommand, $sOption = '')
+Func _WD_Action($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Action"
 	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURL
+
+	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
 	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
@@ -589,9 +595,11 @@ EndFunc   ;==>_WD_Action
 ; Link ..........: https://www.w3.org/TR/webdriver/#contexts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Window($sSession, $sCommand, $sOption = '')
+Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Window"
 	Local $sResponse, $oJSON, $sResult = "", $iErr, $sErr
+
+	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
 
@@ -698,10 +706,13 @@ EndFunc   ;==>_WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver#element-retrieval
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = "", $lMultiple = False)
+Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = Default, $lMultiple = Default)
 	Local Const $sFuncName = "_WD_FindElement"
 	Local $sCmd, $sElement, $sResponse, $sResult, $iErr, $sErr
 	Local $oJson, $oValues, $sKey, $iRow, $aElements[0]
+
+	If $sStartElement = Default Then $sStartElement = ""
+	If $lMultiple = Default Then $lMultiple = False
 
 	$sCmd = ($lMultiple) ? 'elements' : 'element'
 	$sElement = ($sStartElement == "") ? "" : "/element/" & $sStartElement
@@ -780,9 +791,11 @@ EndFunc   ;==>_WD_FindElement
 ;                  https://www.w3.org/TR/webdriver#element-interaction
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = '')
+Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_ElementAction"
 	Local $sResponse, $sResult = '', $iErr, $oJson, $sErr
+
+	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
 
@@ -867,9 +880,12 @@ EndFunc   ;==>_WD_ElementAction
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = "[]", $lAsync = False)
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $lAsync = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
+
+	If $sArguments = Default Then $sArguments = "[]"
+	If $lAsync = Default Then $lAsync = False
 
 	$sScript = __WD_EscapeString($sScript)
 
@@ -920,10 +936,12 @@ EndFunc   ;==>_WD_ExecuteScript
 ; Link ..........: https://www.w3.org/TR/webdriver#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Alert($sSession, $sCommand, $sOption = '')
+Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $oJSON, $sResult = ''
 	Local $aNoAlertResults[2] = [$HTTP_STATUS_NOT_FOUND, $HTTP_STATUS_BAD_REQUEST]
+
+	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
 
@@ -1046,10 +1064,11 @@ Func _WD_GetSource($sSession)
 ; Link ..........: https://www.w3.org/TR/webdriver#cookies
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Cookies($sSession, $sCommand, $sOption = '')
+Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Cookies"
-
 	Local $sResult, $sResponse, $iErr
+
+	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
 
@@ -1118,8 +1137,10 @@ EndFunc   ;==>_WD_Cookies
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Option($sOption, $vValue = "")
+Func _WD_Option($sOption, $vValue = Default)
 	Local Const $sFuncName = "_WD_Option"
+
+	If $vValue = Default Then $vValue = ''
 
 	Switch $sOption
 		Case "Driver"
@@ -1480,8 +1501,10 @@ EndFunc   ;==>__WD_Delete
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = "")
+Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default)
 	Local $sMsg
+
+	If $sMessage = Default Then $sMessage = ''
 
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_None
