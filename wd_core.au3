@@ -1,6 +1,7 @@
 #include-once
 #include <array.au3>
-#include <File.au3>
+#include <File.au3>			; Needed for _WD_UpdateDriver
+#include <WinAPIProc.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include <WinHttp.au3> ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
@@ -1545,14 +1546,29 @@ EndFunc ;==>__WD_Error
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_CloseDriver($sDriver = Default)
+	Local $iID, $aData
+
 	If $sDriver = Default Then $sDriver = $_WD_DRIVER
 
-	Local $sFile = StringRegExpReplace($sDriver, "^.*\\(.*)$", "$1")
+	Do
+		$iID = ProcessExists($sDriver)
 
-	If ProcessExists($sFile) Then
-		ProcessClose($sFile)
-	EndIf
-EndFunc   ;==>__WD_CloseDriver
+		If $iID Then
+			$aData = _WinAPI_EnumChildProcess($iID)
+
+			If IsArray($aData) Then
+				For $i = 0 To UBound($aData) - 1
+					If $aData[$i][1] = 'conhost.exe' Then
+						ProcessClose($aData[$i][0])
+					EndIf
+				Next
+			EndIf
+
+			ProcessClose($iID)
+		EndIf
+	Until Not $iID
+
+EndFunc ;==>__WD_CloseDriver
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_EscapeString
