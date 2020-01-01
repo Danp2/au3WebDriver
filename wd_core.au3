@@ -793,7 +793,7 @@ EndFunc   ;==>_WD_FindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_ElementAction"
-	Local $sResponse, $sResult = '', $iErr, $oJson, $sErr
+	Local $sResponse, $sResult = '', $aResult[4], $iErr, $oJson, $sErr
 
 	If $sOption = Default Then $sOption = ''
 
@@ -832,6 +832,13 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 				Case 'clear', 'click', 'value'
 					$sResult = $sResponse
 
+				Case 'rect'
+					$oJson = Json_Decode($sResponse)
+					$aResult[0] = Json_Get($oJson, "[value][height]")
+					$aResult[1] = Json_Get($oJson, "[value][width]")
+					$aResult[2] = Json_Get($oJson, "[value][x]")
+					$aResult[3] = Json_Get($oJson, "[value][y]")
+
 				Case Else
 					$oJson = Json_Decode($sResponse)
 					$sResult = Json_Get($oJson, "[value]")
@@ -855,7 +862,11 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, "")
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	If $sCommand = 'rect' Then
+		Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $aResult)
+	Else
+		Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	EndIf
 EndFunc   ;==>_WD_ElementAction
 
 
