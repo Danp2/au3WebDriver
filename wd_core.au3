@@ -244,6 +244,7 @@ Global Enum _
 		$_WD_ERROR_Exception, _ ; Exception from web driver
 		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
 		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
+		$_WD_ERROR_NotFound, _ ;
 		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
@@ -258,7 +259,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Error return value", _
 		"Webdriver Exception", _
 		"Invalid Expression", _
-		"No alert present" _
+		"No alert present", _
+		"Not found" _
 		]
 
 Global Const $WD_Element_NotFound = "no such element"

@@ -1168,6 +1168,68 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $lResult)
 EndFunc
 
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DownloadFile
+; Description ...: Download file and save to disk
+; Syntax ........: _WD_DownloadFile($sURL, $sDest)
+; Parameters ....: $sURL                - URL representing file to be downloaded
+;                  $sDest               - Full path, including filename, of destination file
+; Return values .: True      - Download succeeded
+;                  False     - Download failed
+;
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidValue
+;                  				- $_WD_ERROR_GeneralError
+;                  				- $_WD_ERROR_NotFound
+;
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_DownloadFile($sURL, $sDest)
+	Local Const $sFuncName = "_WD_DownloadFile"
+	Local $lResult = False
+
+	; Save current debug level and set to none
+	Local $WDDebugSave = $_WD_DEBUG
+	$_WD_DEBUG = $_WD_DEBUG_None
+
+	Local $sData = __WD_Get($sURL)
+	Local $iErr = @error
+
+	If $iErr = $_WD_ERROR_Success Then
+		If  $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
+			$iErr = $_WD_ERROR_NotFound
+		Else
+			Local $hFile = FileOpen($sDest, 18)
+
+			If $hFile <> -1 Then
+				FileWrite($hFile, $sData)
+				FileClose($hFile)
+
+				$lResult = True
+			Else
+				$iErr = $_WD_ERROR_GeneralError
+			EndIf
+		EndIf
+	EndIf
+
+	; Restore prior setting
+	$_WD_DEBUG = $WDDebugSave
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $lResult)
+EndFunc
+
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
