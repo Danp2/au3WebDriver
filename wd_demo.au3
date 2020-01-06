@@ -8,7 +8,7 @@
 Local Const $sElementSelector = "//input[@name='q']"
 
 Local $sDesiredCapabilities, $iIndex, $sSession
-Local $lProcess = False
+Local $nMsg, $lProcess = False
 
 Local $aBrowsers[][2] = [["Firefox", SetupGecko], _
 						["Chrome", SetupChrome], _
@@ -22,6 +22,7 @@ Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
 						["DemoAlerts", False], _
 						["DemoFrames", False], _
 						["DemoActions", False], _
+						["DemoDownload", False], _
 						["DemoWindows", False]]
 
 Local $aDebugLevel[][2] = [["None", $_WD_DEBUG_None], _
@@ -152,12 +153,16 @@ Func DemoNavigation()
 EndFunc
 
 Func DemoElements()
-	Local $sElement, $aElements, $sValue
+	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $sDecode, $hFileOpen
 
 	_WD_Navigate($sSession, "http://google.com")
 
 	; Locate a single element
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
+
+	; Get element's coordinates
+	$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
+	ConsoleWrite("Element Coords = " & $oERect.Item('x') & " / " & $oERect.Item('y') & " / " & $oERect.Item('width') & " / " & $oERect.Item('height') & @CRLF)
 
 	; Locate multiple matching elements
 	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
@@ -234,6 +239,8 @@ Func DemoAlerts()
 EndFunc
 
 Func DemoFrames()
+	Local $sElement
+
 	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_frame_cols")
 	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
@@ -246,7 +253,7 @@ Func DemoFrames()
 EndFunc
 
 Func DemoActions()
-	Local $sElement, $aElements, $sValue
+	Local $sElement, $aElements, $sValue, $sAction
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
@@ -264,8 +271,27 @@ ConsoleWrite("$sAction = " & $sAction & @CRLF)
 	sleep(5000)
 EndFunc
 
+Func DemoDownload()
+	_WD_Navigate($sSession, "http://google.com")
+
+	; Get the website's URL
+	$sUrl = _WD_Action($sSession, 'url')
+
+	; Find the element and retrieve it's source attribute
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@id='hplogo']")
+	$sSource  = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
+
+	; Combine the URL and element link
+	$sURL = _WinAPI_UrlCombine($sUrl, $sSource)
+
+	; Download the file
+	_WD_DownloadFile($sUrl, @ScriptDir & "\testimage.png")
+
+	_WD_DownloadFile("http://www.google.com/notexisting.jpg", @ScriptDir & "\testimage2.jpg")
+EndFunc
+
 Func DemoWindows()
-	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2
+	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2, $bDecode, $sDecode, $oWRect
 
 	$sHnd1 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
 	_WD_Navigate($sSession, "http://google.com")
@@ -274,6 +300,11 @@ Func DemoWindows()
 	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
 	_WD_Navigate($sSession, "http://yahoo.com")
 
+	; Get window coordinates
+	$oWRect = _WD_Window($sSession, 'rect')
+	ConsoleWrite("Window Coords = " & $oWRect.Item('x') & " / " & $oWRect.Item('y') & " / " & $oWRect.Item('width') & " / " & $oWRect.Item('height') & @CRLF)
+
+	; Take screenshot
 	_WD_Window($sSession, "switch", $sHnd1)
 	$sResponse = _WD_Window($sSession, 'screenshot')
 	$bDecode = _Base64Decode($sResponse)
@@ -283,6 +314,7 @@ Func DemoWindows()
 	FileWrite($hFileOpen, $sDecode)
 	FileClose($hFileOpen)
 
+	; Take another one
 	_WD_Window($sSession, "switch", $sHnd2)
 	$sResponse = _WD_Window($sSession, 'screenshot')
 	$bDecode = _Base64Decode($sResponse)
