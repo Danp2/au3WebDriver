@@ -26,6 +26,15 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.2.0.4
+	- Added: _WD_DownloadFile
+	- Added: Global variable to hold session details
+	- Changed: wd_demo
+		- Added: GUI front-end
+		- Added: DemoDownload
+		- Changed: DemoWindows, DemoTimeouts, DemoElements
+	- Fixed: __WD_CloseDriver now closes child console processes
+
 	v0.2.0.3
 	- Fixed: Missing include file
 	- Fixed: _WD_Execute timeout detection / handling
@@ -213,7 +222,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.2.0.3"
+Global Const $__WDVERSION = "0.2.0.4"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
