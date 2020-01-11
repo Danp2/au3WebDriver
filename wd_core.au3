@@ -1557,12 +1557,14 @@ EndFunc ;==>__WD_Error
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_CloseDriver($sDriver = Default)
-	Local $iID, $aData
+	Local $sFile, $iID, $aData
 
 	If $sDriver = Default Then $sDriver = $_WD_DRIVER
 
+	$sFile = StringRegExpReplace($sDriver, "^.*\\(.*)$", "$1")
+
 	Do
-		$iID = ProcessExists($sDriver)
+		$iID = ProcessExists($sFile)
 
 		If $iID Then
 			$aData = _WinAPI_EnumChildProcess($iID)
