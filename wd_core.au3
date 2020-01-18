@@ -1304,9 +1304,9 @@ Func __WD_Get($sURL)
 		Else
 			Switch $aURL[1]
 				Case $INTERNET_SCHEME_HTTP
-					$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6])
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6] & $aURL[7])
 				Case $INTERNET_SCHEME_HTTPS
-					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6])
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6] & $aURL[7])
 				Case Else
 					SetError($_WD_ERROR_InvalidValue)
 			EndSwitch
@@ -1386,9 +1386,9 @@ Func __WD_Post($sURL, $sData)
 		Else
 			Switch $aURL[1]
 				Case $INTERNET_SCHEME_HTTP
-					$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6], Default, StringToBinary($sData, $_WD_BFORMAT))
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6] & $aURL[7], Default, StringToBinary($sData, $_WD_BFORMAT))
 				Case $INTERNET_SCHEME_HTTPS
-					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "POST", $aURL[6], Default, StringToBinary($sData, $_WD_BFORMAT))
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "POST", $aURL[6] & $aURL[7], Default, StringToBinary($sData, $_WD_BFORMAT))
 				Case Else
 					SetError($_WD_ERROR_InvalidValue)
 			EndSwitch
@@ -1464,9 +1464,9 @@ Func __WD_Delete($sURL)
 		Else
 			Switch $aURL[1]
 				Case $INTERNET_SCHEME_HTTP
-					$sResponseText = _WinHttpSimpleRequest($hConnect, "DELETE", $aURL[6])
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "DELETE", $aURL[6] & $aURL[7])
 				Case $INTERNET_SCHEME_HTTPS
-					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "DELETE", $aURL[6])
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "DELETE", $aURL[6] & $aURL[7])
 				Case Else
 					SetError($_WD_ERROR_InvalidValue)
 			EndSwitch
