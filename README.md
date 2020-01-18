@@ -50,6 +50,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_jQuerify($sSession[, $sjQueryFile = Default[, $iTimeout = Default]])
 - _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = "")
 - _WD_ConsoleVisible($lVisible = False)
+- _WD_LoadWait($sSession[, $iDelay = 0[, $iTimeout = -1[, $sElement = '']]])
 - _WD_Screenshot($sSession, $sElement = '', $nOutputType = 1)
 - _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 - _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
