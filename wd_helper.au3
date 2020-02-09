@@ -859,7 +859,7 @@ EndFunc
 ; Name ..........: _WD_ConsoleVisible
 ; Description ...: Control visibility of the webdriver console app
 ; Syntax ........: _WD_ConsoleVisible([$lVisible = False])
-; Parameters ....: $lVisible            - [optional] Set to true to hide the console
+; Parameters ....: $lVisible            - [optional] Set to true to show the console
 ; Return values .: None
 ; Author ........: Dan Pollak
 ; Modified ......:
