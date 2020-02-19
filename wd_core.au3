@@ -801,6 +801,7 @@ EndFunc   ;==>_WD_FindElement
 ;                  				- $_WD_ERROR_NoMatch
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_InvalidDataType
+;                  				- $_WD_ERROR_InvalidExpression
 ;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -845,25 +846,30 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	EndSwitch
 
 	If $iErr = $_WD_ERROR_Success Then
-		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+		Switch $_WD_HTTPRESULT
+			Case $HTTP_STATUS_OK
+				Switch $sCommand
+					Case 'clear', 'click', 'value'
+						$sResult = $sResponse
 
-			Switch $sCommand
-				Case 'clear', 'click', 'value'
-					$sResult = $sResponse
+					Case Else
+						$oJson = Json_Decode($sResponse)
+						$sResult = Json_Get($oJson, "[value]")
+				EndSwitch
 
-				Case Else
-					$oJson = Json_Decode($sResponse)
-					$sResult = Json_Get($oJson, "[value]")
-			EndSwitch
+			Case $HTTP_STATUS_NOT_FOUND
+				$oJson = Json_Decode($sResponse)
+				$sErr = Json_Get($oJson, "[value][error]")
+				$iErr = ($sErr == $WD_Element_Stale) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
 
-		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-			$oJson = Json_Decode($sResponse)
-			$sErr = Json_Get($oJson, "[value][error]")
-			$iErr = ($sErr == $WD_Element_Stale) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
+			Case $HTTP_STATUS_BAD_REQUEST
+				$oJson = Json_Decode($sResponse)
+				$sErr = Json_Get($oJson, "[value][error]")
+				$iErr = ($sErr == $WD_Element_Invalid) ? $_WD_ERROR_InvalidArgue : $_WD_ERROR_Exception
 
-		Else
-			$iErr = $_WD_ERROR_Exception
-		EndIf
+			Case Else
+				$iErr = $_WD_ERROR_Exception
+		EndSwitch
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
