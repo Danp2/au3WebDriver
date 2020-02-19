@@ -943,12 +943,12 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SelectFiles
-; Description ...:
+; Description ...: Select files for uploading to a website
 ; Syntax ........: _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector           - Value to find
-;                  $sFilename           - Full path of file(s) to upload (use newline character to separate files)
+;                  $sSelector           - Value to find. Should point to element of type <input type="file">
+;                  $sFilename           - Full path of file(s) to upload (use newline character [@LF] to separate files)
 ;
 ; Return values .: Number of selected files
 ;
@@ -966,14 +966,21 @@ EndFunc
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectUploadFile"
 
-	Local $sResponse, $sResult, $sJsonElement, $oJson
+	Local $sResponse, $sResult, $sJsonElement, $oJson, $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $sFilename <> "" Then
+			$sSavedEscape = $_WD_ESCAPE_CHARS
+			; Convert file string into proper format
+			$sFilename = StringReplace(__WD_EscapeString($sFilename), @LF, "\n")
+			; Prevent further string escaping
+			$_WD_ESCAPE_CHARS = ""
 			$sResponse = _WD_ElementAction($sSession, $sElement, 'value', $sFilename)
 			$iErr = @error
+			; Restore setting
+			$_WD_ESCAPE_CHARS = $sSavedEscape
 		Else
 			$sResponse = _WD_ElementAction($sSession, $sElement, 'clear')
 			$iErr = @error
