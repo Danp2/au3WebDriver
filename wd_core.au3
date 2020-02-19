@@ -250,6 +250,7 @@ Global Enum _
 		$_WD_ERROR_SocketError, _ ; No socket
 		$_WD_ERROR_InvalidDataType, _ ; Invalid data type (IP, URL, Port ...)
 		$_WD_ERROR_InvalidValue, _ ; Invalid value in function-call
+		$_WD_ERROR_InvalidArgue, _ ; Invalid argument in function-call
 		$_WD_ERROR_SendRecv, _ ; Send / Recv Error
 		$_WD_ERROR_Timeout, _ ; Connection / Send / Recv timeout
 		$_WD_ERROR_NoMatch, _ ; No match for _WDAction-find/search _WDGetElement...
@@ -266,6 +267,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Socket Error", _
 		"Invalid data type", _
 		"Invalid value", _
+		"Invalid argument", _
 		"Send / Recv error", _
 		"Timeout", _
 		"No match", _
@@ -278,6 +280,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 
 Global Const $WD_Element_NotFound = "no such element"
 Global Const $WD_Element_Stale = "stale element reference"
+Global Const $WD_Element_Invalid = "invalid argument"
 
 #EndRegion Global Constants
 
