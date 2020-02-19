@@ -23,7 +23,8 @@ Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
 						["DemoFrames", False], _
 						["DemoActions", False], _
 						["DemoDownload", False], _
-						["DemoWindows", False]]
+						["DemoWindows", False], _
+						["DemoUpload", False]]
 
 Local $aDebugLevel[][2] = [["None", $_WD_DEBUG_None], _
 							["Error", $_WD_DEBUG_Error], _
@@ -323,6 +324,16 @@ Func DemoWindows()
 	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $sDecode)
 	FileClose($hFileOpen)
+EndFunc
+
+Func DemoUpload()
+	; Uses files created in DemoWindows
+    _WD_Navigate($sSession, "https://www.htmlquick.com/reference/tags/input-file.html")
+	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//section[@id='examples']//input[@name='uploadedfile']", @ScriptDir & "\Screen1.png")
+	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[@name='uploadedfiles[]']", @ScriptDir & "\Screen1.png" & @LF & @ScriptDir & "\Screen2.png")
+
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[2]")
+	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc
 
 Func SetupGecko()
