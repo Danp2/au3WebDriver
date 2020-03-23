@@ -972,7 +972,6 @@ EndFunc   ;==>_WD_ExecuteScript
 Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $oJSON, $sResult = ''
-	Local $aNoAlertResults[2] = [$HTTP_STATUS_NOT_FOUND, $HTTP_STATUS_BAD_REQUEST]
 
 	If $sOption = Default Then $sOption = ''
 
@@ -983,7 +982,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
+			If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
 				$iErr = $_WD_ERROR_NoAlert
 			EndIf
 
@@ -992,7 +991,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				If _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
+				If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
 					$sResult = ""
 					$iErr = $_WD_ERROR_NoAlert
 				Else
@@ -1005,7 +1004,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And _ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0 Then
+			If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
 				$iErr = $_WD_ERROR_NoAlert
 			EndIf
 
@@ -1014,7 +1013,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				$sResult = (_ArraySearch($aNoAlertResults, $_WD_HTTPRESULT) >= 0) ? False : True
+				$sResult = ($_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND) ? False : True
 			EndIf
 
 		Case Else
