@@ -4,7 +4,7 @@
 #include <WinAPIProc.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include <WinHttp.au3> ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
-
+#ignorefunc _WD_IsLatestRelease
 #Region Description
 ; ==============================================================================
 ; UDF ...........: WD_Core.au3
@@ -1246,6 +1246,7 @@ EndFunc   ;==>_WD_Option
 ; ===============================================================================================================================
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
+	Local $sFunction, $lLatest, $sUpdate
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set." & @CRLF), 0, 0)
@@ -1256,9 +1257,15 @@ Func _WD_Startup()
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		$sFunction = "_WD_IsLatestRelease"
+		$lLatest = Call($sFunction)
+
+		If @error = 0xDEAD And @extended = 0xBEEF Then $lLatest = True
+		$sUpdate = $lLatest ? "" : " (Update available)"
+
 		ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		ConsoleWrite("_WDStartup: AutoIt:" & @TAB & @AutoItVersion & @CRLF)
-		ConsoleWrite("_WDStartup: WD.au3:" & @TAB & $__WDVERSION & @CRLF)
+		ConsoleWrite("_WDStartup: WD.au3:" & @TAB & $__WDVERSION & $sUpdate & @CRLF)
 		ConsoleWrite("_WDStartup: WinHTTP:" & @TAB & __WinHttpVer() & @CRLF)
 		ConsoleWrite("_WDStartup: Driver:" & @TAB & $_WD_DRIVER & @CRLF)
 		ConsoleWrite("_WDStartup: Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
