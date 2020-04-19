@@ -26,11 +26,19 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v.0.2.0.7
+	- Changed: Remove check for invalid status codes from _WD_Alert
+	- Changed: Hide debug output in _WD_IsLatestRelease
+	- Changed: Expanded error handling in _WD_ElementAction
+	- Fixed: Default variable initialization in _WD_ElementOptionSelect
+	- Added: _WD_ElementSelectAction
+	- Added: Check for UDF update in _WD_Startup
+
 	v0.2.0.6
 	- Changed: _WD_ElementAction handling of return status codes
 	- Changed: File separator is now @LF in _WD_SelectFiles
 	- Changed: wd_demo
-		- Added: DemoUpload
+	- Added: DemoUpload
 	- Chore: Update description of parameters in _WD_ConsoleVisible
 	- Fixed: Proper string escaping in _WD_SelectFiles
 
@@ -234,7 +242,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.2.0.6"
+Global Const $__WDVERSION = "0.2.0.7"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
