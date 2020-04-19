@@ -855,6 +855,93 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
     EndIf
 EndFunc
 
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_ElementSelectAction
+; Description ...: Perform action on desginated Select element
+; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sSelectElement      - Element ID of Select element from _WDFindElement
+;                  $sCommand            - Action to be performed
+; Return values .: Success      - Requested data returned by web driver
+;                  Failure      - ""
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_NoMatch
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidDataType
+;                  				- $_WD_ERROR_InvalidExpression
+;                  				- $_WD_ERROR_InvalidArgue
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
+Local Const $sFuncName = "_WD_ElementSelectAction"
+Local $sNodeName, $sJsonElement, $sResponse, $oJson, $vResult
+Local $sText, $aOptions
+
+	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
+	Local $iErr = @error
+
+	If $iErr = $_WD_ERROR_Success And StringLower($sNodeName) = 'select' Then
+		$sCommand = StringLower($sCommand)
+
+		Switch $sCommand
+			Case 'value'
+				; Retrieve current value of designated Select element
+				$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sSelectElement & '"}'
+				$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].value", $sJsonElement)
+				$iErr = @error
+
+				If $iErr = $_WD_ERROR_Success Then
+					$oJson = Json_Decode($sResponse)
+					$vResult  = Json_Get($oJson, "[value]")
+				EndIf
+
+			Case 'options'
+				; Retrieve array containing value / label attributes from the Select element's options
+				$aOptions = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//option", $sSelectElement, True)
+
+				$iErr = @error
+
+				If $iErr = $_WD_ERROR_Success Then
+					$sText = ""
+					For $sElement In $aOptions
+						$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+						$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement)
+
+						$iErr = @error
+
+						If $iErr = $_WD_ERROR_Success Then
+							$oJson = Json_Decode($sResponse)
+							$sText &= (($sText <> "") ? @CRLF : "") & Json_Get($oJson, "[value]")
+						EndIf
+					Next
+
+					Local $aOut[0][2]
+					_ArrayAdd($aOut , $sText , 0 , Default , Default, 1)
+					$vResult = $aOut
+				EndIf
+		Case Else
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), "")
+
+		EndSwitch
+	Else
+		$iErr = $_WD_ERROR_InvalidArgue
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & ((IsArray($vResult)) ? "(array)" : $vResult) & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
+EndFunc
+
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ConsoleVisible
 ; Description ...: Control visibility of the webdriver console app
