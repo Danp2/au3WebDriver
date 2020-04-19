@@ -846,9 +846,9 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
-    Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
-
 	If $sStartElement = Default Then $sStartElement = ""
+
+    Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
 
     If @error = $_WD_ERROR_Success Then
         _WD_ElementAction($sSession, $sElement, 'click')
