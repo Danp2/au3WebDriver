@@ -1026,19 +1026,25 @@ EndFunc
 Func _WD_IsLatestRelease()
 	Local Const $sFuncName = "_WD_IsLatestRelease"
 	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
-
 	Local $lResult
+
+	; Save current debug level and set to none
+	Local $WDDebugSave = $_WD_DEBUG
+	$_WD_DEBUG = $_WD_DEBUG_None
+
 	Local $sResult = __WD_Get($sGitURL)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $aLatestWDVersion = StringRegExp($sResult, '<a href="/Danp2/WebDriver/releases/tag/(.*)">', 1)
 		Local $sLatestWDVersion = $aLatestWDVersion[0]
-
 		$lResult = ($__WDVERSION == $sLatestWDVersion)
 	Else
 		$lResult = Null
 	EndIf
+
+	; Restore prior setting
+	$_WD_DEBUG = $WDDebugSave
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $lResult & @CRLF)
