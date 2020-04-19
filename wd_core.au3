@@ -267,6 +267,7 @@ Global Enum _
 		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
 		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
 		$_WD_ERROR_NotFound, _ ;
+		$_WD_ERROR_ElementIssue, _ ;
 		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
@@ -283,12 +284,15 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Webdriver Exception", _
 		"Invalid Expression", _
 		"No alert present", _
-		"Not found" _
+		"Not found", _
+		"Element interaction issue" _
 		]
 
 Global Const $WD_Element_NotFound = "no such element"
 Global Const $WD_Element_Stale = "stale element reference"
 Global Const $WD_Element_Invalid = "invalid argument"
+Global Const $WD_Element_Intercept = "element click intercepted"
+Global Const $WD_Element_NotInteract = "element not interactable"
 
 #EndRegion Global Constants
 
@@ -873,7 +877,17 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			Case $HTTP_STATUS_BAD_REQUEST
 				$oJson = Json_Decode($sResponse)
 				$sErr = Json_Get($oJson, "[value][error]")
-				$iErr = ($sErr == $WD_Element_Invalid) ? $_WD_ERROR_InvalidArgue : $_WD_ERROR_Exception
+
+				Switch $sErr
+					Case $WD_Element_Invalid
+						$iErr = $_WD_ERROR_InvalidArgue
+
+					Case $WD_Element_Intercept, $WD_Element_NotInteract
+						$iErr = $_WD_ERROR_ElementIssue
+
+					Case Else
+						$iErr = $_WD_ERROR_Exception
+				EndSwitch
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception
