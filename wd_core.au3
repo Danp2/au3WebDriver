@@ -1269,7 +1269,7 @@ Func _WD_Startup()
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set." & @CRLF), 0, 0)
 	EndIf
 
-	__WD_CloseDriver()
+	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
