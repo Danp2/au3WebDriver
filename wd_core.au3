@@ -321,7 +321,7 @@ Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in ms
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 
 Global $_WD_WINHTTP_TIMEOUTS = True
-Global $_WD_HTTPTimeOuts[3] = [0, 60000, 30000, 30000]
+Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
