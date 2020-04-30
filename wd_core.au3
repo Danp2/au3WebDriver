@@ -320,6 +320,8 @@ Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 
+Global $_WD_WINHTTP_TIMEOUTS = True
+Global $_WD_HTTPTimeOuts[3] = [0, 60000, 30000, 30000]
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
@@ -1180,6 +1182,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |Port - Port used for web driver communication
 ;                               |BinaryFormat - Format used to store binary data
 ;                               |DriverClose - Close prior driver instances before launching new one (Boolean)
+;                               |HTTPTimeouts - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Value ..: Success      - 1 / current value
@@ -1236,8 +1239,14 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_DRIVER_CLOSE = $vValue
+		Case "HTTPTimeouts"
+			If $vValue == "" Then Return $_WD_WINHTTP_TIMEOUTS
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_WINHTTP_TIMEOUTS = $vValue
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|HTTPTimeouts) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
