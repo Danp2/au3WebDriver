@@ -26,6 +26,13 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v.0.2.0.8
+	- Fixed: Error handling in _WD_IsLatestRelease
+	- Changed: Add support for DriverClose option to _WD_Option
+	- Changed: _WD_Startup no longer closes existing driver consoles if DriverClose option (_WD_Option) is False
+	- Changed: Add support for HTTPTimeouts option to _WD_Option
+	- Changed: Set timeouts for WinHTTP requests if HTTPTimeouts option (_WD_Option) is True
+
 	v.0.2.0.7
 	- Changed: Remove check for invalid status codes from _WD_Alert
 	- Changed: Hide debug output in _WD_IsLatestRelease
@@ -242,7 +249,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.2.0.7"
+Global Const $__WDVERSION = "0.2.0.8"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
