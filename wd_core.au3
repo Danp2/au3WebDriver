@@ -1363,6 +1363,10 @@ Func __WD_Get($sURL)
 		; Initialize and get session handle
 		Local $hOpen = _WinHttpOpen()
 
+		If $_WD_WINHTTP_TIMEOUTS Then
+			_WinHttpSetTimeouts($_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
+		EndIf
+
 		; Get connection handle
 		Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
 
@@ -1445,6 +1449,10 @@ Func __WD_Post($sURL, $sData)
 		; Initialize and get session handle
 		Local $hOpen = _WinHttpOpen()
 
+		If $_WD_WINHTTP_TIMEOUTS Then
+			_WinHttpSetTimeouts($_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
+		EndIf
+
 		; Get connection handle
 		Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
 
@@ -1522,6 +1530,10 @@ Func __WD_Delete($sURL)
 	Else
 		; Initialize and get session handle
 		Local $hOpen = _WinHttpOpen()
+
+		If $_WD_WINHTTP_TIMEOUTS Then
+			_WinHttpSetTimeouts($_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
+		EndIf
 
 		; Get connection handle
 		Local $hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
