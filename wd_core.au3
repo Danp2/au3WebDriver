@@ -722,7 +722,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, 100) & "..." & @CRLF)
+		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iErr Then
@@ -913,7 +913,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse,100) & "..." & @CRLF)
+		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iErr Then
@@ -962,7 +962,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $lAsync = Def
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iErr Then
@@ -1413,7 +1413,7 @@ Func __WD_Get($sURL)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText,100) & "..." & @CRLF)
+		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iResult Then
@@ -1497,7 +1497,7 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
+		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iResult Then
@@ -1579,7 +1579,7 @@ Func __WD_Delete($sURL)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & $sResponseText & @CRLF)
+		ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iResult Then
