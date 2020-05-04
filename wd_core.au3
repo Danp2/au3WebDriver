@@ -1403,8 +1403,7 @@ Func __WD_Get($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-			; Remove $HTTP_STATUS_REQUEST_TIMEOUT check once Chromedriver is updated
-			ElseIf $_WD_HTTPRESULT =  $HTTP_STATUS_SERVER_ERROR Or $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
@@ -1489,8 +1488,7 @@ Func __WD_Post($sURL, $sData)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-			; Remove $HTTP_STATUS_REQUEST_TIMEOUT check once Chromedriver is updated
-			ElseIf $_WD_HTTPRESULT =  $HTTP_STATUS_SERVER_ERROR Or $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
@@ -1571,8 +1569,7 @@ Func __WD_Delete($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-			; Remove $HTTP_STATUS_REQUEST_TIMEOUT check once Chromedriver is updated
-			ElseIf $_WD_HTTPRESULT =  $HTTP_STATUS_SERVER_ERROR Or $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
