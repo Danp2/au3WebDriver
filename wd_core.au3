@@ -949,7 +949,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $lAsync = Def
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
-	If $sArguments = Default Then $sArguments = "[]"
+	If $sArguments = Default Then $sArguments = ""
 	If $lAsync = Default Then $lAsync = False
 
 	$sScript = __WD_EscapeString($sScript)
