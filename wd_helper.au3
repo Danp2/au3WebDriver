@@ -160,7 +160,6 @@ Func _WD_Attach($sSession, $sString, $sMode = Default)
 	$aHandles = _WD_Window($sSession, 'handles')
 
 	If @error = $_WD_ERROR_Success Then
-		$sMode = StringLower($sMode)
 		$sCurrentTab = _WD_Window($sSession, 'window')
 
 		For $sHandle In $aHandles
@@ -887,8 +886,7 @@ Local $sText, $aOptions
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
 
-	If $iErr = $_WD_ERROR_Success And StringLower($sNodeName) = 'select' Then
-		$sCommand = StringLower($sCommand)
+	If $iErr = $_WD_ERROR_Success And $sNodeName = 'select' Then
 
 		Switch $sCommand
 			Case 'value'
@@ -1183,8 +1181,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 	; Save current debug level and set to none
 	Local $WDDebugSave = $_WD_DEBUG
 	$_WD_DEBUG = $_WD_DEBUG_None
-
-	$sBrowser = StringLower($sBrowser)
 
 	Switch $sBrowser
 		Case 'chrome'

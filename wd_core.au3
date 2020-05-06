@@ -1134,8 +1134,6 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 
 	If $sOption = Default Then $sOption = ''
 
-	$sCommand = StringLower($sCommand)
-
 	Switch $sCommand
 		Case 'getall'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
@@ -1209,8 +1207,6 @@ Func _WD_Option($sOption, $vValue = Default)
 	Local Const $sFuncName = "_WD_Option"
 
 	If $vValue = Default Then $vValue = ''
-
-	$sOption = StringLower($sOption)
 
 	Switch $sOption
 		Case "driver"
