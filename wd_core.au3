@@ -420,8 +420,8 @@ EndFunc   ;==>_WD_DeleteSession
 ; Description ...: Get current web driver state
 ; Syntax ........: _WD_Status()
 ; Parameters ....:
-; Return values .: Success      - Raw JSON response from web driver
-;                  Failure      - 0
+; Return values .: Success      - Dictionary object with "message" and "ready" items
+;                  Failure      - ''
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  @EXTENDED    - WinHTTP status code
@@ -435,7 +435,12 @@ EndFunc   ;==>_WD_DeleteSession
 Func _WD_Status()
 	Local Const $sFuncName = "_WD_Status"
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
-	Local $iErr = @error
+	Local $iErr = @error, $sResult = ''
+
+	If $iErr = $_WD_ERROR_Success Then
+		Local $oJSON = Json_Decode($sResponse)
+		$sResult = Json_Get($oJSON, "[value]")
+	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
@@ -445,7 +450,7 @@ Func _WD_Status()
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Status
 
 
