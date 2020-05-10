@@ -1303,8 +1303,21 @@ Func _WD_Startup()
 		$sFunction = "_WD_IsLatestRelease"
 		$lLatest = Call($sFunction)
 
-		If @error = 0xDEAD And @extended = 0xBEEF Then $lLatest = True
-		$sUpdate = $lLatest ? "" : " (Update available)"
+		Select
+			Case @error = 0xDEAD And @extended = 0xBEEF
+				$sUpdate = "" ; update check not performed
+
+			Case @error
+				$sUpdate = " (Update status unknown [" & @error & "])"
+
+			Case $lLatest
+				$sUpdate = " (Up to date)"
+
+			Case Not $lLatest
+				$sUpdate = " (Update available)"
+
+		EndSelect
+
 
 		ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		ConsoleWrite("_WDStartup: AutoIt:" & @TAB & @AutoItVersion & @CRLF)
