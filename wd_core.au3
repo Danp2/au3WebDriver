@@ -1714,3 +1714,53 @@ Func __WD_TranslateQuotes($sData)
 	Local $sResult = StringReplace($sData, '"' , "'")
 	Return SetError($_WD_ERROR_Success, 0, $sResult)
 EndFunc
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_DetectError
+; Description ...: Evaluate results from webdriver to identify errors
+; Syntax ........: __WD_DetectError(Byref $iErr, $vResult)
+; Parameters ....: $iErr                - [in/out] Error code
+;                  $vResult             - Result from webdriver
+; Return values .: None
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_DetectError(ByRef $iErr, $vResult)
+	; Don't perform any action if error condition is
+	; already set or the webdriver result equals null
+	If $iErr or $vResult == Null Then Return
+
+	; Extract "value" element from JSON string
+	If Not IsObj($vResult) Then
+		Local $oJSON = Json_Decode($vResult)
+		$vResult = Json_Get($oJSON, "[value]")
+
+		If @error Or $vResult == Null Then Return
+	EndIf
+
+	Local $sErr = $vResult.item('error')
+
+	Switch $vResult.item('error')
+		Case ""
+
+		Case $WD_InvalidSession
+			$iErr = $_WD_ERROR_SessionInvalid
+
+		Case $WD_Element_NotFound, $WD_Element_Stale
+			$iErr =  $_WD_ERROR_NoMatch
+
+		Case $WD_Element_Invalid
+			$iErr = $_WD_ERROR_InvalidArgue
+
+		Case $WD_Element_Intercept, $WD_Element_NotInteract
+			$iErr = $_WD_ERROR_ElementIssue
+
+		Case Else
+			$iErr = $_WD_ERROR_Exception
+
+	EndSwitch
+EndFunc
