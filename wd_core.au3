@@ -727,12 +727,6 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 					$oJson = Json_Decode($sResponse)
 					$sResult = Json_Get($oJson, "[value]")
 			EndSwitch
-
-		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-			$oJson = Json_Decode($sResponse)
-			$sErr = Json_Get($oJson, "[value][error]")
-			$iErr = ($sErr == $WD_Element_Stale) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
-
 		Else
 			$iErr = $_WD_ERROR_Exception
 		EndIf
@@ -813,11 +807,6 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = Default
 
 				$sResult = Json_Get($oJson, "[value][" & $_WD_ELEMENT_ID & "]")
 			EndIf
-
-		ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-			$oJson = Json_Decode($sResponse)
-			$sErr = Json_Get($oJson, "[value][error]")
-			$iErr = ($sErr == $WD_Element_NotFound) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
 
 		Else
 			$iErr = $_WD_ERROR_Exception
@@ -908,26 +897,6 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 						$sResult = Json_Get($oJson, "[value]")
 				EndSwitch
 
-			Case $HTTP_STATUS_NOT_FOUND
-				$oJson = Json_Decode($sResponse)
-				$sErr = Json_Get($oJson, "[value][error]")
-				$iErr = ($sErr == $WD_Element_Stale) ? $_WD_ERROR_NoMatch : $_WD_ERROR_Exception
-
-			Case $HTTP_STATUS_BAD_REQUEST
-				$oJson = Json_Decode($sResponse)
-				$sErr = Json_Get($oJson, "[value][error]")
-
-				Switch $sErr
-					Case $WD_Element_Invalid
-						$iErr = $_WD_ERROR_InvalidArgue
-
-					Case $WD_Element_Intercept, $WD_Element_NotInteract
-						$iErr = $_WD_ERROR_ElementIssue
-
-					Case Else
-						$iErr = $_WD_ERROR_Exception
-				EndSwitch
-
 			Case Else
 				$iErr = $_WD_ERROR_Exception
 		EndSwitch
@@ -992,9 +961,6 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $lAsync = Def
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
-
-
-;~ 	Return SetError(($_WD_HTTPRESULT <> $HTTP_STATUS_OK) ? $_WD_ERROR_GeneralError : $_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
 
@@ -1736,8 +1702,6 @@ Func __WD_TranslateQuotes($sData)
 	Local $sResult = StringReplace($sData, '"' , "'")
 	Return SetError($_WD_ERROR_Success, 0, $sResult)
 EndFunc
-
-
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_DetectError
