@@ -1730,25 +1730,27 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		If @error Or $vResult == Null Then Return
 	EndIf
 
-	Local $sErr = $vResult.item('error')
+	If (Not IsObj($vResult)) Or ObjName($vResult, $OBJ_STRING) <> 'Scripting.Dictionary' Then Return
 
-	Switch $vResult.item('error')
-		Case ""
+	If $vResult.Exists('error') Then
+		Switch $vResult.item('error')
+			Case ""
 
-		Case $WD_InvalidSession
-			$iErr = $_WD_ERROR_SessionInvalid
+			Case $WD_InvalidSession
+				$iErr = $_WD_ERROR_SessionInvalid
 
-		Case $WD_Element_NotFound, $WD_Element_Stale
-			$iErr =  $_WD_ERROR_NoMatch
+			Case $WD_Element_NotFound, $WD_Element_Stale
+				$iErr =  $_WD_ERROR_NoMatch
 
-		Case $WD_Element_Invalid
-			$iErr = $_WD_ERROR_InvalidArgue
+			Case $WD_Element_Invalid
+				$iErr = $_WD_ERROR_InvalidArgue
 
-		Case $WD_Element_Intercept, $WD_Element_NotInteract
-			$iErr = $_WD_ERROR_ElementIssue
+			Case $WD_Element_Intercept, $WD_Element_NotInteract
+				$iErr = $_WD_ERROR_ElementIssue
 
-		Case Else
-			$iErr = $_WD_ERROR_Exception
+			Case Else
+				$iErr = $_WD_ERROR_Exception
 
-	EndSwitch
+		EndSwitch
+	EndIf
 EndFunc
