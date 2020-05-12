@@ -4,6 +4,7 @@
 #include <WinAPIProc.au3>
 #include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include <WinHttp.au3> ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
+
 #ignorefunc _WD_IsLatestRelease
 #Region Description
 ; ==============================================================================
@@ -26,6 +27,15 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v.0.2.0.9
+	- Changed: _WD_Status now returns Dictionary object instead of raw JSON string
+	- Changed: Add support for DebugTrim option to _WD_Option
+	- Changed: Remove check for $HTTP_STATUS_SERVER_ERROR (chromedriver relic)
+	- Changed: Improved output from _WD_IsLatestRelease
+	- Fixed: Default arguments for _WD_ExecuteScript should be empty string
+	- Fixed: Remvoed unneeded string conversion
+	- Added: Generic error detection routine
+
 	v.0.2.0.8
 	- Fixed: Error handling in _WD_IsLatestRelease
 	- Changed: Add support for DriverClose option to _WD_Option
@@ -249,7 +259,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.2.0.8"
+Global Const $__WDVERSION = "0.2.0.9"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
