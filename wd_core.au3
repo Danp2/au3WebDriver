@@ -680,6 +680,12 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	Switch $sCommand
 		Case 'window'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+			If $sOption = '' Then
+				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+			Else
+				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
+			EndIf
+
 			$iErr = @error
 
 		Case 'handles'
