@@ -645,6 +645,7 @@ EndFunc   ;==>_WD_Action
 ;                               | Maximize - Maximize window
 ;                               | Minimize - Minimize window
 ;                               | Fullscreen - Set window to fullscreen
+;                               | New - Create a new window
 ;                               | Rect - Get or set the window's size & position
 ;                               | Screenshot - Take screenshot of window
 ;                               | Close - Close current tab
@@ -695,6 +696,10 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
+		Case 'new'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
+			$iErr = @error
+
 		Case 'rect'
 			If $sOption = '' Then
 				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
@@ -737,6 +742,10 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			Switch $sCommand
 				Case 'maximize', 'minimize', 'fullscreen', 'close', 'switch', 'frame', 'parent'
 					$sResult = $sResponse
+
+				Case 'new'
+					$oJson = Json_Decode($sResponse)
+					$sResult = Json_Get($oJson, "[value][handle]")
 
 				Case Else
 					$oJson = Json_Decode($sResponse)
