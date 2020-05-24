@@ -640,7 +640,7 @@ EndFunc   ;==>_WD_Action
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;
 ;                  $sCommand  - one of the following actions:
-;                               | Window - Get current tab's window handle
+;                               | Window - Get or set the current window
 ;                               | Handles - Get all window handles
 ;                               | Maximize - Maximize window
 ;                               | Minimize - Minimize window
@@ -679,7 +679,6 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 
 	Switch $sCommand
 		Case 'window'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
 			If $sOption = '' Then
 				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
 			Else
