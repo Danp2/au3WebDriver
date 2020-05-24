@@ -652,6 +652,8 @@ EndFunc   ;==>_WD_Action
 ;                               | Switch - Switch to designated tab
 ;                               | Frame - Switch to frame
 ;                               | Parent - Switch to parent frame
+;                               | Print - Generate PDF representation of the paginated document
+
 ;
 ;                  $sOption   - [optional] a string value. Default is ''.
 ;
@@ -721,8 +723,8 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window", $sOption)
 			$iErr = @error
 
-		Case 'frame'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame", $sOption)
+		Case 'frame', 'print'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
 			$iErr = @error
 
 		Case 'parent'
@@ -730,7 +732,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen|Rect|Screenshot|Close|Switch|Frame|Parent) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen|New|Rect|Screenshot|Close|Switch|Frame|Parent|Print) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -740,7 +742,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
 
 			Switch $sCommand
-				Case 'maximize', 'minimize', 'fullscreen', 'close', 'switch', 'frame', 'parent'
+				Case 'maximize', 'minimize', 'fullscreen', 'close', 'switch', 'frame', 'parent', 'print'
 					$sResult = $sResponse
 
 				Case 'new'
