@@ -27,13 +27,13 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
-	v.0.2.0.9
+	v0.2.0.9
 	- Changed: _WD_Status now returns Dictionary object instead of raw JSON string
 	- Changed: Add support for DebugTrim option to _WD_Option
 	- Changed: Remove check for $HTTP_STATUS_SERVER_ERROR (chromedriver relic)
 	- Changed: Improved output from _WD_IsLatestRelease
 	- Fixed: Default arguments for _WD_ExecuteScript should be empty string
-	- Fixed: Remvoed unneeded string conversion
+	- Fixed: Removed unneeded string conversion
 	- Added: Generic error detection routine
 
 	v.0.2.0.8
