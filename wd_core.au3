@@ -27,6 +27,7 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+
 	v0.2.0.9
 	- Changed: _WD_Status now returns Dictionary object instead of raw JSON string
 	- Changed: Add support for DebugTrim option to _WD_Option
@@ -227,7 +228,7 @@
 	*
 	* MIT License
 	*
-	* Copyright (c) 2018 Dan Pollak
+	* Copyright (c) 2020 Dan Pollak
 	*
 	* Permission is hereby granted, free of charge, to any person obtaining a copy
 	* of this software and associated documentation files (the "Software"), to deal
@@ -259,7 +260,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.2.0.9"
+Global Const $__WDVERSION = "0.3.0.1"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
