@@ -294,6 +294,7 @@ Global Enum _
 		$_WD_ERROR_NotFound, _ ;
 		$_WD_ERROR_ElementIssue, _ ;
 		$_WD_ERROR_SessionInvalid, _ ;
+		$_WD_ERROR_UnknownCommand, _ ;
 		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
@@ -312,10 +313,12 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"No alert present", _
 		"Not found", _
 		"Element interaction issue", _
-		"Invalid session ID" _
+		"Invalid session ID", _
+		"Unknown Command" _
 		]
 
 Global Const $WD_InvalidSession = "invalid session id"
+Global Const $WD_UnknownCommand = "unknown command"
 
 Global Const $WD_Element_NotFound = "no such element"
 Global Const $WD_Element_Stale = "stale element reference"
@@ -1759,11 +1762,15 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 	If (Not IsObj($vResult)) Or ObjName($vResult, $OBJ_STRING) <> 'Scripting.Dictionary' Then Return
 
 	If $vResult.Exists('error') Then
+
 		Switch $vResult.item('error')
 			Case ""
 
 			Case $WD_InvalidSession
 				$iErr = $_WD_ERROR_SessionInvalid
+
+			Case $WD_UnknownCommand
+				$iErr = $_WD_ERROR_UnknownCommand
 
 			Case $WD_Element_NotFound, $WD_Element_Stale
 				$iErr =  $_WD_ERROR_NoMatch
