@@ -27,6 +27,11 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.3.0.1
+	- Changed (_WD_Window): Add support for New option
+	- Changed (_WD_Window): Add support for Print option
+	- Changed (_WD_Window): Window option can now be used to switch tabs (ala existing 'switch' option)
+	- Added: Unknown Command error detection
 
 	v0.2.0.9
 	- Changed: _WD_Status now returns Dictionary object instead of raw JSON string
