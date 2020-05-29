@@ -683,7 +683,7 @@ EndFunc   ;==>_WD_Action
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Window"
-	Local $sResponse, $oJSON, $sResult = "", $iErr, $sErr
+	Local $sResponse, $oJSON, $sResult = "", $iErr
 
 	If $sOption = Default Then $sOption = ''
 
@@ -803,7 +803,7 @@ EndFunc   ;==>_WD_Window
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = Default, $lMultiple = Default)
 	Local Const $sFuncName = "_WD_FindElement"
-	Local $sCmd, $sElement, $sResponse, $sResult, $iErr, $sErr
+	Local $sCmd, $sElement, $sResponse, $sResult, $iErr
 	Local $oJson, $oValues, $sKey, $iRow, $aElements[0]
 
 	If $sStartElement = Default Then $sStartElement = ""
@@ -886,7 +886,7 @@ EndFunc   ;==>_WD_FindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_ElementAction"
-	Local $sResponse, $sResult = '', $iErr, $oJson, $sErr
+	Local $sResponse, $sResult = '', $iErr, $oJson
 
 	If $sOption = Default Then $sOption = ''
 
