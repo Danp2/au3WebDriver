@@ -357,7 +357,7 @@ Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CreateSession
 ; Description ...: Request new session from web driver
-; Syntax ........: _WD_CreateSession([$sDesiredCapabilities = '{}'])
+; Syntax ........: _WD_CreateSession([$sDesiredCapabilities = Default])
 ; Parameters ....: $sDesiredCapabilities- [optional] a string value. Default is '{}'.
 ; Return values .: Success      - Session ID to be used in future requests to web driver session
 ;                  Failure      - Empty string
@@ -482,7 +482,7 @@ EndFunc   ;==>_WD_Status
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Timeouts
 ; Description ...:  Set or retrieve the session timeout parameters
-; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = ''])
+; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sTimeouts           - [optional] a string value. Default is ''.
 ; Return values .: Success      - Raw return value from web driver in JSON format
@@ -568,7 +568,7 @@ EndFunc   ;==>_WD_Navigate
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Action
 ; Description ...: Perform various interactions with the web driver session
-; Syntax ........: _WD_Action($sSession, $sCommand[, $sOption = ''])
+; Syntax ........: _WD_Action($sSession, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | refresh
@@ -645,7 +645,7 @@ EndFunc   ;==>_WD_Action
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Window
 ; Description ...: Perform interactions related to the current window
-; Syntax ........: _WD_Window($sSession, $sCommand[, $sOption = ''])
+; Syntax ........: _WD_Window($sSession, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;
 ;                  $sCommand  - one of the following actions:
@@ -782,7 +782,7 @@ EndFunc   ;==>_WD_Window
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FindElement
 ; Description ...: Find element(s) by designated strategy
-; Syntax ........: _WD_FindElement($sSession, $sStrategy, $sSelector[, $sStartElement = ""[, $lMultiple = False]])
+; Syntax ........: _WD_FindElement($sSession, $sStrategy, $sSelector[, $sStartElement = Default[, $lMultiple = Default]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
@@ -863,7 +863,7 @@ EndFunc   ;==>_WD_FindElement
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementAction
 ; Description ...: Perform action on desginated element
-; Syntax ........: _WD_ElementAction($sSession, $sElement, $sCommand[, $sOption = ''])
+; Syntax ........: _WD_ElementAction($sSession, $sElement, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sElement            - Element ID from _WDFindElement
 ;                  $sCommand            - Action to be performed
@@ -952,7 +952,7 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = "[]"[, $lAsync = False]])
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $lAsync = Default]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sScript             - Javascript command(s) to run
 ;                  $sArguments          - [optional] String of arguments in JSON format
@@ -1002,7 +1002,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Alert
 ; Description ...: Respond to user prompt
-; Syntax ........: _WD_Alert($sSession, $sCommand[, $sOption = ''])
+; Syntax ........: _WD_Alert($sSession, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | dismiss
@@ -1133,7 +1133,7 @@ Func _WD_GetSource($sSession)
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Cookies
 ; Description ...: Gets, sets, or deletes the session's cookies
-; Syntax ........: _WD_Cookies($sSession, $sCommand[, $sOption = ''])
+; Syntax ........: _WD_Cookies($sSession, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | Get
@@ -1206,7 +1206,7 @@ EndFunc   ;==>_WD_Cookies
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Option
 ; Description ...: Sets and get options for the web driver UDF
-; Syntax ........: _WD_Option($sOption[, $vValue = ""])
+; Syntax ........: _WD_Option($sOption[, $vValue = Default])
 ; Parameters ....: $sOption             - a string value.
 ;                  $vValue              - [optional] a variant value. Default is "".
 ; Parameter(s): .: $sOption     - Driver - Full path name to web driver executable
@@ -1630,7 +1630,7 @@ EndFunc   ;==>__WD_Delete
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
 ; Description ...: Writes Error to the console and show message-boxes if the script is compiled
-; Syntax ........: __WD_Error($sWhere, $i_WD_ERROR[, $sMessage = ""])
+; Syntax ........: __WD_Error($sWhere, $i_WD_ERROR[, $sMessage = Default])
 ; Parameters ....: $sWhere              - Name of calling routine
 ;                  $i_WD_ERROR          - Error constant
 ;                  $sMessage            - [optional] (Default = "") : Additional Information

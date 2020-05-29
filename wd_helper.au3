@@ -41,7 +41,7 @@
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
 ; Description ...: Helper function to create new tab using Javascript
-; Syntax ........: _WD_NewTab($sSession[, $lSwitch = True[, $iTimeout = -1]])
+; Syntax ........: _WD_NewTab($sSession[, $lSwitch = Default[, $iTimeout = Default[, $sURL = Default[, $sFeatures = Default]]]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
@@ -131,7 +131,7 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Attach
 ; Description ...: Helper function to attach to existing browser tab
-; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = 'title'])
+; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sString             - String to search for
 ;                  $sMode               - [optional] One of the following search modes:
@@ -204,7 +204,7 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
 ; Description ...: Simulate a mouse click on a link with text matching the provided string
-; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $lPartial = True])
+; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $lPartial = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sText               - Text to find in link
 ;                  $lPartial            - [optional] Search by partial text? Default is True.
@@ -248,7 +248,7 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
 ; Description ...: Wait for a element to be found  in the current tab before returning
-; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = 0[, $iTimeout = -1[, $lVisible = False]]])
+; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $lVisible = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
@@ -566,7 +566,7 @@ EndFunc ;==>_WD_FrameLeave
 ; #FUNCTION# ===========================================================================================================
 ; Name ..........: _WD_HighlightElement
 ; Description ...:
-; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = 1])
+; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sElement            - Element ID from _WDFindElement
 ;                  $iMethod             - [optional] an integer value. Default is 1.
@@ -600,7 +600,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_HighlightElements
 ; Description ...:
-; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = 1])
+; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $aElements           - an array of Elements ID from _WDFindElement
 ;                  $iMethod             - [optional] an integer value. Default is 1.
@@ -631,7 +631,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LoadWait
 ; Description ...: Wait for a browser page load to complete before returning
-; Syntax ........: _WD_LoadWait($sSession[, $iDelay = 0[, $iTimeout = -1[, $sElement = '']]])
+; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
@@ -694,7 +694,7 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
 ; Description ...:
-; Syntax ........: _WD_Screenshot($sSession[, $sElement = ''[, $nOutputType = 1]])
+; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $nOutputType = Default]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sElement            - [optional] Element ID from _WDFindElement
 ;                  $nOutputType         - [optional] One of the following output types:
@@ -828,7 +828,7 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementOptionSelect
 ; Description ...: Find and click on an option from a Select element
-; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = ""])
+; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
@@ -943,7 +943,7 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ConsoleVisible
 ; Description ...: Control visibility of the webdriver console app
-; Syntax ........: _WD_ConsoleVisible([$lVisible = False])
+; Syntax ........: _WD_ConsoleVisible([$lVisible = Default])
 ; Parameters ....: $lVisible            - [optional] Set to true to show the console
 ; Return values .: None
 ; Author ........: Dan Pollak
@@ -983,7 +983,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetShadowRoot
 ; Description ...:
-; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
+; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
