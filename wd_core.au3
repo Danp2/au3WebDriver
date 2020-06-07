@@ -346,6 +346,7 @@ Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
 Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
 Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching new one
+Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one already exists
 Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug output
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
@@ -1215,6 +1216,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |Port - Port used for web driver communication
 ;                               |BinaryFormat - Format used to store binary data
 ;                               |DriverClose - Close prior driver instances before launching new one (Boolean)
+;                               |DriverDetect - Use existing driver instance if it exists (Boolean)
 ;                               |HTTPTimeouts - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 ;                               |DebugTrim - Length of response text written to the debug cocnsole
 ;
@@ -1273,6 +1275,12 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_DRIVER_CLOSE = $vValue
+		Case "driverdetect"
+			If $vValue == "" Then Return $_WD_DRIVER_DETECT
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_DRIVER_DETECT = $vValue
 		Case "httptimeouts"
 			If $vValue == "" Then Return $_WD_WINHTTP_TIMEOUTS
 			If Not IsBool($vValue) Then
@@ -1286,7 +1294,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			EndIf
 			$_WD_RESPONSE_TRIM = $vValue
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|HTTPTimeouts|DebugTrim) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
