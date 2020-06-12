@@ -1455,7 +1455,7 @@ Func __WD_Get($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
@@ -1540,7 +1540,7 @@ Func __WD_Post($sURL, $sData)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
@@ -1621,7 +1621,7 @@ Func __WD_Delete($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_REQUEST_TIMEOUT Then
+			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
 		EndIf
