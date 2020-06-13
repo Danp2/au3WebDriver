@@ -27,6 +27,11 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.3.0.2
+	- Fixed: WinHTTP timeout coding
+	- Changed (_WD_Option): Add support for DriverDetect option
+	- Changed (_WD_Startup): Respect DriverDetect setting
+
 	v0.3.0.1
 	- Changed (_WD_Window): Add support for New option
 	- Changed (_WD_Window): Add support for Print option
@@ -265,7 +270,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.3.0.1"
+Global Const $__WDVERSION = "0.3.0.2"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
