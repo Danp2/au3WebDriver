@@ -332,6 +332,7 @@ Global Const $WD_Element_Invalid = "invalid argument"
 Global Const $WD_Element_Intercept = "element click intercepted"
 Global Const $WD_Element_NotInteract = "element not interactable"
 
+Global Const $WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 #EndRegion Global Constants
 
 
@@ -1432,7 +1433,7 @@ Func __WD_Get($sURL)
 		Local $hOpen = _WinHttpOpen()
 
 		If $_WD_WINHTTP_TIMEOUTS Then
-			_WinHttpSetTimeouts($_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
+			_WinHttpSetTimeouts($hOpen, $_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
 		EndIf
 
 		; Get connection handle
@@ -1455,6 +1456,7 @@ Func __WD_Get($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
+				$sResponseText = $WD_WinHTTPTimeoutMsg
 			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
@@ -1517,7 +1519,7 @@ Func __WD_Post($sURL, $sData)
 		Local $hOpen = _WinHttpOpen()
 
 		If $_WD_WINHTTP_TIMEOUTS Then
-			_WinHttpSetTimeouts($_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
+			_WinHttpSetTimeouts($hOpen, $_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
 		EndIf
 
 		; Get connection handle
@@ -1540,6 +1542,7 @@ Func __WD_Post($sURL, $sData)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
+				$sResponseText = $WD_WinHTTPTimeoutMsg
 			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
@@ -1598,7 +1601,7 @@ Func __WD_Delete($sURL)
 		Local $hOpen = _WinHttpOpen()
 
 		If $_WD_WINHTTP_TIMEOUTS Then
-			_WinHttpSetTimeouts($_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
+			_WinHttpSetTimeouts($hOpen, $_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
 		EndIf
 
 		; Get connection handle
@@ -1621,6 +1624,7 @@ Func __WD_Delete($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
+				$sResponseText = $WD_WinHTTPTimeoutMsg
 			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
 				$iResult = $_WD_ERROR_Timeout
 			EndIf
