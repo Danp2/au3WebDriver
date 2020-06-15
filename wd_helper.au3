@@ -1329,6 +1329,86 @@ EndFunc
 
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_SetTimeouts
+; Description ...: User friendly function to set webdriver session timeouts
+; Syntax ........: _WD_SetTimeouts($sSession[, $iPageLoad = Default[, $iScript = Default[, $iImplicitWait = Default]]])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $iPageLoad           - [optional] Page load timeout in milliseconds
+;                  $iScript             - [optional] Script timeout in milliseconds
+;                  $iImplicitWait       - [optional] Implicit wait timeout in milliseconds
+; Return values .: Success      - Raw return value from web driver in JSON format
+;                  Failure      - 0
+;
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_InvalidArgue
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidDataType
+;
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
+;				 : When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
+;
+; Related .......: _WD_Timeouts
+; Link ..........: https://www.w3.org/TR/webdriver/#set-timeouts
+; Example .......: _WD_SetTimeouts($sSession, 50000)
+; ===============================================================================================================================
+Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
+	Local Const $sFuncName = "_WD_SetTimeouts"
+	Local $sTimeouts = '', $sResult = '', $lIsNull
+
+	; Build string to pass to _WD_Timeouts
+	If $iPageLoad <> Default Then
+		If Not IsInt($iPageLoad) Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iPageLoad), 0, 0)
+		EndIf
+
+		$sTimeouts &= '"pageLoad":' & $iPageLoad
+	EndIf
+
+	If $iScript <> Default Then
+		$lIsNull = (IsKeyword($iScript) = $KEYWORD_NULL)
+		If Not IsInt($iScript) And Not $lIsNull Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iScript), 0, 0)
+		EndIf
+
+		If StringLen($sTimeouts) Then $sTimeouts &= ", "
+		$sTimeouts &= '"script":'
+		$sTimeouts &= ($lIsNull) ? "null" : $iScript
+	EndIf
+
+	If $iImplicitWait <> Default Then
+		If Not IsInt($iImplicitWait) Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iImplicitWait), 0, 0)
+		EndIf
+
+		If StringLen($sTimeouts) Then $sTimeouts &= ", "
+		$sTimeouts &= '"implicit":' & $iImplicitWait
+	EndIf
+
+	If StringLen($sTimeouts) Then
+		$sTimeouts = "{" & $sTimeouts & "}"
+
+		; Set webdriver timeouts
+		$sResult = _WD_Timeouts($sSession, $sTimeouts)
+		Local $iErr = @error
+
+		If $iErr = $_WD_ERROR_Success And $iPageLoad <> Default Then
+			; Adjust WinHTTP receive timeouts to prevent send/recv errors
+			$_WD_HTTPTimeOuts[3] = $iPageLoad + 1000
+		EndIf
+	Else
+		$iErr = $_WD_ERROR_InvalidArgue
+		$sResult = 0
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+EndFunc
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
 ; Syntax ........: _Base64Decode($input_string)
