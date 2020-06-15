@@ -1408,6 +1408,35 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetElementById
+; Description ...: Locate element by id
+; Syntax ........: _WD_GetElementById($sSession, $sID)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sID                 - ID of desired element
+; Return values .: Success      - Element ID returned by web driver
+;                  Failure      - ""
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_NoMatch
+;                  @EXTENDED    - WinHTTP status code
+;
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_FindElement
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetElementById($sSession, $sID)
+	Local Const $sFuncName = "_WD_GetElementById"
+
+	Local $sXpath = '//*[@id="' & $sID & '"]'
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
+	Local $iErr = @error
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
+EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
