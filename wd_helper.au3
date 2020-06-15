@@ -1437,6 +1437,36 @@ Func _WD_GetElementById($sSession, $sID)
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
 EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetElementByName
+; Description ...: Locate element by name
+; Syntax ........: _WD_GetElementByName($sSession, $sName)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sName               - Name of desired element
+; Return values .: Success      - Element ID returned by web driver
+;                  Failure      - ""
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_NoMatch
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+;
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_FindElement
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetElementByName($sSession, $sName)
+	Local Const $sFuncName = "_WD_GetElementByName"
+
+	Local $sXpath = '//*[@name="' & $sName & '"]'
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
+	Local $iErr = @error
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
+EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
