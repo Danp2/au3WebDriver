@@ -1467,6 +1467,40 @@ Func _WD_GetElementByName($sSession, $sName)
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
 EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_SetElementValue
+; Description ...:
+; Syntax ........: _WD_SetElementValue($sSession, $sElement, $sValue)
+; Parameters ....: $sSession            - a string value.
+;                  $sElement            - a string value.
+;                  $sValue              - a string value.
+; Return values .: Success      - Requested data returned by web driver
+;                  Failure      - ""
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_NoMatch
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidDataType
+;                  				- $_WD_ERROR_InvalidExpression
+;                  @EXTENDED    - WinHTTP status code
+;
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_SetElementValue($sSession, $sElement, $sValue)
+	Local Const $sFuncName = "_WD_SetElementValue"
+
+	Local $sResult = _WD_ElementAction($sSession, $sElement, 'value', $sValue)
+	Local $iErr = @error
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+EndFunc
+
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...:
