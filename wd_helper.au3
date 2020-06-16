@@ -1500,6 +1500,91 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue)
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_ElementActionEx
+; Description ...: Perform advanced action on desginated element
+; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[,
+;                  $iButton = Default[, $iHoldDelay = Default]]]])
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sElement            - Element ID from _WDFindElement
+;                  $sCommand            - one of the following actions:
+;                               | hover
+;                               | doubleclick
+;                               | rightclick
+;                               |
+;                  $iXOffset            - [optional] X Offset. Default is 0
+;                  $iYOffset            - [optional] Y Offset. Default is 0
+;                  $iButton             - [optional] Mouse button. Default is 0
+;                  $iHoldDelay          - [optional] Hold time in ms. Default is 1000
+;
+; Return values .: Success      - Return value from web driver (could be an empty string)
+;                  Failure      - ""
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidDataType
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_ElementAction, _WD_Action
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default)
+	Local Const $sFuncName = "_WD_ElementActionEx"
+	Local $sAction, $iErr, $sResult
+
+	If $iXOffset = Default Then $iXOffset = 0
+	If $iYOffset = Default Then $iYOffset = 0
+	If $iButton = Default Then $iButton = 0
+	If $iHoldDelay = Default Then $iHoldDelay = 1000
+
+	If Not IsInt($iXOffset) Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iXOffset: " & $iXOffset), 0, "")
+	EndIf
+
+	If Not IsInt($iButton) Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iButton: " & $iButton), 0, "")
+	EndIf
+
+	If Not IsInt($iYOffset) Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iYOffset: " & $iYOffset), 0, "")
+	EndIf
+
+	If Not IsInt($iHoldDelay) Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iHoldDelay: " & $iHoldDelay), 0, "")
+	EndIf
+
+	; Default "hover" action
+	$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,'
+	$sAction &= '"x":' & $iXOffset & ',"y":' & $iYOffset & ',"type":"pointerMove","origin":{"ELEMENT":"'
+	$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}'
+
+	Switch $sCommand
+		Case 'hover'
+
+		Case 'doubleclick'
+			$sAction &= ',{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"},{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"}'
+
+		Case 'rightclick'
+			$sAction &= ',{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}'
+
+		Case 'clickandhold'
+			$sAction &= ',{"button":' & $iButton & ',"type":"pointerDown"},{"type": "pause", "duration": ' & $iHoldDelay & '},{"button":2,"type":"pointerUp"}'
+
+		Case Else
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold) $sCommand=>" & $sCommand), 0, "")
+
+	EndSwitch
+
+	; Close action string
+	$sAction &= ']}]}'
+
+	$sResult = _WD_Action($sSession, 'actions', $sAction)
+	$iErr = @error
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode

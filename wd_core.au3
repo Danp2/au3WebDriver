@@ -55,6 +55,13 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.3.0.3
+	- Added: _WD_SetTimeouts
+	- Added: _WD_GetElementById
+	- Added: _WD_GetElementByName
+	- Added: _WD_SetElementValue
+	- Added: _WD_ElementActionEx
+
 	v0.3.0.2
 	- Fixed: WinHTTP timeout coding
 	- Changed (_WD_Option): Add support for DriverDetect option
@@ -822,7 +829,7 @@ EndFunc   ;==>_WD_Window
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $sStartElement       - [optional] a string value. Default is "".
-;                  $lMultiple           - [optional] an unknown value. Default is False.
+;                  $lMultiple           - [optional] a logical value. Default is False.
 ; Return values .: Success      - Element ID(s) returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
