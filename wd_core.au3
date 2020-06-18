@@ -1456,7 +1456,7 @@ EndFunc   ;==>_WD_Shutdown
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_Get($sURL)
+Func __WD_Get($sURL, $iMode = Default)
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
@@ -1484,9 +1484,9 @@ Func __WD_Get($sURL)
 		Else
 			Switch $aURL[1]
 				Case $INTERNET_SCHEME_HTTP
-					$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6] & $aURL[7])
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6] & $aURL[7], Default, Default, Default, Default, $iMode)
 				Case $INTERNET_SCHEME_HTTPS
-					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6] & $aURL[7])
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6] & $aURL[7], Default, Default, Default, Default, $iMode)
 				Case Else
 					SetError($_WD_ERROR_InvalidValue)
 			EndSwitch
