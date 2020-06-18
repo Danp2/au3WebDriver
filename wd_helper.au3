@@ -1190,6 +1190,11 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 		Case 'firefox'
 			$sEXE = "firefox.exe"
 			$sDriverEXE = "geckodriver.exe"
+
+		Case 'msedge'
+			$sEXE = "msedge.exe"
+			$sDriverEXE = "msedgedriver.exe"
+
 		Case Else
 			$iErr = $_WD_ERROR_InvalidValue
 	EndSwitch
@@ -1197,7 +1202,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 	If $iErr = $_WD_ERROR_Success Then
 		$sPath = RegRead($cRegKey & $sEXE, "")
 		$sBrowserVersion = FileGetVersion($sPath)
-		$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
 
 		; Get version of current webdriver
 		$sCmd = $sInstallDir & "\" & $sDriverEXE & " --version"
@@ -1216,6 +1220,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 		; for the designated browser
 		Switch $sBrowser
 			Case 'chrome'
+				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
 				$sDriverLatest = __WD_Get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort)
 				$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
 
@@ -1228,6 +1233,39 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 
 					$sURLNewDriver = "https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest
 					$sURLNewDriver &= ($lFlag64) ? "-win64.zip" : "-win32.zip"
+				Else
+					$iErr = $_WD_ERROR_GeneralError
+				EndIf
+
+			Case 'msedge'
+				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
+				$sDriverLatest = __WD_Get('https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort, 2) ; 2 = binary data
+
+				If @error = $_WD_ERROR_Success Then
+					Select
+						Case BinaryMid($sDriverLatest, 1, 4) = '0x0000FEFF'                   ; UTF-32 BE
+							$iStartPos = 5
+							$iConversion = $SB_UTF16LE
+						Case BinaryMid($sDriverLatest, 1, 4) = '0xFFFE0000'                   ; UTF-32 LE
+							$iStartPos = 5
+							$iConversion = $SB_UTF16LE
+						Case BinaryMid($sDriverLatest, 1, 2) = '0xFEFF'                       ; UTF-16 BE
+							$iStartPos = 3
+							$iConversion = $SB_UTF16BE
+						Case BinaryMid($sDriverLatest, 1, 2) = '0xFFFE'                       ; UTF-16 LE
+							$iStartPos = 3
+							$iConversion = $SB_UTF16LE
+						Case BinaryMid($sDriverLatest, 1, 3) = '0xEFBBBF'                     ; UTF-8
+							$iStartPos = 4
+							$iConversion = $SB_UTF8
+						Case Else
+							$iStartPos = 1
+							$iConversion = $SB_ANSI
+					EndSelect
+
+					$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
+					$sURLNewDriver = "https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_"
+					$sURLNewDriver &= ($lFlag64) ? "win64.zip" : "win32.zip"
 				Else
 					$iErr = $_WD_ERROR_GeneralError
 				EndIf
