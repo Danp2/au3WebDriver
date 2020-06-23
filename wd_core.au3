@@ -363,8 +363,9 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Unknown Command" _
 		]
 
-Global Const $WD_InvalidSession = "invalid session id"
-Global Const $WD_UnknownCommand = "unknown command"
+Global Const $WD_ErrorInvalidSession = "invalid session id"
+Global Const $WD_ErrorUnknownCommand = "unknown command"
+Global Const $WD_ErrorTimeout = "timeout"
 
 Global Const $WD_Element_NotFound = "no such element"
 Global Const $WD_Element_Stale = "stale element reference"
@@ -502,8 +503,6 @@ Func _WD_Status()
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
 	Local $iErr = @error, $sResult = ''
 
-	__WD_DetectError($iErr, $sResponse)
-
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, "[value]")
@@ -555,7 +554,6 @@ Func _WD_Timeouts($sSession, $sTimeouts = Default)
 	EndIf
 
 	Local $iErr = @error
-	__WD_DetectError($iErr, $sResponse)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
@@ -593,7 +591,6 @@ Func _WD_Navigate($sSession, $sURL)
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 
 	Local $iErr = @error
-	__WD_DetectError($iErr, $sResponse)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
@@ -670,8 +667,6 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title|Actions) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
-
-	__WD_DetectError($iErr, $sResponse)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
@@ -787,8 +782,6 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 
 	EndSwitch
 
-	__WD_DetectError($iErr, $sResponse)
-
 	If $iErr = $_WD_ERROR_Success Then
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
 
@@ -857,8 +850,6 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = Default
 
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sElement & "/" & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
 	$iErr = @error
-
-	__WD_DetectError($iErr, $sResponse)
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
@@ -960,8 +951,6 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 
 	EndSwitch
 
-	__WD_DetectError($iErr, $sResponse)
-
 	If $iErr = $_WD_ERROR_Success Then
 		Switch $_WD_HTTPRESULT
 			Case $HTTP_STATUS_OK
@@ -1027,7 +1016,6 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $lAsync = Def
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 
 	Local $iErr = @error
-	__WD_DetectError($iErr, $sResponse)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
@@ -1117,8 +1105,6 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
-	__WD_DetectError($iErr, $sResponse)
-
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
@@ -1154,7 +1140,6 @@ Func _WD_GetSource($sSession)
 
 	$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/source")
 	$iErr = @error
-	__WD_DetectError($iErr, $sResponse)
 
 	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
@@ -1230,8 +1215,6 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(GetAll|Get|Add|Delete) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
-
-	__WD_DetectError($iErr, $sResponse)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
@@ -1497,12 +1480,8 @@ Func __WD_Get($sURL, $iMode = Default)
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
 				$sResponseText = $WD_WinHTTPTimeoutMsg
-			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
-				If StringInStr($sResponseText, '"error":"timeout"') > 0 Then
-					$iResult = $_WD_ERROR_Timeout
-				Else
-					$iResult = $_WD_ERROR_Exception
-				EndIf
+			Else
+				__WD_DetectError($iErr, $sResponseText)
 			EndIf
 		EndIf
 
@@ -1587,12 +1566,8 @@ Func __WD_Post($sURL, $sData)
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
 				$sResponseText = $WD_WinHTTPTimeoutMsg
-			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
-				If StringInStr($sResponseText, '"error":"timeout"') > 0 Then
-					$iResult = $_WD_ERROR_Timeout
-				Else
-					$iResult = $_WD_ERROR_Exception
-				EndIf
+			Else
+				__WD_DetectError($iErr, $sResponseText)
 			EndIf
 		EndIf
 
@@ -1673,12 +1648,8 @@ Func __WD_Delete($sURL)
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
 				$sResponseText = $WD_WinHTTPTimeoutMsg
-			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
-				If StringInStr($sResponseText, '"error":"timeout"') > 0 Then
-					$iResult = $_WD_ERROR_Timeout
-				Else
-					$iResult = $_WD_ERROR_Exception
-				EndIf
+			Else
+				__WD_DetectError($iErr, $sResponseText)
 			EndIf
 		EndIf
 
@@ -1843,11 +1814,14 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		Switch $vResult.item('error')
 			Case ""
 
-			Case $WD_InvalidSession
+			Case $WD_ErrorInvalidSession
 				$iErr = $_WD_ERROR_SessionInvalid
 
-			Case $WD_UnknownCommand
+			Case $WD_ErrorUnknownCommand
 				$iErr = $_WD_ERROR_UnknownCommand
+
+			Case $WD_ErrorTimeout
+				$iErr = $_WD_ERROR_Timeout
 
 			Case $WD_Element_NotFound, $WD_Element_Stale
 				$iErr =  $_WD_ERROR_NoMatch
