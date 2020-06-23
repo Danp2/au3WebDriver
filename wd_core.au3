@@ -1498,7 +1498,11 @@ Func __WD_Get($sURL, $iMode = Default)
 				$iResult = $_WD_ERROR_SendRecv
 				$sResponseText = $WD_WinHTTPTimeoutMsg
 			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
-				$iResult = $_WD_ERROR_Timeout
+				If StringInStr($sResponseText, '"error":"timeout"') > 0 Then
+					$iResult = $_WD_ERROR_Timeout
+				Else
+					$iResult = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 		EndIf
 
@@ -1584,7 +1588,11 @@ Func __WD_Post($sURL, $sData)
 				$iResult = $_WD_ERROR_SendRecv
 				$sResponseText = $WD_WinHTTPTimeoutMsg
 			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
-				$iResult = $_WD_ERROR_Timeout
+				If StringInStr($sResponseText, '"error":"timeout"') > 0 Then
+					$iResult = $_WD_ERROR_Timeout
+				Else
+					$iResult = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 		EndIf
 
@@ -1666,7 +1674,11 @@ Func __WD_Delete($sURL)
 				$iResult = $_WD_ERROR_SendRecv
 				$sResponseText = $WD_WinHTTPTimeoutMsg
 			ElseIf $_WD_HTTPRESULT = $HTTP_STATUS_SERVER_ERROR Then
-				$iResult = $_WD_ERROR_Timeout
+				If StringInStr($sResponseText, '"error":"timeout"') > 0 Then
+					$iResult = $_WD_ERROR_Timeout
+				Else
+					$iResult = $_WD_ERROR_Exception
+				EndIf
 			EndIf
 		EndIf
 
