@@ -1373,11 +1373,15 @@ Func _WD_Startup()
 
 		EndSelect
 
+		Local $sWinHttpVer = __WinHttpVer()
+		If $sWinHttpVer < "1.6.4.2" Then
+			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
+		EndIf
 
 		ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		ConsoleWrite("_WDStartup: AutoIt:" & @TAB & @AutoItVersion & @CRLF)
 		ConsoleWrite("_WDStartup: WD.au3:" & @TAB & $__WDVERSION & $sUpdate & @CRLF)
-		ConsoleWrite("_WDStartup: WinHTTP:" & @TAB & __WinHttpVer() & @CRLF)
+		ConsoleWrite("_WDStartup: WinHTTP:" & @TAB & $sWinHttpVer & @CRLF)
 		ConsoleWrite("_WDStartup: Driver:" & @TAB & $_WD_DRIVER & @CRLF)
 		ConsoleWrite("_WDStartup: Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
 		ConsoleWrite("_WDStartup: Port:" & @TAB & $_WD_PORT & @CRLF)
@@ -1389,7 +1393,7 @@ Func _WD_Startup()
 	$pid = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $pid Then
-		ConsoleWrite("_WDStartup: Existing instance of " & $sFile & "detected!" & @CRLF)
+		ConsoleWrite("_WDStartup: Existing instance of " & $sFile & " detected!" & @CRLF)
 	Else
 		$pid = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 	EndIf
