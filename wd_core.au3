@@ -55,6 +55,13 @@
 ; AutoIt Version : v3.3.14.5
 ; ==============================================================================
 #cs
+	v0.3.0.4
+	- Added: _WD_ExecuteCdpCommand (TheDcoder)
+	- Changed (_WD_UpdateDriver): Add support for MSEdge (Chromium)
+	- Changed (_WD_Shutdown): Allow shutdown of specific module by name or PID
+	- Changed (_WD_Startup): Notify if WinHTTP UDF needs updated
+	- Changed: Improved error handling / HTTP timeout detection
+
 	v0.3.0.3
 	- Added: _WD_SetTimeouts
 	- Added: _WD_GetElementById
@@ -305,7 +312,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.3.0.3"
+Global Const $__WDVERSION = "0.3.0.4"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"
