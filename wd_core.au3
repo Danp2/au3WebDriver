@@ -1409,8 +1409,8 @@ EndFunc   ;==>_WD_Startup
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Shutdown
 ; Description ...: Kill the web driver console app
-; Syntax ........: _WD_Shutdown()
-; Parameters ....:
+; Syntax ........: _WD_Shutdown([$vDriver = Default])
+; Parameters ....: $vDriver             - - [optional] The name or PID of Web driver console to shutdown.
 ; Return values .: None
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -1419,8 +1419,8 @@ EndFunc   ;==>_WD_Startup
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Shutdown()
-	__WD_CloseDriver()
+Func _WD_Shutdown($vDriver = Default)
+	__WD_CloseDriver($vDriver)
 EndFunc   ;==>_WD_Shutdown
 
 
