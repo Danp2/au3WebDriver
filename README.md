@@ -61,6 +61,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_GetElementById($sSession, $sID)
 - _WD_GetElementByName($sSession, $sName)
 - _WD_SetElementValue($sSession, $sElement, $sValue)
+- _WD_ExecuteCdpCommand($sSession, $sCommand, $oParams)
 
 # Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
