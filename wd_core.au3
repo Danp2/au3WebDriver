@@ -1722,7 +1722,7 @@ EndFunc ;==>__WD_Error
 ; Name ..........: __WD_CloseDriver
 ; Description ...: Shutdown web driver console if it exists
 ; Syntax ........: __WD_CloseDriver([$sDriver = Default])
-; Parameters ....: $sDriver             - [optional] Web driver console to shutdown. Default is $_WD_DRIVER
+; Parameters ....: $vDriver             - [optional] The name or PID of Web driver console to shutdown. Default is $_WD_DRIVER
 ; Return values .: None
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -1731,30 +1731,35 @@ EndFunc ;==>__WD_Error
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_CloseDriver($sDriver = Default)
-	Local $sFile, $iID, $aData
+Func __WD_CloseDriver($vDriver = Default)
+	Local $sFile, $aData, $aProcessList[2][2]
 
-	If $sDriver = Default Then $sDriver = $_WD_DRIVER
+	If $vDriver = Default Then $vDriver = $_WD_DRIVER
 
-	$sFile = StringRegExpReplace($sDriver, "^.*\\(.*)$", "$1")
+	; Did calling routine pass a single PID?
+	If IsInt($vDriver) Then
+		; Yes, so build array to close this single instance
+		$aProcessList[0][0] = 1
+		$aProcessList[1][1] = $vDriver
+	Else
+		; No, close all matching driver instances
+		$sFile = StringRegExpReplace($vDriver, "^.*\\(.*)$", "$1")
+		$aProcessList = ProcessList($vDriver)
+	EndIf
 
-	Do
-		$iID = ProcessExists($sFile)
+    For $i = 1 To $aProcessList[0][0]
+		$aData = _WinAPI_EnumChildProcess($aProcessList[$i][1])
 
-		If $iID Then
-			$aData = _WinAPI_EnumChildProcess($iID)
-
-			If IsArray($aData) Then
-				For $i = 0 To UBound($aData) - 1
-					If $aData[$i][1] = 'conhost.exe' Then
-						ProcessClose($aData[$i][0])
-					EndIf
-				Next
-			EndIf
-
-			ProcessClose($iID)
+		If IsArray($aData) Then
+			For $j = 0 To UBound($aData) - 1
+				If $aData[$j][1] == 'conhost.exe' Then
+					ProcessClose($aData[$j][0])
+				EndIf
+			Next
 		EndIf
-	Until Not $iID
+
+		ProcessClose($aProcessList[$i][1])
+    Next
 
 EndFunc ;==>__WD_CloseDriver
 
