@@ -851,12 +851,23 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = Default
 	If $sStartElement = Default Then $sStartElement = ""
 	If $lMultiple = Default Then $lMultiple = False
 
-	$sCmd = ($lMultiple) ? 'elements' : 'element'
-	$sElement = ($sStartElement == "") ? "" : "/element/" & $sStartElement
-	$sSelector = __WD_EscapeString($sSelector)
+	If $sStartElement Then
+		$sElement = "/element/" & $sStartElement
 
-	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sElement & "/" & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
-	$iErr = @error
+		; Make sure using a relative selector if using xpath strategy
+		If $sStrategy = $_WD_LOCATOR_ByXPath And StringLeft($sSelector, 1) <> '.' Then
+			$iErr = $_WD_ERROR_InvalidExpression
+			$sResponse = "Selector must be relative when supplying a starting element"
+		EndIf
+	EndIf
+
+	If $iErr = $_WD_ERROR_Success Then
+		$sCmd = ($lMultiple) ? 'elements' : 'element'
+		$sSelector = __WD_EscapeString($sSelector)
+
+		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sElement & "/" & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
+		$iErr = @error
+	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
