@@ -1221,11 +1221,11 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 		Switch $sBrowser
 			Case 'chrome'
 				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
-				$sDriverLatest = __WD_Get('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort)
+				$sDriverLatest = BinaryToString(InetRead('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort))
 				$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
 
 			Case 'firefox'
-				$sResult = __WD_Get("https://github.com/mozilla/geckodriver/releases/latest")
+				$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
 
 				If @error = $_WD_ERROR_Success Then
 					$sDriverLatest = StringRegExp($sResult, '<a href="/mozilla/geckodriver/releases/tag/(.*)">', 1)[0]
@@ -1239,7 +1239,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 
 			Case 'msedge'
 				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
-				$sDriverLatest = __WD_Get('https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort, 2) ; 2 = binary data
+				$sDriverLatest = InetRead('https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort)
 
 				If @error = $_WD_ERROR_Success Then
 					Select
@@ -1272,7 +1272,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 		EndSwitch
 
 		If ($iErr = $_WD_ERROR_Success And $sDriverLatest > $sDriverVersion) Or $lForce Then
-			$sReturned = __WD_Get($sURLNewDriver)
+			$sReturned = InetRead($sURLNewDriver)
 
 			$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 			$hFile = FileOpen($sTempFile, 18)
