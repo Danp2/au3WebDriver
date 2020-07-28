@@ -1118,11 +1118,11 @@ Func _WD_IsLatestRelease()
 	Local $WDDebugSave = $_WD_DEBUG
 	$_WD_DEBUG = $_WD_DEBUG_None
 
-	Local $sResult = __WD_Get($sGitURL)
+	Local $sResult = InetRead($sGitURL)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $aLatestWDVersion = StringRegExp($sResult, '<a href="/Danp2/WebDriver/releases/tag/(.*)">', $STR_REGEXPARRAYMATCH)
+		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), '<a href="/Danp2/WebDriver/releases/tag/(.*)">', $STR_REGEXPARRAYMATCH)
 
 		If Not @error Then
 			Local $sLatestWDVersion = $aLatestWDVersion[0]
