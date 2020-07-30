@@ -829,13 +829,14 @@ EndFunc   ;==>_WD_Window
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
-;                  $sStartElement       - [optional] a string value. Default is "".
-;                  $lMultiple           - [optional] a logical value. Default is False.
+;                  $sStartElement       - [optional] Element ID to use as starting node. Devault is ""
+;                  $lMultiple           - [optional] Return multiple matching elements? Default is False
 ; Return values .: Success      - Element ID(s) returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_NoMatch
+;                  				- $_WD_ERROR_InvalidExpression
 ;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
