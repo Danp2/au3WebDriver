@@ -166,7 +166,7 @@ Func DemoElements()
 	ConsoleWrite("Element Coords = " & $oERect.Item('x') & " / " & $oERect.Item('y') & " / " & $oERect.Item('width') & " / " & $oERect.Item('height') & @CRLF)
 
 	; Locate multiple matching elements
-	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", '', True)
+	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", Default, True)
 	_ArrayDisplay($aElements, "Found Elements")
 
 	; Set element's contents
@@ -341,22 +341,22 @@ _WD_Option('Driver', 'geckodriver.exe')
 _WD_Option('DriverParams', '--log trace')
 _WD_Option('Port', 4444)
 
-$sDesiredCapabilities = '{"desiredCapabilities":{"javascriptEnabled":true,"nativeEvents":true,"acceptInsecureCerts":true}}'
+$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
 EndFunc
 
 Func SetupChrome()
 _WD_Option('Driver', 'chromedriver.exe')
 _WD_Option('Port', 9515)
-_WD_Option('DriverParams', '--log-path="' & @ScriptDir & '\chrome.log"')
+_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
-$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true }}}}'
+$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false }}}}'
 EndFunc
 
 Func SetupEdge()
-_WD_Option('Driver', 'MicrosoftWebDriver.exe')
-_WD_Option('Port', 17556)
+_WD_Option('Driver', 'msedgedriver.exe')
+_WD_Option('Port', 9515)
 _WD_Option('DriverParams', '--verbose')
 
-$sDesiredCapabilities = '{"capabilities":{}}'
+$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"binary": "' & StringReplace (@UserProfileDir, "\", "/") & '/AppData/Local/Microsoft/Edge SxS/Application/msedge.exe"}}}}'
 EndFunc
 
