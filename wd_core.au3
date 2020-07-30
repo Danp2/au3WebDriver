@@ -402,6 +402,7 @@ Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
+Global $_WD_HTTPContentType = "Content-Type: application/json"
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
@@ -1489,9 +1490,9 @@ Func __WD_Get($sURL, $iMode = Default)
 		Else
 			Switch $aURL[1]
 				Case $INTERNET_SCHEME_HTTP
-					$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6] & $aURL[7], Default, Default, Default, Default, $iMode)
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "GET", $aURL[6] & $aURL[7], Default, Default, $_WD_HTTPContentType, Default, $iMode)
 				Case $INTERNET_SCHEME_HTTPS
-					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6] & $aURL[7], Default, Default, Default, Default, $iMode)
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6] & $aURL[7], Default, Default, $_WD_HTTPContentType, Default, $iMode)
 				Case Else
 					SetError($_WD_ERROR_InvalidValue)
 			EndSwitch
@@ -1575,9 +1576,9 @@ Func __WD_Post($sURL, $sData)
 		Else
 			Switch $aURL[1]
 				Case $INTERNET_SCHEME_HTTP
-					$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6] & $aURL[7], Default, StringToBinary($sData, $_WD_BFORMAT))
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "POST", $aURL[6] & $aURL[7], Default, StringToBinary($sData, $_WD_BFORMAT), $_WD_HTTPContentType)
 				Case $INTERNET_SCHEME_HTTPS
-					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "POST", $aURL[6] & $aURL[7], Default, StringToBinary($sData, $_WD_BFORMAT))
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "POST", $aURL[6] & $aURL[7], Default, StringToBinary($sData, $_WD_BFORMAT), $_WD_HTTPContentType)
 				Case Else
 					SetError($_WD_ERROR_InvalidValue)
 			EndSwitch
@@ -1657,9 +1658,9 @@ Func __WD_Delete($sURL)
 		Else
 			Switch $aURL[1]
 				Case $INTERNET_SCHEME_HTTP
-					$sResponseText = _WinHttpSimpleRequest($hConnect, "DELETE", $aURL[6] & $aURL[7])
+					$sResponseText = _WinHttpSimpleRequest($hConnect, "DELETE", $aURL[6] & $aURL[7], Default, Default, $_WD_HTTPContentType)
 				Case $INTERNET_SCHEME_HTTPS
-					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "DELETE", $aURL[6] & $aURL[7])
+					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "DELETE", $aURL[6] & $aURL[7], Default, Default, $_WD_HTTPContentType)
 				Case Else
 					SetError($_WD_ERROR_InvalidValue)
 			EndSwitch
