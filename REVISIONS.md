@@ -1,3 +1,8 @@
+
+	v0.3.0.6
+	- Fixed (__WD_Get, __WD_Post, __WD_Delete): Correctly pass detected errors to calling routine
+	- Changed (__WD_Get): Eliminated optional $iMode parameter
+
 	v0.3.0.5
 	- Added: _WD_GetTable (danylarson / water)
 	- Fixed (_WD_FindElement): Enforce relative xpath when utilizing a starting element
@@ -95,14 +100,14 @@
 	- Changed: Added backslash to list of characters to escape
 	- Changed: Modified _WD_jQuerify with additional parameters for timeout / alternate jQuery source
 
-   v0.1.0.21
-   - Fixed: 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window
-   - Fixed: Prevent runtime error dialog from appearing when function call succeeded
+	v0.1.0.21
+	- Fixed: 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window
+	- Fixed: Prevent runtime error dialog from appearing when function call succeeded
 
 	V0.1.0.20
 	- Fixed: Escape string passed to _WD_ElementAction when setting element's value
-   - Fixed: Return value from _WD_Window should be "" on error
-   - Fixed: Current tab handling in _WD_Attach
+	- Fixed: Return value from _WD_Window should be "" on error
+	- Fixed: Current tab handling in _WD_Attach
 
 	V0.1.0.19
 	- Added: _WD_ConsoleVisible
@@ -121,7 +126,7 @@
 	- Changed: Rework coding of _WD_ElementAction
 	- Fixed: Error handling in __WD_Get
 	- Fixed: _WD_NewTab failed in some situations
-    - Fixed: _WD_Window error handling
+	- Fixed: _WD_Window error handling
 	- Added: _WD_Screenshot
 
 	V0.1.0.16
