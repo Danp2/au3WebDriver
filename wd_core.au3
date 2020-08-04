@@ -1288,6 +1288,7 @@ Func __WD_Get($sURL)
 				$sResponseText = $WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
+				$iResult = $iErr
 			EndIf
 		EndIf
 
@@ -1374,6 +1375,7 @@ Func __WD_Post($sURL, $sData)
 				$sResponseText = $WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
+				$iResult = $iErr
 			EndIf
 		EndIf
 
@@ -1456,6 +1458,7 @@ Func __WD_Delete($sURL)
 				$sResponseText = $WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
+				$iResult = $iErr
 			EndIf
 		EndIf
 
