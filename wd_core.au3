@@ -1191,7 +1191,7 @@ Func _WD_Startup()
 		ConsoleWrite('_WDStartup: ' & $sCommand & @CRLF)
 	EndIf
 
-	$sFile = StringRegExpReplace($_WD_DRIVER, "^.*\\(.*)$", "$1")
+	$sFile = __WD_StripPath($_WD_DRIVER)
 	$pid = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $pid Then
@@ -1548,8 +1548,8 @@ Func __WD_CloseDriver($vDriver = Default)
 		$aProcessList[1][1] = $vDriver
 	Else
 		; No, close all matching driver instances
-		$sFile = StringRegExpReplace($vDriver, "^.*\\(.*)$", "$1")
-		$aProcessList = ProcessList($vDriver)
+		$sFile = __WD_StripPath($vDriver)
+		$aProcessList = ProcessList($sFile)
 	EndIf
 
     For $i = 1 To $aProcessList[0][0]
@@ -1651,4 +1651,8 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 		EndSwitch
 	EndIf
+EndFunc
+
+Func __WD_StripPath($sFilePath)
+	Return StringRegExpReplace($sFilePath, "^.*\\(.*)$", "$1")
 EndFunc
