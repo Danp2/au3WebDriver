@@ -181,6 +181,7 @@ Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one alrea
 Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug output
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
+Global $_WD_CONSOLE = Default ; Destination for console output
 
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
@@ -1045,6 +1046,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |DriverDetect - Use existing driver instance if it exists (Boolean)
 ;                               |HTTPTimeouts - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 ;                               |DebugTrim - Length of response text written to the debug cocnsole
+;                               |Console - Destination for console output
 ;
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Value ..: Success      - 1 / current value
@@ -1119,8 +1121,14 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_RESPONSE_TRIM = $vValue
+		Case "console"
+			If $vValue == "" Then Return $_WD_CONSOLE
+			If Not (IsString($vValue) Or IsInt($vValue)) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string/int) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_CONSOLE = $vValue
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim|Console) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
