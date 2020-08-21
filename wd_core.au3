@@ -94,7 +94,7 @@
 
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.3.0.6"
+Global Const $__WDVERSION = "0.3.0.7"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict  = "{}"

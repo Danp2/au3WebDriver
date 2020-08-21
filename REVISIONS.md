@@ -1,3 +1,7 @@
+	v0.3.0.7
+	- Fixed (__WD_CloseDriver): Properly close webdriver console
+   - Changed (_WD_Option): Added support for "console" option
+   - Changed: Allow logging to file instead of default console
 
 	v0.3.0.6
 	- Fixed (__WD_Get, __WD_Post, __WD_Delete): Correctly pass detected errors to calling routine
