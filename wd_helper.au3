@@ -335,8 +335,8 @@ Func _WD_GetMouseElement($sSession)
 	$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $sElement & @CRLF)
-		ConsoleWrite($sFuncName & ': ' & IsObj($sElement) & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sElement & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & IsObj($sElement) & @CRLF)
 	EndIf
 
 Return SetError($_WD_ERROR_Success, 0, $sElement)
@@ -818,7 +818,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr))
@@ -933,7 +933,7 @@ Local $sText, $aOptions
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & ((IsArray($vResult)) ? "(array)" : $vResult) & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & ((IsArray($vResult)) ? "(array)" : $vResult) & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
@@ -1019,7 +1019,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
     EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
@@ -1082,7 +1082,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $sResult & " file(s) selected" & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & " file(s) selected" & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
@@ -1134,7 +1134,7 @@ Func _WD_IsLatestRelease()
 	$_WD_DEBUG = $WDDebugSave
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $lResult & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $lResult & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $lResult)
@@ -1298,7 +1298,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 	$_WD_DEBUG = $WDDebugSave
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $lResult)
@@ -1335,7 +1335,7 @@ Func _WD_DownloadFile($sURL, $sDest)
 	Local $WDDebugSave = $_WD_DEBUG
 	$_WD_DEBUG = $_WD_DEBUG_None
 
-	Local $sData = __WD_Get($sURL)
+	Local $sData = InetRead($sURL)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1359,7 +1359,7 @@ Func _WD_DownloadFile($sURL, $sDest)
 	$_WD_DEBUG = $WDDebugSave
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $lResult)
@@ -1441,7 +1441,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
