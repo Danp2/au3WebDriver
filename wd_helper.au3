@@ -255,6 +255,7 @@ EndFunc
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ;                  $lVisible            - [optional] Check visibility of element?
+;                  $lEnabled            - [optional] Check enabled status of element?
 ; Return values .: Success      - 1
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
@@ -266,14 +267,14 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $lVisible = Default)
+Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $lVisible = Default, $lEnabled = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
-	Local $iErr, $iResult = 0, $sElement, $lIsVisible = True
+	Local $iErr, $iResult = 0, $sElement, $lIsVisible = True, $lIsEnabled = True
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $lVisible = Default Then $lVisible = False
-
+	If $lEnabled = Default Then $lEnabled = False
 	Sleep($iDelay)
 
 	Local $hWaitTimer = TimerInit()
@@ -291,7 +292,15 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				EndIf
 			EndIf
 
-			If $lIsVisible = True Then
+			If $lEnabled Then
+				$lIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+
+				If @error Then
+					$lIsEnabled = False
+				EndIf
+			EndIf
+
+			If $lIsVisible And $lIsEnabled Then
 				$iResult = 1
 				ExitLoop
 			EndIf
