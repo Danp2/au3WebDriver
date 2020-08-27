@@ -38,6 +38,7 @@
 #ce
 #EndRegion Many thanks to:
 
+#ignorefunc _HtmlTableGetWriteToArray
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
@@ -1677,7 +1678,7 @@ EndFunc
 ;                               - $_WD_ERROR_NoMatch
 ;                  @EXTENDED    - WinHTTP status code
 ; Author ........: danylarson
-; Modified ......: water
+; Modified ......: water, danp2
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
@@ -1686,21 +1687,40 @@ EndFunc
 Func _WD_GetTable($sSession, $sBaseElement)
     Local Const $sFuncName = "_WD_GetTable"
     Local $aElements, $iLines, $iColumns, $iRow, $iColumn
-    $aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
-    If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-    $iLines = UBound($aElements)
-    $aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/td", "", True) ; Retrieve the number of table columns by checking the first table row
-    If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-    $iColumns = UBound($aElements)
-    Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
-    $aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/td", "", True) ; Retrieve all table cells
-    If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-    For $i = 0 To UBound($aElements) - 1
-        $iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
-        $iColumn = Mod($i, $iColumns)
-        $aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
-        If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-    Next
+	Local $sElement, $sHTML
+
+	; Determine if optional UDF is available
+	Call("_HtmlTableGetWriteToArray", "")
+
+	If @error = 0xDEAD And @extended = 0xBEEF Then
+		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		$iLines = UBound($aElements)
+		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/td", "", True) ; Retrieve the number of table columns by checking the first table row
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		$iColumns = UBound($aElements)
+		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
+		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/td", "", True) ; Retrieve all table cells
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		For $i = 0 To UBound($aElements) - 1
+			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
+			$iColumn = Mod($i, $iColumns)
+			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
+			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		Next
+	Else
+		; Get the table element
+		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+
+		; Retrieve its HTML
+		$sHTML = _WD_ElementAction($sSession, $sElement, "Property", "outerHTML")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+
+		; Convert to array
+		$aTable = _HtmlTableGetWriteToArray($sHTML)
+	EndIf
+
     Return $aTable
 EndFunc   ;==>_WD_GetTable
 
