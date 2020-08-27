@@ -4,6 +4,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 # Requirements
 - JSON UDF https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 - WinHTTP UDF https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
+- HtmlTable2Array UDF (optional) https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/
 
 - WebDriver for desired browser
 	- Chrome	[[download](https://sites.google.com/a/chromium.org/chromedriver/downloads)]	[[status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)]
@@ -37,7 +38,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_NewTab($sSession, $lSwitch = True, $iTimeout = -1, $sURL = "", $sFeatures = "")
 - _WD_Attach($sSession, $sString, $sMode = 'title')
 - _WD_LinkClickByText($sSession, $sText, $lPartial = True)
-- _WD_WaitElement($sSession, $sElement, $sStrategy, $sSelector[, $iDelay = 0[, $iTimeout = -1]])
+- _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $lVisible = Default[, $lEnabled = Default]]]])
 - _WD_GetMouseElement($sSession)
 - _WD_GetElementFromPoint($sSession, $iX, $iY)
 - _WD_LastHTTPResult()
@@ -57,11 +58,14 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
 - _WD_IsLatestRelease()
 - _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $lFlag64 = Default[, $lForce = Default]]])
+- _WD_DownloadFile($sURL, $sDest)
 - _WD_SetTimeouts($sSession[, $iPageLoad = Default[, $iScript = Default[, $iImplicitWait = Default]]])
 - _WD_GetElementById($sSession, $sID)
 - _WD_GetElementByName($sSession, $sName)
 - _WD_SetElementValue($sSession, $sElement, $sValue)
+- _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default]]]])
 - _WD_ExecuteCdpCommand($sSession, $sCommand, $oParams)
+- _WD_GetTable($sSession, $sBaseElement)
 
 # Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
