@@ -1,5 +1,6 @@
 #Include-once
 #include "wd_core.au3"
+#include <File.au3>			; Needed for _WD_UpdateDriver
 
 #Region Copyright
 #cs
