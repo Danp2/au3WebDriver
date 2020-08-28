@@ -1,3 +1,9 @@
+	v0.3.0.8
+  - Changed (_WD_WaitElement): Added optional parameter to check elements enabled status
+  - Changed (_WD_GetTable): Optionally support faster _HtmlTableGetWriteToArray
+  - Changed (_WD_ElementAction): Allow retrieving element value with the 'value' command
+  - Chore: Modified #include usage
+ 
 	v0.3.0.7
 	- Fixed (__WD_CloseDriver): Properly close webdriver console
    - Changed (_WD_Option): Added support for "console" option
