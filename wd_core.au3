@@ -744,7 +744,12 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case 'value'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & __WD_EscapeString($sOption) & '"}')
+			If $sOption Then
+				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & __WD_EscapeString($sOption) & '"}')
+			Else
+				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/property/value")
+			EndIf
+
 			$iErr = @error
 
 		Case Else
@@ -756,8 +761,16 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 		Switch $_WD_HTTPRESULT
 			Case $HTTP_STATUS_OK
 				Switch $sCommand
-					Case 'clear', 'click', 'value'
+					Case 'clear', 'click'
 						$sResult = $sResponse
+
+					Case 'value'
+						If $sOption Then
+							$sResult = $sResponse
+						Else
+							$oJson = Json_Decode($sResponse)
+							$sResult = Json_Get($oJson, "[value]")
+						EndIf
 
 					Case Else
 						$oJson = Json_Decode($sResponse)
