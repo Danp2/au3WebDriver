@@ -180,6 +180,7 @@ Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = Default ; Destination for console output
+Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
 
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]

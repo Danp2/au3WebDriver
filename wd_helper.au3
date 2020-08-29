@@ -1718,7 +1718,7 @@ Func _WD_GetTable($sSession, $sBaseElement)
 		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
 
 		; Convert to array
-		$aTable = _HtmlTableGetWriteToArray($sHTML)
+		$aTable = _HtmlTableGetWriteToArray($sHTML, 1, False, $_WD_IFILTER)
 	EndIf
 
     Return $aTable
