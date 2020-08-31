@@ -2,9 +2,9 @@
 This UDF will allow you to interact with any browser that supports the [W3C WebDriver specifications](https://www.w3.org/TR/webdriver/). Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
 
 # Requirements
-- JSON UDF https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
-- WinHTTP UDF https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
-- HtmlTable2Array UDF (optional) https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/
+- [JSON UDF](https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn)
+- [WinHTTP UDF](https://www.autoitscript.com/forum/topic/84133-winhttp-functions/)
+- [HtmlTable2Array UDF](https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/) (optional)
 
 - WebDriver for desired browser
 	- Chrome	[[download](https://sites.google.com/a/chromium.org/chromedriver/downloads)]	[[status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)]
