@@ -250,7 +250,8 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
 ; Description ...: Wait for a element to be found  in the current tab before returning
-; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $lVisible = Default]]])
+; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $lVisible = Default[,
+;                  					$lEnabled = Default]]]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
@@ -965,7 +966,7 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ConsoleVisible($lVisible = Default)
-	Local $sFile = StringRegExpReplace($_WD_DRIVER, "^.*\\(.*)$", "$1")
+	Local $sFile = __WD_StripPath($_WD_DRIVER)
 	Local $pid, $pid2, $hWnd = 0, $aWinList
 
 	If $lVisible = Default Then $lVisible = False
