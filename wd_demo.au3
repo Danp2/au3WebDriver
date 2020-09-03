@@ -357,6 +357,6 @@ _WD_Option('Driver', 'msedgedriver.exe')
 _WD_Option('Port', 9515)
 _WD_Option('DriverParams', '--verbose')
 
-$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"binary": "' & StringReplace (@UserProfileDir, "\", "/") & '/AppData/Local/Microsoft/Edge SxS/Application/msedge.exe"}}}}'
+$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"binary": "' & StringReplace (@ProgramFilesDir, "\", "/") & '/Microsoft/Edge/Application/msedge.exe", "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false}}}}'
 EndFunc
 
