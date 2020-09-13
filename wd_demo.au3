@@ -163,7 +163,10 @@ Func DemoElements()
 
 	; Get element's coordinates
 	$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
-	ConsoleWrite("Element Coords = " & $oERect.Item('x') & " / " & $oERect.Item('y') & " / " & $oERect.Item('width') & " / " & $oERect.Item('height') & @CRLF)
+
+	If IsObj($oERect) Then
+		ConsoleWrite("Element Coords = " & $oERect.Item('x') & " / " & $oERect.Item('y') & " / " & $oERect.Item('width') & " / " & $oERect.Item('height') & @CRLF)
+	EndIf
 
 	; Locate multiple matching elements
 	$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div/input", Default, True)
@@ -187,7 +190,9 @@ Func DemoElements()
 
 	_WD_ElementAction($sSession, $sElement, 'value', "fujimo")
 	Sleep(500)
-	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
+	$sValue1 = _WD_ElementAction($sSession, $sElement, 'property', 'value')
+	$sValue2 = _WD_ElementAction($sSession, $sElement, 'value')
+	MsgBox(0, 'result', $sValue1 & " / " & $sValue2)
 
 	; Click input element
 	_WD_ElementAction($sSession, $sElement, 'click')
@@ -267,9 +272,12 @@ ConsoleWrite("$sElement = " & $sElement & @CRLF)
 ConsoleWrite("$sAction = " & $sAction & @CRLF)
 
 	_WD_Action($sSession, "actions", $sAction)
-	sleep(5000)
+	sleep(2000)
+	Send("Q")
+	sleep(2000)
+
 	_WD_Action($sSession, "actions")
-	sleep(5000)
+	sleep(2000)
 EndFunc
 
 Func DemoDownload()
