@@ -1,6 +1,7 @@
 #Include-once
 #include "wd_core.au3"
 #include <File.au3>			; Needed for _WD_UpdateDriver
+#include <InetConstants.au3>
 
 #Region Copyright
 #cs
@@ -1339,15 +1340,17 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_DownloadFile($sURL, $sDest)
+Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local Const $sFuncName = "_WD_DownloadFile"
 	Local $lResult = False
+
+	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	; Save current debug level and set to none
 	Local $WDDebugSave = $_WD_DEBUG
 	$_WD_DEBUG = $_WD_DEBUG_None
 
-	Local $sData = InetRead($sURL)
+	Local $sData = InetRead($sURL, $iOptions)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
