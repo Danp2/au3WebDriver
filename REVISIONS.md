@@ -1,3 +1,12 @@
+ 	v0.3.0.9
+  - Changed (_WD_GetTable): Filter html elements by default when using _HtmlTableGetWriteToArray
+  - Fix (_WD_DownloadFile): Handle error from InetRead
+  - Changed (_WD_DownloadFile): Add $iOptions parameter
+  - Chore: Updated wd_demo.au3
+    - Update binary location of Edge browser
+    - Update DemoDownload example
+    - Misc updates
+
 	v0.3.0.8
   - Changed (_WD_WaitElement): Added optional parameter to check elements enabled status
   - Changed (_WD_GetTable): Optionally support faster _HtmlTableGetWriteToArray
