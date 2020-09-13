@@ -1520,11 +1520,11 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SetElementValue
-; Description ...:
+; Description ...: Set value of designated element
 ; Syntax ........: _WD_SetElementValue($sSession, $sElement, $sValue)
-; Parameters ....: $sSession            - a string value.
-;                  $sElement            - a string value.
-;                  $sValue              - a string value.
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sElement            - Element ID from _WDFindElement
+;                  $sValue              - New value for element
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
