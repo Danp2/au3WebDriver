@@ -58,7 +58,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = "")
 - _WD_IsLatestRelease()
 - _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $lFlag64 = Default[, $lForce = Default]]])
-- _WD_DownloadFile($sURL, $sDest)
+- _WD_DownloadFile($sURL, $sDest[, $iOptions = Default])
 - _WD_SetTimeouts($sSession[, $iPageLoad = Default[, $iScript = Default[, $iImplicitWait = Default]]])
 - _WD_GetElementById($sSession, $sID)
 - _WD_GetElementByName($sSession, $sName)
