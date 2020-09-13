@@ -1321,9 +1321,11 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DownloadFile
 ; Description ...: Download file and save to disk
-; Syntax ........: _WD_DownloadFile($sURL, $sDest)
+; Syntax ........: _WD_DownloadFile($sURL, $sDest[, $iOptions = Default])
 ; Parameters ....: $sURL                - URL representing file to be downloaded
 ;                  $sDest               - Full path, including filename, of destination file
+;                  $iOptions            - [optional] Download options
+;
 ; Return values .: True      - Download succeeded
 ;                  False     - Download failed
 ;
