@@ -1365,6 +1365,8 @@ Func _WD_DownloadFile($sURL, $sDest)
 				$iErr = $_WD_ERROR_GeneralError
 			EndIf
 		EndIf
+	Else
+		$iErr = $_WD_ERROR_InvalidValue
 	EndIf
 
 	; Restore prior setting
