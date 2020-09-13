@@ -278,17 +278,26 @@ Func DemoDownload()
 	; Get the website's URL
 	$sUrl = _WD_Action($sSession, 'url')
 
-	; Find the element and retrieve it's source attribute
+	; Find the element
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@id='hplogo']")
-	$sSource  = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
 
-	; Combine the URL and element link
-	$sURL = _WinAPI_UrlCombine($sUrl, $sSource)
+	If @error <> $_WD_ERROR_Success Then
+		; Try alternate element
+		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div[@id='hplogo']//img")
+	EndIf
 
-	; Download the file
-	_WD_DownloadFile($sUrl, @ScriptDir & "\testimage.png")
+	If @error = $_WD_ERROR_Success Then
+		;  Retrieve it's source attribute
+		$sSource  = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
 
-	_WD_DownloadFile("http://www.google.com/notexisting.jpg", @ScriptDir & "\testimage2.jpg")
+		; Combine the URL and element link
+		$sURL = _WinAPI_UrlCombine($sUrl, $sSource)
+
+		; Download the file
+		_WD_DownloadFile($sUrl, @ScriptDir & "\testimage.png")
+
+		_WD_DownloadFile("http://www.google.com/notexisting.jpg", @ScriptDir & "\testimage2.jpg")
+	EndIf
 EndFunc
 
 Func DemoWindows()
