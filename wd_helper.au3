@@ -1330,8 +1330,6 @@ EndFunc
 ;                  False     - Download failed
 ;
 ;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidValue
 ;                  				- $_WD_ERROR_GeneralError
 ;                  				- $_WD_ERROR_NotFound
 ;
@@ -1356,22 +1354,18 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		If  $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-			$iErr = $_WD_ERROR_NotFound
+		Local $hFile = FileOpen($sDest, 18)
+
+		If $hFile <> -1 Then
+			FileWrite($hFile, $sData)
+			FileClose($hFile)
+
+			$lResult = True
 		Else
-			Local $hFile = FileOpen($sDest, 18)
-
-			If $hFile <> -1 Then
-				FileWrite($hFile, $sData)
-				FileClose($hFile)
-
-				$lResult = True
-			Else
-				$iErr = $_WD_ERROR_GeneralError
-			EndIf
+			$iErr = $_WD_ERROR_GeneralError
 		EndIf
 	Else
-		$iErr = $_WD_ERROR_InvalidValue
+		$iErr = $_WD_ERROR_NotFound
 	EndIf
 
 	; Restore prior setting
