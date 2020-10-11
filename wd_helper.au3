@@ -1353,10 +1353,6 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
-	; Save current debug level and set to none
-	Local $WDDebugSave = $_WD_DEBUG
-	$_WD_DEBUG = $_WD_DEBUG_None
-
 	Local $sData = InetRead($sURL, $iOptions)
 	Local $iErr = @error
 
@@ -1374,9 +1370,6 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Else
 		$iErr = $_WD_ERROR_NotFound
 	EndIf
-
-	; Restore prior setting
-	$_WD_DEBUG = $WDDebugSave
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
