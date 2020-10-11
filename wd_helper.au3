@@ -310,10 +310,9 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 			If $lIsVisible And $lIsEnabled Then
 				$iResult = 1
 				ExitLoop
+			Else
+				$sElement = ''
 			EndIf
-
-;~ 		ElseIf $iErr <> $_WD_ERROR_NoMatch Then
-;~ 			ExitLoop
 		EndIf
 
 		If (TimerDiff($hWaitTimer) > $iTimeout) Then
