@@ -252,7 +252,7 @@ EndFunc
 ; Name ..........: _WD_WaitElement
 ; Description ...: Wait for a element to be found  in the current tab before returning
 ; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $lVisible = Default[,
-;                  					$lEnabled = Default]]]])
+;                  					$lEnabled = Default[, $lReturnElement = Default]]]]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
@@ -260,7 +260,8 @@ EndFunc
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ;                  $lVisible            - [optional] Check visibility of element?
 ;                  $lEnabled            - [optional] Check enabled status of element?
-; Return values .: Success      - 1
+;                  $lReturnElement      - [optional] Return found element?
+; Return values .: Success      - 1 or element ID
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Timeout
@@ -271,7 +272,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $lVisible = Default, $lEnabled = Default)
+Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $lVisible = Default, $lEnabled = Default, $lReturnElement = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $iResult = 0, $sElement, $lIsVisible = True, $lIsEnabled = True
 
@@ -279,6 +280,8 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $lVisible = Default Then $lVisible = False
 	If $lEnabled = Default Then $lEnabled = False
+	If $lReturnElement = Default Then $lReturnElement = False
+
 	Sleep($iDelay)
 
 	Local $hWaitTimer = TimerInit()
@@ -321,7 +324,12 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		Sleep(1000)
 	WEnd
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iResult)
+	If $lReturnElement Then
+		Return SetError(__WD_Error($sFuncName, $iErr), $iResult, $sElement)
+	Else
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, $iResult)
+	EndIf
+
 EndFunc
 
 
