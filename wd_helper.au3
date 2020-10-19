@@ -413,8 +413,8 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
 ; Description ...: This will return how many frames/iframes are in your current window/frame. It will not traverse to nested frames.
-; Syntax ........: _WD_GetFrameCount()
-; Parameters ....:
+; Syntax ........: _WD_GetFrameCount($sSession)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ; Return values .: Success      - Numeric count of frames, 0 or positive number
 ;                  Failure      - blank string
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -446,8 +446,8 @@ EndFunc ;==>_WD_GetFrameCount
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_IsWindowTop
 ; Description ...: This will return a boolean of the session being at the top level, or in a frame(s).
-; Syntax ........: _WD_IsWindowTop()
-; Parameters ....:
+; Syntax ........: _WD_IsWindowTop($sSession)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ; Return values .: Success      - Boolean response
 ;                  Failure      - ""
  ;                  @ERROR       - $_WD_ERROR_Success
@@ -480,7 +480,8 @@ EndFunc ;==>_WD_IsWindowTop
 ; Name ..........: _WD_FrameEnter
 ; Description ...: This will enter the specified frame for subsequent WebDriver operations.
 ; Syntax ........: _WD_FrameEnter($sSession, $sIndexOrID)
-; Parameters ....:
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+;                  $sIndexOrID          - Integer index or Element ID
 ; Return values .: Success      - True
 ;                  Failure      - WD Response error message (E.g. "no such frame")
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -528,8 +529,8 @@ EndFunc ;==>_WD_FrameEnter
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameLeave
 ; Description ...: This will leave the current frame, to its parent, not necessarily the Top, for subsequent WebDriver operations.
-; Syntax ........: _WD_FrameLeave()
-; Parameters ....:
+; Syntax ........: _WD_FrameLeave($sSession)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ; Return values .: Success      True
 ;                  Failure      - WD Response error message (E.g. "chrome not reachable")
 ; Author ........: Decibel
