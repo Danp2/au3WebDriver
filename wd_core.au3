@@ -86,10 +86,9 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
-	- Michał Lipok for all his feedback / suggestions
+	- Michal Lipok for all his feedback / suggestions
 #ce
 #EndRegion Many thanks to:
-
 
 #Region Global Constants
 Global Const $__WDVERSION = "0.3.0.9"
@@ -163,7 +162,6 @@ Global Const $WD_Element_NotInteract = "element not interactable"
 Global Const $WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 #EndRegion Global Constants
 
-
 #Region Global Variables
 Global $_WD_DRIVER = "" ; Path to web driver executable
 Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
@@ -235,7 +233,6 @@ Func _WD_CreateSession($sDesiredCapabilities = Default)
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sSession)
 EndFunc   ;==>_WD_CreateSession
-
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DeleteSession
@@ -309,7 +306,6 @@ Func _WD_Status()
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Status
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Timeouts
 ; Description ...:  Set or retrieve the session timeout parameters
@@ -356,7 +352,6 @@ Func _WD_Timeouts($sSession, $sTimeouts = Default)
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_Timeouts
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Navigate
 ; Description ...: Navigate to the designated URL
@@ -392,7 +387,6 @@ Func _WD_Navigate($sSession, $sURL)
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, 1)
 EndFunc   ;==>_WD_Navigate
-
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Action
@@ -474,7 +468,6 @@ EndFunc   ;==>_WD_Action
 ; Description ...: Perform interactions related to the current window
 ; Syntax ........: _WD_Window($sSession, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;
 ;                  $sCommand  - one of the following actions:
 ;                               | Window - Get or set the current window
 ;                               | Handles - Get all window handles
@@ -489,18 +482,13 @@ EndFunc   ;==>_WD_Action
 ;                               | Frame - Switch to frame
 ;                               | Parent - Switch to parent frame
 ;                               | Print - Generate PDF representation of the paginated document
-
-;
 ;                  $sOption   - [optional] a string value. Default is ''.
-;
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
-;
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_InvalidDataType
 ;                  @EXTENDED    - WinHTTP status code
-;
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -603,7 +591,6 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Window
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FindElement
 ; Description ...: Find element(s) by designated strategy
@@ -694,14 +681,27 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement = Default
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, ($lMultiple) ? $aElements : $sResult)
 EndFunc   ;==>_WD_FindElement
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementAction
 ; Description ...: Perform action on desginated element
 ; Syntax ........: _WD_ElementAction($sSession, $sElement, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sElement            - Element ID from _WDFindElement
-;                  $sCommand            - Action to be performed
+;                  $sCommand            - one of the following actions:
+;                               | Name
+;                               | Rect
+;                               | Text
+;                               | Selected
+;                               | Enabled
+;                               | Displayed
+;                               | Active
+;                               | Attribute
+;                               | Property
+;                               | CSS
+;                               | Clear
+;                               | Click
+;                               | Value
+;                               | Screenshot
 ;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
@@ -794,7 +794,6 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_ElementAction
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands
@@ -842,7 +841,6 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $lAsync = Def
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
-
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Alert
@@ -930,7 +928,6 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Alert
-
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetSource
@@ -1042,7 +1039,6 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Cookies
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Option
 ; Description ...: Sets and get options for the web driver UDF
@@ -1061,7 +1057,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |Console - Destination for console output
 ;
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
-; Return Value ..: Success      - 1 / current value
+; Return Values .: Success      - 1 / current value
 ;                  Failure      - 0
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -1227,7 +1223,6 @@ Func _WD_Startup()
 	Return SetError($_WD_ERROR_Success, 0, $pid)
 EndFunc   ;==>_WD_Startup
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Shutdown
 ; Description ...: Kill the web driver console app
@@ -1244,8 +1239,6 @@ EndFunc   ;==>_WD_Startup
 Func _WD_Shutdown($vDriver = Default)
 	__WD_CloseDriver($vDriver)
 EndFunc   ;==>_WD_Shutdown
-
-
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Get
@@ -1328,7 +1321,6 @@ Func __WD_Get($sURL)
 
 	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
 EndFunc   ;==>__WD_Get
-
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Post
@@ -1414,7 +1406,6 @@ Func __WD_Post($sURL, $sData)
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Post
 
-
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Delete
 ; Description ...: Submit DELETE request to WD console app
@@ -1497,7 +1488,6 @@ Func __WD_Delete($sURL)
 	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
 EndFunc   ;==>__WD_Delete
 
-
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
 ; Description ...: Writes Error to the console and show message-boxes if the script is compiled
@@ -1541,7 +1531,6 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default)
 
 	Return $i_WD_ERROR
 EndFunc ;==>__WD_Error
-
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CloseDriver
