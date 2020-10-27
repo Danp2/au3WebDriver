@@ -748,12 +748,10 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 		Switch $nOutputType
 			Case 1 ; String
 				$sResult = BinaryToString(_Base64Decode($sResponse))
-
 			Case 2 ; Binary
 				$sResult = _Base64Decode($sResponse)
-
 			Case 3 ; Base64
-
+				$sResult = $sResponse
 		EndSwitch
 	Else
 		$sResult = ''
