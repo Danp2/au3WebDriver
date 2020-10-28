@@ -6,10 +6,10 @@
 	- Changed (_WD_WaitElement): Added optional parameter to return element instead of 0/1
 	- Chore: Update function headers (Danp2 and seadoggie01)
 	- Fix (_WD_Screenshot): Edit return value for Base64 screenshots (seadoggie01)
-   - Fix (_WD_WaitElement): Clear variable holding element ID if visibility or enabled check fails
+	- Fix (_WD_WaitElement): Clear variable holding element ID if visibility or enabled check fails
 
 	v0.3.0.9
-   - Changed (_WD_GetTable): Filter html elements by default when using _HtmlTableGetWriteToArray
+	- Changed (_WD_GetTable): Filter html elements by default when using _HtmlTableGetWriteToArray
 	- Fix (_WD_DownloadFile): Handle error from InetRead
 	- Changed (_WD_DownloadFile): Add $iOptions parameter
 	- Chore: Updated wd_demo.au3
