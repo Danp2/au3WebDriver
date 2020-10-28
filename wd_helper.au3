@@ -35,7 +35,7 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
-	- Michał Lipok for all his feedback / suggestions
+	- Michal Lipok for all his feedback / suggestions
 #ce
 #EndRegion Many thanks to:
 
@@ -45,7 +45,7 @@
 ; Name ..........: _WD_NewTab
 ; Description ...: Helper function to create new tab using Javascript
 ; Syntax ........: _WD_NewTab($sSession[, $lSwitch = Default[, $iTimeout = Default[, $sURL = Default[, $sFeatures = Default]]]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $lSwitch             - [optional] Switch session context to new tab? Default is True.
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ;                  $sURL                - [optional] URL to be loaded in new tab
@@ -130,12 +130,11 @@ Func _WD_NewTab($sSession, $lSwitch = Default, $iTimeout = Default, $sURL = Defa
 	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Attach
 ; Description ...: Helper function to attach to existing browser tab
 ; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sString             - String to search for
 ;                  $sMode               - [optional] One of the following search modes:
 ;                               | Title (Default)
@@ -208,7 +207,7 @@ EndFunc
 ; Name ..........: _WD_LinkClickByText
 ; Description ...: Simulate a mouse click on a link with text matching the provided string
 ; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $lPartial = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sText               - Text to find in link
 ;                  $lPartial            - [optional] Search by partial text? Default is True.
 ; Return values .: Success      - None
@@ -247,13 +246,12 @@ Func _WD_LinkClickByText($sSession, $sText, $lPartial = Default)
 	Return SetError($_WD_ERROR_Success)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
 ; Description ...: Wait for a element to be found  in the current tab before returning
 ; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $lVisible = Default[,
 ;                  					$lEnabled = Default[, $lReturnElement = Default]]]]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
@@ -331,12 +329,11 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetMouseElement
 ; Description ...: Retrieves reference to element below mouse pointer
 ; Syntax ........: _WD_GetMouseElement($sSession)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Element ID returned by web driver
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -362,12 +359,11 @@ Func _WD_GetMouseElement($sSession)
 Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetElementFromPoint
-; Description ...:
+; Description ...: Retrieves reference to element at specified point
 ; Syntax ........: _WD_GetElementFromPoint($sSession, $iX, $iY)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $iX                  - an integer value.
 ;                  $iY                  - an integer value.
 ; Return values .: Success      - Element ID returned by web driver
@@ -391,7 +387,6 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LastHTTPResult
 ; Description ...: Return the result of the last WinHTTP request
@@ -409,12 +404,11 @@ Func _WD_LastHTTPResult()
 	Return $_WD_HTTPRESULT
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
 ; Description ...: This will return how many frames/iframes are in your current window/frame. It will not traverse to nested frames.
 ; Syntax ........: _WD_GetFrameCount($sSession)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Success      - Numeric count of frames, 0 or positive number
 ;                  Failure      - blank string
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -442,12 +436,11 @@ Func _WD_GetFrameCount($sSession)
     Return SetError($_WD_ERROR_Success, 0, Number($iValue))
 EndFunc ;==>_WD_GetFrameCount
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_IsWindowTop
 ; Description ...: This will return a boolean of the session being at the top level, or in a frame(s).
 ; Syntax ........: _WD_IsWindowTop($sSession)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Success      - Boolean response
 ;                  Failure      - ""
  ;                  @ERROR       - $_WD_ERROR_Success
@@ -480,7 +473,7 @@ EndFunc ;==>_WD_IsWindowTop
 ; Name ..........: _WD_FrameEnter
 ; Description ...: This will enter the specified frame for subsequent WebDriver operations.
 ; Syntax ........: _WD_FrameEnter($sSession, $sIndexOrID)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sIndexOrID          - Integer index or Element ID
 ; Return values .: Success      - True
 ;                  Failure      - WD Response error message (E.g. "no such frame")
@@ -530,7 +523,7 @@ EndFunc ;==>_WD_FrameEnter
 ; Name ..........: _WD_FrameLeave
 ; Description ...: This will leave the current frame, to its parent, not necessarily the Top, for subsequent WebDriver operations.
 ; Syntax ........: _WD_FrameLeave($sSession)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Success      True
 ;                  Failure      - WD Response error message (E.g. "chrome not reachable")
 ; Author ........: Decibel
@@ -586,10 +579,10 @@ EndFunc ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
 ; Name ..........: _WD_HighlightElement
-; Description ...:
+; Description ...: Highlights the specified element
 ; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sElement            - Element ID from _WDFindElement
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sElement            - Element ID from _WD_FindElement
 ;                  $iMethod             - [optional] an integer value. Default is 1.
 ;                  1=style -> Highlight border dotted red
 ;                  2=style -> Highlight yellow rounded box
@@ -620,10 +613,10 @@ EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_HighlightElements
-; Description ...:
+; Description ...: Highlights the specified elements
 ; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $aElements           - an array of Elements ID from _WDFindElement
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $aElements           - an array of Elements ID from _WD_FindElement
 ;                  $iMethod             - [optional] an integer value. Default is 1.
 ;                  1=style -> Highlight border dotted red
 ;                  2=style -> Highlight yellow rounded box
@@ -653,7 +646,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Name ..........: _WD_LoadWait
 ; Description ...: Wait for a browser page load to complete before returning
 ; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ;                  $sElement            - [optional] Element ID to confirm DOM invalidation
@@ -714,16 +707,21 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
-; Description ...:
+; Description ...: Takes a screenshot of the Window or Element
 ; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $nOutputType = Default]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sElement            - [optional] Element ID from _WDFindElement
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sElement            - [optional] Element ID from _WD_FindElement
 ;                  $nOutputType         - [optional] One of the following output types:
 ;                               | 1 - String (Default)
 ;                               | 2 - Binary
 ;                               | 3 - Base64
-
-; Return values .: None
+; Return values .: Success      - output of specified type
+;                  Failure      - empty string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_NoMatch
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidDataType
+;                  				- $_WD_ERROR_InvalidExpression
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -750,12 +748,10 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 		Switch $nOutputType
 			Case 1 ; String
 				$sResult = BinaryToString(_Base64Decode($sResponse))
-
 			Case 2 ; Binary
 				$sResult = _Base64Decode($sResponse)
-
 			Case 3 ; Base64
-
+				$sResult = $sResponse
 		EndSwitch
 	Else
 		$sResult = ''
@@ -768,7 +764,7 @@ EndFunc
 ; Name ..........: _WD_jQuerify
 ; Description ...: Inject jQuery library into current session
 ; Syntax ........: _WD_jQuerify($sSession[, $sjQueryFile = Default[, $iTimeout = Default]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                : $sjQueryFile         - [optional] Path or URL to jQuery source file
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
 ; Return values .: None
@@ -850,7 +846,7 @@ EndFunc
 ; Name ..........: _WD_ElementOptionSelect
 ; Description ...: Find and click on an option from a Select element
 ; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $sStartElement       - [optional] Element ID of element to use as starting point
@@ -875,13 +871,12 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
     EndIf
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
 ; Description ...: Perform action on desginated Select element
 ; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sSelectElement      - Element ID of Select element from _WDFindElement
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sSelectElement      - Element ID of Select element from _WD_FindElement
 ;                  $sCommand            - Action to be performed
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
@@ -960,7 +955,6 @@ Local $sText, $aOptions
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ConsoleVisible
 ; Description ...: Control visibility of the webdriver console app
@@ -1003,9 +997,9 @@ EndFunc   ;==>_WD_ConsoleVisible
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetShadowRoot
-; Description ...:
+; Description ...: Retrieves the shadow root of an element
 ; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $sStartElement       - [optional] a string value. Default is "".
@@ -1046,12 +1040,11 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SelectFiles
 ; Description ...: Select files for uploading to a website
 ; Syntax ........: _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find. Should point to element of type <input type="file">
 ;                  $sFilename           - Full path of file(s) to upload (use newline character [@LF] to separate files)
@@ -1109,7 +1102,6 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_IsLatestRelease
 ; Description ...: Compares local UDF version to latest release on Github
@@ -1161,7 +1153,6 @@ Func _WD_IsLatestRelease()
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $lResult)
 
 EndFunc
-
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_UpdateDriver
@@ -1325,7 +1316,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $lResult)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DownloadFile
 ; Description ...: Download file and save to disk
@@ -1379,12 +1369,11 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $lResult)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SetTimeouts
 ; Description ...: User friendly function to set webdriver session timeouts
 ; Syntax ........: _WD_SetTimeouts($sSession[, $iPageLoad = Default[, $iScript = Default[, $iImplicitWait = Default]]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $iPageLoad           - [optional] Page load timeout in milliseconds
 ;                  $iScript             - [optional] Script timeout in milliseconds
 ;                  $iImplicitWait       - [optional] Implicit wait timeout in milliseconds
@@ -1465,7 +1454,7 @@ EndFunc
 ; Name ..........: _WD_GetElementById
 ; Description ...: Locate element by id
 ; Syntax ........: _WD_GetElementById($sSession, $sID)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sID                 - ID of desired element
 ; Return values .: Success      - Element ID returned by web driver
 ;                  Failure      - ""
@@ -1473,7 +1462,7 @@ EndFunc
 ;                  				- $_WD_ERROR_Exception
 ;                  				- $_WD_ERROR_NoMatch
 ;                  @EXTENDED    - WinHTTP status code
-;
+; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_FindElement
@@ -1494,7 +1483,7 @@ EndFunc
 ; Name ..........: _WD_GetElementByName
 ; Description ...: Locate element by name
 ; Syntax ........: _WD_GetElementByName($sSession, $sName)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sName               - Name of desired element
 ; Return values .: Success      - Element ID returned by web driver
 ;                  Failure      - ""
@@ -1524,8 +1513,8 @@ EndFunc
 ; Name ..........: _WD_SetElementValue
 ; Description ...: Set value of designated element
 ; Syntax ........: _WD_SetElementValue($sSession, $sElement, $sValue)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sElement            - Element ID from _WDFindElement
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sElement            - Element ID from _WD_FindElement
 ;                  $sValue              - New value for element
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
@@ -1557,8 +1546,8 @@ EndFunc
 ; Description ...: Perform advanced action on desginated element
 ; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[,
 ;                  $iButton = Default[, $iHoldDelay = Default]]]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sElement            - Element ID from _WDFindElement
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sElement            - Element ID from _WD_FindElement
 ;                  $sCommand            - one of the following actions:
 ;                               | hover
 ;                               | doubleclick
@@ -1638,12 +1627,11 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteCdpCommand
 ; Description ...: Execute CDP command
 ; Syntax ........: _WD_ExecuteCdpCommand($sSession, $sCommand, $oParams)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sCommand            - Name of the command
 ;                  $oParams             - Parameters of the command as an object
 ; Return values .: Same as __WD_Post
@@ -1672,7 +1660,7 @@ EndFunc
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
-; Parameters ....: $sSession     - Session ID from _WDCreateSession
+; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sBaseElement - XPath of the table to return
 ; Return values .: Success      - 2D array
 ;                  Failure      - ""
@@ -1729,7 +1717,7 @@ EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
-; Description ...:
+; Description ...: Decodes Base64 strings into binary
 ; Syntax ........: _Base64Decode($input_string)
 ; Parameters ....: $input_string        - string to be decoded
 ; Return values .: Decoded string
