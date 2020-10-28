@@ -1,22 +1,32 @@
- 	v0.3.0.9
-  - Changed (_WD_GetTable): Filter html elements by default when using _HtmlTableGetWriteToArray
-  - Fix (_WD_DownloadFile): Handle error from InetRead
-  - Changed (_WD_DownloadFile): Add $iOptions parameter
-  - Chore: Updated wd_demo.au3
-    - Update binary location of Edge browser
-    - Update DemoDownload example
-    - Misc updates
+	v0.3.1.0
+	- Changed: Cleanup _WD_DownloadFile
+		- Revise error list in header
+		- Remove leftover $_WD_HTTPRESULT coding
+		- Return $_WD_ERROR_NotFound instead of $_WD_ERROR_InvalidValue
+	- Changed (_WD_WaitElement): Added optional parameter to return element instead of 0/1
+	- Chore: Update function headers (Danp2 and seadoggie01)
+	- Fix (_WD_Screenshot): Edit return value for Base64 screenshots (seadoggie01)
+   - Fix (_WD_WaitElement): Clear variable holding element ID if visibility or enabled check fails
+
+	v0.3.0.9
+   - Changed (_WD_GetTable): Filter html elements by default when using _HtmlTableGetWriteToArray
+	- Fix (_WD_DownloadFile): Handle error from InetRead
+	- Changed (_WD_DownloadFile): Add $iOptions parameter
+	- Chore: Updated wd_demo.au3
+		- Update binary location of Edge browser
+		- Update DemoDownload example
+		- Misc updates
 
 	v0.3.0.8
-  - Changed (_WD_WaitElement): Added optional parameter to check elements enabled status
-  - Changed (_WD_GetTable): Optionally support faster _HtmlTableGetWriteToArray
-  - Changed (_WD_ElementAction): Allow retrieving element value with the 'value' command
-  - Chore: Modified #include usage
- 
+	- Changed (_WD_WaitElement): Added optional parameter to check elements enabled status
+	- Changed (_WD_GetTable): Optionally support faster _HtmlTableGetWriteToArray
+	- Changed (_WD_ElementAction): Allow retrieving element value with the 'value' command
+	- Chore: Modified #include usage
+
 	v0.3.0.7
 	- Fixed (__WD_CloseDriver): Properly close webdriver console
-   - Changed (_WD_Option): Added support for "console" option
-   - Changed: Allow logging to file instead of default console
+	- Changed (_WD_Option): Added support for "console" option
+	- Changed: Allow logging to file instead of default console
 
 	v0.3.0.6
 	- Fixed (__WD_Get, __WD_Post, __WD_Delete): Correctly pass detected errors to calling routine
