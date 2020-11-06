@@ -1568,11 +1568,13 @@ Func __WD_CloseDriver($vDriver = Default)
 			For $j = 0 To UBound($aData) - 1
 				If $aData[$j][1] == 'conhost.exe' Then
 					ProcessClose($aData[$j][0])
+					ProcessWaitClose($aData[$j][0], 5)
 				EndIf
 			Next
 		EndIf
 
 		ProcessClose($aProcessList[$i][1])
+		ProcessWaitClose($aProcessList[$i][1], 5)
     Next
 
 EndFunc ;==>__WD_CloseDriver
