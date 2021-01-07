@@ -247,15 +247,21 @@ EndFunc
 Func DemoFrames()
 	Local $sElement
 
-	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_frame_cols")
+	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe")
 	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
 	_WD_FrameEnter($sSession, $sElement)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
+	_WD_FrameEnter($sSession, $sElement)
+    $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
+    _WD_ElementAction($sSession, $sButton, 'click')
+    _WD_LoadWait($sSession, 2000)
 	_WD_FrameLeave($sSession)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
-
+	_WD_FrameLeave($sSession)
+	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 EndFunc
 
 Func DemoActions()
