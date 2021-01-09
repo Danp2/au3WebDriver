@@ -1,3 +1,9 @@
+	v0.3.1.1
+	- Fix (_WD_ElementOptionSelect): Correctly capture and re-throw errors (seadoggie01)
+	- Fix (__WD_CloseDriver): Call ProcessWaitClose to ensure each process closes
+	- Chore: Updated wd_demo.au3
+		- Update DemoFrames example
+
 	v0.3.1.0
 	- Changed: Cleanup _WD_DownloadFile
 		- Revise error list in header
