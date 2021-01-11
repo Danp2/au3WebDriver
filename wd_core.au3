@@ -564,7 +564,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
 
 			Switch $sCommand
-				Case 'maximize', 'minimize', 'fullscreen', 'close', 'switch', 'frame', 'parent', 'print'
+				Case 'maximize', 'minimize', 'fullscreen', 'close', 'switch', 'frame', 'parent'
 					$sResult = $sResponse
 
 				Case 'new'
