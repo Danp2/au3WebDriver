@@ -1558,7 +1558,8 @@ EndFunc
 ;                               | hover
 ;                               | doubleclick
 ;                               | rightclick
-;                               |
+;                               | hide
+;                               | show
 ;                  $iXOffset            - [optional] X Offset. Default is 0
 ;                  $iYOffset            - [optional] Y Offset. Default is 0
 ;                  $iButton             - [optional] Mouse button. Default is 0
@@ -1579,7 +1580,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
-	Local $sAction, $iErr, $sResult
+	Local $sAction, $sSubAction, $sJavascript, $iErr, $sResult, $sJsonElement, $sResponse, $oJSON, $iActionType = 1
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -1602,36 +1603,57 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iHoldDelay: " & $iHoldDelay), 0, "")
 	EndIf
 
-	; Default "hover" action
-	$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,'
-	$sAction &= '"x":' & $iXOffset & ',"y":' & $iYOffset & ',"type":"pointerMove","origin":{"ELEMENT":"'
-	$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}'
-
 	Switch $sCommand
 		Case 'hover'
+			$sSubAction = ''
 
 		Case 'doubleclick'
-			$sAction &= ',{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"},{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"}'
+			$sSubAction = ',{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"},{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"}'
 
 		Case 'rightclick'
-			$sAction &= ',{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}'
+			$sSubAction = ',{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}'
 
 		Case 'clickandhold'
-			$sAction &= ',{"button":' & $iButton & ',"type":"pointerDown"},{"type": "pause", "duration": ' & $iHoldDelay & '},{"button":2,"type":"pointerUp"}'
+			$sSubAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"type": "pause", "duration": ' & $iHoldDelay & '},{"button":2,"type":"pointerUp"}'
+
+		Case 'hide'
+			$iActionType = 2
+			$sJavascript = "arguments[0].style='display: none'; return true;"
+
+		Case 'show'
+			$iActionType = 2
+			$sJavascript = "arguments[0].style='display: normal'; return true;"
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
-	; Close action string
-	$sAction &= ']}]}'
+	Switch $iActionType
+		Case 1
+			; Default "hover" action
+			$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,'
+			$sAction &= '"x":' & $iXOffset & ',"y":' & $iYOffset & ',"type":"pointerMove","origin":{"ELEMENT":"'
+			$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}'
 
-	$sResult = _WD_Action($sSession, 'actions', $sAction)
-	$iErr = @error
+			; Append additional action
+			$sAction &= $sSubAction
+
+			; Close action string
+			$sAction &= ']}]}'
+
+			$sResult = _WD_Action($sSession, 'actions', $sAction)
+			$iErr = @error
+		Case 2
+			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+			$sResponse = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement)
+			$iErr = @error
+			$oJSON = Json_Decode($sResponse)
+			$sResult = Json_Get($oJSON, "[value]")
+	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
-EndFunc
+EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteCdpCommand
