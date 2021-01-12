@@ -702,6 +702,10 @@ EndFunc   ;==>_WD_FindElement
 ;                               | Click
 ;                               | Value
 ;                               | Screenshot
+;                               | Shadow	 - Get element's shadow root
+;                               | CompRole	 - Get element's computed role
+;                               | CompLabel	 - Get element's computed label
+;
 ;                  $sOption             - [optional] a string value. Default is ''.
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
@@ -728,7 +732,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
-		Case 'name', 'rect', 'text', 'selected', 'enabled', 'displayed', 'screenshot'
+		Case 'name', 'rect', 'text', 'selected', 'enabled', 'displayed', 'screenshot', 'shadow', 'comprole', 'complabel'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand)
 			$iErr = @error
 
@@ -754,7 +758,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value|Screenshot) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value|Screenshot|Shadow|CompRole|CompLabel) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
