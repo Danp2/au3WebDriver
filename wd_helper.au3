@@ -1070,8 +1070,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 
 
 	If $iErr = $_WD_ERROR_Success Then
-		$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-		$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].shadowRoot", $sJsonElement)
+		$sResponse = _WD_ElementAction($sSession, $sElement, 'shadow')																					 
 		$oJson = Json_Decode($sResponse)
 		$sResult  = Json_Get($oJson, "[value][" & $_WD_ELEMENT_ID & "]")
     EndIf
