@@ -761,6 +761,43 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_PrintToPDF
+; Description ...: Print the current tab in paginated PDF format
+; Syntax ........: _WD_PrintToPDF($sSession[, $sOptions = Default]])
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                : $sOptions            - [optional] JSON string of formatting directives
+; Return values .: Success      - String containing PDF contents
+;                  Failure      - empty string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_InvalidDataType
+;
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517)
+; Related .......:
+; Link ..........: https://www.w3.org/TR/webdriver/#print-page
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_PrintToPDF($sSession, $sOptions = Default)
+	Local Const $sFuncName = "_WD_PrintToPDF"
+	Local $sResponse, $sResult, $iErr
+
+	If $sOptions = Default Then $sOptions = $_WD_EmptyDict
+
+	$sResponse = _WD_Window($sSession, 'print', $sOptions)
+	$iErr = @error
+
+	If $iErr = $_WD_ERROR_Success Then
+		$sResult = _Base64Decode($sResponse)
+	Else
+		$sResult = ''
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+EndFunc 
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_jQuerify
 ; Description ...: Inject jQuery library into current session
 ; Syntax ........: _WD_jQuerify($sSession[, $sjQueryFile = Default[, $iTimeout = Default]])
