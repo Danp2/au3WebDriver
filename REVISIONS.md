@@ -1,3 +1,13 @@
+	v0.4.0.1
+	- Added: _WD_PrintToPDF
+	- Fix (_WD_Window): Properly handle 'print' result
+	- Changed (_WD_ElementActionEx): Added 'hide' and 'show' options
+	- Changed (_WD_ElementAction): Added support for Shadow, CompRole & CompLabel actions
+	- Changed (_WD_GetShadowRoot): Use _WD_ElementAction instead of _WD_ExecuteScript
+	- Changed (_WD_NewTab): Use native Webdriver commands when Javascript isn't required
+	- Changed (_WD_FindElement): Support shadow roots
+	- Changed (_WD_Window): Support 'full' option for screenshots
+
 	v0.3.1.1
 	- Fix (_WD_ElementOptionSelect): Correctly capture and re-throw errors (seadoggie01)
 	- Fix (__WD_CloseDriver): Call ProcessWaitClose to ensure each process closes
