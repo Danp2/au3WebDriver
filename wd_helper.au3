@@ -71,60 +71,72 @@ Func _WD_NewTab($sSession, $lSwitch = Default, $iTimeout = Default, $sURL = Defa
 	If $sURL = Default Then $sURL = ''
 	If $sFeatures = Default Then $sFeatures = ''
 
-	Local $aHandles = _WD_Window($sSession, 'handles')
-
-	If @error <> $_WD_ERROR_Success Or Not IsArray($aHandles) Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
-	EndIf
-
-	Local $iTabCount = UBound($aHandles)
-
-	; Get handle to current last tab
-	$sLastTabHandle = $aHandles[$iTabCount - 1]
-
 	; Get handle for current tab
 	Local $sCurrentTabHandle = _WD_Window($sSession, 'window')
 
-	If @error = $_WD_ERROR_Success Then
-		; Search for current tab handle in array of tab handles. If not found,
-		; then make the current tab handle equal to the last tab
-		$iTabIndex = _ArraySearch($aHandles, $sCurrentTabHandle)
+	If $sFeatures = '' Then
+		$sTabHandle = _WD_Window($sSession, 'new', '{"type":"tab"}')
 
-		If @error Then
+		If @error = $_WD_ERROR_Success Then
+			_WD_Window($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
+
+			If $sURL Then _WD_Navigate($sSession, $sURL)
+
+			If Not $lSwitch Then _WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
+		EndIf
+	Else
+		Local $aHandles = _WD_Window($sSession, 'handles')
+
+		If @error <> $_WD_ERROR_Success Or Not IsArray($aHandles) Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+		EndIf
+
+		Local $iTabCount = UBound($aHandles)
+
+		; Get handle to current last tab
+		$sLastTabHandle = $aHandles[$iTabCount - 1]
+
+		If @error = $_WD_ERROR_Success Then
+			; Search for current tab handle in array of tab handles. If not found,
+			; then make the current tab handle equal to the last tab
+			$iTabIndex = _ArraySearch($aHandles, $sCurrentTabHandle)
+
+			If @error Then
+				$sCurrentTabHandle = $sLastTabHandle
+				$iTabIndex = $iTabCount - 1
+			EndIf
+		Else
+			_WD_Window($sSession, 'Switch', '{"handle":"' & $sLastTabHandle & '"}')
 			$sCurrentTabHandle = $sLastTabHandle
 			$iTabIndex = $iTabCount - 1
 		EndIf
-	Else
-		_WD_Window($sSession, 'Switch', '{"handle":"' & $sLastTabHandle & '"}')
-		$sCurrentTabHandle = $sLastTabHandle
-		$iTabIndex = $iTabCount - 1
-	EndIf
 
-	_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
+		_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
 
-	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
-	EndIf
-
-	$hWaitTimer = TimerInit()
-
-	While 1
- 		$aTemp = _WD_Window($sSession, 'handles')
-
-		If UBound($aTemp) > $iTabCount Then
-			$sTabHandle = $aTemp[$iTabIndex + 1]
-			ExitLoop
+		If @error <> $_WD_ERROR_Success Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 		EndIf
 
-		If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
+		$hWaitTimer = TimerInit()
 
-		Sleep(10)
-	WEnd
+		While 1
+			$aTemp = _WD_Window($sSession, 'handles')
 
-	If $lSwitch Then
-		_WD_Window($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
-	Else
-		_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
+			If UBound($aTemp) > $iTabCount Then
+				$sTabHandle = $aTemp[$iTabIndex + 1]
+				ExitLoop
+			EndIf
+
+			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
+
+			Sleep(10)
+		WEnd
+
+		If $lSwitch Then
+			_WD_Window($sSession, 'Switch', '{"handle":"' & $sTabHandle & '"}')
+		Else
+			_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
+		EndIf
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
