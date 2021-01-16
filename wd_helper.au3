@@ -1,6 +1,6 @@
-#Include-once
+#include-once
 #include "wd_core.au3"
-#include <File.au3>			; Needed for _WD_UpdateDriver
+#include <File.au3> ; Needed for _WD_UpdateDriver
 #include <InetConstants.au3>
 
 #Region Copyright
@@ -368,7 +368,7 @@ Func _WD_GetMouseElement($sSession)
 		__WD_ConsoleWrite($sFuncName & ': ' & IsObj($sElement) & @CRLF)
 	EndIf
 
-Return SetError($_WD_ERROR_Success, 0, $sElement)
+	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
@@ -389,7 +389,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local $sResponse, $sElement, $oJSON
-    Local $sScript = "return document.elementFromPoint(arguments[0], arguments[1]);"
+	Local $sScript = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sParams = $iX & ", " & $iY
 
 	$sResponse = _WD_ExecuteScript($sSession, $sScript, $sParams)
@@ -433,20 +433,20 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetFrameCount($sSession)
-    Local Const $sFuncName = "_WD_GetFrameCount"
-    Local $sResponse, $oJSON, $iValue
+	Local Const $sFuncName = "_WD_GetFrameCount"
+	Local $sResponse, $oJSON, $iValue
 
-    $sResponse = _WD_ExecuteScript($sSession, "return window.frames.length")
+	$sResponse = _WD_ExecuteScript($sSession, "return window.frames.length")
 
 	If @error <> $_WD_ERROR_Success Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
-    $oJSON = Json_Decode($sResponse)
-    $iValue = Json_Get($oJSON, "[value]")
+	$oJSON = Json_Decode($sResponse)
+	$iValue = Json_Get($oJSON, "[value]")
 
-    Return SetError($_WD_ERROR_Success, 0, Number($iValue))
-EndFunc ;==>_WD_GetFrameCount
+	Return SetError($_WD_ERROR_Success, 0, Number($iValue))
+EndFunc   ;==>_WD_GetFrameCount
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_IsWindowTop
@@ -455,7 +455,7 @@ EndFunc ;==>_WD_GetFrameCount
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Success      - Boolean response
 ;                  Failure      - ""
- ;                  @ERROR       - $_WD_ERROR_Success
+;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
@@ -466,20 +466,20 @@ EndFunc ;==>_WD_GetFrameCount
 ; ===============================================================================================================================
 Func _WD_IsWindowTop($sSession)
 	Local Const $sFuncName = "_WD_IsWindowTop"
-    Local $sResponse, $oJSON
-    Local $blnResult
+	Local $sResponse, $oJSON
+	Local $blnResult
 
-    $sResponse = _WD_ExecuteScript($sSession, "return window.top == window.self")
+	$sResponse = _WD_ExecuteScript($sSession, "return window.top == window.self")
 
 	If @error <> $_WD_ERROR_Success Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
-    $oJSON = Json_Decode($sResponse)
-    $blnResult = Json_Get($oJSON, "[value]")
+	$oJSON = Json_Decode($sResponse)
+	$blnResult = Json_Get($oJSON, "[value]")
 
-    Return SetError($_WD_ERROR_Success, 0, $blnResult)
-EndFunc ;==>_WD_IsWindowTop
+	Return SetError($_WD_ERROR_Success, 0, $blnResult)
+EndFunc   ;==>_WD_IsWindowTop
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameEnter
@@ -500,36 +500,36 @@ EndFunc ;==>_WD_IsWindowTop
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $sIndexOrID)
 	Local Const $sFuncName = "_WD_FrameEnter"
-    Local $sOption
-    Local $sResponse, $oJSON
-    Local $sValue
+	Local $sOption
+	Local $sResponse, $oJSON
+	Local $sValue
 
-    ;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-    If IsInt($sIndexOrID) = True Then
-        $sOption = '{"id":' & $sIndexOrID & '}'
-    Else
+	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
+	If IsInt($sIndexOrID) = True Then
+		$sOption = '{"id":' & $sIndexOrID & '}'
+	Else
 		$sOption = '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $sIndexOrID & '"}}'
-    EndIf
+	EndIf
 
-    $sResponse = _WD_Window($sSession, "frame", $sOption)
+	$sResponse = _WD_Window($sSession, "frame", $sOption)
 
 	If @error <> $_WD_ERROR_Success Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
-    $oJSON = Json_Decode($sResponse)
-    $sValue = Json_Get($oJSON, "[value]")
+	$oJSON = Json_Decode($sResponse)
+	$sValue = Json_Get($oJSON, "[value]")
 
-    ;*** Evaluate the response
-    If $sValue <> Null Then
-        $sValue = Json_Get($oJSON, "[value][error]")
-    Else
-        $sValue = True
-    EndIf
+	;*** Evaluate the response
+	If $sValue <> Null Then
+		$sValue = Json_Get($oJSON, "[value][error]")
+	Else
+		$sValue = True
+	EndIf
 
-    Return SetError($_WD_ERROR_Success, 0, $sValue)
+	Return SetError($_WD_ERROR_Success, 0, $sValue)
 
-EndFunc ;==>_WD_FrameEnter
+EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameLeave
@@ -547,47 +547,47 @@ EndFunc ;==>_WD_FrameEnter
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
 	Local Const $sFuncName = "_WD_FrameLeave"
-    Local $sOption
-    Local $sResponse, $oJSON, $asJSON
-    Local $sValue
+	Local $sOption
+	Local $sResponse, $oJSON, $asJSON
+	Local $sValue
 
-    $sOption = '{}'
+	$sOption = '{}'
 
-    $sResponse = _WD_Window($sSession, "parent", $sOption)
+	$sResponse = _WD_Window($sSession, "parent", $sOption)
 
 	If @error <> $_WD_ERROR_Success Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
-    ;Chrome--
-    ;   Good: '{"value":null}'
-    ;   Bad: '{"value":{"error":"chrome not reachable"....
-    ;Firefox--
-    ;   Good: '{"value": {}}'
-    ;   Bad: '{"value":{"error":"unknown error","message":"Failed to decode response from marionette","stacktrace":""}}'
+	;Chrome--
+	;   Good: '{"value":null}'
+	;   Bad: '{"value":{"error":"chrome not reachable"....
+	;Firefox--
+	;   Good: '{"value": {}}'
+	;   Bad: '{"value":{"error":"unknown error","message":"Failed to decode response from marionette","stacktrace":""}}'
 
-    $oJSON = Json_Decode($sResponse)
-    $sValue = Json_Get($oJSON, "[value]")
+	$oJSON = Json_Decode($sResponse)
+	$sValue = Json_Get($oJSON, "[value]")
 
-    ;*** Is this something besides a Chrome PASS?
-    If $sValue <> Null Then
-        ;*** Check for a nested JSON object
-        If Json_IsObject($sValue) = True Then
-            $asJSON = Json_ObjGetKeys($sValue)
+	;*** Is this something besides a Chrome PASS?
+	If $sValue <> Null Then
+		;*** Check for a nested JSON object
+		If Json_IsObject($sValue) = True Then
+			$asJSON = Json_ObjGetKeys($sValue)
 
-            ;*** Is this an empty nested object
-            If UBound($asJSON) = 0 Then ;Firefox PASS
-                $sValue = True
-            Else ;Chrome and Firefox FAIL
-                $sValue = $asJSON[0] & ":" & Json_Get($oJSON, "[value][" & $asJSON[0] & "]")
-            EndIf
-        EndIf
-    Else ;Chrome PASS
-        $sValue = True
-    EndIf
+			;*** Is this an empty nested object
+			If UBound($asJSON) = 0 Then ;Firefox PASS
+				$sValue = True
+			Else ;Chrome and Firefox FAIL
+				$sValue = $asJSON[0] & ":" & Json_Get($oJSON, "[value][" & $asJSON[0] & "]")
+			EndIf
+		EndIf
+	Else ;Chrome PASS
+		$sValue = True
+	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sValue)
-EndFunc ;==>_WD_FrameLeave
+EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
 ; Name ..........: _WD_HighlightElement
@@ -609,18 +609,18 @@ EndFunc ;==>_WD_FrameLeave
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
-    Local Const $aMethod[] = ["border: 2px dotted red", _
-            "background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
-            "border:2px dotted  red;background: #FFFF66; border-radius: 5px; padding-left: 3px;"]
+	Local Const $aMethod[] = ["border: 2px dotted red", _
+			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
+			"border:2px dotted  red;background: #FFFF66; border-radius: 5px; padding-left: 3px;"]
 
 	If $iMethod = Default Then $iMethod = 1
-    If $iMethod < 1 Or $iMethod > 3 Then $iMethod = 1
+	If $iMethod < 1 Or $iMethod > 3 Then $iMethod = 1
 
 	Local $sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-    Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod - 1] & "'; return true;", $sJsonElement)
-    Local $oJSON = Json_Decode($sResponse)
-    Local $sResult = Json_Get($oJSON, "[value]")
-    Return ($sResult = "true" ? SetError(0, 0, $sResult) : SetError(1, 0, False))
+	Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod - 1] & "'; return true;", $sJsonElement)
+	Local $oJSON = Json_Decode($sResponse)
+	Local $sResult = Json_Get($oJSON, "[value]")
+	Return ($sResult = "true" ? SetError(0, 0, $sResult) : SetError(1, 0, False))
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -644,14 +644,14 @@ EndFunc   ;==>_WD_HighlightElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElements($sSession, $aElements, $iMethod = Default)
-    Local $iHighlightedElements = 0
+	Local $iHighlightedElements = 0
 
 	If $iMethod = Default Then $iMethod = 1
 
-    For $i = 0 To UBound($aElements) - 1
-        $iHighlightedElements += (_WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
-    Next
-    Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError(1, 0, False))
+	For $i = 0 To UBound($aElements) - 1
+		$iHighlightedElements += (_WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
+	Next
+	Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError(1, 0, False))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
@@ -727,7 +727,7 @@ EndFunc
 ;                               | 1 - String (Default)
 ;                               | 2 - Binary
 ;                               | 3 - Base64
-; Return values .: Success      - output of specified type
+; Return values .: Success      - output of specified type (PNG format)
 ;                  Failure      - empty string
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_NoMatch
@@ -807,7 +807,7 @@ Func _WD_PrintToPDF($sSession, $sOptions = Default)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
-EndFunc 
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_jQuerify
@@ -839,31 +839,31 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 
 	Local $jQueryLoader = _
-	"(function(jqueryUrl, callback) {" & _
-	"    if (typeof jqueryUrl != 'string') {" & _
-	"        jqueryUrl = 'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js';" & _
-	"    }" & _
-	"    if (typeof jQuery == 'undefined') {" & _
-	"        var script = document.createElement('script');" & _
-	"        var head = document.getElementsByTagName('head')[0];" & _
-	"        var done = false;" & _
-	"        script.onload = script.onreadystatechange = (function() {" & _
-	"            if (!done && (!this.readyState || this.readyState == 'loaded' " & _
-	"                    || this.readyState == 'complete')) {" & _
-	"                done = true;" & _
-	"                script.onload = script.onreadystatechange = null;" & _
-	"                head.removeChild(script);" & _
-	"                callback();" & _
-	"            }" & _
-	"        });" & _
-	"        script.src = jqueryUrl;" & _
-	"        head.appendChild(script);" & _
-	"    }" & _
-	"    else {" & _
-	"        jQuery.noConflict();" & _
-	"        callback();" & _
-	"    }" & _
-	"})(arguments[0], arguments[arguments.length - 1]);"
+			"(function(jqueryUrl, callback) {" & _
+			"    if (typeof jqueryUrl != 'string') {" & _
+			"        jqueryUrl = 'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js';" & _
+			"    }" & _
+			"    if (typeof jQuery == 'undefined') {" & _
+			"        var script = document.createElement('script');" & _
+			"        var head = document.getElementsByTagName('head')[0];" & _
+			"        var done = false;" & _
+			"        script.onload = script.onreadystatechange = (function() {" & _
+			"            if (!done && (!this.readyState || this.readyState == 'loaded' " & _
+			"                    || this.readyState == 'complete')) {" & _
+			"                done = true;" & _
+			"                script.onload = script.onreadystatechange = null;" & _
+			"                head.removeChild(script);" & _
+			"                callback();" & _
+			"            }" & _
+			"        });" & _
+			"        script.src = jqueryUrl;" & _
+			"        head.appendChild(script);" & _
+			"    }" & _
+			"    else {" & _
+			"        jQuery.noConflict();" & _
+			"        callback();" & _
+			"    }" & _
+			"})(arguments[0], arguments[arguments.length - 1]);"
 
 	_WD_ExecuteScript($sSession, $jQueryLoader, $sjQueryFile, True)
 
@@ -914,15 +914,15 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
-    If $sStartElement = Default Then $sStartElement = ""
+	If $sStartElement = Default Then $sStartElement = ""
 
-    Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
 
-    If @error = $_WD_ERROR_Success Then
-        _WD_ElementAction($sSession, $sElement, 'click')
-    EndIf
-	
-    Return SetError(@error, @extended)
+	If @error = $_WD_ERROR_Success Then
+		_WD_ElementAction($sSession, $sElement, 'click')
+	EndIf
+
+	Return SetError(@error, @extended)
 
 EndFunc
 
@@ -950,9 +950,9 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
-Local Const $sFuncName = "_WD_ElementSelectAction"
-Local $sNodeName, $sJsonElement, $sResponse, $oJson, $vResult
-Local $sText, $aOptions
+	Local Const $sFuncName = "_WD_ElementSelectAction"
+	Local $sNodeName, $sJsonElement, $sResponse, $oJSON, $vResult
+	Local $sText, $aOptions
 
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
@@ -967,8 +967,8 @@ Local $sText, $aOptions
 				$iErr = @error
 
 				If $iErr = $_WD_ERROR_Success Then
-					$oJson = Json_Decode($sResponse)
-					$vResult  = Json_Get($oJson, "[value]")
+					$oJSON = Json_Decode($sResponse)
+					$vResult = Json_Get($oJSON, "[value]")
 				EndIf
 
 			Case 'options'
@@ -986,17 +986,17 @@ Local $sText, $aOptions
 						$iErr = @error
 
 						If $iErr = $_WD_ERROR_Success Then
-							$oJson = Json_Decode($sResponse)
-							$sText &= (($sText <> "") ? @CRLF : "") & Json_Get($oJson, "[value]")
+							$oJSON = Json_Decode($sResponse)
+							$sText &= (($sText <> "") ? @CRLF : "") & Json_Get($oJSON, "[value]")
 						EndIf
 					Next
 
 					Local $aOut[0][2]
-					_ArrayAdd($aOut , $sText , 0 , Default , Default, 1)
+					_ArrayAdd($aOut, $sText, 0, Default, Default, 1)
 					$vResult = $aOut
 				EndIf
-		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
+			Case Else
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
 
 		EndSwitch
 	Else
@@ -1032,18 +1032,18 @@ Func _WD_ConsoleVisible($lVisible = Default)
 	$pid = ProcessExists($sFile)
 
 	If $pid Then
-		$aWinList=WinList("[CLASS:ConsoleWindowClass]")
+		$aWinList = WinList("[CLASS:ConsoleWindowClass]")
 
-		For $i=1 To $aWinList[0][0]
+		For $i = 1 To $aWinList[0][0]
 			$pid2 = WinGetProcess($aWinList[$i][1])
 
 			If $pid2 = $pid Then
-				$hWnd=$aWinList[$i][1]
+				$hWnd = $aWinList[$i][1]
 				ExitLoop
 			EndIf
 		Next
 
-		If $hWnd<>0 Then
+		If $hWnd <> 0 Then
 			WinSetState($hWnd, "", $lVisible ? @SW_SHOW : @SW_HIDE)
 		EndIf
 	EndIf
@@ -1073,7 +1073,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; ===============================================================================================================================
 Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_GetShadowRoot"
-	Local $sResponse, $sResult, $sJsonElement, $oJson
+	Local $sResponse, $sResult, $sJsonElement, $oJSON
 
 	If $sStartElement = Default Then $sStartElement = ""
 
@@ -1119,7 +1119,7 @@ EndFunc
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectUploadFile"
 
-	Local $sResponse, $sResult, $sJsonElement, $oJson, $sSavedEscape
+	Local $sResponse, $sResult, $sJsonElement, $oJSON, $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
@@ -1141,9 +1141,9 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 
 		If $iErr = $_WD_ERROR_Success Then
 			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-			$sResponse  = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement)
-			$oJson = Json_Decode($sResponse)
-			$sResult  = Json_Get($oJson, "[value]")
+			$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement)
+			$oJSON = Json_Decode($sResponse)
+			$sResult = Json_Get($oJSON, "[value]")
 		Else
 			$sResult = "0"
 		EndIf
@@ -1350,7 +1350,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $lFlag64 = Default, $lF
 			FileDelete($sInstallDir & "\" & $sDriverEXE)
 
 			; Extract new instance of webdriver
-			$oShell = ObjCreate ("Shell.Application")
+			$oShell = ObjCreate("Shell.Application")
 			$FilesInZip = $oShell.NameSpace($sTempFile).items
 			$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
 			FileDelete($sTempFile)
@@ -1732,7 +1732,7 @@ Func _WD_ExecuteCdpCommand($sSession, $sCommand, $oParams)
 	Return SetError(__WD_Error($sFuncName, @error), @extended, $sResponse)
 EndFunc
 
- ; #FUNCTION# ====================================================================================================================
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
@@ -1752,8 +1752,8 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetTable($sSession, $sBaseElement)
-    Local Const $sFuncName = "_WD_GetTable"
-    Local $aElements, $iLines, $iColumns, $iRow, $iColumn
+	Local Const $sFuncName = "_WD_GetTable"
+	Local $aElements, $iLines, $iColumns, $iRow, $iColumn
 	Local $sElement, $sHTML
 
 	; Determine if optional UDF is available
@@ -1788,7 +1788,7 @@ Func _WD_GetTable($sSession, $sBaseElement)
 		$aTable = _HtmlTableGetWriteToArray($sHTML, 1, False, $_WD_IFILTER)
 	EndIf
 
-    Return $aTable
+	Return $aTable
 EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
@@ -1806,36 +1806,36 @@ EndFunc   ;==>_WD_GetTable
 ; ===============================================================================================================================
 Func _Base64Decode($input_string)
 
-    Local $struct = DllStructCreate("int")
+	Local $struct = DllStructCreate("int")
 
-    Local $a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
-            "str", $input_string, _
-            "int", 0, _
-            "int", 1, _
-            "ptr", 0, _
-            "ptr", DllStructGetPtr($struct, 1), _
-            "ptr", 0, _
-            "ptr", 0)
+	Local $a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
+			"str", $input_string, _
+			"int", 0, _
+			"int", 1, _
+			"ptr", 0, _
+			"ptr", DllStructGetPtr($struct, 1), _
+			"ptr", 0, _
+			"ptr", 0)
 
-    If @error Or Not $a_Call[0] Then
-        Return SetError(1, 0, "") ; error calculating the length of the buffer needed
-    EndIf
+	If @error Or Not $a_Call[0] Then
+		Return SetError(1, 0, "") ; error calculating the length of the buffer needed
+	EndIf
 
-    Local $a = DllStructCreate("byte[" & DllStructGetData($struct, 1) & "]")
+	Local $a = DllStructCreate("byte[" & DllStructGetData($struct, 1) & "]")
 
-    $a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
-            "str", $input_string, _
-            "int", 0, _
-            "int", 1, _
-            "ptr", DllStructGetPtr($a), _
-            "ptr", DllStructGetPtr($struct, 1), _
-            "ptr", 0, _
-            "ptr", 0)
+	$a_Call = DllCall("Crypt32.dll", "int", "CryptStringToBinary", _
+			"str", $input_string, _
+			"int", 0, _
+			"int", 1, _
+			"ptr", DllStructGetPtr($a), _
+			"ptr", DllStructGetPtr($struct, 1), _
+			"ptr", 0, _
+			"ptr", 0)
 
-    If @error Or Not $a_Call[0] Then
-        Return SetError(2, 0, ""); error decoding
-    EndIf
+	If @error Or Not $a_Call[0] Then
+		Return SetError(2, 0, "") ; error decoding
+	EndIf
 
-    Return DllStructGetData($a, 1)
+	Return DllStructGetData($a, 1)
 
 EndFunc   ;==>_Base64Decode
