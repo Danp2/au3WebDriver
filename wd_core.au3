@@ -308,6 +308,45 @@ Func _WD_Status()
 EndFunc   ;==>_WD_Status
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetSession
+; Description ...:  Get details on existing session
+; Syntax ........: _WD_GetSession($sSession)
+; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Return values .: Success      - Dictionary object with "sessionId" and "capabilities" items
+;                  Failure      - ''
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.w3.org/TR/webdriver#get-session
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetSession($sSession)
+	Local Const $sFuncName = "_WD_GetSession"
+
+	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
+	Local $iErr = @error, $sResult = ''
+
+	If $iErr = $_WD_ERROR_Success Then
+		Local $oJSON = Json_Decode($sResponse)
+		$sResult = Json_Get($oJSON, "[value]")
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+	EndIf
+
+	If $iErr Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
+	EndIf
+
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+EndFunc   ;==>_WD_GetSession
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Timeouts
 ; Description ...:  Set or retrieve the session timeout parameters
 ; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = Default])
