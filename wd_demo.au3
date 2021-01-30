@@ -142,9 +142,9 @@ EndFunc
 
 Func DemoNavigation()
 	_WD_Navigate($sSession, "http://google.com")
-	_WD_NewTab($sSession)
-	_WD_Navigate($sSession, "http://yahoo.com")
-	_WD_NewTab($sSession, True, -1, 'http://bing.com', 'width=200,height=200')
+	_WD_NewTab($sSession, Default, Default, "http://yahoo.com")
+;	_WD_Navigate($sSession, "http://yahoo.com")
+	_WD_NewTab($sSession, True, Default, 'http://bing.com', 'width=200,height=200')
 
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
 	_WD_Attach($sSession, "google.com", "URL")
@@ -154,7 +154,7 @@ Func DemoNavigation()
 EndFunc
 
 Func DemoElements()
-	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $sDecode, $hFileOpen
+	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $hFileOpen
 
 	_WD_Navigate($sSession, "http://google.com")
 
@@ -209,16 +209,42 @@ Func DemoElements()
 	; Take element screenshot
 	$sResponse = _WD_ElementAction($sSession, $sElement, 'screenshot')
 	$bDecode = _Base64Decode($sResponse)
-	$sDecode = BinaryToString($bDecode)
 
 	$hFileOpen = FileOpen("Element.png", $FO_BINARY + $FO_OVERWRITE)
-	FileWrite($hFileOpen, $sDecode)
+	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
+
+	_WD_Navigate($sSession, "http://demo.guru99.com/test/simple_context_menu.html")
+
+	Sleep(2000)
+
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[contains(text(),'Double-Click Me To See Alert')]")
+
+	If @error = $_WD_ERROR_Success Then
+		_WD_ElementActionEx($sSession, $sElement, "doubleclick")
+	EndIf
+
+	Sleep(2000)
+	_WD_Alert($sSession, 'accept')
+
+	_WD_ElementActionEx($sSession, $sElement, "hide")
+	Sleep(5000)
+	_WD_ElementActionEx($sSession, $sElement, "show")
+
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//span[@class='context-menu-one btn btn-neutral']")
+
+	If @error = $_WD_ERROR_Success Then
+		_WD_ElementActionEx($sSession, $sElement, "rightclick")
+	EndIf
 EndFunc
 
 Func DemoScript()
 	_WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
-	_WD_Alert($sSession, 'Dismiss')
+	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
+	_WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}')
+	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
+	_WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});")
+	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
 EndFunc
 
 Func DemoCookies()
@@ -315,7 +341,7 @@ Func DemoDownload()
 EndFunc
 
 Func DemoWindows()
-	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2, $bDecode, $sDecode, $oWRect
+	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2, $bDecode, $oWRect
 
 	$sHnd1 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
 	_WD_Navigate($sSession, "http://google.com")
@@ -332,20 +358,18 @@ Func DemoWindows()
 	_WD_Window($sSession, "switch", $sHnd1)
 	$sResponse = _WD_Window($sSession, 'screenshot')
 	$bDecode = _Base64Decode($sResponse)
-	$sDecode = BinaryToString($bDecode)
 
 	$hFileOpen = FileOpen("Screen1.png", $FO_BINARY + $FO_OVERWRITE)
-	FileWrite($hFileOpen, $sDecode)
+	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
 
 	; Take another one
 	_WD_Window($sSession, "switch", $sHnd2)
 	$sResponse = _WD_Window($sSession, 'screenshot')
 	$bDecode = _Base64Decode($sResponse)
-	$sDecode = BinaryToString($bDecode)
 
 	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
-	FileWrite($hFileOpen, $sDecode)
+	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
 EndFunc
 
@@ -365,6 +389,7 @@ _WD_Option('DriverParams', '--log trace')
 _WD_Option('Port', 4444)
 
 $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
+
 EndFunc
 
 Func SetupChrome()
@@ -378,7 +403,7 @@ EndFunc
 Func SetupEdge()
 _WD_Option('Driver', 'msedgedriver.exe')
 _WD_Option('Port', 9515)
-_WD_Option('DriverParams', '--verbose')
+_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
 $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"binary": "' & StringReplace (@ProgramFilesDir, "\", "/") & '/Microsoft/Edge/Application/msedge.exe", "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false}}}}'
 EndFunc
