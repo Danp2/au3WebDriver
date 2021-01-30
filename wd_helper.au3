@@ -505,7 +505,7 @@ Func _WD_FrameEnter($sSession, $sIndexOrID)
 	Local $sValue
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	If IsInt($sIndexOrID) = True Then
+	If IsInt($sIndexOrID) Or IsKeyword($sIndexOrID) = $KEYWORD_NULL Then
 		$sOption = '{"id":' & $sIndexOrID & '}'
 	Else
 		$sOption = '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $sIndexOrID & '"}}'
