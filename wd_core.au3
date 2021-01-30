@@ -699,25 +699,26 @@ EndFunc   ;==>_WD_FindElement
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sElement            - Element ID from _WDFindElement
 ;                  $sCommand            - one of the following actions:
-;                               | Name
-;                               | Rect
-;                               | Text
-;                               | Selected
-;                               | Enabled
-;                               | Displayed
-;                               | Active
-;                               | Attribute
-;                               | Property
-;                               | CSS
-;                               | Clear
-;                               | Click
-;                               | Value
-;                               | Screenshot
+;                               | Name		 - Get element's tag name
+;                               | Rect		 - Get element's dimensions / coordinates
+;                               | Text		 - Get element's rendered text
+;                               | Selected	 - Get element's selected status
+;                               | Enabled	 - Get element's enabled status
+;                               | Displayed	 - Get element's visibility
+;                               | Active	 - Get active element
+;                               | Attribute	 - Get element's attribute
+;                               | Property	 - Get element's property
+;                               | CSS		 - Get element's CSS value
+;                               | Clear		 - Clear element's value
+;                               | Click		 - Click element
+;                               | Value		 - Get or set element's value
+;                               | Screenshot - Take element screenshot
 ;                               | Shadow	 - Get element's shadow root
 ;                               | CompRole	 - Get element's computed role
 ;                               | CompLabel	 - Get element's computed label
 ;
 ;                  $sOption             - [optional] a string value. Default is ''.
+;
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -732,6 +733,8 @@ EndFunc   ;==>_WD_FindElement
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver/#state
 ;                  https://www.w3.org/TR/webdriver#element-interaction
+;                  https://www.w3.org/TR/webdriver/#take-element-screenshot
+;                  https://www.w3.org/TR/webdriver/#element-displayedness
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
