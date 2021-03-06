@@ -1608,6 +1608,8 @@ EndFunc
 ;                               | rightclick
 ;                               | hide
 ;                               | show
+;                               | childcount
+;
 ;                  $iXOffset            - [optional] X Offset. Default is 0
 ;                  $iYOffset            - [optional] Y Offset. Default is 0
 ;                  $iButton             - [optional] Mouse button. Default is 0
@@ -1672,8 +1674,12 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iActionType = 2
 			$sJavascript = "arguments[0].style='display: normal'; return true;"
 
+		Case 'childcount'
+			$iActionType = 2
+			$sJavascript = "return arguments[0].children.length;"
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
