@@ -1253,22 +1253,22 @@ Func _WD_Startup()
 			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
 		EndIf
 
-		__WD_ConsoleWrite("_WDStartup: OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
-		__WD_ConsoleWrite("_WDStartup: AutoIt:" & @TAB & @AutoItVersion & @CRLF)
-		__WD_ConsoleWrite("_WDStartup: WD.au3:" & @TAB & $__WDVERSION & $sUpdate & @CRLF)
-		__WD_ConsoleWrite("_WDStartup: WinHTTP:" & @TAB & $sWinHttpVer & @CRLF)
-		__WD_ConsoleWrite("_WDStartup: Driver:" & @TAB & $_WD_DRIVER & @CRLF)
-		__WD_ConsoleWrite("_WDStartup: Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
-		__WD_ConsoleWrite("_WDStartup: Port:" & @TAB & $_WD_PORT & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": WD.au3:" & @TAB & $__WDVERSION & $sUpdate & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & @CRLF)
 	Else
-		__WD_ConsoleWrite('_WDStartup: ' & $sCommand & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sCommand & @CRLF)
 	EndIf
 
 	$sFile = __WD_StripPath($_WD_DRIVER)
 	$pid = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $pid Then
-		__WD_ConsoleWrite("_WDStartup: Existing instance of " & $sFile & " detected!" & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!" & @CRLF)
 	Else
 		$pid = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 	EndIf
