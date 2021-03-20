@@ -41,6 +41,13 @@
 
 #ignorefunc _HtmlTableGetWriteToArray
 
+#Region Global Constants
+Global Enum _
+		$_WD_OPTION_None = 0, _
+		$_WD_OPTION_Visible = 1, _
+		$_WD_OPTION_Enabled = 2, _
+		$_WD_OPTION_Element = 4
+#EndRegion
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
 ; Description ...: Helper function to create new tab using Javascript
@@ -261,16 +268,19 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
 ; Description ...: Wait for a element to be found  in the current tab before returning
-; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $lVisible = Default[,
-;                  					$lEnabled = Default[, $lReturnElement = Default]]]]])
+; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
 ;                  $iTimeout            - [optional] Period of time to wait before exiting function
-;                  $lVisible            - [optional] Check visibility of element?
-;                  $lEnabled            - [optional] Check enabled status of element?
-;                  $lReturnElement      - [optional] Return found element?
+;                  $iOptions            - [optional] Binary flags to perform addtional actions
+;
+;                                         $_WD_OPTION_None 	(0) = No optional feature processing
+;                                         $_WD_OPTION_Visible (1) = Confirm element is visible
+;                                         $_WD_OPTION_Enabled (2) = Confirm element is enabled
+;                                         $_WD_OPTION_Element (4) = Return found element
+;
 ; Return values .: Success      - 1 or element ID
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
@@ -282,15 +292,17 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $lVisible = Default, $lEnabled = Default, $lReturnElement = Default)
+Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $iResult = 0, $sElement, $lIsVisible = True, $lIsEnabled = True
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
-	If $lVisible = Default Then $lVisible = False
-	If $lEnabled = Default Then $lEnabled = False
-	If $lReturnElement = Default Then $lReturnElement = False
+	If $iOptions = Default Then $iOptions = $_WD_OPTION_None
+
+	Local $lVisible = BitAND($iOptions, $_WD_OPTION_Visible)
+	Local $lEnabled = BitAND($iOptions, $_WD_OPTION_Enabled)
+	Local $lReturnElement = BitAND($iOptions, $_WD_OPTION_Element)
 
 	Sleep($iDelay)
 
