@@ -326,7 +326,9 @@ EndFunc   ;==>_WD_Status
 ; ===============================================================================================================================
 Func _WD_GetSession($sSession)
 	Local Const $sFuncName = "_WD_GetSession"
+	Local $sResult
 
+	#cs
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
 
@@ -342,6 +344,9 @@ Func _WD_GetSession($sSession)
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
 	EndIf
+	#ce
+
+	$sResult = $_WD_SESSION_DETAILS
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_GetSession
