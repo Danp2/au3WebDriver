@@ -1611,21 +1611,23 @@ EndFunc
 ; Name ..........: _WD_ElementActionEx
 ; Description ...: Perform advanced action on desginated element
 ; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[,
-;                  $iButton = Default[, $iHoldDelay = Default]]]])
+;                  $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default]]]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sElement            - Element ID from _WD_FindElement
 ;                  $sCommand            - one of the following actions:
-;                               | hover
-;                               | doubleclick
-;                               | rightclick
-;                               | hide
-;                               | show
-;                               | childcount
+;                                           | hover
+;                                           | doubleclick
+;                                           | rightclick
+;                                           | hide
+;                                           | show
+;                                           | childcount
+;                                           | modifierclick
 ;
 ;                  $iXOffset            - [optional] X Offset. Default is 0
 ;                  $iYOffset            - [optional] Y Offset. Default is 0
 ;                  $iButton             - [optional] Mouse button. Default is 0
 ;                  $iHoldDelay          - [optional] Hold time in ms. Default is 1000
+;                  $sModifier           - [optional] Modifier key. Default is "\uE008" (shift key)
 ;
 ; Return values .: Success      - Return value from web driver (could be an empty string)
 ;                  Failure      - ""
@@ -1640,14 +1642,15 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default)
+Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
-	Local $sAction, $sSubAction, $sJavascript, $iErr, $sResult, $sJsonElement, $sResponse, $oJSON, $iActionType = 1
+	Local $sAction, $sJavascript, $iErr, $sResult, $sJsonElement, $sResponse, $oJSON, $iActionType = 1
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
 	If $iButton = Default Then $iButton = 0
 	If $iHoldDelay = Default Then $iHoldDelay = 1000
+	If $sModifier = Default Then $sModifier = "\uE008" ; shift
 
 	If Not IsInt($iXOffset) Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iXOffset: " & $iXOffset), 0, "")
@@ -1665,18 +1668,19 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iHoldDelay: " & $iHoldDelay), 0, "")
 	EndIf
 
+	Local $sPreAction = '', $sPostAction = '', $sPostHoverAction = ''
+
 	Switch $sCommand
 		Case 'hover'
-			$sSubAction = ''
 
 		Case 'doubleclick'
-			$sSubAction = ',{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"},{"button":0,"type":"pointerDown"},{"button":0,"type":"pointerUp"}'
+			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"button":' & $iButton & ',"type":"pointerUp"},{"button":' & $iButton & ',"type":"pointerDown"},{"button":' & $iButton & ',"type":"pointerUp"}'
 
 		Case 'rightclick'
-			$sSubAction = ',{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}'
+			$sPostHoverAction = ',{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}'
 
 		Case 'clickandhold'
-			$sSubAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"type": "pause", "duration": ' & $iHoldDelay & '},{"button":2,"type":"pointerUp"}'
+			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"type": "pause", "duration": ' & $iHoldDelay & '},{"button":' & $iButton & ',"type":"pointerUp"}'
 
 		Case 'hide'
 			$iActionType = 2
@@ -1690,23 +1694,48 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iActionType = 2
 			$sJavascript = "return arguments[0].children.length;"
 
+		Case 'modifierclick'
+			; Hold modifier key down
+			$sPreAction = '{"type": "key", "id": "keyboard_1", "actions": [{"type": "keyDown", "value": "' & $sModifier & '"}]},'
+
+			; Perform click
+			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"}, {"button":' & $iButton & ',"type":"pointerUp"}'
+
+			; Release modifier key
+			$sPostAction = ',{"type": "key", "id": "keyboard_2", "actions": [{"type": "keyUp", "value": "' & $sModifier & '"}'
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
 	Switch $iActionType
 		Case 1
+			; Build dynamic action string
+			$sAction = '{"actions":['
+
+			If $sPreAction Then
+				$sAction &= $sPreAction
+			EndIf
+
 			; Default "hover" action
-			$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,'
+			$sAction &= '{"id":"hover","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,'
 			$sAction &= '"x":' & $iXOffset & ',"y":' & $iYOffset & ',"type":"pointerMove","origin":{"ELEMENT":"'
 			$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}'
 
-			; Append additional action
-			$sAction &= $sSubAction
+			If $sPostHoverAction Then
+				$sAction &= $sPostHoverAction
+			EndIf
 
-			; Close action string
-			$sAction &= ']}]}'
+			; Close mouse actions
+			$sAction &= "]}"
+
+			If $sPostAction Then
+				$sAction &= $sPostAction
+			EndIf
+
+			; Close main action
+			$sAction &= "]}]}"
 
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
