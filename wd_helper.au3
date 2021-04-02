@@ -47,6 +47,11 @@ Global Enum _
 		$_WD_OPTION_Visible = 1, _
 		$_WD_OPTION_Enabled = 2, _
 		$_WD_OPTION_Element = 4
+
+Global Enum _
+		$_WD_OPTION_Standard, _
+		$_WD_OPTION_Advanced
+
 #EndRegion
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
@@ -1578,10 +1583,15 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SetElementValue
 ; Description ...: Set value of designated element
-; Syntax ........: _WD_SetElementValue($sSession, $sElement, $sValue)
+; Syntax ........: _WD_SetElementValue($sSession, $sElement, $sValue[, $iStyle = Default])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sElement            - Element ID from _WD_FindElement
 ;                  $sValue              - New value for element
+;                  $iStyle              - [optional] Update style. Default is $_WD_OPTION_Standard.
+;
+;                                         $_WD_OPTION_Standard (0) = Set value using _WD_ElementAction
+;                                         $_WD_OPTION_Advanced (1) = set value using _WD_ExecuteScript
+;
 ; Return values .: Success      - Requested data returned by web driver
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -1592,17 +1602,31 @@ EndFunc
 ;                  @EXTENDED    - WinHTTP status code
 ;
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: 03/31/2021
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_SetElementValue($sSession, $sElement, $sValue)
+Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 	Local Const $sFuncName = "_WD_SetElementValue"
+	Local $sResult, $iErr, $sScript, $sJsonElement
 
-	Local $sResult = _WD_ElementAction($sSession, $sElement, 'value', $sValue)
-	Local $iErr = @error
+	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
+	If $iStyle < $_WD_OPTION_Standard Or $iStyle > $_WD_OPTION_Advanced Then $iMethod = $_WD_OPTION_Standard
+
+	Switch $iStyle
+		Case $_WD_OPTION_Standard
+			$sResult = _WD_ElementAction($sSession, $sElement, 'value', $sValue)
+			$iErr = @error
+
+		Case $_WD_OPTION_Advanced
+			$sScript = "Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(arguments[0], arguments[1]);arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
+			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+			$sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement & ',"' & $sValue & '"')
+			$iErr = @error
+
+	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc
