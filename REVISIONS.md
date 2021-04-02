@@ -1,3 +1,13 @@
+	v0.4.0.2
+	- Added: _WD_GetSession
+	- Changed (_WD_FrameEnter): Allow Null as valid index value
+	- Changed (_WD_ElementActionEx): Added support for childCount action
+	- Changed (_WD_WaitElement): Switch to single parameter for options 		*** Script breaking change ***
+	- Changed: _WD_ElementActionEx
+		- Fixed: doubleclick and clickandhold now honor button parameter
+		- Added: modifierclick
+	- Changed (_WD_SetElementValue): Added "advanced" option
+	
 	v0.4.0.1
 	- Added: _WD_PrintToPDF
 	- Fix (_WD_Window): Properly handle 'print' result
