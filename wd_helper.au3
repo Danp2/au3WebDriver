@@ -1613,7 +1613,7 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 	Local $sResult, $iErr, $sScript, $sJsonElement
 
 	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
-	If $iStyle < $_WD_OPTION_Standard Or $iStyle > $_WD_OPTION_Advanced Then $iMethod = $_WD_OPTION_Standard
+	If $iStyle < $_WD_OPTION_Standard Or $iStyle > $_WD_OPTION_Advanced Then $iStyle = $_WD_OPTION_Standard
 
 	Switch $iStyle
 		Case $_WD_OPTION_Standard
