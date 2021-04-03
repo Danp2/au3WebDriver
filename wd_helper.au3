@@ -613,28 +613,30 @@ EndFunc   ;==>_WD_FrameLeave
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sElement            - Element ID from _WD_FindElement
 ;                  $iMethod             - [optional] an integer value. Default is 1.
+;                  0=style -> Remove highlight
 ;                  1=style -> Highlight border dotted red
 ;                  2=style -> Highlight yellow rounded box
 ;                  3=style -> Highlight yellow rounded box + border  dotted red
 ; Return values .: Success      - True
 ;                  Failure      - False
 ; Author ........: Danyfirex
-; Modified ......:
+; Modified ......: 04/03/2021
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
-	Local Const $aMethod[] = ["border: 2px dotted red", _
+	Local Const $aMethod[] = ["border: 0px", _
+			"border: 2px dotted red", _
 			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
 			"border:2px dotted  red;background: #FFFF66; border-radius: 5px; padding-left: 3px;"]
 
 	If $iMethod = Default Then $iMethod = 1
-	If $iMethod < 1 Or $iMethod > 3 Then $iMethod = 1
+	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
 	Local $sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-	Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod - 1] & "'; return true;", $sJsonElement)
+	Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;", $sJsonElement)
 	Local $oJSON = Json_Decode($sResponse)
 	Local $sResult = Json_Get($oJSON, "[value]")
 	Return ($sResult = "true" ? SetError(0, 0, $sResult) : SetError(1, 0, False))
