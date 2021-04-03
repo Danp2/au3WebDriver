@@ -35,7 +35,7 @@
 #cs
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
-	- Michal Lipok for all his feedback / suggestions
+	- Michał Lipok (@mLipok) for all his feedback / suggestions
 #ce
 #EndRegion Many thanks to:
 
