@@ -501,9 +501,9 @@ EndFunc   ;==>_WD_IsWindowTop
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameEnter
 ; Description ...: This will enter the specified frame for subsequent WebDriver operations.
-; Syntax ........: _WD_FrameEnter($sSession, $sIndexOrID)
+; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sIndexOrID          - Integer index or Element ID
+;                  $vIdentifier         - Index (as 0-based Integer) or HTMLElement @ID (as String) or Null (Keyword)
 ; Return values .: Success      - True
 ;                  Failure      - WD Response error message (E.g. "no such frame")
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -515,17 +515,17 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_FrameEnter($sSession, $sIndexOrID)
+Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
 	Local $sOption
 	Local $sResponse, $oJSON
 	Local $sValue
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	If IsInt($sIndexOrID) Or IsKeyword($sIndexOrID) = $KEYWORD_NULL Then
-		$sOption = '{"id":' & $sIndexOrID & '}'
+	If IsInt($vIdentifier) Or IsKeyword($vIdentifier) = $KEYWORD_NULL Then
+		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		$sOption = '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $sIndexOrID & '"}}'
+		$sOption = '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $vIdentifier & '"}}'
 	EndIf
 
 	$sResponse = _WD_Window($sSession, "frame", $sOption)
@@ -545,7 +545,6 @@ Func _WD_FrameEnter($sSession, $sIndexOrID)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sValue)
-
 EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
