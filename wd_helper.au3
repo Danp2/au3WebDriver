@@ -230,10 +230,10 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
 ; Description ...: Simulate a mouse click on a link with text matching the provided string
-; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $lPartial = Default])
+; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $bPartial = Default])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sText               - Text to find in link
-;                  $lPartial            - [optional] Search by partial text? Default is True.
+;                  $bPartial            - [optional] Search by partial text? Default is True.
 ; Return values .: Success      - None
 ;                  Failure      - Sets @error to non-zero
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -241,34 +241,27 @@ EndFunc
 ;                  				- $_WD_ERROR_NoMatch
 ;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LinkClickByText($sSession, $sText, $lPartial = Default)
+Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
 
-	If $lPartial = Default Then $lPartial = True
+	If $bPartial = Default Then $bPartial = True
 
-	Local $sElement = _WD_FindElement($sSession, ($lPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
+	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
+	If @error <> $_WD_ERROR_Success Then _
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
 
-	Local $iErr = @error
-
-	If $iErr = $_WD_ERROR_Success Then
-		_WD_ElementAction($sSession, $sElement, 'click')
-		$iErr = @error
-
-		If $iErr <> $_WD_ERROR_Success Then
+	_WD_ElementAction($sSession, $sElement, 'click')
+	If @error <> $_WD_ERROR_Success Then _
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), $_WD_HTTPRESULT)
-		EndIf
-	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
-	EndIf
 
 	Return SetError($_WD_ERROR_Success)
-EndFunc
+EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
