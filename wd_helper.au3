@@ -499,7 +499,7 @@ Func _WD_IsWindowTop($sSession)
 EndFunc   ;==>_WD_IsWindowTop
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_FrameEnter
+; Name ..........: _WD_FrameEnter 
 ; Description ...: This will enter the specified frame for subsequent WebDriver operations.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
@@ -509,8 +509,8 @@ EndFunc   ;==>_WD_IsWindowTop
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
 ; Author ........: Decibel
-; Modified ......: 2018-04-27
-; Remarks .......:
+; Modified ......: mLipok
+; Remarks .......: For nested frames use this function as many time as many nesting level is in analyzed website
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
@@ -522,7 +522,9 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local $sValue
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	If IsInt($vIdentifier) Or IsKeyword($vIdentifier) = $KEYWORD_NULL Then
+	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
+		$sOption = '{"id":null}'
+	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
 		$sOption = '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $vIdentifier & '"}}'
