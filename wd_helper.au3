@@ -171,7 +171,7 @@ EndFunc
 ;                  				- $_WD_ERROR_NoMatch
 ;                  				- $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -182,50 +182,44 @@ Func _WD_Attach($sSession, $sString, $sMode = Default)
 	Local $sTabHandle = '', $lFound = False, $sCurrentTab = '', $aHandles
 
 	If $sMode = Default Then $sMode = 'title'
+	If Not StringRegExp($sMode, '(?i)(title|url|html)', $STR_REGEXPMATCH) Then _
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sMode=>" & $sMode), 0, $sTabHandle)
 
 	$aHandles = _WD_Window($sSession, 'handles')
+	If @error <> $_WD_ERROR_Success Then _
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError), 0, $sTabHandle)
 
-	If @error = $_WD_ERROR_Success Then
-		$sCurrentTab = _WD_Window($sSession, 'window')
+	$sCurrentTab = _WD_Window($sSession, 'window')
 
-		For $sHandle In $aHandles
+	For $sHandle In $aHandles
 
-			_WD_Window($sSession, 'Switch', '{"handle":"' & $sHandle & '"}')
+		_WD_Window($sSession, 'Switch', '{"handle":"' & $sHandle & '"}')
 
-			Switch $sMode
-				Case "title", "url"
-					If StringInStr(_WD_Action($sSession, $sMode), $sString) > 0 Then
-						$lFound = True
-						$sTabHandle = $sHandle
-						ExitLoop
-					EndIf
+		Switch $sMode
+			Case "title", "url"
+				If StringInStr(_WD_Action($sSession, $sMode), $sString) > 0 Then
+					$lFound = True
+					$sTabHandle = $sHandle
+					ExitLoop
+				EndIf
 
-				Case 'html'
-					If StringInStr(_WD_GetSource($sSession), $sString) > 0 Then
-						$lFound = True
-						$sTabHandle = $sHandle
-						ExitLoop
-					EndIf
+			Case 'html'
+				If StringInStr(_WD_GetSource($sSession), $sString) > 0 Then
+					$lFound = True
+					$sTabHandle = $sHandle
+					ExitLoop
+				EndIf
+		EndSwitch
+	Next
 
-				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sMode=>" & $sMode), 0, $sTabHandle)
-			EndSwitch
-		Next
-
-		If Not $lFound Then
-			; Restore prior active tab
-			If $sCurrentTab <> '' Then
-				_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
-			EndIf
-
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, $sTabHandle)
-		EndIf
-	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError), 0, $sTabHandle)
+	If Not $lFound Then
+		; Restore prior active tab
+		If $sCurrentTab <> '' Then _WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, $sTabHandle)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
-EndFunc
+EndFunc   ;==>_WD_Attach
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
