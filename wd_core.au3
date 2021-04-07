@@ -1,7 +1,7 @@
 #include-once
 #include <WinAPIProc.au3>
-#include <JSON.au3> ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
-#include <WinHttp.au3> ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
+#include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+#include "WinHttp.au3" ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
 #Region Copyright
 #cs
