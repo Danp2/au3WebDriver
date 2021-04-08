@@ -1645,6 +1645,7 @@ EndFunc
 ;                                           | hover
 ;                                           | doubleclick
 ;                                           | rightclick
+;                                           | clickandhold
 ;                                           | hide
 ;                                           | show
 ;                                           | childcount
