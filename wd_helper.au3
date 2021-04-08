@@ -510,7 +510,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ;                  				- $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: mLipok
-; Remarks .......: For nested frames use this function as many time as many nesting level is in analyzed website
+; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
