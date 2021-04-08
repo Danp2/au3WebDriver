@@ -1137,7 +1137,7 @@ EndFunc
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
-	Local Const $sFuncName = "_WD_SelectUploadFile"
+	Local Const $sFuncName = "_WD_SelectFiles"
 
 	Local $sResponse, $sResult, $sJsonElement, $oJSON, $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
