@@ -272,7 +272,7 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
-; Description ...: Wait for a element to be found  in the current tab before returning
+; Description ...: Wait for a element to be found in the current tab before returning
 ; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
@@ -285,13 +285,14 @@ EndFunc
 ;                                         $_WD_OPTION_Visible (1) = Confirm element is visible
 ;                                         $_WD_OPTION_Enabled (2) = Confirm element is enabled
 ;                                         $_WD_OPTION_Element (4) = Return found element
+;                                         $_WD_OPTION_NoMatch (8) = Confirm element not found
 ;
 ; Return values .: Success      - 1 or element ID
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -299,15 +300,16 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
-	Local $iErr, $iResult = 0, $sElement, $lIsVisible = True, $lIsEnabled = True
+	Local $iErr, $iResult = 0, $sElement, $bIsVisible = True, $bIsEnabled = True
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $iOptions = Default Then $iOptions = $_WD_OPTION_None
 
-	Local $lVisible = BitAND($iOptions, $_WD_OPTION_Visible)
-	Local $lEnabled = BitAND($iOptions, $_WD_OPTION_Enabled)
-	Local $lReturnElement = BitAND($iOptions, $_WD_OPTION_Element)
+	Local $bVisible = BitAND($iOptions, $_WD_OPTION_Visible)
+	Local $bEnabled = BitAND($iOptions, $_WD_OPTION_Enabled)
+	Local $bReturnElement = BitAND($iOptions, $_WD_OPTION_Element)
+	Local $b_Check_NoMatch = BitAND($iOptions, $_WD_OPTION_NoMatch)
 
 	Sleep($iDelay)
 
@@ -317,24 +319,26 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 		$iErr = @error
 
-		If $iErr = $_WD_ERROR_Success Then
-			If $lVisible Then
-				$lIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+		If $iErr = $_WD_ERROR_NoMatch And $b_Check_NoMatch Then
+			Return SetError(__WD_Error($sFuncName, 0), 0, 1)
+		ElseIf $iErr = $_WD_ERROR_Success Then
+			If $bVisible Then
+				$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 
 				If @error Then
-					$lIsVisible = False
+					$bIsVisible = False
 				EndIf
 			EndIf
 
-			If $lEnabled Then
-				$lIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+			If $bEnabled Then
+				$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
 
 				If @error Then
-					$lIsEnabled = False
+					$bIsEnabled = False
 				EndIf
 			EndIf
 
-			If $lIsVisible And $lIsEnabled Then
+			If $bIsVisible And $bIsEnabled Then
 				$iResult = 1
 				ExitLoop
 			Else
@@ -350,13 +354,13 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		Sleep(1000)
 	WEnd
 
-	If $lReturnElement Then
+	If $bReturnElement Then
 		Return SetError(__WD_Error($sFuncName, $iErr), $iResult, $sElement)
 	Else
 		Return SetError(__WD_Error($sFuncName, $iErr), 0, $iResult)
 	EndIf
 
-EndFunc
+EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetMouseElement
