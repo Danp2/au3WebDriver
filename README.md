@@ -73,5 +73,8 @@ You will always be able to find the latest version in the GitHub Repo  https://g
 
 # Discussion Thread on Autoit Forums
 [[WebDriver UDF Help&Support part 1](https://sites.google.com/a/chromium.org/chromedriver/downloads)]
+
 [[WebDriver UDF Help&Support part 2](https://www.autoitscript.com/forum/topic/201106-webdriver-udf-help-support-ii/)]
+
 [[WebDriver UDF Help&Support part 3](https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/)]
+
