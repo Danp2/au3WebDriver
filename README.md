@@ -72,4 +72,6 @@ You will always be able to find the latest version in the GitHub Repo  https://g
 
 
 # Discussion Thread on Autoit Forums
+https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/
 https://www.autoitscript.com/forum/topic/201106-webdriver-udf-help-support-ii/
+https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/
