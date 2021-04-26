@@ -10,25 +10,28 @@ Local Const $sElementSelector = "//input[@name='q']"
 Local $sDesiredCapabilities, $iIndex, $sSession
 Local $nMsg, $lProcess = False
 
-Local $aBrowsers[][2] = [["Firefox", SetupGecko], _
-						["Chrome", SetupChrome], _
-						["Edge", SetupEdge]]
+Local $aBrowsers[][2] = _
+		[["Firefox", SetupGecko], _
+		["Chrome", SetupChrome], _
+		["Edge", SetupEdge]]
 
-Local $aDemoSuite[][2] = [["DemoTimeouts", False], _
-						["DemoNavigation", True], _
-						["DemoElements", False], _
-						["DemoScript", False], _
-						["DemoCookies", False], _
-						["DemoAlerts", False], _
-						["DemoFrames", False], _
-						["DemoActions", False], _
-						["DemoDownload", False], _
-						["DemoWindows", False], _
-						["DemoUpload", False]]
+Local $aDemoSuite[][2] = _
+		[["DemoTimeouts", False], _
+		["DemoNavigation", True], _
+		["DemoElements", False], _
+		["DemoScript", False], _
+		["DemoCookies", False], _
+		["DemoAlerts", False], _
+		["DemoFrames", False], _
+		["DemoActions", False], _
+		["DemoDownload", False], _
+		["DemoWindows", False], _
+		["DemoUpload", False]]
 
-Local $aDebugLevel[][2] = [["None", $_WD_DEBUG_None], _
-							["Error", $_WD_DEBUG_Error], _
-							["Full", $_WD_DEBUG_Info]]
+Local $aDebugLevel[][2] = _
+		[["None", $_WD_DEBUG_None], _
+		["Error", $_WD_DEBUG_Error], _
+		["Full", $_WD_DEBUG_Info]]
 
 Local $iSpacing = 50
 Local $iCount = UBound($aDemoSuite)
@@ -44,7 +47,7 @@ GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
 
 GUICtrlCreateLabel("Demos", 15, 52)
 For $i = 0 To $iCount - 1
-    $aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
+	$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
 	If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
 Next
 
@@ -58,31 +61,31 @@ Local $idButton = GUICtrlCreateButton("Run Demo!", 60, $iPos + 40, 85, 25)
 
 GUISetState(@SW_SHOW)
 
-    While 1
-		$nMsg = GUIGetMsg()
-		Switch $nMsg
-            Case $GUI_EVENT_CLOSE
-                ExitLoop
+While 1
+	$nMsg = GUIGetMsg()
+	Switch $nMsg
+		Case $GUI_EVENT_CLOSE
+			ExitLoop
 
-			Case $idBrowsers
+		Case $idBrowsers
 
-			Case $idDebugging
+		Case $idDebugging
 
-            Case $idButton
-                $lProcess = True
-				ExitLoop
+		Case $idButton
+			$lProcess = True
+			ExitLoop
 
-		   Case Else
-				For $i = 0 To $iCount - 1
-					If $aCheckboxes[$i] = $nMsg Then
-						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
-						ExitLoop
+		Case Else
+			For $i = 0 To $iCount - 1
+				If $aCheckboxes[$i] = $nMsg Then
+					$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
+					ExitLoop
 
-					EndIf
+				EndIf
 
-				Next
-        EndSwitch
-    WEnd
+			Next
+	EndSwitch
+WEnd
 
 ; Set debug level
 $_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
@@ -118,7 +121,6 @@ MsgBox($MB_ICONINFORMATION, "Demo complete!", "Click ok to shutdown the browser 
 _WD_DeleteSession($sSession)
 _WD_Shutdown()
 
-
 Func DemoTimeouts()
 	; Retrieve current settings and save
 	Local $sResponse = _WD_Timeouts($sSession)
@@ -138,12 +140,12 @@ Func DemoTimeouts()
 
 	; Restore initial settings
 	_WD_Timeouts($sSession, $sTimouts)
-EndFunc
+EndFunc   ;==>DemoTimeouts
 
 Func DemoNavigation()
 	_WD_Navigate($sSession, "http://google.com")
 	_WD_NewTab($sSession, Default, Default, "http://yahoo.com")
-;	_WD_Navigate($sSession, "http://yahoo.com")
+	;	_WD_Navigate($sSession, "http://yahoo.com")
 	_WD_NewTab($sSession, True, Default, 'http://bing.com', 'width=200,height=200')
 
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
@@ -151,7 +153,7 @@ Func DemoNavigation()
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
 	_WD_Attach($sSession, "yahoo.com", "URL")
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
-EndFunc
+EndFunc   ;==>DemoNavigation
 
 Func DemoElements()
 	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $hFileOpen
@@ -198,9 +200,9 @@ Func DemoElements()
 	_WD_ElementAction($sSession, $sElement, 'click')
 
 	; Click search button
-    $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='btnK']")
-    _WD_ElementAction($sSession, $sButton, 'click')
-    _WD_LoadWait($sSession, 2000)
+	$sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//input[@name='btnK']")
+	_WD_ElementAction($sSession, $sButton, 'click')
+	_WD_LoadWait($sSession, 2000)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
@@ -236,7 +238,7 @@ Func DemoElements()
 	If @error = $_WD_ERROR_Success Then
 		_WD_ElementActionEx($sSession, $sElement, "rightclick")
 	EndIf
-EndFunc
+EndFunc   ;==>DemoElements
 
 Func DemoScript()
 	_WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
@@ -245,18 +247,18 @@ Func DemoScript()
 	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
 	_WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});")
 	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
-EndFunc
+EndFunc   ;==>DemoScript
 
 Func DemoCookies()
 	_WD_Navigate($sSession, "http://google.com")
 	_WD_Cookies($sSession, 'Get', 'NID')
 
 	Local $sName = "Testname"
-	Local $sValue ="TestValue"
+	Local $sValue = "TestValue"
 	Local $sCookie = '{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
 	_WD_Cookies($sSession, 'add', $sCookie)
 	_WD_Cookies($sSession, 'Get', $sName)
-EndFunc
+EndFunc   ;==>DemoCookies
 
 Func DemoAlerts()
 	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
@@ -268,7 +270,7 @@ Func DemoAlerts()
 	Sleep(5000)
 	_WD_Alert($sSession, 'Dismiss')
 
-EndFunc
+EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
 	Local $sElement
@@ -281,14 +283,14 @@ Func DemoFrames()
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
 	_WD_FrameEnter($sSession, $sElement)
-    $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
-    _WD_ElementAction($sSession, $sButton, 'click')
-    _WD_LoadWait($sSession, 2000)
+	$sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
+	_WD_ElementAction($sSession, $sButton, 'click')
+	_WD_LoadWait($sSession, 2000)
 	_WD_FrameLeave($sSession)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 	_WD_FrameLeave($sSession)
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
-EndFunc
+EndFunc   ;==>DemoFrames
 
 Func DemoActions()
 	Local $sElement, $aElements, $sValue, $sAction
@@ -296,21 +298,21 @@ Func DemoActions()
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 
-ConsoleWrite("$sElement = " & $sElement & @CRLF)
+	ConsoleWrite("$sElement = " & $sElement & @CRLF)
 
 	$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,"x":0,"y":0,"type":"pointerMove","origin":{"ELEMENT":"'
 	$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}},{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}]}]}'
 
-ConsoleWrite("$sAction = " & $sAction & @CRLF)
+	ConsoleWrite("$sAction = " & $sAction & @CRLF)
 
 	_WD_Action($sSession, "actions", $sAction)
-	sleep(2000)
+	Sleep(2000)
 	Send("Q")
-	sleep(2000)
+	Sleep(2000)
 
 	_WD_Action($sSession, "actions")
-	sleep(2000)
-EndFunc
+	Sleep(2000)
+EndFunc   ;==>DemoActions
 
 Func DemoDownload()
 	_WD_Navigate($sSession, "http://google.com")
@@ -328,17 +330,17 @@ Func DemoDownload()
 
 	If @error = $_WD_ERROR_Success Then
 		;  Retrieve it's source attribute
-		$sSource  = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
+		$sSource = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
 
 		; Combine the URL and element link
-		$sURL = _WinAPI_UrlCombine($sUrl, $sSource)
+		$sUrl = _WinAPI_UrlCombine($sUrl, $sSource)
 
 		; Download the file
 		_WD_DownloadFile($sUrl, @ScriptDir & "\testimage.png")
 
 		_WD_DownloadFile("http://www.google.com/notexisting.jpg", @ScriptDir & "\testimage2.jpg")
 	EndIf
-EndFunc
+EndFunc   ;==>DemoDownload
 
 Func DemoWindows()
 	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2, $bDecode, $oWRect
@@ -371,40 +373,39 @@ Func DemoWindows()
 	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
-EndFunc
+EndFunc   ;==>DemoWindows
 
 Func DemoUpload()
 	; Uses files created in DemoWindows
-    _WD_Navigate($sSession, "https://www.htmlquick.com/reference/tags/input-file.html")
+	_WD_Navigate($sSession, "https://www.htmlquick.com/reference/tags/input-file.html")
 	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//section[@id='examples']//input[@name='uploadedfile']", @ScriptDir & "\Screen1.png")
 	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[@name='uploadedfiles[]']", @ScriptDir & "\Screen1.png" & @LF & @ScriptDir & "\Screen2.png")
 
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[2]")
 	_WD_ElementAction($sSession, $sElement, 'click')
-EndFunc
+EndFunc   ;==>DemoUpload
 
 Func SetupGecko()
-_WD_Option('Driver', 'geckodriver.exe')
-_WD_Option('DriverParams', '--log trace')
-_WD_Option('Port', 4444)
+	_WD_Option('Driver', 'geckodriver.exe')
+	_WD_Option('DriverParams', '--log trace')
+	_WD_Option('Port', 4444)
 
-$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
+	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
 
-EndFunc
+EndFunc   ;==>SetupGecko
 
 Func SetupChrome()
-_WD_Option('Driver', 'chromedriver.exe')
-_WD_Option('Port', 9515)
-_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
+	_WD_Option('Driver', 'chromedriver.exe')
+	_WD_Option('Port', 9515)
+	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
-$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false }}}}'
-EndFunc
+	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false }}}}'
+EndFunc   ;==>SetupChrome
 
 Func SetupEdge()
-_WD_Option('Driver', 'msedgedriver.exe')
-_WD_Option('Port', 9515)
-_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
+	_WD_Option('Driver', 'msedgedriver.exe')
+	_WD_Option('Port', 9515)
+	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
-$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"binary": "' & StringReplace (@ProgramFilesDir, "\", "/") & '/Microsoft/Edge/Application/msedge.exe", "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false}}}}'
-EndFunc
-
+	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"binary": "' & StringReplace(@ProgramFilesDir, "\", "/") & '/Microsoft/Edge/Application/msedge.exe", "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false}}}}'
+EndFunc   ;==>SetupEdge
