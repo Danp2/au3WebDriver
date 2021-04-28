@@ -1722,7 +1722,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"}, {"button":' & $iButton & ',"type":"pointerUp"}'
 
 			; Release modifier key
-			$sPostAction = ',{"type": "key", "id": "keyboard_2", "actions": [{"type": "keyUp", "value": "' & $sModifier & '"}'
+			$sPostAction = ',{"type": "key", "id": "keyboard_2", "actions": [{"type": "keyUp", "value": "' & $sModifier & '"}]}'
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick) $sCommand=>" & $sCommand), 0, "")
@@ -1755,7 +1755,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			EndIf
 
 			; Close main action
-			$sAction &= "]}]}"
+			$sAction &= "]}"
 
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
