@@ -1,3 +1,12 @@
+	v0.4.0.3
+	- Changed (_WD_HighlightElement): Option to remove highlight
+	- Fix (_WD_SetElementValue): Corrected leftover $iMethod reference
+	- Fix (_WD_FrameEnter) Properly handle Null index (mLipok)
+	- Fix (_WD_SelectFiles) Properly set value of $sFuncName (mLipok)
+	- Fix (_WD_ElementActionEx) Properly terminate JSON string
+	- Chore (_WD_IsLatestRelease) Remove unneeded code for saving debug level (seadoggie01)
+	- Chore (_WD_GetShadowRoot) Remove unused variable (seadoggie01)
+
 	v0.4.0.2
 	- Added: _WD_GetSession
 	- Changed (_WD_FrameEnter): Allow Null as valid index value
@@ -7,7 +16,7 @@
 		- Fixed: doubleclick and clickandhold now honor button parameter
 		- Added: modifierclick
 	- Changed (_WD_SetElementValue): Added "advanced" option
-	
+
 	v0.4.0.1
 	- Added: _WD_PrintToPDF
 	- Fix (_WD_Window): Properly handle 'print' result
