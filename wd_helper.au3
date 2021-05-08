@@ -1859,6 +1859,37 @@ Func _WD_GetTable($sSession, $sBaseElement)
 EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_IsFullScreen
+; Description ...: Return a boolean indicating if the session is in full screen mode
+; Syntax ........: _WD_IsFullScreen($sSession)
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+; Return values .: Success      - True or False
+;                  Failure      - Raw response from webdriver
+;                  @ERROR       - $_WD_ERROR_Success
+;                               - $_WD_ERROR_Exception
+;
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/?do=findComment&comment=1480527
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_IsFullScreen($sSession)
+	Local Const $sFuncName = "_WD_IsFullScreen"
+	Local $sResponse = _WD_ExecuteScript($sSession, 'return screen.width == window.innerWidth and screen.height == window.innerHeight;')
+
+	If @error <> $_WD_ERROR_Success Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResponse)
+	EndIf
+
+	Local $oJSON = Json_Decode($sResponse)
+	Local $bResult = Json_Get($oJSON, "[value]")
+
+	Return SetError($_WD_ERROR_Success, 0, $bResult)
+EndFunc   ;==>_WD_IsFullScreen
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Base64Decode
 ; Description ...: Decodes Base64 strings into binary
 ; Syntax ........: _Base64Decode($input_string)
