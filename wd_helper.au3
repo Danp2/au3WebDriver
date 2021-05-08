@@ -1616,7 +1616,7 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 			$iErr = @error
 
 		Case $_WD_OPTION_Advanced
-			$sScript = "Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(arguments[0], arguments[1]);arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
+			$sScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'value').set.call(arguments[0], arguments[1]);arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
 			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
 			$sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement & ',"' & $sValue & '"')
 			$iErr = @error
