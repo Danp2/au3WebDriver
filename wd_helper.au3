@@ -993,7 +993,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 
 			Case 'options'
 				; Retrieve array containing value / label attributes from the Select element's options
-				$aOptions = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//option", $sSelectElement, True)
+				$aOptions = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "./option", $sSelectElement, True)
 
 				$iErr = @error
 
