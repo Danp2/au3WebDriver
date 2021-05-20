@@ -1,3 +1,8 @@
+	v0.4.0.4
+	- Added: _WD_IsFullScreen
+	- Changed (_WD_SetElementValue): Advanced option now works with more element types
+	- Fixed (_WD_ElementSelectAction): Use relative xpath when calling _WD_FindElement
+
 	v0.4.0.3
 	- Changed (_WD_HighlightElement): Option to remove highlight
 	- Fix (_WD_SetElementValue): Corrected leftover $iMethod reference
