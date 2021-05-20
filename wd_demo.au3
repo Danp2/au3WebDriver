@@ -8,7 +8,7 @@
 Local Const $sElementSelector = "//input[@name='q']"
 
 Local $sDesiredCapabilities, $iIndex, $sSession
-Local $nMsg, $lProcess = False
+Local $nMsg, $bProcess = False
 
 Local $aBrowsers[][2] = _
 		[["Firefox", SetupGecko], _
@@ -72,7 +72,7 @@ While 1
 		Case $idDebugging
 
 		Case $idButton
-			$lProcess = True
+			$bProcess = True
 			ExitLoop
 
 		Case Else
@@ -94,7 +94,7 @@ $_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
 
 GUIDelete($hGUI)
-If Not $lProcess Then Exit
+If Not $bProcess Then Exit
 
 _WD_Startup()
 
@@ -399,7 +399,7 @@ Func SetupChrome()
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
-	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false }}}}'
+	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 EndFunc   ;==>SetupChrome
 
 Func SetupEdge()
