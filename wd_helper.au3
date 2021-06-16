@@ -46,7 +46,8 @@ Global Enum _
 		$_WD_OPTION_None = 0, _
 		$_WD_OPTION_Visible = 1, _
 		$_WD_OPTION_Enabled = 2, _
-		$_WD_OPTION_Element = 4
+		$_WD_OPTION_Element = 4, _
+		$_WD_OPTION_NoMatch = 8
 
 Global Enum _
 		$_WD_OPTION_Standard, _
