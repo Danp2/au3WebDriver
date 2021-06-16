@@ -91,7 +91,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.4.0.2"
+Global Const $__WDVERSION = "0.4.0.4"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID  = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -644,14 +644,14 @@ EndFunc   ;==>_WD_Window
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FindElement
 ; Description ...: Find element(s) by designated strategy
-; Syntax ........: _WD_FindElement($sSession, $sStrategy, $sSelector[, $sStartNodeID = Default[, $lMultiple = Default[,
-;                  $lShadowRoot = Default]]])
+; Syntax ........: _WD_FindElement($sSession, $sStrategy, $sSelector[, $sStartNodeID = Default[, $bMultiple = Default[,
+;                  $bShadowRoot = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $sStartNodeID        - [optional] ID to use as starting node. Default is ""
-;                  $lMultiple           - [optional] Return multiple matching elements? Default is False
-;                  $lShadowRoot         - [optional] Starting node is a shadow root? Default is False
+;                  $bMultiple           - [optional] Return multiple matching elements? Default is False
+;                  $bShadowRoot         - [optional] Starting node is a shadow root? Default is False
 ;
 ; Return values .: Success      - Element ID(s) returned by web driver
 ;                  Failure      - ""
@@ -667,17 +667,17 @@ EndFunc   ;==>_WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver#element-retrieval
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $lMultiple = Default, $lShadowRoot = Default)
+Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
 	Local Const $sFuncName = "_WD_FindElement"
 	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr
 	Local $oJson, $oValues, $sKey, $iRow, $aElements[0]
 
 	If $sStartNodeID = Default Then $sStartNodeID = ""
-	If $lMultiple = Default Then $lMultiple = False
-	If $lShadowRoot = Default Then $lShadowRoot = False
+	If $bMultiple = Default Then $bMultiple = False
+	If $bShadowRoot = Default Then $bShadowRoot = False
 
 	If $sStartNodeID Then
-		$sBaseCmd = ($lShadowRoot) ? "/shadow/" : "/element/"
+		$sBaseCmd = ($bShadowRoot) ? "/shadow/" : "/element/"
 		$sBaseCmd &= $sStartNodeID
 
 		; Make sure using a relative selector if using xpath strategy
@@ -688,7 +688,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
-		$sCmd = '/element' & (($lMultiple) ? 's' : '')
+		$sCmd = '/element' & (($bMultiple) ? 's' : '')
 		$sSelector = __WD_EscapeString($sSelector)
 
 		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & $sBaseCmd & $sCmd, '{"using":"' & $sStrategy & '","value":"' & $sSelector & '"}')
@@ -697,7 +697,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-			If $lMultiple Then
+			If $bMultiple Then
 
 				$oJson = Json_Decode($sResponse)
 				$oValues = Json_Get($oJson, '[value]')
@@ -733,7 +733,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, ($lMultiple) ? $aElements : $sResult)
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, ($bMultiple) ? $aElements : $sResult)
 EndFunc   ;==>_WD_FindElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -859,11 +859,11 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $lAsync = Default]])
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default]])
 ; Parameters ....: $sSession            - Session ID from _WDCreateSession
 ;                  $sScript             - Javascript command(s) to run
 ;                  $sArguments          - [optional] String of arguments in JSON format
-;                  $lAsync              - [optional] Perform request asyncronously? Default is False.
+;                  $bAsync              - [optional] Perform request asyncronously? Default is False.
 ; Return values .: Raw response from web driver
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
@@ -877,17 +877,17 @@ EndFunc   ;==>_WD_ElementAction
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $lAsync = Default)
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
 	If $sArguments = Default Then $sArguments = ""
-	If $lAsync = Default Then $lAsync = False
+	If $bAsync = Default Then $bAsync = False
 
 	$sScript = __WD_EscapeString($sScript)
 
 	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
-	$sCmd = ($lAsync) ? 'async' : 'sync'
+	$sCmd = ($bAsync) ? 'async' : 'sync'
 
 	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 
@@ -1224,7 +1224,7 @@ EndFunc   ;==>_WD_Option
 ; ===============================================================================================================================
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
-	Local $sFunction, $lLatest, $sUpdate, $sFile, $pid
+	Local $sFunction, $bLatest, $sUpdate, $sFile, $pid
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set." & @CRLF), 0, 0)
@@ -1236,7 +1236,7 @@ Func _WD_Startup()
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		$sFunction = "_WD_IsLatestRelease"
-		$lLatest = Call($sFunction)
+		$bLatest = Call($sFunction)
 
 		Select
 			Case @error = 0xDEAD And @extended = 0xBEEF
@@ -1245,10 +1245,10 @@ Func _WD_Startup()
 			Case @error
 				$sUpdate = " (Update status unknown [" & @error & "])"
 
-			Case $lLatest
+			Case $bLatest
 				$sUpdate = " (Up to date)"
 
-			Case Not $lLatest
+			Case Not $bLatest
 				$sUpdate = " (Update available)"
 
 		EndSelect
