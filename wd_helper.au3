@@ -272,7 +272,7 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
-; Description ...: Wait for a element to be found in the current tab before returning
+; Description ...: Wait for an element in the current tab before returning
 ; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
@@ -291,6 +291,8 @@ EndFunc
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Timeout
+;                  				- $_WD_ERROR_InvalidArgue
+;
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -309,50 +311,58 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	Local $bVisible = BitAND($iOptions, $_WD_OPTION_Visible)
 	Local $bEnabled = BitAND($iOptions, $_WD_OPTION_Enabled)
 	Local $bReturnElement = BitAND($iOptions, $_WD_OPTION_Element)
-	Local $b_Check_NoMatch = BitAND($iOptions, $_WD_OPTION_NoMatch)
+	Local $bCheckNoMatch = BitAND($iOptions, $_WD_OPTION_NoMatch)
 
-	Sleep($iDelay)
+	; Other options aren't valid if No Match option is supplied
+	If $bCheckNoMatch And $iOptions <> $_WD_OPTION_NoMatch Then
+		$iErr = $_WD_ERROR_InvalidArgue
+	Else
+		Sleep($iDelay)
 
-	Local $hWaitTimer = TimerInit()
+		Local $hWaitTimer = TimerInit()
 
-	While 1
-		$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
-		$iErr = @error
+		While 1
+			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+			$iErr = @error
 
-		If $iErr = $_WD_ERROR_NoMatch And $b_Check_NoMatch Then
-			Return SetError(__WD_Error($sFuncName, 0), 0, 1)
-		ElseIf $iErr = $_WD_ERROR_Success Then
-			If $bVisible Then
-				$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
-
-				If @error Then
-					$bIsVisible = False
-				EndIf
-			EndIf
-
-			If $bEnabled Then
-				$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
-
-				If @error Then
-					$bIsEnabled = False
-				EndIf
-			EndIf
-
-			If $bIsVisible And $bIsEnabled Then
+			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
 				$iResult = 1
+				$iErr = $_WD_ERROR_Success
 				ExitLoop
-			Else
-				$sElement = ''
+
+			ElseIf $iErr = $_WD_ERROR_Success Then
+				If $bVisible Then
+					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+
+					If @error Then
+						$bIsVisible = False
+					EndIf
+				EndIf
+
+				If $bEnabled Then
+					$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+
+					If @error Then
+						$bIsEnabled = False
+					EndIf
+				EndIf
+
+				If $bIsVisible And $bIsEnabled Then
+					$iResult = 1
+					ExitLoop
+				Else
+					$sElement = ''
+				EndIf
 			EndIf
-		EndIf
 
-		If (TimerDiff($hWaitTimer) > $iTimeout) Then
-			$iErr = $_WD_ERROR_Timeout
-			ExitLoop
-		EndIf
+			If (TimerDiff($hWaitTimer) > $iTimeout) Then
+				$iErr = $_WD_ERROR_Timeout
+				ExitLoop
+			EndIf
 
-		Sleep(1000)
-	WEnd
+			Sleep(1000)
+		WEnd
+	EndIf
 
 	If $bReturnElement Then
 		Return SetError(__WD_Error($sFuncName, $iErr), $iResult, $sElement)
@@ -503,7 +513,7 @@ Func _WD_IsWindowTop($sSession)
 EndFunc   ;==>_WD_IsWindowTop
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_FrameEnter 
+; Name ..........: _WD_FrameEnter
 ; Description ...: This will enter the specified frame for subsequent WebDriver operations.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
