@@ -272,7 +272,7 @@ EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
-; Description ...: Wait for a element to be found  in the current tab before returning
+; Description ...: Wait for a element to be found in the current tab before returning
 ; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
