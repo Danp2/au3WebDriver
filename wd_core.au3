@@ -239,7 +239,7 @@ EndFunc   ;==>_WD_CreateSession
 ; Name ..........: _WD_DeleteSession
 ; Description ...:  Delete existing session
 ; Syntax ........: _WD_DeleteSession($sSession)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Success      - 1
 ;                  Failure      - 0
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -311,7 +311,7 @@ EndFunc   ;==>_WD_Status
 ; Name ..........: _WD_GetSession
 ; Description ...:  Get details on existing session
 ; Syntax ........: _WD_GetSession($sSession)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Success      - Dictionary object with "sessionId" and "capabilities" items
 ;                  Failure      - ''
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -355,7 +355,7 @@ EndFunc   ;==>_WD_GetSession
 ; Name ..........: _WD_Timeouts
 ; Description ...:  Set or retrieve the session timeout parameters
 ; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sTimeouts           - [optional] a string value. Default is ''.
 ; Return values .: Success      - Raw return value from web driver in JSON format
 ;                  Failure      - 0
@@ -401,7 +401,7 @@ EndFunc   ;==>_WD_Timeouts
 ; Name ..........: _WD_Navigate
 ; Description ...: Navigate to the designated URL
 ; Syntax ........: _WD_Navigate($sSession, $sURL)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sURL                - Destination URL
 ; Return values .: Success      - 1
 ;                  Failure      - 0
@@ -437,7 +437,7 @@ EndFunc   ;==>_WD_Navigate
 ; Name ..........: _WD_Action
 ; Description ...: Perform various interactions with the web driver session
 ; Syntax ........: _WD_Action($sSession, $sCommand[, $sOption = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | refresh
 ;                               | back
@@ -512,7 +512,7 @@ EndFunc   ;==>_WD_Action
 ; Name ..........: _WD_Window
 ; Description ...: Perform interactions related to the current window
 ; Syntax ........: _WD_Window($sSession, $sCommand[, $sOption = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sCommand  - one of the following actions:
 ;                               | Window - Get or set the current window
 ;                               | Handles - Get all window handles
@@ -646,7 +646,7 @@ EndFunc   ;==>_WD_Window
 ; Description ...: Find element(s) by designated strategy
 ; Syntax ........: _WD_FindElement($sSession, $sStrategy, $sSelector[, $sStartNodeID = Default[, $bMultiple = Default[,
 ;                  $bShadowRoot = Default]]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $sStartNodeID        - [optional] ID to use as starting node. Default is ""
@@ -740,8 +740,8 @@ EndFunc   ;==>_WD_FindElement
 ; Name ..........: _WD_ElementAction
 ; Description ...: Perform action on desginated element
 ; Syntax ........: _WD_ElementAction($sSession, $sElement, $sCommand[, $sOption = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
-;                  $sElement            - Element ID from _WDFindElement
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sElement            - Element ID from _WD_FindElement
 ;                  $sCommand            - one of the following actions:
 ;                               | Name		 - Get element's tag name
 ;                               | Rect		 - Get element's dimensions / coordinates
@@ -860,7 +860,7 @@ EndFunc   ;==>_WD_ElementAction
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands
 ; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default]])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sScript             - Javascript command(s) to run
 ;                  $sArguments          - [optional] String of arguments in JSON format
 ;                  $bAsync              - [optional] Perform request asyncronously? Default is False.
@@ -908,7 +908,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; Name ..........: _WD_Alert
 ; Description ...: Respond to user prompt
 ; Syntax ........: _WD_Alert($sSession, $sCommand[, $sOption = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | dismiss
 ;                               | accept
@@ -995,7 +995,7 @@ EndFunc   ;==>_WD_Alert
 ; Name ..........: _WD_GetSource
 ; Description ...: Get page source
 ; Syntax ........: _WD_GetSource($sSession)
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ; Return values .: Success      - Source code from page
 ;                  Failure      - ""
 ;                  @ERROR       - $_WD_ERROR_Success
@@ -1035,7 +1035,7 @@ Func _WD_GetSource($sSession)
 ; Name ..........: _WD_Cookies
 ; Description ...: Gets, sets, or deletes the session's cookies
 ; Syntax ........: _WD_Cookies($sSession, $sCommand[, $sOption = Default])
-; Parameters ....: $sSession            - Session ID from _WDCreateSession
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sCommand            - one of the following actions:
 ;                               | Get
 ;                               | GetAll
