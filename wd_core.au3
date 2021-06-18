@@ -327,6 +327,7 @@ EndFunc   ;==>_WD_Status
 Func _WD_GetSession($sSession)
 	Local Const $sFuncName = "_WD_GetSession"
 	Local $sResult
+	#forceref $sSession, $sFuncName
 
 	#cs
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
