@@ -1255,7 +1255,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  				- $_WD_ERROR_GeneralError
 ;
 ; Author ........: Dan Pollak, CyCho
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
@@ -1392,7 +1392,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_InvalidValue
 ;                  				- $_WD_ERROR_NotFound
-; Author ........: mLipok
+; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
 ; Remarks .......:
 ; Related .......:
@@ -1438,7 +1438,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_InvalidValue
 ;                  				- $_WD_ERROR_NotFound
-; Author ........: mLipok
+; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
 ; Remarks .......:
 ; Related .......:
