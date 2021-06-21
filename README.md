@@ -47,8 +47,6 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_IsWindowTop()
 - _WD_FrameEnter($sIndexOrID)
 - _WD_FrameLeave()
-- _WD_GetBrowserVersion($sBrowser)
-- _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 - _WD_HighlightElement($sSession, $sElement[, $iMethod = 1])
 - _WD_HighlightElements($sSession, $aElements[, $iMethod = 1])
 - _WD_jQuerify($sSession[, $sjQueryFile = Default[, $iTimeout = Default]])
