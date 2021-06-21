@@ -1418,7 +1418,6 @@ Func _WD_GetBrowserVersion($sBrowser)
 		Local $sPath = RegRead($cRegKey & $sEXE, "")
 		If @error Then
 			$iErr = $_WD_ERROR_NotFound
-			MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$iErr = " & $iErr)
 		Else
 			$sBrowserVersion = FileGetVersion($sPath)
 		EndIf
