@@ -1261,11 +1261,11 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
 ; ===============================================================================================================================
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
+	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $sEXE, $sDriverEXE, $sPath, $sBrowserVersion, $sCmd, $iPID, $bResult = False
 	Local $sOutput, $sDriverVersion, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sReturned, $sTempFile, $hFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 
-	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local Const $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
