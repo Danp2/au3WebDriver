@@ -1215,9 +1215,10 @@ Func _WD_IsLatestRelease()
 	Local Const $sFuncName = "_WD_IsLatestRelease"
 	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
 	Local $bResult = Null
+	Local $iErr = $_WD_ERROR_Success
 
 	Local $sResult = InetRead($sGitURL)
-	Local $iErr = @error
+	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), '<a href="/Danp2/WebDriver/releases/tag/(.*)">', $STR_REGEXPARRAYMATCH)
@@ -1261,11 +1262,12 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
 ; ===============================================================================================================================
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
-	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
-	Local $sDriverVersion, $sVersionShort, $sDriverLatest, $sURLNewDriver
+	Local Const $sFuncName = "_WD_UpdateDriver"
+	Local $iErr = $_WD_ERROR_Success, $sEXE, $sDriverEXE, $sPath, $sBrowserVersion, $sCmd, $iPID, $bResult = False
+	Local $sOutput, $sDriverVersion, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sReturned, $sTempFile, $hFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 
-	Local Const $sFuncName = "_WD_UpdateDriver"
+	Local Const $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
 	If $bFlag64 = Default Then $bFlag64 = False
@@ -1492,11 +1494,12 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local Const $sFuncName = "_WD_DownloadFile"
 	Local $bResult = False
+	Local $iErr = $_WD_ERROR_Success
 
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
-	Local $iErr = @error
+	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $hFile = FileOpen($sDest, 18)
