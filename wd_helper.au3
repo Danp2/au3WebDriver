@@ -1215,9 +1215,10 @@ Func _WD_IsLatestRelease()
 	Local Const $sFuncName = "_WD_IsLatestRelease"
 	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
 	Local $bResult = Null
+	Local $iErr = $_WD_ERROR_Success
 
 	Local $sResult = InetRead($sGitURL)
-	Local $iErr = @error
+	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), '<a href="/Danp2/WebDriver/releases/tag/(.*)">', $STR_REGEXPARRAYMATCH)
@@ -1423,11 +1424,12 @@ EndFunc   ;==>_WD_UpdateDriver
 Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local Const $sFuncName = "_WD_DownloadFile"
 	Local $bResult = False
+	Local $iErr = $_WD_ERROR_Success
 
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
-	Local $iErr = @error
+	$iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $hFile = FileOpen($sDest, 18)
