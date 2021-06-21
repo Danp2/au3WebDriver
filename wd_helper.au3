@@ -1449,10 +1449,10 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local $iErr = $_WD_ERROR_Success
 
 	$sInstallDir =StringRegExpReplace($sInstallDir,'(?i)(\\)\Z','') & '\' ; prevent double \\ on the end of directory
-	Local $sCmd = $sInstallDir & $sDriverEXE & " --version"
 	If Not FileExists($sInstallDir & $sDriverEXE) Then
 		$iErr = $_WD_ERROR_NotFound
 	Else
+		Local $sCmd = $sInstallDir & $sDriverEXE & " --version"
 		Local $iPID = Run($sCmd, $sInstallDir, @SW_HIDE, $STDOUT_CHILD)
 		If @error Then $iErr = $_WD_ERROR_GeneralError
 
