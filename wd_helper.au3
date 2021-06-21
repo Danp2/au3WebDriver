@@ -1429,7 +1429,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
-	$iErr = $_WD_ERROR_GeneralError
+	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $hFile = FileOpen($sDest, 18)
