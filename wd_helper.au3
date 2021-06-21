@@ -1263,11 +1263,9 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; ===============================================================================================================================
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
-	Local $iErr = $_WD_ERROR_Success, $sEXE, $sDriverEXE, $sPath, $sBrowserVersion, $sCmd, $iPID, $bResult = False
-	Local $sOutput, $sDriverVersion, $sVersionShort, $sDriverLatest, $sURLNewDriver
+	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
+	Local $sDriverVersion, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sReturned, $sTempFile, $hFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
-
-	Local Const $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
 	If $bFlag64 = Default Then $bFlag64 = False
@@ -1450,7 +1448,7 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local $sDriverVersion = "None"
 	Local $iErr = $_WD_ERROR_Success
 
-	$sInstallDir =StringRegExpReplace($sInstallDir,'(?i)(\\)\Z','') & '\' ; prevent double \\ on the end of directory
+	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 	If Not FileExists($sInstallDir & $sDriverEXE) Then
 		$iErr = $_WD_ERROR_NotFound
 	Else
