@@ -289,11 +289,11 @@ EndFunc   ;==>_WD_DeleteSession
 Func _WD_Status()
 	Local Const $sFuncName = "_WD_Status"
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
-	Local $iErr = @error, $sResult = ''
+	Local $iErr = @error, $oResult = Null
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, "[value]")
+		$oResult = Json_Get($oJSON, "[value]")
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -304,7 +304,7 @@ Func _WD_Status()
 		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $oResult)
 EndFunc   ;==>_WD_Status
 
 ; #FUNCTION# ====================================================================================================================
