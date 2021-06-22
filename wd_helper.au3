@@ -795,9 +795,9 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	If $iErr = $_WD_ERROR_Success Then
 		Switch $nOutputType
 			Case 1 ; String
-				$sResult = BinaryToString(_Base64Decode($sResponse))
+				$sResult = BinaryToString(__WD_Base64Decode($sResponse))
 			Case 2 ; Binary
-				$sResult = _Base64Decode($sResponse)
+				$sResult = __WD_Base64Decode($sResponse)
 			Case 3 ; Base64
 				$sResult = $sResponse
 		EndSwitch
@@ -837,7 +837,7 @@ Func _WD_PrintToPDF($sSession, $sOptions = Default)
 	$iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		$sResult = _Base64Decode($sResponse)
+		$sResult = __WD_Base64Decode($sResponse)
 	Else
 		$sResult = ''
 	EndIf
@@ -1975,10 +1975,10 @@ Func _WD_IsFullScreen($sSession)
 	Return SetError($_WD_ERROR_Success, 0, $bResult)
 EndFunc   ;==>_WD_IsFullScreen
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _Base64Decode
+; #INTERNAL_USE_ONLY# ====================================================================================================================
+; Name ..........: __WD_Base64Decode
 ; Description ...: Decodes Base64 strings into binary
-; Syntax ........: _Base64Decode($input_string)
+; Syntax ........: __WD_Base64Decode($input_string)
 ; Parameters ....: $input_string        - string to be decoded
 ; Return values .: Decoded string
 ; Author ........: trancexx
@@ -1988,7 +1988,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Link ..........: https://www.autoitscript.com/forum/topic/81332-_base64encode-_base64decode/
 ; Example .......: No
 ; ===============================================================================================================================
-Func _Base64Decode($input_string)
+Func __WD_Base64Decode($input_string)
 
 	Local $struct = DllStructCreate("int")
 
@@ -2022,4 +2022,4 @@ Func _Base64Decode($input_string)
 
 	Return DllStructGetData($a, 1)
 
-EndFunc   ;==>_Base64Decode
+EndFunc   ;==>__WD_Base64Decode
