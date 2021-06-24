@@ -61,7 +61,7 @@ Global Enum _
 ; Syntax ........: _WD_NewTab($sSession[, $bSwitch = Default[, $iTimeout = Default[, $sURL = Default[, $sFeatures = Default]]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $bSwitch             - [optional] Switch session context to new tab? Default is True.
-;                  $iTimeout            - [optional] Period of time to wait before exiting function
+;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sURL                - [optional] URL to be loaded in new tab
 ;                  $sFeatures           - [optional] Comma-separated list of requested features of the new tab
 ; Return values .: Success      - String representing handle of new tab
@@ -279,7 +279,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
-;                  $iTimeout            - [optional] Period of time to wait before exiting function
+;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $iOptions            - [optional] Binary flags to perform addtional actions
 ;
 ;                                         $_WD_OPTION_None 	(0) = No optional feature processing
@@ -696,7 +696,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $iDelay              - [optional] Milliseconds to wait before checking status
-;                  $iTimeout            - [optional] Period of time to wait before exiting function
+;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sElement            - [optional] Element ID to confirm DOM invalidation
 ; Return values .: Success      - 1
 ;                  Failure      - 0 and sets the @error flag to non-zero
@@ -851,7 +851,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ; Syntax ........: _WD_jQuerify($sSession[, $sjQueryFile = Default[, $iTimeout = Default]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                : $sjQueryFile         - [optional] Path or URL to jQuery source file
-;                  $iTimeout            - [optional] Period of time to wait before exiting function
+;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ; Return values .: None
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Timeout
