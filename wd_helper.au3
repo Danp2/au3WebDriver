@@ -1975,6 +1975,107 @@ Func _WD_IsFullScreen($sSession)
 	Return SetError($_WD_ERROR_Success, 0, $bResult)
 EndFunc   ;==>_WD_IsFullScreen
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetCDPSettings
+; Description ...: Retrieve CDP related settings from the browser
+; Syntax ........: _WD_GetCDPSettings($sSession, $sOption)
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sOption             - one of the following:
+;                               | debugger
+;                               | list
+;                               | version
+;
+; Return values .: None
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetCDPSettings($sSession, $sOption)
+	Local Const $sFuncName = "_WD_GetCDPSettings"
+	Local $sJSON, $oJSON, $sDebuggerAdress, $iEntries, $aKeys, $iKeys, $iResult, $aResults, $iErr
+	Local $sKey, $sDriver, $vResult
+
+	If $sOption = Default Then $sOption = 'Debugger'
+	$sDriver = _WD_Option('Driver')
+
+	Select
+		Case StringInStr($sDriver, 'gecko')
+			$sKey = '[value][capabilities]["moz:debuggerAddress"]'
+
+		Case StringInStr($sDriver, 'chrome')
+			$sKey = '[value][capabilities]["goog:chromeOptions"][debuggerAddress]'
+
+		Case StringInStr($sDriver, 'edge')
+			$sKey = '[value][capabilities]["ms:edgeOptions"][debuggerAddress]'
+
+	EndSelect
+
+	$sJSON = _WD_GetSession($sSession)
+	$oJSON = Json_Decode($sJSON)
+	$sDebuggerAdress = Json_Get($oJSON, $sKey)
+
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+	Else
+		$sOption = StringLower($sOption)
+
+		Switch $sOption
+			Case 'debugger'
+				$vResult = $sDebuggerAdress
+
+			Case 'list', 'version'
+				$sJSON = __WD_Get("http://" & $sDebuggerAdress & "/json/" & $sOption)
+				$iErr = @error
+
+				If $iErr = $_WD_ERROR_Success Then
+					$oJSON = Json_Decode($sJSON)
+					$iEntries = UBound($oJSON)
+
+					If $iEntries  Then
+						$aKeys = Json_ObjGetKeys($oJSON[0])
+						$iKeys = UBound($aKeys)
+
+						Dim $aResults[$iKeys][$iEntries + 1]
+
+						For $i = 0 To $iKeys - 1
+							$aResults[$i][0] = $aKeys[$i]
+
+							For $j = 0 To $iEntries - 1
+								$sKey = "[" & $j & "]." & $aKeys[$i]
+								$aResults[$i][$j+1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
+							Next
+						Next
+					Else
+						$aKeys = Json_ObjGetKeys($oJSON)
+						$iKeys = UBound($aKeys)
+
+						Dim $aResults[$iKeys][2]
+						For $i = 0 To $iKeys - 1
+							$aResults[$i][0] = $aKeys[$i]
+
+							$aResults[$i][1] = Json_Get($oJSON, "." & $aKeys[$i])
+						Next
+					EndIf
+
+					$vResult = $aResults
+				EndIf
+
+			Case Else
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Debugger|List|Version) $sCommand=>" & $sOption), 0, "")
+		EndSwitch
+
+	EndIf
+
+	If $iErr Then
+		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+	EndIf
+
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $vResult)
+EndFunc
+
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
 ; Name ..........: __WD_Base64Decode
 ; Description ...: Decodes Base64 strings into binary
