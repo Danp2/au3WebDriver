@@ -282,14 +282,13 @@ EndFunc   ;==>_WD_LinkClickByText
 ;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $iOptions            - [optional] Binary flags to perform addtional actions
 ;
-;                                         $_WD_OPTION_None 	(0) = No optional feature processing
+;                                         $_WD_OPTION_None    (0) = No optional feature processing
 ;                                         $_WD_OPTION_Visible (1) = Confirm element is visible
 ;                                         $_WD_OPTION_Enabled (2) = Confirm element is enabled
-;                                         $_WD_OPTION_Element (4) = Return found element
 ;                                         $_WD_OPTION_NoMatch (8) = Confirm element not found
 ;
-; Return values .: Success      - 1 or element ID
-;                  Failure      - 0 and sets the @error flag to non-zero
+; Return values .: Success      - Element ID returned by web driver
+;                  Failure      - "" and sets the @error flag to non-zero
 ;                  @error       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Timeout
 ;                  				- $_WD_ERROR_InvalidArgue
@@ -303,7 +302,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
-	Local $iErr, $iResult = 0, $sElement, $bIsVisible = True, $bIsEnabled = True
+	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -311,7 +310,6 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 	Local $bVisible = BitAND($iOptions, $_WD_OPTION_Visible)
 	Local $bEnabled = BitAND($iOptions, $_WD_OPTION_Enabled)
-	Local $bReturnElement = BitAND($iOptions, $_WD_OPTION_Element)
 	Local $bCheckNoMatch = BitAND($iOptions, $_WD_OPTION_NoMatch)
 
 	; Other options aren't valid if No Match option is supplied
@@ -327,7 +325,6 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
-				$iResult = 1
 				$iErr = $_WD_ERROR_Success
 				ExitLoop
 
@@ -350,7 +347,6 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				EndIf
 
 				If $bIsVisible And $bIsEnabled Then
-					$iResult = 1
 					ExitLoop
 				Else
 					$sElement = ''
@@ -366,11 +362,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		WEnd
 	EndIf
 
-	If $bReturnElement Then
-		Return SetError(__WD_Error($sFuncName, $iErr), $iResult, $sElement)
-	Else
-		Return SetError(__WD_Error($sFuncName, $iErr), 0, $iResult)
-	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
 
 EndFunc   ;==>_WD_WaitElement
 
