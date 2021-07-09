@@ -1,3 +1,10 @@
+	v0.4.0.5
+	- Changed (_WD_WaitElement): Added support for $_WD_OPTION_NoMatch (mLipok)
+	- Changed (_WD_WaitElement): Always return Element ID
+	- Fixed: InetRead() @error handling (mLipok)
+	- Changed: Expose _WD_GetBrowserVersion and _WD_GetWebDriverVersion (mLipok)
+	- Changed: Renamed _Base64Decode to __WD_Base64Decode
+
 	v0.4.0.4
 	- Added: _WD_IsFullScreen
 	- Changed (_WD_SetElementValue): Advanced option now works with more element types
