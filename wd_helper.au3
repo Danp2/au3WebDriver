@@ -1985,7 +1985,15 @@ EndFunc   ;==>_WD_IsFullScreen
 ;                               | list
 ;                               | version
 ;
-; Return values .: None
+; Return values .: Success      - (debugger) websocket target originally returned by _WD_CreateSession
+;								- (list) array containing websocket targets
+;								- (version) array containing version metadata
+;
+;                  Failure      - Empty string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_GeneralError
+;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1995,26 +2003,25 @@ EndFunc   ;==>_WD_IsFullScreen
 ; ===============================================================================================================================
 Func _WD_GetCDPSettings($sSession, $sOption)
 	Local Const $sFuncName = "_WD_GetCDPSettings"
-	Local $sJSON, $oJSON, $sDebuggerAdress, $iEntries, $aKeys, $iKeys, $iResult, $aResults, $iErr
-	Local $sKey, $sDriver, $vResult
-
-	If $sOption = Default Then $sOption = 'Debugger'
-	$sDriver = _WD_Option('Driver')
-
-	Select
-		Case StringInStr($sDriver, 'gecko')
-			$sKey = '[value][capabilities]["moz:debuggerAddress"]'
-
-		Case StringInStr($sDriver, 'chrome')
-			$sKey = '[value][capabilities]["goog:chromeOptions"][debuggerAddress]'
-
-		Case StringInStr($sDriver, 'edge')
-			$sKey = '[value][capabilities]["ms:edgeOptions"][debuggerAddress]'
-
-	EndSelect
+	Local $sJSON, $oJSON, $sDebuggerAdress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
+	Local $sKey, $vResult, $sBrowser
 
 	$sJSON = _WD_GetSession($sSession)
 	$oJSON = Json_Decode($sJSON)
+	$sBrowser = Json_Get($oJSON, '[value][capabilities][browserName]')
+
+	Switch $sBrowser
+		Case 'firefox'
+			$sKey = '[value][capabilities]["moz:debuggerAddress"]'
+
+		Case 'chrome'
+			$sKey = '[value][capabilities]["goog:chromeOptions"][debuggerAddress]'
+
+		Case 'msedge'
+			$sKey = '[value][capabilities]["ms:edgeOptions"][debuggerAddress]'
+
+	EndSwitch
+
 	$sDebuggerAdress = Json_Get($oJSON, $sKey)
 
 	If @error Then
