@@ -1849,35 +1849,6 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_ExecuteCdpCommand
-; Description ...: Execute CDP command
-; Syntax ........: _WD_ExecuteCdpCommand($sSession, $sCommand, $oParams)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sCommand            - Name of the command
-;                  $oParams             - Parameters of the command as an object
-; Return values .: Same as __WD_Post
-; Author ........: Damon Harris (TheDcoder)
-; Modified ......: 03/07/2020
-; Remarks .......: This function is specific to ChromeDriver, you can execute "Chrome DevTools Protocol" commands by using this
-;                  function, for all available commands see: https://chromedevtools.github.io/devtools-protocol/tot/
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_ExecuteCdpCommand($sSession, $sCommand, $oParams)
-	Local Const $sFuncName = "_WD_ExecuteCdpCommand"
-
-	Local $vData = Json_ObjCreate()
-	Json_ObjPut($vData, 'cmd', $sCommand)
-	Json_ObjPut($vData, 'params', $oParams)
-	$vData = Json_Encode($vData)
-
-	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & '/goog/cdp/execute', $vData)
-
-	Return SetError(__WD_Error($sFuncName, @error), @extended, $sResponse)
-EndFunc   ;==>_WD_ExecuteCdpCommand
-
-; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
