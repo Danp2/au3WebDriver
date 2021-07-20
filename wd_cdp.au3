@@ -1,0 +1,312 @@
+#include "wd_core.au3"
+#include "WinHttp_WebSocket.au3"
+#include <APIErrorsConstants.au3>
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_ExecuteCDPCommand
+; Description ...: Execute CDP command
+; Syntax ........: _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams[, $sWebSocketURL = Default])
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sCommand            - Name of the command
+;                  $oParams             - Parameters of the command as an object
+;                  $sWebSocketURL       - [optional] Websocket URL
+;
+; Return values .: Success      - Raw return value from web driver in JSON format
+;                  Failure      - Empty string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Damon Harris (TheDcoder)
+; Modified ......: Danp2
+; Remarks .......: The original version of this function is specific to ChromeDriver, you can execute "Chrome DevTools Protocol"
+;                  commands by using this function, for all available commands see: https://chromedevtools.github.io/devtools-protocol/tot/
+;
+;                  The revised version uses websockets to provide CDP access for all compatible browsers. However, it
+;                  will only with an OS that natively supports WebSockets (Windows 8, Windows Server 2012, or newer)
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
+	Local Const $sFuncName = "_WD_ExecuteCDPCommand"
+	Local $iErr = 0, $vData = Json_ObjCreate()
+
+	If $sWebSocketURL = Default Then $sWebSocketURL = ''
+
+	; Original version (Chrome only)
+	If Not $sWebSocketURL Then
+		Json_ObjPut($vData, 'cmd', $sCommand)
+		Json_ObjPut($vData, 'params', $oParams)
+		$vData = Json_Encode($vData)
+
+		Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & '/goog/cdp/execute', $vData)
+		$iErr = @error
+
+		If $_WD_DEBUG = $_WD_DEBUG_Info Then
+			__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		EndIf
+
+		Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResponse)
+	EndIf
+
+	; Websocket version
+	Local $hOpen = 0, $hConnect = 0, $hRequest = 0, $hWebSocket = 0
+	Local $aURL, $fStatus, $sErrText
+	Local $iBufferLen = 1024, $tBuffer = 0, $bRecv = Binary(""), $sRecv
+	Local $iBytesRead = 0, $iBufferType = 0
+	Local $iStatus = 0, $iReasonLengthConsumed = 0
+	Local $tCloseReasonBuffer = DllStructCreate("byte[123]")
+	Local $sWSSRegex = '^((ws[s]?):\/\/)([^:\/\s]+)(?::([0-9]+))?(.*)$'
+	Local Static $iID = 0
+
+	$aURL = StringRegExp($sWebSocketURL, $sWSSRegex, 3)
+
+	If Not IsArray($aURL) Or UBound($aURL) < 5 Then
+		$iErr = $_WD_ERROR_InvalidValue
+		$sErrText = "URL invalid"
+	Else
+		; Initialize and get session handle
+		$hOpen = _WinHttpOpen()
+
+		If $_WD_WINHTTP_TIMEOUTS Then
+			_WinHttpSetTimeouts($hOpen, $_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
+		EndIf
+
+		; Get connection handle
+		$hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
+
+		$hRequest = _WinHttpOpenRequest($hConnect, "GET", $aURL[4], "")
+
+		; Request protocol upgrade from http to websocket.
+		$fStatus = _WinHttpSetOptionNoParams($hRequest, $WINHTTP_OPTION_UPGRADE_TO_WEB_SOCKET)
+
+		If Not $fStatus Then
+			$iErr = $_WD_ERROR_SocketError
+			$sErrText = "SetOption error"
+		Else
+			; Perform websocket handshake by sending a request and receiving server's response.
+			; Application may specify additional headers if needed.
+			$fStatus = _WinHttpSendRequest($hRequest)
+
+			If Not $fStatus Then
+				$iErr = $_WD_ERROR_SocketError
+				$sErrText = "SendRequest error"
+			Else
+				$fStatus = _WinHttpReceiveResponse($hRequest)
+
+				If Not $fStatus Then
+					$iErr = $_WD_ERROR_SocketError
+					$sErrText = "ReceiveResponse error"
+				Else
+					; Application should check what is the HTTP status code returned by the server and behave accordingly.
+					; WinHttpWebSocketCompleteUpgrade will fail if the HTTP status code is different than 101.
+					$hWebSocket = _WinHttpWebSocketCompleteUpgrade($hRequest, 0)
+
+					If $hWebSocket = 0 Then
+						$iErr = $_WD_ERROR_SocketError
+						$sErrText = "WebSocketCompleteUpgrade error"
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+
+		If Not $iErr Then
+			_WinHttpCloseHandle($hRequest)
+
+			$iID += 1
+			Json_ObjPut($vData, 'id', $iID)
+			Json_ObjPut($vData, 'method', $sCommand)
+			Json_ObjPut($vData, 'params', $oParams)
+			$vData = Json_Encode($vData)
+
+		  ; Send and receive data on the websocket protocol.
+
+			$fStatus = _WinHttpWebSocketSend($hWebSocket, _
+					$WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, _
+					$vData)
+
+			If @error Or $fStatus <> 0 Then
+				$iErr = $_WD_ERROR_SocketError
+				$sErrText = "WebSocketSend error"
+			Else
+				Do
+					If $iBufferLen = 0 Then
+						$iErr = $_WD_ERROR_GeneralError
+						$sErrText = "Not enough memory"
+						ExitLoop
+					EndIf
+
+					$tBuffer = DllStructCreate("byte[" & $iBufferLen & "]")
+
+					$fStatus = _WinHttpWebSocketReceive($hWebSocket, _
+							$tBuffer, _
+							$iBytesRead, _
+							$iBufferType)
+
+					If @error Or $fStatus <> 0 Then
+						$iErr = $_WD_ERROR_SocketError
+						$sErrText = "WebSocketReceive error"
+						ExitLoop
+					EndIf
+
+					; If we receive just part of the message restart the receive operation.
+					$bRecv &= BinaryMid(DllStructGetData($tBuffer, 1), 1, $iBytesRead)
+					$tBuffer = 0
+
+					$iBufferLen -= $iBytesRead
+				Until $iBufferType <> $WINHTTP_WEB_SOCKET_UTF8_FRAGMENT_BUFFER_TYPE
+
+				If Not $iErr Then
+					; We expected server just to echo single UTF8 message.
+					If $iBufferType <> $WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE Then
+						$iErr = $_WD_ERROR_SocketError
+						$sErrText = "Unexpected buffer type"
+					EndIf
+
+					$sRecv = BinaryToString($bRecv)
+				EndIf
+
+				; Gracefully close the connection.
+;~ 				$fStatus = _WinHttpWebSocketShutdown($hWebSocket, _
+;~ 						$WINHTTP_WEB_SOCKET_SUCCESS_CLOSE_STATUS)
+
+				$fStatus = _WinHttpWebSocketClose($hWebSocket, _
+						$WINHTTP_WEB_SOCKET_SUCCESS_CLOSE_STATUS)
+
+				If @error Or ($fStatus And $fStatus <> $ERROR_WINHTTP_CONNECTION_ERROR) Then
+					$iErr = $_WD_ERROR_SocketError
+					$sErrText = "WebSocketClose error (" & $fStatus & ")"
+				Else
+					; Check close status returned by the server.
+					$fStatus = _WinHttpWebSocketQueryCloseStatus($hWebSocket, _
+							$iStatus, _
+							$iReasonLengthConsumed, _
+							$tCloseReasonBuffer)
+
+					If @error Or ($fStatus And $fStatus <> $ERROR_INVALID_OPERATION) Then
+						$iErr = $_WD_ERROR_SocketError
+						$sErrText = "QueryCloseStatus error (" & $fStatus & ")"
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+	EndIf
+
+	If $iErr Then
+		Return SetError(__WD_Error($sFuncName, $iErr, $sErrText), $_WD_HTTPRESULT, "")
+	EndIf
+
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sRecv)
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetCDPSettings
+; Description ...: Retrieve CDP related settings from the browser
+; Syntax ........: _WD_GetCDPSettings($sSession, $sOption)
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sOption             - one of the following:
+;                               | debugger
+;                               | list
+;                               | version
+;
+; Return values .: Success      - (debugger) websocket target originally returned by _WD_CreateSession
+;								- (list) array containing websocket targets
+;								- (version) array containing version metadata
+;
+;                  Failure      - Empty string
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+;                  				- $_WD_ERROR_GeneralError
+;                  @EXTENDED    - WinHTTP status code
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetCDPSettings($sSession, $sOption)
+	Local Const $sFuncName = "_WD_GetCDPSettings"
+	Local $sJSON, $oJSON, $sDebuggerAdress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
+	Local $sKey, $vResult, $sBrowser
+
+	$sJSON = _WD_GetSession($sSession)
+	$oJSON = Json_Decode($sJSON)
+	$sBrowser = Json_Get($oJSON, '[value][capabilities][browserName]')
+
+	Switch $sBrowser
+		Case 'firefox'
+			$sKey = '[value][capabilities]["moz:debuggerAddress"]'
+
+		Case 'chrome'
+			$sKey = '[value][capabilities]["goog:chromeOptions"][debuggerAddress]'
+
+		Case 'msedge'
+			$sKey = '[value][capabilities]["ms:edgeOptions"][debuggerAddress]'
+
+	EndSwitch
+
+	$sDebuggerAdress = Json_Get($oJSON, $sKey)
+
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+	Else
+		$sOption = StringLower($sOption)
+
+		Switch $sOption
+			Case 'debugger'
+				$vResult = $sDebuggerAdress
+
+			Case 'list', 'version'
+				$sJSON = __WD_Get("http://" & $sDebuggerAdress & "/json/" & $sOption)
+				$iErr = @error
+
+				If $iErr = $_WD_ERROR_Success Then
+					$oJSON = Json_Decode($sJSON)
+					$iEntries = UBound($oJSON)
+
+					If $iEntries  Then
+						$aKeys = Json_ObjGetKeys($oJSON[0])
+						$iKeys = UBound($aKeys)
+
+						Dim $aResults[$iKeys][$iEntries + 1]
+
+						For $i = 0 To $iKeys - 1
+							$aResults[$i][0] = $aKeys[$i]
+
+							For $j = 0 To $iEntries - 1
+								$sKey = "[" & $j & "]." & $aKeys[$i]
+								$aResults[$i][$j+1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
+							Next
+						Next
+					Else
+						$aKeys = Json_ObjGetKeys($oJSON)
+						$iKeys = UBound($aKeys)
+
+						Dim $aResults[$iKeys][2]
+						For $i = 0 To $iKeys - 1
+							$aResults[$i][0] = $aKeys[$i]
+
+							$aResults[$i][1] = Json_Get($oJSON, "." & $aKeys[$i])
+						Next
+					EndIf
+
+					$vResult = $aResults
+				EndIf
+
+			Case Else
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Debugger|List|Version) $sCommand=>" & $sOption), 0, "")
+		EndSwitch
+
+	EndIf
+
+	If $iErr Then
+		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+	EndIf
+
+	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $vResult)
+EndFunc
