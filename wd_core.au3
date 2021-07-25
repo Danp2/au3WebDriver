@@ -103,7 +103,7 @@ Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
-Global Const $_WD_DefaultTimeout = 10000 ; 10 seconds
+Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
