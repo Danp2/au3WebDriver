@@ -103,8 +103,6 @@ Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
-Global $_WD_DefaultTimeout = 10000 ; 10 seconds
-
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
 		$_WD_DEBUG_Error,    _ ; Error logging to console
@@ -181,6 +179,7 @@ Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = Default ; Destination for console output
 Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
 
+Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
