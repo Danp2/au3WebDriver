@@ -1117,6 +1117,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |HTTPTimeouts - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 ;                               |DebugTrim - Length of response text written to the debug cocnsole
 ;                               |Console - Destination for console output
+;                               |DefaultTimeout - Set/Get $_WD_DefaultTimeout - measured in miliseconds
 ;
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Values .: Success      - 1 / current value
@@ -1197,6 +1198,12 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string/int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_CONSOLE = $vValue
+		Case "DefaultTimeout"
+			If $vValue == "" Then Return $_WD_DefaultTimeout
+			If Not IsInt($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_DefaultTimeout = $vValue
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim|Console) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
