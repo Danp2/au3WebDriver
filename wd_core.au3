@@ -1117,7 +1117,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |HTTPTimeouts - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 ;                               |DebugTrim - Length of response text written to the debug cocnsole
 ;                               |Console - Destination for console output
-;                               |DefaultTimeout - Set/Get $_WD_DefaultTimeout - measured in miliseconds
+;                               |DefaultTimeout - Default timeout (in miliseconds) used by other functions if no other value is supplied
 ;
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Values .: Success      - 1 / current value
@@ -1126,7 +1126,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
