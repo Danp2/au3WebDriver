@@ -103,8 +103,6 @@ Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
-Global Const $_WD_DefaultTimeout = 10000 ; 10 seconds
-
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
 		$_WD_DEBUG_Error,    _ ; Error logging to console
@@ -181,6 +179,7 @@ Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = Default ; Destination for console output
 Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
 
+Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
@@ -1118,6 +1117,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |HTTPTimeouts - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 ;                               |DebugTrim - Length of response text written to the debug cocnsole
 ;                               |Console - Destination for console output
+;                               |DefaultTimeout - Default timeout (in miliseconds) used by other functions if no other value is supplied
 ;
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Values .: Success      - 1 / current value
@@ -1126,7 +1126,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -1198,6 +1198,12 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string/int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_CONSOLE = $vValue
+		Case "DefaultTimeout"
+			If $vValue == "" Then Return $_WD_DefaultTimeout
+			If Not IsInt($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_DefaultTimeout = $vValue
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim|Console) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
