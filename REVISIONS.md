@@ -1,3 +1,9 @@
+	v0.4.1.0
+	- Changed: Moved CDP-related functions to separate file (wd_cdp.au3)
+	- Changed (_WD_ExecuteCDPCommand): Now supports additional browsers via WebSockets
+	- Added: _WD_GetCDPSettings
+	- Changed (_WD_Option): Added support for "DefaultTimeout" option (mLipok)
+
 	v0.4.0.5
 	- Changed (_WD_WaitElement): Added support for $_WD_OPTION_NoMatch (mLipok)
 	- Changed (_WD_WaitElement): Always return Element ID
