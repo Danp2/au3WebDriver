@@ -5,6 +5,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - [JSON UDF](https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn)
 - [WinHTTP UDF](https://www.autoitscript.com/forum/topic/84133-winhttp-functions/)
 - [HtmlTable2Array UDF](https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/) (optional)
+- [WinHttp_WebSocket UDF](https://github.com/Danp2/autoit-websocket) (optional; needed for websocket CDP functionality)
 
 - WebDriver for desired browser
 	- Chrome	[[download](https://sites.google.com/a/chromium.org/chromedriver/downloads)]	[[status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)]
@@ -68,9 +69,13 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_GetElementByName($sSession, $sName)
 - _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 - _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
-- _WD_ExecuteCdpCommand($sSession, $sCommand, $oParams)
 - _WD_GetTable($sSession, $sBaseElement)
 - _WD_IsFullScreen($sSession)
+
+## CDP functions
+
+- _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
+- _WD_GetCDPSettings($sSession, $sOption)
 
 ## Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
