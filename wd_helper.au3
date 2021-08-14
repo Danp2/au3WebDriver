@@ -71,9 +71,9 @@ Global Enum _
 ;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
 ; Modified ......: 01/12/2019
-; Remarks .......:
+; Remarks .......: For list of $sFeatures take a look in the following link
 ; Related .......:
-; Link ..........:
+; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Default, $sFeatures = Default)
