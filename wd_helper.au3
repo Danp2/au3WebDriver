@@ -110,7 +110,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 		; Get handle to current last tab
 		$sLastTabHandle = $aHandles[$iTabCount - 1]
 
-		If @error = $_WD_ERROR_Success Then
+		If $sCurrentTabHandle Then
 			; Search for current tab handle in array of tab handles. If not found,
 			; then make the current tab handle equal to the last tab
 			$iTabIndex = _ArraySearch($aHandles, $sCurrentTabHandle)
