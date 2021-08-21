@@ -1263,6 +1263,9 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	If $bFlag64 = Default Then $bFlag64 = False
 	If $bForce = Default Then $bForce = False
 
+	; If the Install directory doesn't exist and it can't be created, then set error
+	If (Not FileExists($sInstallDir)) And (Not DirCreate($sInstallDir)) Then $iErr = $_WD_ERROR_InvalidValue
+
 	; Save current debug level and set to none
 	Local $WDDebugSave = $_WD_DEBUG
 	$_WD_DEBUG = $_WD_DEBUG_None
@@ -1352,14 +1355,30 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			__WD_CloseDriver($sDriverEXE)
 			FileDelete($sInstallDir & "\" & $sDriverEXE)
 
+			; Handle COM Errors
+			Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+			#forceref $oErr
+
 			; Extract new instance of webdriver
 			$oShell = ObjCreate("Shell.Application")
-			$FilesInZip = $oShell.NameSpace($sTempFile).items
-			$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
-			FileDelete($sTempFile)
+			If @error Then 
+				$iErr = $_WD_ERROR_GeneralError
+			Else
+				$FilesInZip = $oShell.NameSpace($sTempFile).items
+				If @error Then 
+					$iErr = $_WD_ERROR_GeneralError
+				Else
+					$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
+					If @error Then
+						$iErr = $_WD_ERROR_GeneralError
+					Else
+						$iErr = $_WD_ERROR_Success
+						$bResult = True
+					EndIf
+				EndIf
+			EndIf
 
-			$iErr = $_WD_ERROR_Success
-			$bResult = True
+			FileDelete($sTempFile)
 		EndIf
 	EndIf
 
@@ -1986,3 +2005,7 @@ Func __WD_Base64Decode($input_string)
 	Return DllStructGetData($a, 1)
 
 EndFunc   ;==>__WD_Base64Decode
+
+Func __WD_ErrHnd()
+
+EndFunc
