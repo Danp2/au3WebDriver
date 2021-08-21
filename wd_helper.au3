@@ -1361,20 +1361,24 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 			; Extract new instance of webdriver
 			$oShell = ObjCreate("Shell.Application")
-			If @error Then $iErr = $_WD_ERROR_GeneralError
-			If $iErr = $_WD_ERROR_Success Then
+			If @error Then 
+				$iErr = $_WD_ERROR_GeneralError
+			Else
 				$FilesInZip = $oShell.NameSpace($sTempFile).items
-				If @error Then $iErr = $_WD_ERROR_GeneralError
-				If $iErr = $_WD_ERROR_Success Then
+				If @error Then 
+					$iErr = $_WD_ERROR_GeneralError
+				Else
 					$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
-					If @error Then $iErr = $_WD_ERROR_GeneralError
+					If @error Then
+						$iErr = $_WD_ERROR_GeneralError
+					Else
+						$iErr = $_WD_ERROR_Success
+						$bResult = True
+					EndIf
 				EndIf
 			EndIf
 
 			FileDelete($sTempFile)
-
-			$iErr = $_WD_ERROR_Success
-			$bResult = True
 		EndIf
 	EndIf
 
