@@ -318,7 +318,9 @@ EndFunc   ;==>_WD_Status
 ;                  @EXTENDED    - WinHTTP status code
 ; Author ........: Dan Pollak
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
+;                  until they determine how this should function. See w3c/webdriver@35df53a for details. Meanwhile, I temporarily
+;                  changed the code to return the information that is available
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#get-session
 ; Example .......: No
