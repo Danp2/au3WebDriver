@@ -210,7 +210,7 @@ Func DemoElements()
 
 	; Take element screenshot
 	$sResponse = _WD_ElementAction($sSession, $sElement, 'screenshot')
-	$bDecode = _Base64Decode($sResponse)
+	$bDecode = __WD_Base64Decode($sResponse)
 
 	$hFileOpen = FileOpen("Element.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $bDecode)
@@ -359,7 +359,7 @@ Func DemoWindows()
 	; Take screenshot
 	_WD_Window($sSession, "switch", $sHnd1)
 	$sResponse = _WD_Window($sSession, 'screenshot')
-	$bDecode = _Base64Decode($sResponse)
+	$bDecode = __WD_Base64Decode($sResponse)
 
 	$hFileOpen = FileOpen("Screen1.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $bDecode)
@@ -368,7 +368,7 @@ Func DemoWindows()
 	; Take another one
 	_WD_Window($sSession, "switch", $sHnd2)
 	$sResponse = _WD_Window($sSession, 'screenshot')
-	$bDecode = _Base64Decode($sResponse)
+	$bDecode = __WD_Base64Decode($sResponse)
 
 	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $bDecode)
@@ -407,5 +407,5 @@ Func SetupEdge()
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
-	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"binary": "' & StringReplace(@ProgramFilesDir, "\", "/") & '/Microsoft/Edge/Application/msedge.exe", "excludeSwitches": [ "enable-automation"], "useAutomationExtension": false}}}}'
+	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
 EndFunc   ;==>SetupEdge
