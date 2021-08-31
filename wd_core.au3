@@ -126,6 +126,7 @@ Global Enum _
 		$_WD_ERROR_ElementIssue, _ ;
 		$_WD_ERROR_SessionInvalid, _ ;
 		$_WD_ERROR_UnknownCommand, _ ;
+		$_WD_ERROR_UserAbort, _ ;
 		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
@@ -145,7 +146,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Not found", _
 		"Element interaction issue", _
 		"Invalid session ID", _
-		"Unknown Command" _
+		"Unknown Command", _
+		"User Aborted" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
@@ -178,7 +180,7 @@ Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in ms
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = Default ; Destination for console output
 Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
-
+Global $_WD_Sleep = Sleep ; Default to calling standard Sleep function
 Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
@@ -1120,6 +1122,7 @@ EndFunc   ;==>_WD_Cookies
 ;                               |DebugTrim - Length of response text written to the debug cocnsole
 ;                               |Console - Destination for console output
 ;                               |DefaultTimeout - Default timeout (in miliseconds) used by other functions if no other value is supplied
+;                               |Sleep - Function to be called when UDF pauses the script execution
 ;
 ;                  $vValue      - Optional: (Default = "") : if no value is given, the current value is returned
 ; Return Values .: Success      - 1 / current value
@@ -1206,8 +1209,15 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_DefaultTimeout = $vValue
+		Case "Sleep"
+			If $vValue == "" Then Return $_WD_Sleep
+			If Not IsFunc($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(func) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_Sleep = $vValue
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim|Console) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim|Console|Sleep) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
@@ -1745,4 +1755,24 @@ Func __WD_ConsoleWrite($sMsg)
 	Else
 		FileWrite($_WD_CONSOLE, $sMsg)
 	EndIf
+EndFunc
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_Sleep
+; Description ...: Pause script execution for designated timeframe
+; Syntax ........: __WD_Sleep($iPause)
+; Parameters ....: $iPause              - Amount of time to pause (in milliseconds)
+; Return values .: None
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......: Calls standard Sleep() by default. This can be overridden with _WD_Option so that a user supplied function
+;                  gets called instead
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_Sleep($iPause)
+	$_WD_Sleep($iPause)
+
+	If @error Then SetError($_WD_ERROR_Timeout)
 EndFunc
