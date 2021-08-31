@@ -143,7 +143,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 
 			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
 
-			Sleep(10)
+			__WD_Sleep(10)
 		WEnd
 
 		If $bSwitch Then
@@ -289,9 +289,11 @@ EndFunc   ;==>_WD_LinkClickByText
 ;
 ; Return values .: Success      - Element ID returned by web driver
 ;                  Failure      - "" and sets the @error flag to non-zero
+;
 ;                  @error       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Timeout
 ;                  				- $_WD_ERROR_InvalidArgue
+;                  				- $_WD_ERROR_UserAbort
 ;
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
@@ -316,50 +318,59 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	If $bCheckNoMatch And $iOptions <> $_WD_OPTION_NoMatch Then
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
-		Sleep($iDelay)
+		__WD_Sleep($iDelay)
 
-		Local $hWaitTimer = TimerInit()
+		If @error Then
+			$iErr = $_WD_ERROR_UserAbort
+		Else
+			Local $hWaitTimer = TimerInit()
 
-		While 1
-			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
-			$iErr = @error
+			While 1
+				$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+				$iErr = @error
 
-			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
-				$iErr = $_WD_ERROR_Success
-				ExitLoop
-
-			ElseIf $iErr = $_WD_ERROR_Success Then
-				If $bVisible Then
-					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
-
-					If @error Then
-						$bIsVisible = False
-					EndIf
-
-				EndIf
-
-				If $bEnabled Then
-					$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
-
-					If @error Then
-						$bIsEnabled = False
-					EndIf
-				EndIf
-
-				If $bIsVisible And $bIsEnabled Then
+				If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
+					$iErr = $_WD_ERROR_Success
 					ExitLoop
-				Else
-					$sElement = ''
+
+				ElseIf $iErr = $_WD_ERROR_Success Then
+					If $bVisible Then
+						$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+
+						If @error Then
+							$bIsVisible = False
+						EndIf
+
+					EndIf
+
+					If $bEnabled Then
+						$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+
+						If @error Then
+							$bIsEnabled = False
+						EndIf
+					EndIf
+
+					If $bIsVisible And $bIsEnabled Then
+						ExitLoop
+					Else
+						$sElement = ''
+					EndIf
 				EndIf
-			EndIf
 
-			If (TimerDiff($hWaitTimer) > $iTimeout) Then
-				$iErr = $_WD_ERROR_Timeout
-				ExitLoop
-			EndIf
+				If (TimerDiff($hWaitTimer) > $iTimeout) Then
+					$iErr = $_WD_ERROR_Timeout
+					ExitLoop
+				EndIf
 
-			Sleep(1000)
-		WEnd
+				__WD_Sleep(1000)
+
+				If @error Then
+					$iErr = $_WD_ERROR_UserAbort
+					ExitLoop
+				EndIf
+			WEnd
+		EndIf
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
@@ -707,36 +718,45 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $sElement = Default Then $sElement = ""
 
-	If $iDelay Then Sleep($iDelay)
+	If $iDelay Then __WD_Sleep($iDelay)
 
-	Local $hLoadWaitTimer = TimerInit()
+	If @error Then
+		$iErr = $_WD_ERROR_UserAbort
+	Else
+		Local $hLoadWaitTimer = TimerInit()
 
-	While True
-		If $sElement <> '' Then
-			_WD_ElementAction($sSession, $sElement, 'name')
+		While True
+			If $sElement <> '' Then
+				_WD_ElementAction($sSession, $sElement, 'name')
 
-			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
-		Else
-			$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
-			$iErr = @error
+				If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
+			Else
+				$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
+				$iErr = @error
 
-			If $iErr Then
+				If $iErr Then
+					ExitLoop
+				EndIf
+
+				$oJSON = Json_Decode($sResponse)
+				$sReadyState = Json_Get($oJSON, "[value]")
+
+				If $sReadyState = 'complete' Then ExitLoop
+			EndIf
+
+			If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
+				$iErr = $_WD_ERROR_Timeout
 				ExitLoop
 			EndIf
 
-			$oJSON = Json_Decode($sResponse)
-			$sReadyState = Json_Get($oJSON, "[value]")
+			__WD_Sleep(100)
 
-			If $sReadyState = 'complete' Then ExitLoop
-		EndIf
-
-		If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
-			$iErr = $_WD_ERROR_Timeout
-			ExitLoop
-		EndIf
-
-		Sleep(100)
-	WEnd
+			If @error Then
+				$iErr = $_WD_ERROR_UserAbort
+				ExitLoop
+			EndIf
+		WEnd
+	EndIf
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, 0)
@@ -904,7 +924,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 				ExitLoop
 			EndIf
 
-			Sleep(250)
+			__WD_Sleep(250)
 			_WD_ExecuteScript($sSession, "jQuery")
 		Until @error = $_WD_ERROR_Success
 	EndIf
@@ -1361,11 +1381,11 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 			; Extract new instance of webdriver
 			$oShell = ObjCreate("Shell.Application")
-			If @error Then 
+			If @error Then
 				$iErr = $_WD_ERROR_GeneralError
 			Else
 				$FilesInZip = $oShell.NameSpace($sTempFile).items
-				If @error Then 
+				If @error Then
 					$iErr = $_WD_ERROR_GeneralError
 				Else
 					$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
