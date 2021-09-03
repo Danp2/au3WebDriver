@@ -2028,4 +2028,4 @@ EndFunc   ;==>__WD_Base64Decode
 
 Func __WD_ErrHnd()
 
-EndFunc
+EndFunc   ;==>__WD_ErrHnd
