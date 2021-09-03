@@ -1,6 +1,6 @@
 #include-once
 #include "wd_core.au3"
-#include "WinHttp_WebSocket.au3" ; https://github.com/Danp2/autoit-websocket
+#include "WinHttp_WebSocket.au3" ; https : / / github.com / Danp2 / autoit - websocket
 #include <APIErrorsConstants.au3>
 
 #Region Copyright
@@ -148,7 +148,7 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 			Json_ObjPut($vData, 'params', $oParams)
 			$vData = Json_Encode($vData)
 
-		  ; Send and receive data on the websocket protocol.
+			; Send and receive data on the websocket protocol.
 
 			$fStatus = _WinHttpWebSocketSend($hWebSocket, _
 					$WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, _
@@ -230,7 +230,7 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sRecv)
-EndFunc
+EndFunc   ;==>_WD_ExecuteCDPCommand
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetCDPSettings
@@ -298,7 +298,7 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 					$oJSON = Json_Decode($sJSON)
 					$iEntries = UBound($oJSON)
 
-					If $iEntries  Then
+					If $iEntries Then
 						$aKeys = Json_ObjGetKeys($oJSON[0])
 						$iKeys = UBound($aKeys)
 
@@ -309,7 +309,7 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 
 							For $j = 0 To $iEntries - 1
 								$sKey = "[" & $j & "]." & $aKeys[$i]
-								$aResults[$i][$j+1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
+								$aResults[$i][$j + 1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
 							Next
 						Next
 					Else
@@ -338,4 +338,4 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $vResult)
-EndFunc
+EndFunc   ;==>_WD_GetCDPSettings
