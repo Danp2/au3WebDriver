@@ -94,8 +94,8 @@
 Global Const $__WDVERSION = "0.4.1.1"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
-Global Const $_WD_SHADOW_ID  = "shadow-6066-11e4-a52e-4f735466cecf"
-Global Const $_WD_EmptyDict  = "{}"
+Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
+Global Const $_WD_EmptyDict = "{}"
 
 Global Const $_WD_LOCATOR_ByCSSSelector = "css selector"
 Global Const $_WD_LOCATOR_ByXPath = "xpath"
@@ -105,7 +105,7 @@ Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
-		$_WD_DEBUG_Error,    _ ; Error logging to console
+		$_WD_DEBUG_Error, _    ; Error logging to console
 		$_WD_DEBUG_Info        ; Full logging to console
 
 Global Enum _
@@ -335,16 +335,16 @@ Func _WD_GetSession($sSession)
 	#cs
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-
+	
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, "[value]")
 	EndIf
-
+	
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
-
+	
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
 	EndIf
@@ -622,12 +622,12 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 					$sResult = $sResponse
 
 				Case 'new'
-					$oJson = Json_Decode($sResponse)
-					$sResult = Json_Get($oJson, "[value][handle]")
+					$oJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($oJSON, "[value][handle]")
 
 				Case Else
-					$oJson = Json_Decode($sResponse)
-					$sResult = Json_Get($oJson, "[value]")
+					$oJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($oJSON, "[value]")
 			EndSwitch
 		Else
 			$iErr = $_WD_ERROR_Exception
@@ -674,7 +674,7 @@ EndFunc   ;==>_WD_Window
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
 	Local Const $sFuncName = "_WD_FindElement"
 	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr
-	Local $oJson, $oValues, $sKey, $iRow, $aElements[0]
+	Local $oJSON, $oValues, $sKey, $iRow, $aElements[0]
 
 	If $sStartNodeID = Default Then $sStartNodeID = ""
 	If $bMultiple = Default Then $bMultiple = False
@@ -703,8 +703,8 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
 			If $bMultiple Then
 
-				$oJson = Json_Decode($sResponse)
-				$oValues = Json_Get($oJson, '[value]')
+				$oJSON = Json_Decode($sResponse)
+				$oValues = Json_Get($oJSON, '[value]')
 
 				If UBound($oValues) > 0 Then
 					$sKey = "[" & $_WD_ELEMENT_ID & "]"
@@ -719,9 +719,9 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 					$iErr = $_WD_ERROR_NoMatch
 				EndIf
 			Else
-				$oJson = Json_Decode($sResponse)
+				$oJSON = Json_Decode($sResponse)
 
-				$sResult = Json_Get($oJson, "[value][" & $_WD_ELEMENT_ID & "]")
+				$sResult = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
 			EndIf
 
 		Else
@@ -787,7 +787,7 @@ EndFunc   ;==>_WD_FindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_ElementAction"
-	Local $sResponse, $sResult = '', $iErr, $oJson
+	Local $sResponse, $sResult = '', $iErr, $oJSON
 
 	If $sOption = Default Then $sOption = ''
 
@@ -835,13 +835,13 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 						If $sOption Then
 							$sResult = $sResponse
 						Else
-							$oJson = Json_Decode($sResponse)
-							$sResult = Json_Get($oJson, "[value]")
+							$oJSON = Json_Decode($sResponse)
+							$sResult = Json_Get($oJSON, "[value]")
 						EndIf
 
 					Case Else
-						$oJson = Json_Decode($sResponse)
-						$sResult = Json_Get($oJson, "[value]")
+						$oJSON = Json_Decode($sResponse)
+						$sResult = Json_Get($oJSON, "[value]")
 				EndSwitch
 
 			Case Else
@@ -850,7 +850,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iErr Then
@@ -898,7 +898,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iErr Then
@@ -1033,7 +1033,7 @@ Func _WD_GetSource($sSession)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
-	EndFunc   ;==>_WD_GetSource
+EndFunc   ;==>_WD_GetSource
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Cookies
@@ -1393,7 +1393,7 @@ Func __WD_Get($sURL)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iResult Then
@@ -1477,7 +1477,7 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iResult Then
@@ -1559,7 +1559,7 @@ Func __WD_Delete($sURL)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText,$_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 	EndIf
 
 	If $iResult Then
@@ -1611,7 +1611,7 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default)
 	EndSwitch
 
 	Return $i_WD_ERROR
-EndFunc ;==>__WD_Error
+EndFunc   ;==>__WD_Error
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CloseDriver
@@ -1642,7 +1642,7 @@ Func __WD_CloseDriver($vDriver = Default)
 		$aProcessList = ProcessList($sFile)
 	EndIf
 
-    For $i = 1 To $aProcessList[0][0]
+	For $i = 1 To $aProcessList[0][0]
 		$aData = _WinAPI_EnumChildProcess($aProcessList[$i][1])
 
 		If IsArray($aData) Then
@@ -1656,9 +1656,9 @@ Func __WD_CloseDriver($vDriver = Default)
 
 		ProcessClose($aProcessList[$i][1])
 		ProcessWaitClose($aProcessList[$i][1], 5)
-    Next
+	Next
 
-EndFunc ;==>__WD_CloseDriver
+EndFunc   ;==>__WD_CloseDriver
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_EscapeString
@@ -1679,12 +1679,12 @@ Func __WD_EscapeString($sData)
 	Local $sRegEx = "([" & $_WD_ESCAPE_CHARS & "])"
 	Local $sEscaped = StringRegExpReplace($sData, $sRegEx, "\\$1")
 	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
-EndFunc
+EndFunc   ;==>__WD_EscapeString
 
 Func __WD_TranslateQuotes($sData)
-	Local $sResult = StringReplace($sData, '"' , "'")
+	Local $sResult = StringReplace($sData, '"', "'")
 	Return SetError($_WD_ERROR_Success, 0, $sResult)
-EndFunc
+EndFunc   ;==>__WD_TranslateQuotes
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_DetectError
@@ -1703,7 +1703,7 @@ EndFunc
 Func __WD_DetectError(ByRef $iErr, $vResult)
 	; Don't perform any action if error condition is
 	; already set or the webdriver result equals null
-	If $iErr or $vResult == Null Then Return
+	If $iErr Or $vResult == Null Then Return
 
 	; Extract "value" element from JSON string
 	If Not IsObj($vResult) Then
@@ -1730,7 +1730,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 				$iErr = $_WD_ERROR_Timeout
 
 			Case $WD_Element_NotFound, $WD_Element_Stale
-				$iErr =  $_WD_ERROR_NoMatch
+				$iErr = $_WD_ERROR_NoMatch
 
 			Case $WD_Element_Invalid
 				$iErr = $_WD_ERROR_InvalidArgue
@@ -1743,11 +1743,11 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 		EndSwitch
 	EndIf
-EndFunc
+EndFunc   ;==>__WD_DetectError
 
 Func __WD_StripPath($sFilePath)
 	Return StringRegExpReplace($sFilePath, "^.*\\(.*)$", "$1")
-EndFunc
+EndFunc   ;==>__WD_StripPath
 
 Func __WD_ConsoleWrite($sMsg)
 	If $_WD_CONSOLE = Default Then
@@ -1755,7 +1755,7 @@ Func __WD_ConsoleWrite($sMsg)
 	Else
 		FileWrite($_WD_CONSOLE, $sMsg)
 	EndIf
-EndFunc
+EndFunc   ;==>__WD_ConsoleWrite
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Sleep
@@ -1775,4 +1775,4 @@ Func __WD_Sleep($iPause)
 	$_WD_Sleep($iPause)
 
 	If @error Then SetError($_WD_ERROR_Timeout)
-EndFunc
+EndFunc   ;==>__WD_Sleep
