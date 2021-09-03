@@ -1,6 +1,6 @@
 #include-once
 #include "wd_core.au3"
-#include "WinHttp_WebSocket.au3" ; https : / / github.com / Danp2 / autoit - websocket
+#include "WinHttp_WebSocket.au3" ; https://github.com/Danp2/autoit-websocket
 #include <APIErrorsConstants.au3>
 
 #Region Copyright
