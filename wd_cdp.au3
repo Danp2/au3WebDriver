@@ -129,11 +129,18 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 				Else
 					; Application should check what is the HTTP status code returned by the server and behave accordingly.
 					; WinHttpWebSocketCompleteUpgrade will fail if the HTTP status code is different than 101.
-					$hWebSocket = _WinHttpWebSocketCompleteUpgrade($hRequest, 0)
+					$iStatus = _WinHttpQueryHeaders($hRequest, $WINHTTP_QUERY_STATUS_CODE)
 
-					If $hWebSocket = 0 Then
+					If $iStatus = $HTTP_STATUS_SWITCH_PROTOCOLS Then
+						$hWebSocket = _WinHttpWebSocketCompleteUpgrade($hRequest, 0)
+
+						If $hWebSocket = 0 Then
+							$iErr = $_WD_ERROR_SocketError
+							$sErrText = "WebSocketCompleteUpgrade error"
+						EndIf
+					Else
 						$iErr = $_WD_ERROR_SocketError
-						$sErrText = "WebSocketCompleteUpgrade error"
+						$sErrText = "ReceiveResponse Status <> $HTTP_STATUS_SWITCH_PROTOCOLS"
 					EndIf
 				EndIf
 			EndIf
