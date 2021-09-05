@@ -1888,6 +1888,37 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DispatchEvent
+; Description ...:
+; Syntax ........: _WD_DispatchEvent($sSession, $sEvent[, $sElement = Default])
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sEvent              - a string value.
+;                  $sElement            - [optional] a string value. Default is Default.
+; Return values .: None
+; Author ........: Your Name
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_DispatchEvent($sSession, $sEvent, $sElement = Default)
+	Local Const $sFuncName = "_WD_DispatchEvent"
+	Local $sScript, $sJsonElement
+
+	If $sElement = Default Then
+	Else
+		$sScript = "arguments[0].dispatchEvent(new Event(arguments[1]))"
+		$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+		_WD_ExecuteScript($sSession, $sScript, '"' & $sJsonElement & '","' & $sEvent & '"')
+	EndIf
+
+	;	_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
+;	Return SetError($_WD_ERROR_Success, 0, 1)
+	Return SetError(__WD_Error($sFuncName, @error), 0, 1)
+EndFunc   ;==>_WD_DispatchEvent
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
