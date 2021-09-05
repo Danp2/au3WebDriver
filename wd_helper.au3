@@ -420,17 +420,43 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
-	Local $sResponse, $sElement, $oJSON
-	Local $sScript = "return document.elementFromPoint(arguments[0], arguments[1]);"
-	Local $sParams = $iX & ", " & $iY
+	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $bFrame = False, $oERect
+	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
+	Local $sScript2 = "X = window.pageXOffset; Y = window.pageYOffset; return new Array(X, Y);"
 
-	$sResponse = _WD_ExecuteScript($sSession, $sScript, $sParams)
-	$oJSON = Json_Decode($sResponse)
-	$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+	While True
+		$sParams = $iX & ", " & $iY
+		$sResponse = _WD_ExecuteScript($sSession, $sScript1, $sParams)
+		$oJSON = Json_Decode($sResponse)
+		$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+
+		If Not @error Then
+			$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
+
+			If Not StringInStr("iframe", $sTagName) Then ExitLoop
+
+			$sResponse = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict)
+			$oJSON = Json_Decode($sResponse)
+			$aCoords = Json_Get($oJSON, "[value]")
+
+			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
+
+			$iX -= ($oERect.Item('x') - $aCoords[0])
+			$iY -= ($oERect.Item('y') - $aCoords[1])
+
+			_WD_FrameEnter($sSession, $sElement)
+			$bFrame = True
+		EndIf
+	WEnd
+
+	; Exit to top-most window
+;~ 	If $bFrame Then
+;~ 		$sResponse = _WD_Window($sSession, "frame", '{"id":null}')
+;~ 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
