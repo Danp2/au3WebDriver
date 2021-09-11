@@ -97,6 +97,8 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 			If $sURL Then _WD_Navigate($sSession, $sURL)
 
 			If Not $bSwitch Then _WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
+		Else
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 		EndIf
 	Else
 		Local $aHandles = _WD_Window($sSession, 'handles')
