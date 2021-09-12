@@ -2010,11 +2010,11 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CheckContext($sSession, $lReconnect = Default, $vTarget = Default)
+Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 	Local Const $sFuncName = "_WD_CheckContext"
 	Local $iResult = $_WD_STATUS_Invalid
 
-	If $lReconnect = Default Then $lReconnect = True
+	If $bReconnect = Default Then $bReconnect = True
 	If $vTarget = Default Then $vTarget = $_WD_TARGET_FirstTab
 
 	_WD_Action($sSession, 'url')
@@ -2024,7 +2024,7 @@ Func _WD_CheckContext($sSession, $lReconnect = Default, $vTarget = Default)
 		$iResult = $_WD_STATUS_Valid
 
 	ElseIf $iErr = $_WD_ERROR_Exception Then
-		If $lReconnect Then
+		If $bReconnect Then
 			If IsInt($vTarget) Then
 				; To recover, get an array of window handles and use one
 				Local $aHandles = _WD_Window($sSession, "handles")
