@@ -53,6 +53,15 @@ Global Enum _
 		$_WD_OPTION_Standard, _
 		$_WD_OPTION_Advanced
 
+Global Enum _
+		$_WD_STATUS_Invalid, _
+		$_WD_STATUS_Valid, _
+		$_WD_STATUS_Reconnect
+
+Global Enum _
+		$_WD_TARGET_FirstTab, _
+		$_WD_TARGET_LastTab
+
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
@@ -1978,6 +1987,71 @@ Func _WD_IsFullScreen($sSession)
 
 	Return SetError($_WD_ERROR_Success, 0, $bResult)
 EndFunc   ;==>_WD_IsFullScreen
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_CheckSession
+; Description ...: Check if browser context is still valid. If found to be invalid, attempt to reestablish connection
+;                  to designated tab
+; Syntax ........: _WD_CheckSession($sSession[, $lReconnect = Default[, $vTarget = Default]])
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $lReconnect          - [optional] Auto reconnect? Default is True
+;                  $vTarget             - [optional] Tab to target in reconnect attempt. Default is $_WD_TARGET_FirstTab
+;                                                    This can be the handle for an existing tab if known.
+;
+; Return values .: Success      - $_WD_STATUS_Valid (1)		-- Current browser context is valid
+;                  				- $_WD_STATUS_Reconnect (2)	-- Context was invalid; Successfully reconnected to existing tab
+;                  Failure      - $_WD_STATUS_Invalid (0)	-- Browser context is invalid
+;                  @ERROR       - $_WD_ERROR_Success
+;                  				- $_WD_ERROR_Exception
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_CheckSession($sSession, $lReconnect = Default, $vTarget = Default)
+	Local Const $sFuncName = "_WD_CheckSession"
+	Local $iResult = $_WD_STATUS_Invalid
+
+	If $lReconnect = Default Then $lReconnect = True
+	If $vTarget = Default Then $vTarget = $_WD_TARGET_FirstTab
+
+	_WD_Action($sSession, 'url')
+	$iErr = @error
+
+	If $iErr = $_WD_ERROR_Success Then
+		$iResult = $_WD_STATUS_Valid
+
+	ElseIf $iErr = $_WD_ERROR_Exception Then
+		If $lReconnect Then
+			If IsInt($vTarget) Then
+				; To recover, get an array of window handles and use one
+				Local $aHandles = _WD_Window($sSession, "handles")
+
+				If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
+					Select
+						Case $vTarget = $_WD_TARGET_FirstTab
+							$vTarget = $aHandles[0]
+
+						Case $vTarget = $_WD_TARGET_LastTab
+							$vTarget = $aHandles[UBound($aHandles) - 1]
+
+					EndSelect
+				EndIf
+			EndIf
+
+			_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
+
+			If @error = $_WD_ERROR_Success Then
+				$iResult = $_WD_STATUS_Reconnect
+			EndIf
+		EndIf
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
+EndFunc   ;==>_WD_CheckSession
+
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
 ; Name ..........: __WD_Base64Decode
