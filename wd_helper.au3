@@ -1989,10 +1989,10 @@ Func _WD_IsFullScreen($sSession)
 EndFunc   ;==>_WD_IsFullScreen
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_CheckSession
+; Name ..........: _WD_CheckContext
 ; Description ...: Check if browser context is still valid. If found to be invalid, attempt to reestablish connection
 ;                  to designated tab
-; Syntax ........: _WD_CheckSession($sSession[, $lReconnect = Default[, $vTarget = Default]])
+; Syntax ........: _WD_CheckContext($sSession[, $lReconnect = Default[, $vTarget = Default]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $lReconnect          - [optional] Auto reconnect? Default is True
 ;                  $vTarget             - [optional] Tab to target in reconnect attempt. Default is $_WD_TARGET_FirstTab
@@ -2010,7 +2010,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CheckSession($sSession, $lReconnect = Default, $vTarget = Default)
+Func _WD_CheckContext($sSession, $lReconnect = Default, $vTarget = Default)
 	Local Const $sFuncName = "_WD_CheckSession"
 	Local $iResult = $_WD_STATUS_Invalid
 
