@@ -2011,7 +2011,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CheckContext($sSession, $lReconnect = Default, $vTarget = Default)
-	Local Const $sFuncName = "_WD_CheckSession"
+	Local Const $sFuncName = "_WD_CheckContext"
 	Local $iResult = $_WD_STATUS_Invalid
 
 	If $lReconnect = Default Then $lReconnect = True
@@ -2050,7 +2050,7 @@ Func _WD_CheckContext($sSession, $lReconnect = Default, $vTarget = Default)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
-EndFunc   ;==>_WD_CheckSession
+EndFunc   ;==>_WD_CheckContext
 
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
