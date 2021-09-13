@@ -2018,7 +2018,7 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 	If $vTarget = Default Then $vTarget = $_WD_TARGET_FirstTab
 
 	_WD_Action($sSession, 'url')
-	$iErr = @error
+	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
 		$iResult = $_WD_STATUS_Valid
