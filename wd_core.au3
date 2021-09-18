@@ -1707,6 +1707,12 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 	; Extract "value" element from JSON string
 	If Not IsObj($vResult) Then
+		; Detect unknown end point
+		If $_WD_HTTPRESULT = $HTTP_STATUS_BAD_METHOD Then
+			$iErr = $_WD_ERROR_UnknownCommand
+			Return
+		EndIf
+
 		Local $oJSON = Json_Decode($vResult)
 		$vResult = Json_Get($oJSON, "[value]")
 
