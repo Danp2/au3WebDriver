@@ -32,9 +32,9 @@
 #EndRegion Copyright
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_ExecuteCDPCommand
+; Name ..........: _WD_CDPExecuteCommand
 ; Description ...: Execute CDP command
-; Syntax ........: _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams[, $sWebSocketURL = Default])
+; Syntax ........: _WD_CDPExecuteCommand($sSession, $sCommand, $oParams[, $sWebSocketURL = Default])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sCommand            - Name of the command
 ;                  $oParams             - Parameters of the command as an object
@@ -56,7 +56,7 @@
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
+Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
 	Local Const $sFuncName = "_WD_ExecuteCDPCommand"
 	Local $iErr = 0, $vData = Json_ObjCreate()
 
@@ -155,7 +155,7 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 			Json_ObjPut($vData, 'params', $oParams)
 			$vData = Json_Encode($vData)
 
-		  ; Send and receive data on the websocket protocol.
+			; Send and receive data on the websocket protocol.
 
 			$fStatus = _WinHttpWebSocketSend($hWebSocket, _
 					$WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, _
@@ -237,12 +237,12 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sRecv)
-EndFunc
+EndFunc   ;==>_WD_CDPExecuteCommand
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_GetCDPSettings
+; Name ..........: _WD_CDPGetSettings
 ; Description ...: Retrieve CDP related settings from the browser
-; Syntax ........: _WD_GetCDPSettings($sSession, $sOption)
+; Syntax ........: _WD_CDPGetSettings($sSession, $sOption)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sOption             - one of the following:
 ;                               | debugger
@@ -265,7 +265,7 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetCDPSettings($sSession, $sOption)
+Func _WD_CDPGetSettings($sSession, $sOption)
 	Local Const $sFuncName = "_WD_GetCDPSettings"
 	Local $sJSON, $oJSON, $sDebuggerAdress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
 	Local $sKey, $vResult, $sBrowser
@@ -305,7 +305,7 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 					$oJSON = Json_Decode($sJSON)
 					$iEntries = UBound($oJSON)
 
-					If $iEntries  Then
+					If $iEntries Then
 						$aKeys = Json_ObjGetKeys($oJSON[0])
 						$iKeys = UBound($aKeys)
 
@@ -316,7 +316,7 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 
 							For $j = 0 To $iEntries - 1
 								$sKey = "[" & $j & "]." & $aKeys[$i]
-								$aResults[$i][$j+1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
+								$aResults[$i][$j + 1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
 							Next
 						Next
 					Else
@@ -345,4 +345,4 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $vResult)
-EndFunc
+EndFunc   ;==>_WD_CDPGetSettings
