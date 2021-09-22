@@ -74,8 +74,8 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 
 ## CDP functions
 
-- _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
-- _WD_GetCDPSettings($sSession, $sOption)
+- _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
+- _WD_CDPGetSettings($sSession, $sOption)
 
 ## Source Code
 You will always be able to find the latest version in the GitHub Repo  https://github.com/Danp2/WebDriver
