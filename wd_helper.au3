@@ -1992,9 +1992,9 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Name ..........: _WD_CheckContext
 ; Description ...: Check if browser context is still valid. If found to be invalid, attempt to reestablish connection
 ;                  to designated tab
-; Syntax ........: _WD_CheckContext($sSession[, $lReconnect = Default[, $vTarget = Default]])
+; Syntax ........: _WD_CheckContext($sSession[, $bReconnect = Default[, $vTarget = Default]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $lReconnect          - [optional] Auto reconnect? Default is True
+;                  $bReconnect          - [optional] Auto reconnect? Default is True
 ;                  $vTarget             - [optional] Tab to target in reconnect attempt. Default is $_WD_TARGET_FirstTab
 ;                                                    This can be the handle for an existing tab if known.
 ;
