@@ -1770,7 +1770,7 @@ EndFunc
 ; Parameters ....: $iPause              - Amount of time to pause (in milliseconds)
 ; Return values .: None
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......: Calls standard Sleep() by default. This can be overridden with _WD_Option so that a user supplied function
 ;                  gets called instead
 ; Related .......:
