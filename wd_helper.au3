@@ -933,6 +933,8 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 			EndIf
 
 			__WD_Sleep(250)
+			If @error Then ExitLoop
+			
 			_WD_ExecuteScript($sSession, "jQuery")
 		Until @error = $_WD_ERROR_Success
 	EndIf
