@@ -79,7 +79,7 @@ Global Enum _
 ;                  				- $_WD_ERROR_GeneralError
 ;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......: 01/12/2019
+; Modified ......: mLipok
 ; Remarks .......: For list of $sFeatures take a look in the following link
 ; Related .......:
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
@@ -715,7 +715,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Return values .: Success      - 1
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -879,7 +879,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ;                  				- $_WD_ERROR_Timeout
 ;                  				- $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
