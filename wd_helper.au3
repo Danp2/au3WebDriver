@@ -155,6 +155,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
 
 			__WD_Sleep(10)
+			If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_UserAbort), 0, $sTabHandle)
 		WEnd
 
 		If $bSwitch Then
