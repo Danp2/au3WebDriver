@@ -1779,6 +1779,5 @@ EndFunc
 ; ===============================================================================================================================
 Func __WD_Sleep($iPause)
 	$_WD_Sleep($iPause)
-
-	If @error Then SetError($_WD_ERROR_Timeout)
-EndFunc
+	If @error Then Return SetError($_WD_ERROR_UserAbort)
+EndFunc   ;==>__WD_Sleep
