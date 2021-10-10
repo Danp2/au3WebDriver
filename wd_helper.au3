@@ -330,52 +330,52 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	If $bCheckNoMatch And $iOptions <> $_WD_OPTION_NoMatch Then
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
-			Local $hWaitTimer = TimerInit()
-			While 1
-				__WD_Sleep($iDelay + 10) ; +10 is a general Sleep in loop
-				If @error Then
-					$iErr = @error
-					ExitLoop
-				EndIf
-
-				$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+		Local $hWaitTimer = TimerInit()
+		While 1
+			__WD_Sleep($iDelay + 10)     ; +10 is a general Sleep in loop
+			If @error Then
 				$iErr = @error
+				ExitLoop
+			EndIf
 
-				If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
-					$iErr = $_WD_ERROR_Success
-					ExitLoop
+			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+			$iErr = @error
 
-				ElseIf $iErr = $_WD_ERROR_Success Then
-					If $bVisible Then
-						$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
+				$iErr = $_WD_ERROR_Success
+				ExitLoop
 
-						If @error Then
-							$bIsVisible = False
-						EndIf
+			ElseIf $iErr = $_WD_ERROR_Success Then
+				If $bVisible Then
+					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 
+					If @error Then
+						$bIsVisible = False
 					EndIf
 
-					If $bEnabled Then
-						$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+				EndIf
 
-						If @error Then
-							$bIsEnabled = False
-						EndIf
-					EndIf
+				If $bEnabled Then
+					$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
 
-					If $bIsVisible And $bIsEnabled Then
-						ExitLoop
-					Else
-						$sElement = ''
+					If @error Then
+						$bIsEnabled = False
 					EndIf
 				EndIf
 
-				If (TimerDiff($hWaitTimer) > $iTimeout) Then
-					$iErr = $_WD_ERROR_Timeout
+				If $bIsVisible And $bIsEnabled Then
 					ExitLoop
+				Else
+					$sElement = ''
 				EndIf
+			EndIf
 
-			WEnd
+			If (TimerDiff($hWaitTimer) > $iTimeout) Then
+				$iErr = $_WD_ERROR_Timeout
+				ExitLoop
+			EndIf
+
+		WEnd
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
@@ -723,38 +723,38 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $sElement = Default Then $sElement = ""
 
-		Local $hLoadWaitTimer = TimerInit()
-		While True
-			__WD_Sleep($iDelay + 10) ; +10 is a general Sleep in loop
-			If @error Then
-				$iErr = @error
+	Local $hLoadWaitTimer = TimerInit()
+	While True
+		__WD_Sleep($iDelay + 10)     ; +10 is a general Sleep in loop
+		If @error Then
+			$iErr = @error
+			ExitLoop
+		EndIf
+
+		If $sElement <> '' Then
+			_WD_ElementAction($sSession, $sElement, 'name')
+
+			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
+		Else
+			$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
+			$iErr = @error
+
+			If $iErr Then
 				ExitLoop
 			EndIf
 
-			If $sElement <> '' Then
-				_WD_ElementAction($sSession, $sElement, 'name')
+			$oJSON = Json_Decode($sResponse)
+			$sReadyState = Json_Get($oJSON, "[value]")
 
-				If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
-			Else
-				$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
-				$iErr = @error
+			If $sReadyState = 'complete' Then ExitLoop
+		EndIf
 
-				If $iErr Then
-					ExitLoop
-				EndIf
+		If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
+			$iErr = $_WD_ERROR_Timeout
+			ExitLoop
+		EndIf
 
-				$oJSON = Json_Decode($sResponse)
-				$sReadyState = Json_Get($oJSON, "[value]")
-
-				If $sReadyState = 'complete' Then ExitLoop
-			EndIf
-
-			If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
-				$iErr = $_WD_ERROR_Timeout
-				ExitLoop
-			EndIf
-
-		WEnd
+	WEnd
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, 0)
@@ -2093,4 +2093,4 @@ EndFunc   ;==>__WD_Base64Decode
 
 Func __WD_ErrHnd()
 
-EndFunc
+EndFunc   ;==>__WD_ErrHnd
