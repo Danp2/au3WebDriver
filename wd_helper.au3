@@ -331,9 +331,8 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
 		__WD_Sleep($iDelay)
-
 		If @error Then
-			$iErr = $_WD_ERROR_UserAbort
+			$iErr = @error
 		Else
 			Local $hWaitTimer = TimerInit()
 
@@ -376,9 +375,8 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				EndIf
 
 				__WD_Sleep(1000)
-
 				If @error Then
-					$iErr = $_WD_ERROR_UserAbort
+					$iErr = @error
 					ExitLoop
 				EndIf
 			WEnd
