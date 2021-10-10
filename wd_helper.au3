@@ -337,6 +337,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 			Local $hWaitTimer = TimerInit()
 
 			While 1
+				Sleep(10) ; general Sleep in loop
 				$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 				$iErr = @error
 
@@ -374,7 +375,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 					ExitLoop
 				EndIf
 
-				__WD_Sleep(1000)
+				__WD_Sleep($iDelay)
 				If @error Then
 					$iErr = @error
 					ExitLoop
