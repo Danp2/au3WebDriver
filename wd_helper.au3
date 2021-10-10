@@ -729,13 +729,14 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $sElement = Default Then $sElement = ""
 
-	If $iDelay Then __WD_Sleep($iDelay)
+	__WD_Sleep($iDelay)
 	If @error Then
 		$iErr = @error
 	Else
 		Local $hLoadWaitTimer = TimerInit()
 
 		While True
+			Sleep(10) ; general Sleep in loop
 			If $sElement <> '' Then
 				_WD_ElementAction($sSession, $sElement, 'name')
 
