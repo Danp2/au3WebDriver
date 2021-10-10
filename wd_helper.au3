@@ -729,9 +729,8 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $sElement = Default Then $sElement = ""
 
 	If $iDelay Then __WD_Sleep($iDelay)
-
 	If @error Then
-		$iErr = $_WD_ERROR_UserAbort
+		$iErr = @error
 	Else
 		Local $hLoadWaitTimer = TimerInit()
 
@@ -759,10 +758,9 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 				ExitLoop
 			EndIf
 
-			__WD_Sleep(100)
-
+			__WD_Sleep($iDelay)
 			If @error Then
-				$iErr = $_WD_ERROR_UserAbort
+				$iErr = @error
 				ExitLoop
 			EndIf
 		WEnd
