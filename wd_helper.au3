@@ -79,7 +79,7 @@ Global Enum _
 ;                  				- $_WD_ERROR_GeneralError
 ;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......: mLipok
+; Modified ......: 01/12/2019
 ; Remarks .......: For list of $sFeatures take a look in the following link
 ; Related .......:
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
@@ -330,14 +330,14 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	If $bCheckNoMatch And $iOptions <> $_WD_OPTION_NoMatch Then
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
-		__WD_Sleep($iDelay)
-		If @error Then
-			$iErr = @error
-		Else
 			Local $hWaitTimer = TimerInit()
-
 			While 1
-				Sleep(10) ; general Sleep in loop
+				__WD_Sleep($iDelay + 10) ; +10 is a general Sleep in loop
+				If @error Then
+					$iErr = @error
+					ExitLoop
+				EndIf
+
 				$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 				$iErr = @error
 
@@ -375,13 +375,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 					ExitLoop
 				EndIf
 
-				__WD_Sleep($iDelay)
-				If @error Then
-					$iErr = @error
-					ExitLoop
-				EndIf
 			WEnd
-		EndIf
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
@@ -715,7 +709,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Return values .: Success      - 1
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ; Author ........: Dan Pollak
-; Modified ......: mLipok
+; Modified ......:
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -729,14 +723,14 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $sElement = Default Then $sElement = ""
 
-	__WD_Sleep($iDelay)
-	If @error Then
-		$iErr = @error
-	Else
 		Local $hLoadWaitTimer = TimerInit()
-
 		While True
-			Sleep(10) ; general Sleep in loop
+			__WD_Sleep($iDelay + 10) ; +10 is a general Sleep in loop
+			If @error Then
+				$iErr = @error
+				ExitLoop
+			EndIf
+
 			If $sElement <> '' Then
 				_WD_ElementAction($sSession, $sElement, 'name')
 
@@ -760,13 +754,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 				ExitLoop
 			EndIf
 
-			__WD_Sleep($iDelay)
-			If @error Then
-				$iErr = @error
-				ExitLoop
-			EndIf
 		WEnd
-	EndIf
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, 0)
@@ -879,7 +867,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ;                  				- $_WD_ERROR_Timeout
 ;                  				- $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
-; Modified ......: mLipok
+; Modified ......:
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
@@ -929,14 +917,14 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 		Local $hWaitTimer = TimerInit()
 
 		Do
+			__WD_Sleep(250)
+			If @error Then ExitLoop
+
 			If TimerDiff($hWaitTimer) > $iTimeout Then
 				SetError($_WD_ERROR_Timeout)
 				ExitLoop
 			EndIf
 
-			__WD_Sleep(250)
-			If @error Then ExitLoop
-			
 			_WD_ExecuteScript($sSession, "jQuery")
 		Until @error = $_WD_ERROR_Success
 	EndIf
