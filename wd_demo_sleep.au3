@@ -61,25 +61,26 @@ Func _My_Sleep($v_Parameter)
 EndFunc   ;==>_My_Sleep
 
 Func _WriteTestHtml($sFilePath = @ScriptDir & "\TestFile.html")
-    FileDelete($sFilePath)
-    Local Const $sHtml = '<html lang="en">' & @CRLF & _
-            '    <head>' & @CRLF & _
-            '        <meta charset="utf-8">' & @CRLF & _
-            '        <title>TESTING</title>' & @CRLF & _
-            '    </head>' & @CRLF & _
-            '    <body>' & @CRLF & _
-            '        <div id="MyLink">Waiting</div>' & @CRLF & _
-            '    </body>' & @CRLF & _
-            '    <script type="text/javascript">' & @CRLF & _
-            '    setTimeout(function()' & @CRLF & _
-            '    {' & @CRLF & _
-            '        // Delayed code in here' & @CRLF & _
-            '        document.getElementById("MyLink").innerHTML="<a>TESTING</a>";' & @CRLF & _
-            '    }, 20000); // 20000 = 20 seconds' & @CRLF & _
-            '    </script>' & @CRLF & _
-            '</html>'
-    FileWrite($sFilePath, $sHtml)
-    Return "file:///" & StringReplace($sFilePath, "\", "/")
+	FileDelete($sFilePath)
+	Local Const $sHtml = _
+			'<html lang="en">' & @CRLF & _
+			'    <head>' & @CRLF & _
+			'        <meta charset="utf-8">' & @CRLF & _
+			'        <title>TESTING</title>' & @CRLF & _
+			'    </head>' & @CRLF & _
+			'    <body>' & @CRLF & _
+			'        <div id="MyLink">Waiting</div>' & @CRLF & _
+			'    </body>' & @CRLF & _
+			'    <script type="text/javascript">' & @CRLF & _
+			'    setTimeout(function()' & @CRLF & _
+			'    {' & @CRLF & _
+			'        // Delayed code in here' & @CRLF & _
+			'        document.getElementById("MyLink").innerHTML="<a>TESTING</a>";' & @CRLF & _
+			'    }, 20000); // 20000 = 20 seconds' & @CRLF & _
+			'    </script>' & @CRLF & _
+			'</html>'
+	FileWrite($sFilePath, $sHtml)
+	Return "file:///" & StringReplace($sFilePath, "\", "/")
 EndFunc   ;==>_WriteTestHtml
 
 Func SetupChrome()
