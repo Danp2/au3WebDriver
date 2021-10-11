@@ -6,13 +6,11 @@
 #include "wd_helper.au3"
 
 Global $idAbortTest
+Global $WD_SESSION
 _Example()
 
 Func _Example()
-	_WD_Startup()
-	Local $sCapabilities = SetupChrome()
-	Local $WD_SESSION = _WD_CreateSession($sCapabilities)
-	_WD_Timeouts($WD_SESSION, 40000)
+	SetupChrome()
 
 	; Create a GUI with various controls.
 	Local $hGUI = GUICreate("Example")
@@ -84,11 +82,14 @@ Func _WriteTestHtml($sFilePath = @ScriptDir & "\TestFile.html")
 EndFunc   ;==>_WriteTestHtml
 
 Func SetupChrome()
+	_WD_Startup()
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
-	_WD_Option('HTTPTimeouts', 40000)
-	_WD_Option('DefaultTimeout', 40000)
+	_WD_Option('HTTPTimeouts', True)
+	_WD_Option('DefaultTimeout', 40001)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
-	Return '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+	$WD_SESSION = _WD_CreateSession($sCapabilities)
+	_WD_Timeouts($WD_SESSION, 40002)
 EndFunc   ;==>SetupChrome
