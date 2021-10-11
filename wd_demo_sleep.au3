@@ -22,7 +22,6 @@ Func _Example()
 
 	ConsoleWrite("- TESTING" & @CRLF)
 
-	_WD_Option("Sleep", _My_Sleep)
 	Local $sFilePath = _WriteTestHtml()
 
 	; Loop until the user exits.
@@ -88,6 +87,7 @@ Func SetupChrome()
 	_WD_Option('HTTPTimeouts', True)
 	_WD_Option('DefaultTimeout', 40001)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
+	_WD_Option("Sleep", _My_Sleep)
 
 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 	$WD_SESSION = _WD_CreateSession($sCapabilities)
