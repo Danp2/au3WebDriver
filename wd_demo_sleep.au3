@@ -44,7 +44,7 @@ Func _Example()
 
 EndFunc   ;==>_Example
 
-Func _My_Sleep($v_Parameter)
+Func _My_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
 	Do
 		Switch GUIGetMsg()
@@ -54,7 +54,7 @@ Func _My_Sleep($v_Parameter)
 			Case $idAbortTest
 				Return SetError($_WD_ERROR_UserAbort)
 		EndSwitch
-	Until TimerDiff($hTimer) > $v_Parameter
+	Until TimerDiff($hTimer) > $iDelay
 EndFunc   ;==>_My_Sleep
 
 Func _WriteTestHtml($sFilePath = @ScriptDir & "\TestFile.html")
