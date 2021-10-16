@@ -290,7 +290,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
-;                  $iDelay              - [optional] Milliseconds to wait before checking status
+;                  $iDelay              - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $iOptions            - [optional] Binary flags to perform addtional actions
 ;
@@ -703,7 +703,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Description ...: Wait for a browser page load to complete before returning
 ; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $iDelay              - [optional] Milliseconds to wait before checking status
+;                  $iDelay              - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sElement            - [optional] Element ID to confirm DOM invalidation
 ; Return values .: Success      - 1
