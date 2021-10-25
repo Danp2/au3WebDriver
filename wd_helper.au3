@@ -1225,8 +1225,6 @@ EndFunc   ;==>_WD_SelectFiles
 ;
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidValue
-;                  				- $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1250,6 +1248,8 @@ Func _WD_IsLatestRelease()
 		If Not @error Then
 			Local $sLatestWDVersion = $aLatestWDVersion[0]
 			$bResult = ($__WDVERSION == $sLatestWDVersion)
+		Else
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
 
