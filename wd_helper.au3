@@ -1239,12 +1239,13 @@ Func _WD_IsLatestRelease()
 	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
 	Local $bResult = Null
 	Local $iErr = $_WD_ERROR_Success
+	Local $sRegex = '<a.*href="\/Danp2\/WebDriver\/releases\/tag\/(.*?)"'
 
 	Local $sResult = InetRead($sGitURL)
 	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), '<a href="/Danp2/WebDriver/releases/tag/(.*)">', $STR_REGEXPARRAYMATCH)
+		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), $sRegex, $STR_REGEXPARRAYMATCH)
 
 		If Not @error Then
 			Local $sLatestWDVersion = $aLatestWDVersion[0]
