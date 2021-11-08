@@ -1214,8 +1214,6 @@ EndFunc   ;==>_WD_SelectFiles
 ;
 ;                  @ERROR       - $_WD_ERROR_Success
 ;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidValue
-;                  				- $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1228,16 +1226,19 @@ Func _WD_IsLatestRelease()
 	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
 	Local $bResult = Null
 	Local $iErr = $_WD_ERROR_Success
+	Local $sRegex = '<a.*href="\/Danp2\/WebDriver\/releases\/tag\/(.*?)"'
 
 	Local $sResult = InetRead($sGitURL)
 	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), '<a href="/Danp2/WebDriver/releases/tag/(.*)">', $STR_REGEXPARRAYMATCH)
+		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), $sRegex, $STR_REGEXPARRAYMATCH)
 
 		If Not @error Then
 			Local $sLatestWDVersion = $aLatestWDVersion[0]
 			$bResult = ($__WDVERSION == $sLatestWDVersion)
+		Else
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
 
@@ -1269,6 +1270,9 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Author ........: Dan Pollak, CyCho
 ; Modified ......: mLipok
 ; Remarks .......:
+; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing
+;                  the update. In this scenario, the return value indicates if an update is available.
+;
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
 ; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
@@ -1363,42 +1367,49 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				EndIf
 		EndSwitch
 
-		If ($iErr = $_WD_ERROR_Success And $sDriverLatest > $sDriverVersion) Or $bForce Then
-			$sReturned = InetRead($sURLNewDriver)
+		If $iErr = $_WD_ERROR_Success Then
+			; When $bForce parameter equals Null, then return True if newer driver is available
+			If IsKeyword($bForce) = $KEYWORD_NULL Then
+				If $sDriverLatest > $sDriverVersion Then
+					$bResult = True
+				EndIf
+			ElseIf $sDriverLatest > $sDriverVersion Or $bForce Then
+				$sReturned = InetRead($sURLNewDriver)
 
-			$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
-			$hFile = FileOpen($sTempFile, 18)
-			FileWrite($hFile, $sReturned)
-			FileClose($hFile)
+				$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
+				$hFile = FileOpen($sTempFile, 18)
+				FileWrite($hFile, $sReturned)
+				FileClose($hFile)
 
-			; Close any instances of webdriver and delete from disk
-			__WD_CloseDriver($sDriverEXE)
-			FileDelete($sInstallDir & "\" & $sDriverEXE)
+				; Close any instances of webdriver and delete from disk
+				__WD_CloseDriver($sDriverEXE)
+				FileDelete($sInstallDir & "\" & $sDriverEXE)
 
-			; Handle COM Errors
-			Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
-			#forceref $oErr
+				; Handle COM Errors
+				Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+				#forceref $oErr
 
-			; Extract new instance of webdriver
-			$oShell = ObjCreate("Shell.Application")
-			If @error Then
-				$iErr = $_WD_ERROR_GeneralError
-			Else
-				$FilesInZip = $oShell.NameSpace($sTempFile).items
+				; Extract new instance of webdriver
+				$oShell = ObjCreate("Shell.Application")
 				If @error Then
 					$iErr = $_WD_ERROR_GeneralError
 				Else
-					$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
+					$FilesInZip = $oShell.NameSpace($sTempFile).items
 					If @error Then
 						$iErr = $_WD_ERROR_GeneralError
 					Else
-						$iErr = $_WD_ERROR_Success
-						$bResult = True
+						$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
+						If @error Then
+							$iErr = $_WD_ERROR_GeneralError
+						Else
+							$iErr = $_WD_ERROR_Success
+							$bResult = True
+						EndIf
 					EndIf
 				EndIf
-			EndIf
 
-			FileDelete($sTempFile)
+				FileDelete($sTempFile)
+			EndIf
 		EndIf
 	EndIf
 

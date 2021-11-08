@@ -1,14 +1,26 @@
+	v0.4.1.2
+	- Added: _WD_CheckContext
+	- Fixed (_WD_NewTab): Return error on _WD_Window failure
+	- Fixed (_WD_IsLatestRelease)
+		- Update regex
+		- Return $_WD_ERROR_Exception if regex fails
+	- Changed (_WD_ExecuteCDPCommand): Added http status check
+	- Changed (__WD_DetectError): Detect unknown end point
+	- Chore: Updated wd_cdp.au3
+		- Rename functions so that they begin with _WD_CDP
+		- Tidy code
+
 	v0.4.1.1
-	- Fix (_WD_NewTab): Properly detect $sCurrentTabHandle retrieval
+	- Fixed (_WD_NewTab): Properly detect $sCurrentTabHandle retrieval
 	- Changed (_WD_UpdateDriver): Improve error handling (seadoggie01)
 	- Added: __WD_Sleep
 		- Changed (_WD_Option): Added support for "Sleep" option
-		- Chore: Use __WD_Sleep instead of Sleep in "helper" functions 
+		- Chore: Use __WD_Sleep instead of Sleep in "helper" functions
 	- Chore: Updated wd_demo.au3
 		- Call correct Base64 decode function
 		- Remove "binary" portion of MS Edge Capabilities string
 	- Chore: Add remark to _WD_GetSession
-	
+
 	v0.4.1.0
 	- Changed: Moved CDP-related functions to separate file (wd_cdp.au3)
 	- Changed (_WD_ExecuteCDPCommand): Now supports additional browsers via WebSockets
