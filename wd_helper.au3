@@ -330,9 +330,9 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	If $bCheckNoMatch And $iOptions <> $_WD_OPTION_NoMatch Then
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
+		__WD_Sleep($iDelay)
 		Local $hWaitTimer = TimerInit()
 		While 1
-			__WD_Sleep($iDelay + 10)     ; +10 is a general Sleep in loop
 			If @error Then
 				$iErr = @error
 				ExitLoop
@@ -375,6 +375,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				ExitLoop
 			EndIf
 
+			__WD_Sleep(10)
 		WEnd
 	EndIf
 
@@ -723,9 +724,9 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $sElement = Default Then $sElement = ""
 
+	__WD_Sleep($iDelay)
 	Local $hLoadWaitTimer = TimerInit()
 	While True
-		__WD_Sleep($iDelay + 10)     ; +10 is a general Sleep in loop
 		If @error Then
 			$iErr = @error
 			ExitLoop
@@ -753,7 +754,8 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 			$iErr = $_WD_ERROR_Timeout
 			ExitLoop
 		EndIf
-
+		
+		__WD_Sleep(10)
 	WEnd
 
 	If $iErr Then
@@ -917,7 +919,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 		Local $hWaitTimer = TimerInit()
 
 		Do
-			__WD_Sleep(250)
+			__WD_Sleep(10)
 			If @error Then ExitLoop
 
 			If TimerDiff($hWaitTimer) > $iTimeout Then
