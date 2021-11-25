@@ -155,7 +155,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
 
 			__WD_Sleep(10)
-			If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_UserAbort), 0, $sTabHandle)
+			If @error Then Return SetError(__WD_Error($sFuncName, @error), 0, $sTabHandle)
 		WEnd
 
 		If $bSwitch Then
@@ -331,12 +331,11 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
 		__WD_Sleep($iDelay)
+		$iErr = @error
+
 		Local $hWaitTimer = TimerInit()
 		While 1
-			If @error Then
-				$iErr = @error
-				ExitLoop
-			EndIf
+			If $iErr Then ExitLoop
 
 			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 			$iErr = @error
@@ -376,6 +375,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 			EndIf
 
 			__WD_Sleep(10)
+			$iErr = @error
 		WEnd
 	EndIf
 
@@ -725,12 +725,11 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $sElement = Default Then $sElement = ""
 
 	__WD_Sleep($iDelay)
+	$iErr = @error
+
 	Local $hLoadWaitTimer = TimerInit()
 	While True
-		If @error Then
-			$iErr = @error
-			ExitLoop
-		EndIf
+		If $iErr Then ExitLoop
 
 		If $sElement <> '' Then
 			_WD_ElementAction($sSession, $sElement, 'name')
@@ -754,8 +753,9 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 			$iErr = $_WD_ERROR_Timeout
 			ExitLoop
 		EndIf
-		
+
 		__WD_Sleep(10)
+		$iErr = @error
 	WEnd
 
 	If $iErr Then
