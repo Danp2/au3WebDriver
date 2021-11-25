@@ -79,7 +79,7 @@ Global Enum _
 ;                  				- $_WD_ERROR_GeneralError
 ;                  				- $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......: 01/12/2019
+; Modified ......: mLipok
 ; Remarks .......: For list of $sFeatures take a look in the following link
 ; Related .......:
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
@@ -155,6 +155,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
 
 			__WD_Sleep(10)
+			If @error Then Return SetError(__WD_Error($sFuncName, @error), 0, $sTabHandle)
 		WEnd
 
 		If $bSwitch Then
@@ -289,7 +290,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector           - Value to find
-;                  $iDelay              - [optional] Milliseconds to wait before checking status
+;                  $iDelay              - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $iOptions            - [optional] Binary flags to perform addtional actions
 ;
@@ -330,58 +331,52 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
 		__WD_Sleep($iDelay)
+		$iErr = @error
 
-		If @error Then
-			$iErr = $_WD_ERROR_UserAbort
-		Else
-			Local $hWaitTimer = TimerInit()
+		Local $hWaitTimer = TimerInit()
+		While 1
+			If $iErr Then ExitLoop
 
-			While 1
-				$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
-				$iErr = @error
+			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+			$iErr = @error
 
-				If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
-					$iErr = $_WD_ERROR_Success
-					ExitLoop
+			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
+				$iErr = $_WD_ERROR_Success
+				ExitLoop
 
-				ElseIf $iErr = $_WD_ERROR_Success Then
-					If $bVisible Then
-						$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+			ElseIf $iErr = $_WD_ERROR_Success Then
+				If $bVisible Then
+					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 
-						If @error Then
-							$bIsVisible = False
-						EndIf
-
+					If @error Then
+						$bIsVisible = False
 					EndIf
 
-					If $bEnabled Then
-						$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+				EndIf
 
-						If @error Then
-							$bIsEnabled = False
-						EndIf
-					EndIf
+				If $bEnabled Then
+					$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
 
-					If $bIsVisible And $bIsEnabled Then
-						ExitLoop
-					Else
-						$sElement = ''
+					If @error Then
+						$bIsEnabled = False
 					EndIf
 				EndIf
 
-				If (TimerDiff($hWaitTimer) > $iTimeout) Then
-					$iErr = $_WD_ERROR_Timeout
+				If $bIsVisible And $bIsEnabled Then
 					ExitLoop
+				Else
+					$sElement = ''
 				EndIf
+			EndIf
 
-				__WD_Sleep(1000)
+			If (TimerDiff($hWaitTimer) > $iTimeout) Then
+				$iErr = $_WD_ERROR_Timeout
+				ExitLoop
+			EndIf
 
-				If @error Then
-					$iErr = $_WD_ERROR_UserAbort
-					ExitLoop
-				EndIf
-			WEnd
-		EndIf
+			__WD_Sleep(10)
+			$iErr = @error
+		WEnd
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
@@ -709,13 +704,13 @@ EndFunc   ;==>_WD_HighlightElements
 ; Description ...: Wait for a browser page load to complete before returning
 ; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $iDelay              - [optional] Milliseconds to wait before checking status
+;                  $iDelay              - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sElement            - [optional] Element ID to confirm DOM invalidation
 ; Return values .: Success      - 1
 ;                  Failure      - 0 and sets the @error flag to non-zero
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -729,45 +724,39 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $sElement = Default Then $sElement = ""
 
-	If $iDelay Then __WD_Sleep($iDelay)
+	__WD_Sleep($iDelay)
+	$iErr = @error
 
-	If @error Then
-		$iErr = $_WD_ERROR_UserAbort
-	Else
-		Local $hLoadWaitTimer = TimerInit()
+	Local $hLoadWaitTimer = TimerInit()
+	While True
+		If $iErr Then ExitLoop
 
-		While True
-			If $sElement <> '' Then
-				_WD_ElementAction($sSession, $sElement, 'name')
+		If $sElement <> '' Then
+			_WD_ElementAction($sSession, $sElement, 'name')
 
-				If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
-			Else
-				$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
-				$iErr = @error
+			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
+		Else
+			$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
+			$iErr = @error
 
-				If $iErr Then
-					ExitLoop
-				EndIf
-
-				$oJSON = Json_Decode($sResponse)
-				$sReadyState = Json_Get($oJSON, "[value]")
-
-				If $sReadyState = 'complete' Then ExitLoop
-			EndIf
-
-			If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
-				$iErr = $_WD_ERROR_Timeout
+			If $iErr Then
 				ExitLoop
 			EndIf
 
-			__WD_Sleep(100)
+			$oJSON = Json_Decode($sResponse)
+			$sReadyState = Json_Get($oJSON, "[value]")
 
-			If @error Then
-				$iErr = $_WD_ERROR_UserAbort
-				ExitLoop
-			EndIf
-		WEnd
-	EndIf
+			If $sReadyState = 'complete' Then ExitLoop
+		EndIf
+
+		If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
+			$iErr = $_WD_ERROR_Timeout
+			ExitLoop
+		EndIf
+
+		__WD_Sleep(10)
+		$iErr = @error
+	WEnd
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, 0)
@@ -880,7 +869,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ;                  				- $_WD_ERROR_Timeout
 ;                  				- $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
@@ -930,12 +919,14 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 		Local $hWaitTimer = TimerInit()
 
 		Do
+			__WD_Sleep(10)
+			If @error Then ExitLoop
+
 			If TimerDiff($hWaitTimer) > $iTimeout Then
 				SetError($_WD_ERROR_Timeout)
 				ExitLoop
 			EndIf
 
-			__WD_Sleep(250)
 			_WD_ExecuteScript($sSession, "jQuery")
 		Until @error = $_WD_ERROR_Success
 	EndIf
@@ -2115,4 +2106,4 @@ EndFunc   ;==>__WD_Base64Decode
 
 Func __WD_ErrHnd()
 
-EndFunc
+EndFunc   ;==>__WD_ErrHnd

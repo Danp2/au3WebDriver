@@ -1769,16 +1769,16 @@ EndFunc
 ; Syntax ........: __WD_Sleep($iPause)
 ; Parameters ....: $iPause              - Amount of time to pause (in milliseconds)
 ; Return values .: None
+;                  @ERROR       - $_WD_ERROR_UserAbort
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......: Calls standard Sleep() by default. This can be overridden with _WD_Option so that a user supplied function
-;                  gets called instead
+;                  gets called instead. User's function can throw error which will lead to $_WD_ERROR_UserAbort
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Sleep($iPause)
 	$_WD_Sleep($iPause)
-
-	If @error Then SetError($_WD_ERROR_Timeout)
-EndFunc
+	If @error Then Return SetError($_WD_ERROR_UserAbort)
+EndFunc   ;==>__WD_Sleep
