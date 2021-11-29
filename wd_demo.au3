@@ -106,9 +106,7 @@ Func RunDemo($idDebugging, $idBrowsers)
 	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
 
 	_WD_Startup()
-	If @error <> $_WD_ERROR_Success Then
-		Exit -1
-	EndIf
+	If @error <> $_WD_ERROR_Success Then Return
 
 	$sSession = _WD_CreateSession($sDesiredCapabilities)
 
