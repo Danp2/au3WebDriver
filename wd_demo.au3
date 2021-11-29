@@ -41,12 +41,10 @@ Global $sSession
 #EndRegion - Global's declarations
 
 _WD_Demo()
+Exit
 
 Func _WD_Demo()
-
-	Local $iIndex
-	Local $nMsg, $bProcess = False
-
+	Local $nMsg
 	Local $iSpacing = 50
 	Local $iCount = UBound($aDemoSuite)
 	Local $aCheckboxes[$iCount]
@@ -86,35 +84,29 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton
-				$bProcess = True
-				ExitLoop
+				RunDemo($idDebugging, $idBrowsers)
 
 			Case Else
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
 						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
-						ExitLoop
-
 					EndIf
-
 				Next
 		EndSwitch
 	WEnd
 
+	GUIDelete($hGUI)
+EndFunc   ;==>_WD_Demo
+
+Func RunDemo($idDebugging, $idBrowsers)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
 	; Execute browser setup routine for user's browser selection
 	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
 
-	GUIDelete($hGUI)
-	If Not $bProcess Then Exit
-
 	_WD_Startup()
-
-	If @error <> $_WD_ERROR_Success Then
-		Exit -1
-	EndIf
+	If @error <> $_WD_ERROR_Success Then Return
 
 	$sSession = _WD_CreateSession($sDesiredCapabilities)
 
@@ -130,12 +122,11 @@ Func _WD_Demo()
 		Next
 	EndIf
 
-	MsgBox($MB_ICONINFORMATION, "Demo complete!", "Click ok to shutdown the browser and console")
+	MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
 
 	_WD_DeleteSession($sSession)
 	_WD_Shutdown()
-EndFunc   ;==>_WD_Demo
-
+EndFunc   ;==>RunDemo
 
 Func DemoTimeouts()
 	; Retrieve current settings and save
