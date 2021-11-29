@@ -90,7 +90,6 @@ Func _WD_Demo()
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
 						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
-						RunDemo($idDebugging, $idBrowsers)
 					EndIf
 				Next
 		EndSwitch
