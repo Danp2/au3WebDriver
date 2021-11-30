@@ -1,5 +1,11 @@
+#include-once
+
+; standard UDF's
 #include <MsgBoxConstants.au3>
+
+; WebDriver related UDF's
 #include "wd_helper.au3" ; https://github.com/Danp2/WebDriver
+
 #Region wd_capabilities.au3 - UDF Header
 ; #INDEX# ========================================================================
 ; Title .........: wd_capabilities.au3
@@ -43,7 +49,7 @@
 
 #Region - wd_capabilities.au3 - thanks, remarks, comments:
 #CS
-; Author(s) .....: Dan Pollak
+; Author(s) .....: Michał Lipok - @mLipok
 ; AutoIt Version : v3.3.14.5
 	- Jonathan Bennett and the AutoIt Team
 	- Dan Pollak (@Danp2) for all his work on https://github.com/Danp2/WebDriver/
@@ -239,9 +245,9 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CapabilitiesInitialize
 ; Description ...: Initialize $_WD_CAPS__API and presets for 'alwaysMatch' Or 'firstMatch'
-; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_Browser_type = ''])
+; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_BrowserType = ''])
 ; Parameters ....: $s_MatchType         - a string value. 'alwaysMatch' Or 'firstMatch'
-;                  $s_Browser_type      - [optional] a string value. Default is ''.
+;                  $s_BrowserType      - [optional] a string value. Default is ''.
 ; Return values .: None
 ; Author ........: mLipok
 ; Modified ......:
@@ -250,24 +256,24 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_CapabilitiesInitialize($s_MatchType, $s_Browser_type = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
+Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserType = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
 	#Region - parameters validation
 ;~ 	ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
 	If Not StringInStr('alwaysMatch|firstMatch', $s_MatchType) Then _
 			Return SetError(1)
 ;~ 	ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
 
-;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$s_Browser_type = " & $s_Browser_type & @CRLF & "$s_MatchType = " & $s_MatchType)
+;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$s_BrowserType = " & $s_BrowserType & @CRLF & "$s_MatchType = " & $s_MatchType)
 	Local $s_SpecificOptions_KeyName = ''
-	If StringInStr($s_Browser_type, 'chrome') Then
+	If StringInStr($s_BrowserType, 'chrome') Then
 		$s_SpecificOptions_KeyName = 'goog:chromeOptions'
-	ElseIf StringInStr($s_Browser_type, 'firefox') Then
+	ElseIf StringInStr($s_BrowserType, 'firefox') Then
 		$s_SpecificOptions_KeyName = 'moz:firefoxOptions'
-	ElseIf StringInStr($s_Browser_type, 'edge') Then
+	ElseIf StringInStr($s_BrowserType, 'edge') Then
 		$s_SpecificOptions_KeyName = 'ms:edgeOptions'
-	ElseIf $s_MatchType = 'alwaysMatch' And $s_Browser_type = '' Then
+	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserType = '' Then
 		$s_SpecificOptions_KeyName = ''
-	ElseIf $s_MatchType = 'firstMatch' And $s_Browser_type = '' Then
+	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserType = '' Then
 		Return SetError(2)
 	EndIf
 	#EndRegion - parameters validation
@@ -301,7 +307,7 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_Browser_type = '') ; $s_MatchT
 
 	#Region - FOR TESTING ONLY
 	Local $s_Information = _
-			"$s_Browser_type = " & $s_Browser_type & @CRLF & _
+			"$s_BrowserType = " & $s_BrowserType & @CRLF & _
 			"$s_MatchType = " & $s_MatchType & @CRLF & _
 			"$s_SpecificOptions_KeyName = " & $s_SpecificOptions_KeyName & @CRLF & _
 			"$i_FirstMatch_Counter = " & $i_FirstMatch_Counter & @CRLF & _
