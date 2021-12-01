@@ -1,7 +1,11 @@
 #include-once
+; standard UDF's
 #include <File.au3> ; Needed For _WD_UpdateDriver
 #include <InetConstants.au3>
+
+; WebDriver related UDF's
 #include "wd_core.au3"
+#include "wd_capabilities.au3"
 
 #Region Copyright
 #cs

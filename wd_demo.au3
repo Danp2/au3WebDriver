@@ -1,12 +1,15 @@
-#include "wd_core.au3"
-#include "wd_helper.au3"
+#Region - inculde files
+; standard UDF's
+#include <ButtonConstants.au3>
 #include <GuiComboBoxEx.au3>
 #include <GUIConstantsEx.au3>
-#include <ButtonConstants.au3>
 #include <WindowsConstants.au3>
+; non standard UDF's
+#include "wd_helper.au3"
+#include "wd_capabilities.au3"
+#EndRegion - inculde files
 
 #Region - Global's declarations
-
 Global Const $sElementSelector = "//input[@name='q']"
 Global Const $aBrowsers[][2] = _
 		[ _
@@ -398,7 +401,13 @@ Func SetupGecko()
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
 
-	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
+;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
+	_WD_CapabilitiesAdd('browserName', 'firefox')
+	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
 EndFunc   ;==>SetupGecko
 
@@ -407,7 +416,13 @@ Func SetupChrome()
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
-	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'chrome')
+	_WD_CapabilitiesAdd('w3c', True)
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
 EndFunc   ;==>SetupChrome
 
@@ -416,6 +431,11 @@ Func SetupEdge()
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
-	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
+;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
 EndFunc   ;==>SetupEdge
