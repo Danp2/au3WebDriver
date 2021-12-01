@@ -1,10 +1,9 @@
 #include-once
-
 ; standard UDF's
+#include <Array.au3>
 #include <MsgBoxConstants.au3>
-
 ; WebDriver related UDF's
-#include "wd_helper.au3" ; https://github.com/Danp2/WebDriver
+#include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 
 #Region wd_capabilities.au3 - UDF Header
 ; #INDEX# ========================================================================
