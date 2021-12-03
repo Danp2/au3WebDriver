@@ -1,4 +1,4 @@
-#Region - inculde files
+#Region - include files
 ; standard UDF's
 #include <ButtonConstants.au3>
 #include <GuiComboBoxEx.au3>
@@ -7,7 +7,7 @@
 ; non standard UDF's
 #include "wd_helper.au3"
 #include "wd_capabilities.au3"
-#EndRegion - inculde files
+#EndRegion - include files
 
 #Region - Global's declarations
 Global Const $sElementSelector = "//input[@name='q']"
