@@ -5,7 +5,6 @@
 
 ; WebDriver related UDF's
 #include "wd_core.au3"
-#include "wd_capabilities.au3"
 
 #Region Copyright
 #cs
