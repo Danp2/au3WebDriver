@@ -1,3 +1,12 @@
+	v0.5.0.1
+	- Added: _WD_Capabilities functions (mLipok)
+	- Changed (_WD_UpdateDriver): Added ability to check for newer webdriver without performing update
+	- Chore: Updated wd_demo.au3 (mLipok)
+		- Au3Check compatibility
+		- Script no longer exits after running selected demos
+		- Demonstrate usage of new _WD_Capabilities functions
+	- Changed (__WD_Sleep): Set @error to $_WD_ERROR_UserAbort in case of error (mLipok)
+
 	v0.4.1.2
 	- Added: _WD_CheckContext
 	- Fixed (_WD_NewTab): Return error on _WD_Window failure
