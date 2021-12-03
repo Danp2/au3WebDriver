@@ -1274,7 +1274,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;
 ; Author ........: Dan Pollak, CyCho
 ; Modified ......: mLipok
-; Remarks .......:
+;
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing
 ;                  the update. In this scenario, the return value indicates if an update is available.
 ;
