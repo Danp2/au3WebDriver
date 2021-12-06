@@ -14,7 +14,7 @@
 ; Author ........: mLipok
 ; Modified ......:
 ; URL ...........:
-; Date ..........: 2021/09/22
+; Date ..........: 2021/12/06
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
@@ -140,16 +140,25 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Name ..........: _WD_CapabilitiesAdd
 ; Description ...: Add capablitities to JSON string
 ; Syntax ........: _WD_CapabilitiesAdd($key[, $value1 = ''[, $value2 = '']])
-; Parameters ....: $key                 - an unknown value.
+; Parameters ....: $key                 - one of the following
+;                               | 'excludeSwitches'
+;                               | 'timeouts'
+;                               | 'proxy'
+;                               | 'w3c'
+;                               | 'args'
+;                               | 'logs'
+;                               | 'prefs'
+;                               | 'env'
+;                               | '' an empty string
 ;                  $value1              - [optional] a variant value. Default is ''.
 ;                  $value2              - [optional] a variant value. Default is ''.
 ; Return values .: None
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: parameters $value1 and $value2 depend on the $key value, take a look on example link
 ; Related .......:
 ; Link ..........:
-; Example .......: No
+; Example .......: https://www.autoitscript.com/wiki/WebDriver#Advanced_Capabilities_example
 ; ===============================================================================================================================
 Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value1 = Default Then $value1 = 'default'
@@ -245,9 +254,13 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Name ..........: __WD_CapabilitiesInitialize
 ; Description ...: Initialize $_WD_CAPS__API and presets for 'alwaysMatch' Or 'firstMatch'
 ; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_BrowserType = ''])
-; Parameters ....: $s_MatchType         - a string value. 'alwaysMatch' Or 'firstMatch'
-;                  $s_BrowserType      - [optional] a string value. Default is ''.
-; Return values .: None
+; Parameters ....: $s_MatchType         - a string value. 'alwaysMatch' Or 'firstMatch'.
+;                  $s_BrowserType      - [optional] a string value. Default is ''. One of:
+;                               | 'chrome'
+;                               | 'firefox'
+;                               | 'edge'
+;                               | '' an empty string
+; Return values .: None, or set @error
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
@@ -341,9 +354,9 @@ EndFunc   ;==>__WD_CapabilitiesSwitch
 ; Name ..........: __WD_CapabilitiesNotation
 ; Description ...: get desired notation prefix for specitfied JSON object
 ; Syntax ........: __WD_CapabilitiesNotation($i_BUILDER_TYPE)
-; Parameters ....: $i_BUILDER_TYPE      - an integer value. one of $_WD_CAPS__** enums
-; Return values .: None
-; Author ........: notation prefix in Json.au3 format
+; Parameters ....: $i_BUILDER_TYPE      - an integer value. One of $_WD_CAPS__** enums
+; Return values .: notation prefix in Json.au3 format
+; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
