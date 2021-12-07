@@ -69,7 +69,7 @@ Global Enum _
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
-; Description ...: Helper function to create new tab using Javascript.
+; Description ...: Create new tab in current browser session.
 ; Syntax ........: _WD_NewTab($sSession[, $bSwitch = Default[, $iTimeout = Default[, $sURL = Default[, $sFeatures = Default]]]])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
 ;                  $bSwitch   - [optional] Switch session context to new tab? Default is True
@@ -172,7 +172,7 @@ EndFunc   ;==>_WD_NewTab
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Attach
-; Description ...: Helper function to attach to existing browser tab.
+; Description ...: Attach to existing browser tab.
 ; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sString  - String to search for
