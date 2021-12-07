@@ -145,6 +145,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                               | 'timeouts'
 ;                               | 'proxy'
 ;                               | 'w3c'
+;                               | 'binary'
 ;                               | 'args'
 ;                               | 'logs'
 ;                               | 'prefs'
