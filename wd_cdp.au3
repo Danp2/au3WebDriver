@@ -267,7 +267,7 @@ EndFunc   ;==>_WD_CDPExecuteCommand
 ; ===============================================================================================================================
 Func _WD_CDPGetSettings($sSession, $sOption)
 	Local Const $sFuncName = "_WD_GetCDPSettings"
-	Local $sJSON, $oJSON, $sDebuggerAdress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
+	Local $sJSON, $oJSON, $sDebuggerAddress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
 	Local $sKey, $vResult, $sBrowser
 
 	$sJSON = _WD_GetSession($sSession)
@@ -286,7 +286,7 @@ Func _WD_CDPGetSettings($sSession, $sOption)
 
 	EndSwitch
 
-	$sDebuggerAdress = Json_Get($oJSON, $sKey)
+	$sDebuggerAddress = Json_Get($oJSON, $sKey)
 
 	If @error Then
 		$iErr = $_WD_ERROR_GeneralError
@@ -295,10 +295,10 @@ Func _WD_CDPGetSettings($sSession, $sOption)
 
 		Switch $sOption
 			Case 'debugger'
-				$vResult = $sDebuggerAdress
+				$vResult = $sDebuggerAddress
 
 			Case 'list', 'version'
-				$sJSON = __WD_Get("http://" & $sDebuggerAdress & "/json/" & $sOption)
+				$sJSON = __WD_Get("http://" & $sDebuggerAddress & "/json/" & $sOption)
 				$iErr = @error
 
 				If $iErr = $_WD_ERROR_Success Then
