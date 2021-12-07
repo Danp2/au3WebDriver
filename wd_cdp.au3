@@ -33,23 +33,20 @@
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CDPExecuteCommand
-; Description ...: Execute CDP command
+; Description ...: Execute CDP command.
 ; Syntax ........: _WD_CDPExecuteCommand($sSession, $sCommand, $oParams[, $sWebSocketURL = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sCommand            - Name of the command
-;                  $oParams             - Parameters of the command as an object
-;                  $sWebSocketURL       - [optional] Websocket URL
-;
-; Return values .: Success      - Raw return value from web driver in JSON format
-;                  Failure      - Empty string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sCommand      - Name of the command
+;                  $oParams       - Parameters of the command as an object
+;                  $sWebSocketURL - [optional] Websocket URL
+; Return values .: Success - Raw return value from web driver in JSON format. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......: Danp2
 ; Remarks .......: The original version of this function is specific to ChromeDriver, you can execute "Chrome DevTools Protocol"
 ;                  commands by using this function, for all available commands see: https://chromedevtools.github.io/devtools-protocol/tot/
-;
+;+
 ;                  The revised version uses websockets to provide CDP access for all compatible browsers. However, it
 ;                  will only with an OS that natively supports WebSockets (Windows 8, Windows Server 2012, or newer)
 ; Related .......:
@@ -241,23 +238,20 @@ EndFunc   ;==>_WD_CDPExecuteCommand
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CDPGetSettings
-; Description ...: Retrieve CDP related settings from the browser
+; Description ...: Retrieve CDP related settings from the browser.
 ; Syntax ........: _WD_CDPGetSettings($sSession, $sOption)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sOption             - one of the following:
-;                               | debugger
-;                               | list
-;                               | version
-;
-; Return values .: Success      - (debugger) websocket target originally returned by _WD_CreateSession
-;								- (list) array containing websocket targets
-;								- (version) array containing version metadata
-;
-;                  Failure      - Empty string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_GeneralError
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sOption  - one of the following:
+;                  |DEBUGGER - Returns the Websocket target originally returned by _WD_CreateSession
+;                  |LIST - Lists websocket targets
+;                  |VERSION - Reurns an array containing version metadata
+; Return values .: Success - The returned value depends on the selected $sOption. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+;                  |DEBUGGER: Websocket target originally returned by _WD_CreateSession
+;                  |LIST: Array containing websocket targets
+;                  |VERSION: Array containing version metadata
+;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
