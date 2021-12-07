@@ -177,10 +177,10 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		EndIf
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 ;~ 		If Not @Compiled Then ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
-	ElseIf $key = 'w3c' Or $key = 'maxInstances' Then  ; for adding "w3c" capability in specific/vendor capabilities : ........
+	ElseIf $key = 'w3c' Or $key = 'maxInstances' Or $key = 'binary' Then  ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+;~ 		https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']'
-;~ 		If Not @Compiled Then ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
 	ElseIf $key = 'args' Then ; for adding "args" capability in specific/vendor capabilities : ........
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ARGS)
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
