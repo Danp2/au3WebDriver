@@ -407,7 +407,7 @@ Func DemoSleep()
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
 
 	; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
-	; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting or even exitp program by clicking X closing button on the "Webdriver Demo" GUI window
+	; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting or even exit program by clicking X closing button on the "Webdriver Demo" GUI window
 EndFunc   ;==>DemoSleep
 
 Func _USER_WD_Sleep($iDelay)
