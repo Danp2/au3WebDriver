@@ -30,7 +30,8 @@ Global $aDemoSuite[][2] = _
 		["DemoActions", False], _
 		["DemoDownload", False], _
 		["DemoWindows", False], _
-		["DemoUpload", False] _
+		["DemoUpload", False], _
+		["DemoSleep", False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -41,6 +42,7 @@ Global Const $aDebugLevel[][2] = _
 		]
 
 Global $sSession
+Global $__g_idButton_Abort
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -72,7 +74,8 @@ Func _WD_Demo()
 	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idDebugging, $sData)
 	GUICtrlSetData($idDebugging, "Full")
-	Local $idButton = GUICtrlCreateButton("Run Demo!", 60, $iPos + 40, 85, 25)
+	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos + 40, 85, 25)
+	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
 
 	GUISetState(@SW_SHOW)
 
@@ -86,7 +89,7 @@ Func _WD_Demo()
 
 			Case $idDebugging
 
-			Case $idButton
+			Case $idButton_Run
 				RunDemo($idDebugging, $idBrowsers)
 
 			Case Else
@@ -396,10 +399,36 @@ Func DemoUpload()
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
 
+Func DemoSleep()
+	; this webpage takes, it tooks a long time to load full content
+	_WD_Navigate($sSession, "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/")
+
+	; this function is waiting to the progress spinner will hide
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
+
+	; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
+	; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting or even exitp program by clicking X closing button on the "Webdriver Demo" GUI window
+EndFunc   ;==>DemoSleep
+
+Func _USER_WD_Sleep($iDelay)
+	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
+	Do
+		Switch GUIGetMsg()
+			Case $GUI_EVENT_CLOSE
+				ConsoleWrite("! USER EXIT" & @CRLF)
+				Exit
+			Case $__g_idButton_Abort
+				ConsoleWrite("! Abort button pressed." & @CRLF)
+				Return SetError($_WD_ERROR_UserAbort)
+		EndSwitch
+	Until TimerDiff($hTimer) > $iDelay
+EndFunc   ;==>_USER_WD_Sleep
+
 Func SetupGecko()
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
+	_WD_Option("Sleep", _USER_WD_Sleep)
 
 ;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
 	_WD_CapabilitiesStartup()
@@ -414,6 +443,7 @@ EndFunc   ;==>SetupGecko
 Func SetupChrome()
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
+	_WD_Option("Sleep", _USER_WD_Sleep)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
 ;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
@@ -429,6 +459,7 @@ EndFunc   ;==>SetupChrome
 Func SetupEdge()
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
+	_WD_Option("Sleep", _USER_WD_Sleep)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
 ;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
