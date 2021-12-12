@@ -83,7 +83,7 @@ Global Enum _
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......: For list of $sFeatures take a look in the following link
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
 ; ===============================================================================================================================
@@ -188,7 +188,7 @@ EndFunc   ;==>_WD_NewTab
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -256,7 +256,7 @@ EndFunc   ;==>_WD_Attach
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -304,7 +304,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -387,7 +387,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/24538450/get-element-currently-under-mouse-without-using-mouse-events
 ; Example .......: No
 ; ===============================================================================================================================
@@ -420,7 +420,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -465,7 +465,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Author ........: Decibel, Danp2
 ; Modified ......: 2018-04-27
 ; Remarks .......: The function will not traverse to nested frames
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -496,7 +496,7 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_top.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -529,7 +529,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -578,7 +578,7 @@ EndFunc   ;==>_WD_FrameEnter
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
 ; ===============================================================================================================================
@@ -643,7 +643,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Author ........: Danyfirex
 ; Modified ......: 04/03/2021
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_HighlightElements
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -680,7 +680,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Author ........: Danyfirex
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_HighlightElement
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -781,7 +781,7 @@ EndFunc   ;==>_WD_LoadWait
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_Window, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -829,7 +829,7 @@ EndFunc   ;==>_WD_Screenshot
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517)
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver/#print-page
 ; Example .......: No
 ; ===============================================================================================================================
@@ -865,7 +865,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
 ; Example .......: No
 ; ===============================================================================================================================
@@ -952,7 +952,7 @@ EndFunc   ;==>_WD_jQuerify
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -988,7 +988,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1109,7 +1109,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1151,7 +1151,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......: If $sFilename is empty, then prior selection is cleared
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1421,7 +1421,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
 ; Remarks .......: Example: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
-; Related .......:
+; Related .......: _WD_GetWebDriverVersion
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1465,7 +1465,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
 ; Remarks .......: Example: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
-; Related .......:
+; Related .......: _WD_GetBrowserVersion
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1696,7 +1696,7 @@ EndFunc   ;==>_WD_GetElementByName
 ; Author ........: Dan Pollak
 ; Modified ......: 03/31/2021
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1877,7 +1877,7 @@ EndFunc   ;==>_WD_ElementActionEx
 ; Author ........: danylarson
 ; Modified ......: water, danp2
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1966,7 +1966,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_Action, _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================

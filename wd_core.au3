@@ -198,7 +198,7 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_DeleteSession
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
 ; Example .......: No
 ; ===============================================================================================================================
@@ -245,7 +245,7 @@ EndFunc   ;==>_WD_CreateSession
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_CreateSession
 ; Link ..........: https://www.w3.org/TR/webdriver#delete-session
 ; Example .......: No
 ; ===============================================================================================================================
@@ -315,7 +315,7 @@ EndFunc   ;==>_WD_Status
 ; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
 ;                  until they determine how this should function. See w3c/webdriver@35df53a for details. Meanwhile, I temporarily
 ;                  changed the code to return the information that is available
-; Related .......:
+; Related .......: _WD_CreateSession
 ; Link ..........: https://www.w3.org/TR/webdriver#get-session
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1208,7 +1208,7 @@ EndFunc   ;==>_WD_Option
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_Shutdown
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1284,7 +1284,7 @@ EndFunc   ;==>_WD_Startup
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_Startup
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
