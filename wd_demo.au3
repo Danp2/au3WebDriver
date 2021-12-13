@@ -43,6 +43,7 @@ Global Const $aDebugLevel[][2] = _
 
 Global $sSession
 Global $__g_idButton_Abort
+Global $__g_bInternalExit = False
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -78,6 +79,7 @@ Func _WD_Demo()
 	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
 
 	GUISetState(@SW_SHOW)
+	Local $bDemoSleep = False
 
 	While 1
 		$nMsg = GUIGetMsg()
@@ -90,27 +92,34 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
-				RunDemo($idDebugging, $idBrowsers)
+				RunDemo($idDebugging, $idBrowsers, $bDemoSleep)
+				If $__g_bInternalExit Then
+					ConsoleWrite("! USER EXIT" & @CRLF)
+					ExitLoop
+				EndIf
 
 			Case Else
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
 						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
+						If $aDemoSuite[$i][0] = "DemoSleep" Then $bDemoSleep = $aDemoSuite[$i][1]
 					EndIf
 				Next
+
 		EndSwitch
 	WEnd
 
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers)
+Func RunDemo($idDebugging, $idBrowsers, $bDemoSleep)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
 	; Execute browser setup routine for user's browser selection
 	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
 
+	If $bDemoSleep Then _WD_Option("Sleep", _USER_WD_Sleep)
 	_WD_Startup()
 	If @error <> $_WD_ERROR_Success Then Return
 
@@ -415,8 +424,8 @@ Func _USER_WD_Sleep($iDelay)
 	Do
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
-				ConsoleWrite("! USER EXIT" & @CRLF)
-				Exit
+				$__g_bInternalExit = True
+				Return SetError($_WD_ERROR_UserAbort)
 			Case $__g_idButton_Abort
 				ConsoleWrite("! Abort button pressed." & @CRLF)
 				Return SetError($_WD_ERROR_UserAbort)
@@ -428,7 +437,6 @@ Func SetupGecko()
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
-	_WD_Option("Sleep", _USER_WD_Sleep)
 
 ;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
 	_WD_CapabilitiesStartup()
@@ -443,7 +451,6 @@ EndFunc   ;==>SetupGecko
 Func SetupChrome()
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
-	_WD_Option("Sleep", _USER_WD_Sleep)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
 ;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
@@ -459,7 +466,6 @@ EndFunc   ;==>SetupChrome
 Func SetupEdge()
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
-	_WD_Option("Sleep", _USER_WD_Sleep)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
 ;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
