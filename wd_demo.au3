@@ -77,6 +77,7 @@ Func _WD_Demo()
 	GUICtrlSetData($idDebugging, "Full")
 	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos + 40, 85, 25)
 	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
+	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
 
 	GUISetState(@SW_SHOW)
 	Local $bDemoSleep = False
@@ -84,6 +85,8 @@ Func _WD_Demo()
 	While 1
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
+			Case $GUI_EVENT_NONE
+				; do nothing
 			Case $GUI_EVENT_CLOSE
 				ExitLoop
 
@@ -105,6 +108,11 @@ Func _WD_Demo()
 						If $aDemoSuite[$i][0] = "DemoSleep" Then $bDemoSleep = $aDemoSuite[$i][1]
 					EndIf
 				Next
+				If $bDemoSleep Then
+					GUICtrlSetState($__g_idButton_Abort, $GUI_ENABLE)
+				Else
+					GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+				EndIf
 
 		EndSwitch
 	WEnd
