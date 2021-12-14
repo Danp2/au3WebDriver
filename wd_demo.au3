@@ -421,12 +421,12 @@ Func DemoSleep()
 		; it can take a long time to load full content of this webpage
 		_WD_Navigate($sSession, "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/")
 		$iError = @error
-		If $iError = $_WD_ERROR_UserAbort Then ExitLoop
+		If $iError Then ExitLoop
 
 		; this function is waiting to the progress spinner will hide
 		_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
 		$iError = @error
-		If $iError = $_WD_ERROR_UserAbort Then ExitLoop
+		If $iError Then ExitLoop
 
 		; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
 		; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting by clicking scecial Abourt button or by clicking X closing button on the "Webdriver Demo" GUI window
