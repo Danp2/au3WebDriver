@@ -43,7 +43,6 @@ Global Const $aDebugLevel[][2] = _
 
 Global $sSession
 Global $__g_idButton_Abort
-Global $__g_bInternalExit = False
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -80,8 +79,6 @@ Func _WD_Demo()
 	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
 
 	GUISetState(@SW_SHOW)
-	Local $bDemoSleep = False
-
 	While 1
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
@@ -95,24 +92,14 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
-				RunDemo($idDebugging, $idBrowsers, $bDemoSleep)
-				If $__g_bInternalExit Then
-					ConsoleWrite("! USER EXIT" & @CRLF)
-					ExitLoop
-				EndIf
+				RunDemo($idDebugging, $idBrowsers)
 
 			Case Else
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
 						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
-						If $aDemoSuite[$i][0] = "DemoSleep" Then $bDemoSleep = $aDemoSuite[$i][1]
 					EndIf
 				Next
-				If $bDemoSleep Then
-					GUICtrlSetState($__g_idButton_Abort, $GUI_ENABLE)
-				Else
-					GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
-				EndIf
 
 		EndSwitch
 	WEnd
@@ -120,14 +107,13 @@ Func _WD_Demo()
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers, $bDemoSleep)
+Func RunDemo($idDebugging, $idBrowsers)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
 	; Execute browser setup routine for user's browser selection
 	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
 
-	If $bDemoSleep Then _WD_Option("Sleep", _USER_WD_Sleep)
 	_WD_Startup()
 	If @error <> $_WD_ERROR_Success Then Return
 
@@ -417,28 +403,40 @@ Func DemoUpload()
 EndFunc   ;==>DemoUpload
 
 Func DemoSleep()
-	; this webpage takes, it tooks a long time to load full content
+	; enable Abort button
+	GUICtrlSetState($__g_idButton_Abort, $GUI_ENABLE)
+
+	; set up outer/user specific sleep function to take control
+	_WD_Option("Sleep", _USER_WD_Sleep)
+
+	; it can take a long time to load full content of this webpage
 	_WD_Navigate($sSession, "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/")
 
 	; this function is waiting to the progress spinner will hide
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
 
 	; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
-	; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting or even exit program by clicking X closing button on the "Webdriver Demo" GUI window
+	; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting by clicking scecial Abourt button or by clicking X closing button on the "Webdriver Demo" GUI window
+
+	; disable Abort button
+	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+
+	; set up internal sleep function - back to standard route
+	_WD_Option("Sleep", Sleep)
 EndFunc   ;==>DemoSleep
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
 	Do
 		Switch GUIGetMsg()
-			Case $GUI_EVENT_CLOSE
-				$__g_bInternalExit = True
-				Return SetError($_WD_ERROR_UserAbort)
-			Case $__g_idButton_Abort
+			Case $GUI_EVENT_CLOSE ; in case when X closing button on the "Webdriver Demo" GUI window was clicked
+				ConsoleWrite("! Abort by GUI Close button pressed." & @CRLF)
+				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
+			Case $__g_idButton_Abort ; in case when Abort button was clicked
 				ConsoleWrite("! Abort button pressed." & @CRLF)
-				Return SetError($_WD_ERROR_UserAbort)
+				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
 		EndSwitch
-	Until TimerDiff($hTimer) > $iDelay
+	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
 EndFunc   ;==>_USER_WD_Sleep
 
 Func SetupGecko()
