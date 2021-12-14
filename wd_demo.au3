@@ -94,7 +94,6 @@ Func _WD_Demo()
 			Case $idButton_Run
 				RunDemo($idDebugging, $idBrowsers)
 
-
 			Case Else
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
