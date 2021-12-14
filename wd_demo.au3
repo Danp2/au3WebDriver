@@ -94,6 +94,7 @@ Func _WD_Demo()
 			Case $idButton_Run
 				RunDemo($idDebugging, $idBrowsers)
 
+
 			Case Else
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
@@ -119,11 +120,13 @@ Func RunDemo($idDebugging, $idBrowsers)
 
 	$sSession = _WD_CreateSession($sDesiredCapabilities)
 
+	Local $iError
 	If @error = $_WD_ERROR_Success Then
 		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 			If $aDemoSuite[$iIndex][1] Then
 				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
 				Call($aDemoSuite[$iIndex][0])
+				$iError = @error
 				ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
 			Else
 				ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -131,7 +134,11 @@ Func RunDemo($idDebugging, $idBrowsers)
 		Next
 	EndIf
 
-	MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
+	If $iError = $_WD_ERROR_UserAbort Then
+		MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
+	Else
+		MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
+	EndIf
 
 	_WD_DeleteSession($sSession)
 	_WD_Shutdown()
@@ -409,20 +416,29 @@ Func DemoSleep()
 	; set up outer/user specific sleep function to take control
 	_WD_Option("Sleep", _USER_WD_Sleep)
 
-	; it can take a long time to load full content of this webpage
-	_WD_Navigate($sSession, "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/")
+	Local $iError
+	While 1
+		; it can take a long time to load full content of this webpage
+		_WD_Navigate($sSession, "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/")
+		$iError = @error
+		If $iError = $_WD_ERROR_UserAbort Then ExitLoop
 
-	; this function is waiting to the progress spinner will hide
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
+		; this function is waiting to the progress spinner will hide
+		_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
+		$iError = @error
+		If $iError = $_WD_ERROR_UserAbort Then ExitLoop
 
-	; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
-	; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting by clicking scecial Abourt button or by clicking X closing button on the "Webdriver Demo" GUI window
+		; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
+		; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting by clicking scecial Abourt button or by clicking X closing button on the "Webdriver Demo" GUI window
+	WEnd
 
 	; disable Abort button
 	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
 
 	; set up internal sleep function - back to standard route
 	_WD_Option("Sleep", Sleep)
+
+	Return SetError($_WD_ERROR_UserAbort)
 EndFunc   ;==>DemoSleep
 
 Func _USER_WD_Sleep($iDelay)
