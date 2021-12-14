@@ -94,6 +94,7 @@ Func _WD_Demo()
 			Case $idButton_Run
 				RunDemo($idDebugging, $idBrowsers)
 
+
 			Case Else
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
@@ -441,7 +442,7 @@ Func DemoSleep()
 	; set up internal sleep function - back to standard route
 	_WD_Option("Sleep", Sleep)
 
-	Return SetError($_WD_ERROR_UserAbort)
+	Return SetError($iError)
 EndFunc   ;==>DemoSleep
 
 Func _USER_WD_Sleep($iDelay)
