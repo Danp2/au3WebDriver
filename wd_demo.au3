@@ -127,6 +127,10 @@ Func RunDemo($idDebugging, $idBrowsers)
 				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
 				Call($aDemoSuite[$iIndex][0])
 				$iError = @error
+				If $iError = $_WD_ERROR_UserAbort Then
+					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
+					ExitLoop
+				EndIf
 				ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
 			Else
 				ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
