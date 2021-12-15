@@ -1,3 +1,13 @@
+	v0.5.0.2
+	- Added: CHM help file (water)
+	- Changed (_WD_Capabilities): Added support for "binary" option (mLipok)
+	- Changed (_WD_Startup): Detect webdriver console exiting with error when launched
+	- Chore: Updated function headers (water)
+	- Chore: Updated wd_demo.au3
+		- Added DemoSleep routine (mLipok)
+		- Changed GUI background color for better visibility in Windows 11 (mLipok)
+		- Disable "Run Demo" button during demo execution
+
 	v0.5.0.1
 	- Added: _WD_Capabilities functions (mLipok)
 	- Changed (_WD_UpdateDriver): Added ability to check for newer webdriver without performing update
