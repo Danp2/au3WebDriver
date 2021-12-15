@@ -1,6 +1,7 @@
 #Region - include files
 ; standard UDF's
 #include <ButtonConstants.au3>
+#include <ColorConstants.au3>
 #include <GuiComboBoxEx.au3>
 #include <GUIConstantsEx.au3>
 #include <WindowsConstants.au3>
@@ -55,7 +56,7 @@ Func _WD_Demo()
 	Local $aCheckboxes[$iCount]
 
 	Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
-
+	GUISetBkColor($COLOR_LIGHTSTEELBLUE)
 	GUICtrlCreateLabel("Browser", 15, 12)
 	Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
 	Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
