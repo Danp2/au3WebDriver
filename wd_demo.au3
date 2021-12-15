@@ -30,7 +30,8 @@ Global $aDemoSuite[][2] = _
 		["DemoActions", False], _
 		["DemoDownload", False], _
 		["DemoWindows", False], _
-		["DemoUpload", False] _
+		["DemoUpload", False], _
+		["DemoSleep", False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -41,6 +42,7 @@ Global Const $aDebugLevel[][2] = _
 		]
 
 Global $sSession
+Global $__g_idButton_Abort
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -72,13 +74,16 @@ Func _WD_Demo()
 	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idDebugging, $sData)
 	GUICtrlSetData($idDebugging, "Full")
-	Local $idButton = GUICtrlCreateButton("Run Demo!", 60, $iPos + 40, 85, 25)
+	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos + 40, 85, 25)
+	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
+	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
 
 	GUISetState(@SW_SHOW)
-
 	While 1
 		$nMsg = GUIGetMsg()
 		Switch $nMsg
+			Case $GUI_EVENT_NONE
+				; do nothing
 			Case $GUI_EVENT_CLOSE
 				ExitLoop
 
@@ -86,8 +91,9 @@ Func _WD_Demo()
 
 			Case $idDebugging
 
-			Case $idButton
+			Case $idButton_Run
 				RunDemo($idDebugging, $idBrowsers)
+
 
 			Case Else
 				For $i = 0 To $iCount - 1
@@ -95,6 +101,7 @@ Func _WD_Demo()
 						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
 					EndIf
 				Next
+
 		EndSwitch
 	WEnd
 
@@ -113,11 +120,17 @@ Func RunDemo($idDebugging, $idBrowsers)
 
 	$sSession = _WD_CreateSession($sDesiredCapabilities)
 
+	Local $iError
 	If @error = $_WD_ERROR_Success Then
 		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 			If $aDemoSuite[$iIndex][1] Then
 				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
 				Call($aDemoSuite[$iIndex][0])
+				$iError = @error
+				If $iError = $_WD_ERROR_UserAbort Then
+					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
+					ExitLoop
+				EndIf
 				ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
 			Else
 				ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -125,7 +138,11 @@ Func RunDemo($idDebugging, $idBrowsers)
 		Next
 	EndIf
 
-	MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
+	If $iError = $_WD_ERROR_UserAbort Then
+		MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
+	Else
+		MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
+	EndIf
 
 	_WD_DeleteSession($sSession)
 	_WD_Shutdown()
@@ -395,6 +412,48 @@ Func DemoUpload()
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[2]")
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
+
+Func DemoSleep()
+	; enable Abort button
+	GUICtrlSetState($__g_idButton_Abort, $GUI_ENABLE)
+
+	; set up outer/user specific sleep function to take control
+	_WD_Option("Sleep", _USER_WD_Sleep)
+
+	_WD_Navigate($sSession, "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/")
+	Local $iError = @error
+	If Not $iError Then
+		; it can take a long time to load full content of this webpage
+		; this following function is waiting to the progress spinner will hide
+		_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
+		$iError = @error
+
+		; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
+		; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting by clicking scecial Abourt button or by clicking X closing button on the "Webdriver Demo" GUI window
+	EndIf
+
+	; disable Abort button
+	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+
+	; set up internal sleep function - back to standard route
+	_WD_Option("Sleep", Sleep)
+
+	Return SetError($iError)
+EndFunc   ;==>DemoSleep
+
+Func _USER_WD_Sleep($iDelay)
+	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
+	Do
+		Switch GUIGetMsg()
+			Case $GUI_EVENT_CLOSE ; in case when X closing button on the "Webdriver Demo" GUI window was clicked
+				ConsoleWrite("! Abort by GUI Close button pressed." & @CRLF)
+				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
+			Case $__g_idButton_Abort ; in case when Abort button was clicked
+				ConsoleWrite("! Abort button pressed." & @CRLF)
+				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
+		EndSwitch
+	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
+EndFunc   ;==>_USER_WD_Sleep
 
 Func SetupGecko()
 	_WD_Option('Driver', 'geckodriver.exe')
