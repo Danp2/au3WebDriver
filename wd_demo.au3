@@ -92,8 +92,9 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
+				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
 				RunDemo($idDebugging, $idBrowsers)
-
+				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
 
 			Case Else
 				For $i = 0 To $iCount - 1
