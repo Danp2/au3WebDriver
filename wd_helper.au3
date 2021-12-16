@@ -409,17 +409,17 @@ EndFunc   ;==>_WD_GetMouseElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetElementFromPoint
-; Description ...: Retrieves reference to element at specified point
+; Description ...: Retrieves reference to element at specified point.
 ; Syntax ........: _WD_GetElementFromPoint($sSession, $iX, $iY)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $iX                  - an integer value.
-;                  $iY                  - an integer value.
-; Return values .: Success      - Element ID returned by web driver
-;                  Failure      - blank string
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $iX       - an integer value
+;                  $iY       - an integer value
+; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success
+;                  Failure - None
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
