@@ -844,9 +844,9 @@ EndFunc   ;==>_WD_ElementAction
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands.
 ; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $bReturnAsValue = False]]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sScript             - Javascript command(s) to run
-;                  $sArguments          - [optional] String of arguments in JSON format
+; Parameters ....: $sSession   - Session ID from _WD_CreateSession
+;                  $sScript    - Javascript command(s) to run
+;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
 ;                  $bReturnAsValue      - [optional] Return Value instead WebDriver Resopnse ? Default is False.
 ; Return values .: Success - Raw response from web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
