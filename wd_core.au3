@@ -890,7 +890,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	If $bReturnAsValue Then
 		Local $oJSON = Json_Decode($sResponse)
 		Local $vValue = Json_Get($oJSON, "[value]")
-		Return SetError($_WD_ERROR_Success, 0, $vValue)
+		$sResponse = $vValue
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
