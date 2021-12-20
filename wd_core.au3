@@ -848,7 +848,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $bReturnAsValue      - [optional] Return Value instead WebDriver Resopnse ? Default is False.
+;                  $bReturnAsValue      - [optional] Extract and return value node from Webdriver response. Default is False.
 ; Return values .: Success - Raw response from web driver or value. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
 ;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
 ;                  - $_WD_ERROR_Exception
