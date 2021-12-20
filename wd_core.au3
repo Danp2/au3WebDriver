@@ -815,30 +815,32 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands.
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default]])
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $bReturnAsValue = False]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-; Return values .: Success - Raw response from web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+;                  $bReturnAsValue      - [optional] Extract and return value node from Webdriver response. Default is False.
+; Return values .: Success - Raw response from web driver or value. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
 ;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default)
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $bReturnAsValue = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
+	If $bReturnAsValue = Default Then $bReturnAsValue = False
 
 	$sScript = __WD_EscapeString($sScript)
 
@@ -855,6 +857,12 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResponse)
+	EndIf
+
+	If $bReturnAsValue Then
+		Local $oJSON = Json_Decode($sResponse)
+		Local $vValue = Json_Get($oJSON, "[value]")
+		$sResponse = $vValue
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
