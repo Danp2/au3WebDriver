@@ -1731,6 +1731,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  $sElement   - Element ID from _WD_FindElement
 ;                  $sCommand   - one of the following actions:
 ;                  |
+;                  |CHECK - Checks a checkbox input element
 ;                  |CHILDCOUNT - Returns the number of child elements
 ;                  |CLICKANDHOLD - Clicks on the target element and holds the button down for the designated timeframe ($iHoldDelay)
 ;                  |DOUBLECLICK - Do a double click on the selected element
@@ -1739,6 +1740,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |MODIFIERCLICK - Holds down a modifier key on the keyboard before clicking on the target element. This can be used to perform advanced actions such as shift-clicking an element
 ;                  |RIGHTCLICK - Do a rightclick on the selected element
 ;                  |SHOW - Change the element's style to 'display: normal' to unhide/show the element
+;                  |UNCHECK - Unchecks a checkbox input element
 ;                  $iXOffset   - [optional] X Offset. Default is 0
 ;                  $iYOffset   - [optional] Y Offset. Default is 0
 ;                  $iButton    - [optional] Mouse button. Default is 0
@@ -1749,7 +1751,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: TheDcoder
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
 ; Related .......: _WD_ElementAction, _WD_Action
@@ -1817,6 +1819,12 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 			; Release modifier key
 			$sPostAction = ',{"type": "key", "id": "keyboard_2", "actions": [{"type": "keyUp", "value": "' & $sModifier & '"}]}'
+
+		Case 'check'
+			ContinueCase
+		Case 'uncheck'
+			$iActionType = 2
+			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick) $sCommand=>" & $sCommand), 0, "")
