@@ -1,6 +1,9 @@
 #include-once
+; standard UDF's
 #include <File.au3> ; Needed For _WD_UpdateDriver
 #include <InetConstants.au3>
+
+; WebDriver related UDF's
 #include "wd_core.au3"
 
 #Region Copyright
@@ -53,26 +56,34 @@ Global Enum _
 		$_WD_OPTION_Standard, _
 		$_WD_OPTION_Advanced
 
+Global Enum _
+		$_WD_STATUS_Invalid, _
+		$_WD_STATUS_Valid, _
+		$_WD_STATUS_Reconnect
+
+Global Enum _
+		$_WD_TARGET_FirstTab, _
+		$_WD_TARGET_LastTab
+
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
-; Description ...: Helper function to create new tab using Javascript
+; Description ...: Create new tab in current browser session.
 ; Syntax ........: _WD_NewTab($sSession[, $bSwitch = Default[, $iTimeout = Default[, $sURL = Default[, $sFeatures = Default]]]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $bSwitch             - [optional] Switch session context to new tab? Default is True.
-;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
-;                  $sURL                - [optional] URL to be loaded in new tab
-;                  $sFeatures           - [optional] Comma-separated list of requested features of the new tab
-; Return values .: Success      - String representing handle of new tab
-;                  Failure      - blank string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_GeneralError
-;                  				- $_WD_ERROR_Timeout
+; Parameters ....: $sSession  - Session ID from _WD_CreateSession
+;                  $bSwitch   - [optional] Switch session context to new tab? Default is True
+;                  $iTimeout  - [optional] Period of time (in milliseconds) to wait before exiting function
+;                  $sURL      - [optional] URL to be loaded in new tab
+;                  $sFeatures - [optional] Comma-separated list of requested features of the new tab
+; Return values .: Success - String representing handle of new tab. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......: 01/12/2019
+; Modified ......: mLipok
 ; Remarks .......: For list of $sFeatures take a look in the following link
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
 ; ===============================================================================================================================
@@ -97,6 +108,8 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 			If $sURL Then _WD_Navigate($sSession, $sURL)
 
 			If Not $bSwitch Then _WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
+		Else
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 		EndIf
 	Else
 		Local $aHandles = _WD_Window($sSession, 'handles')
@@ -144,6 +157,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
 
 			__WD_Sleep(10)
+			If @error Then Return SetError(__WD_Error($sFuncName, @error), 0, $sTabHandle)
 		WEnd
 
 		If $bSwitch Then
@@ -158,24 +172,23 @@ EndFunc   ;==>_WD_NewTab
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Attach
-; Description ...: Helper function to attach to existing browser tab
+; Description ...: Attach to existing browser tab.
 ; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sString             - String to search for
-;                  $sMode               - [optional] One of the following search modes:
-;                               | Title (Default)
-;                               | URL
-;                               | HTML
-; Return values .: Success      - String representing handle of matching tab
-;                  Failure      - blank string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_InvalidDataType
-;                  				- $_WD_ERROR_NoMatch
-;                  				- $_WD_ERROR_GeneralError
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sString  - String to search for
+;                  $sMode    - [optional] One of the following search modes:
+;                  |Title (default)
+;                  |URL
+;                  |HTML
+; Return values .: Success - String representing handle of matching tab. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -231,21 +244,19 @@ EndFunc   ;==>_WD_Attach
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
-; Description ...: Simulate a mouse click on a link with text matching the provided string
+; Description ...: Simulate a mouse click on a link with text matching the provided string.
 ; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $bPartial = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sText               - Text to find in link
-;                  $bPartial            - [optional] Search by partial text? Default is True.
-; Return values .: Success      - None
-;                  Failure      - Sets @error to non-zero
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_NoMatch
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sText    - Text to find in link
+;                  $bPartial - [optional] Search by partial text? Default is True
+; Return values .: Success - None. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -273,32 +284,27 @@ EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_WaitElement
-; Description ...: Wait for an element in the current tab before returning
+; Description ...: Wait for an element in the current tab before returning.
 ; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector           - Value to find
-;                  $iDelay              - [optional] Milliseconds to wait before checking status
-;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
-;                  $iOptions            - [optional] Binary flags to perform addtional actions
-;
-;                                         $_WD_OPTION_None    (0) = No optional feature processing
-;                                         $_WD_OPTION_Visible (1) = Confirm element is visible
-;                                         $_WD_OPTION_Enabled (2) = Confirm element is enabled
-;                                         $_WD_OPTION_NoMatch (8) = Confirm element not found
-;
-; Return values .: Success      - Element ID returned by web driver
-;                  Failure      - "" and sets the @error flag to non-zero
-;
-;                  @error       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Timeout
-;                  				- $_WD_ERROR_InvalidArgue
-;                  				- $_WD_ERROR_UserAbort
-;
+; Parameters ....: $sSession  - Session ID from _WD_CreateSession
+;                  $sStrategy - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector - Value to find
+;                  $iDelay    - [optional] Milliseconds to wait before initially checking status
+;                  $iTimeout  - [optional] Period of time (in milliseconds) to wait before exiting function
+;                  $iOptions  - [optional] Binary flags to perform additional actions:
+;                  |$_WD_OPTION_None    (0) = No optional feature processing
+;                  |$_WD_OPTION_Visible (1) = Confirm element is visible
+;                  |$_WD_OPTION_Enabled (2) = Confirm element is enabled
+;                  |$_WD_OPTION_NoMatch (8) = Confirm element not found
+; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_InvalidArgue
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -319,58 +325,52 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
 		__WD_Sleep($iDelay)
+		$iErr = @error
 
-		If @error Then
-			$iErr = $_WD_ERROR_UserAbort
-		Else
-			Local $hWaitTimer = TimerInit()
+		Local $hWaitTimer = TimerInit()
+		While 1
+			If $iErr Then ExitLoop
 
-			While 1
-				$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
-				$iErr = @error
+			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+			$iErr = @error
 
-				If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
-					$iErr = $_WD_ERROR_Success
-					ExitLoop
+			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
+				$iErr = $_WD_ERROR_Success
+				ExitLoop
 
-				ElseIf $iErr = $_WD_ERROR_Success Then
-					If $bVisible Then
-						$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+			ElseIf $iErr = $_WD_ERROR_Success Then
+				If $bVisible Then
+					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 
-						If @error Then
-							$bIsVisible = False
-						EndIf
-
+					If @error Then
+						$bIsVisible = False
 					EndIf
 
-					If $bEnabled Then
-						$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+				EndIf
 
-						If @error Then
-							$bIsEnabled = False
-						EndIf
-					EndIf
+				If $bEnabled Then
+					$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
 
-					If $bIsVisible And $bIsEnabled Then
-						ExitLoop
-					Else
-						$sElement = ''
+					If @error Then
+						$bIsEnabled = False
 					EndIf
 				EndIf
 
-				If (TimerDiff($hWaitTimer) > $iTimeout) Then
-					$iErr = $_WD_ERROR_Timeout
+				If $bIsVisible And $bIsEnabled Then
 					ExitLoop
+				Else
+					$sElement = ''
 				EndIf
+			EndIf
 
-				__WD_Sleep(1000)
+			If (TimerDiff($hWaitTimer) > $iTimeout) Then
+				$iErr = $_WD_ERROR_Timeout
+				ExitLoop
+			EndIf
 
-				If @error Then
-					$iErr = $_WD_ERROR_UserAbort
-					ExitLoop
-				EndIf
-			WEnd
-		EndIf
+			__WD_Sleep(10)
+			$iErr = @error
+		WEnd
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
@@ -379,14 +379,15 @@ EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetMouseElement
-; Description ...: Retrieves reference to element below mouse pointer
+; Description ...: Retrieves reference to element below mouse pointer.
 ; Syntax ........: _WD_GetMouseElement($sSession)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-; Return values .: Element ID returned by web driver
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success
+;                  Failure - None
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/24538450/get-element-currently-under-mouse-without-using-mouse-events
 ; Example .......: No
 ; ===============================================================================================================================
@@ -463,10 +464,11 @@ EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LastHTTPResult
-; Description ...: Return the result of the last WinHTTP request
+; Description ...: Return the result of the last WinHTTP request.
 ; Syntax ........: _WD_LastHTTPResult()
 ; Parameters ....: None
-; Return values .: Result of last WinHTTP request
+; Return values .: Success - Result of last WinHTTP request
+;                  Failure - None
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -480,17 +482,16 @@ EndFunc   ;==>_WD_LastHTTPResult
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
-; Description ...: This will return how many frames/iframes are in your current window/frame. It will not traverse to nested frames.
+; Description ...: This will return how many frames/iframes are in your current window/frame.
 ; Syntax ........: _WD_GetFrameCount($sSession)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-; Return values .: Success      - Numeric count of frames, 0 or positive number
-;                  Failure      - blank string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - Numeric count of frames, 0 or positive number. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
 ; Modified ......: 2018-04-27
-; Remarks .......:
-; Related .......:
+; Remarks .......: The function will not traverse to nested frames
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -514,15 +515,14 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Name ..........: _WD_IsWindowTop
 ; Description ...: This will return a boolean of the session being at the top level, or in a frame(s).
 ; Syntax ........: _WD_IsWindowTop($sSession)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-; Return values .: Success      - Boolean response
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - Boolean response. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_top.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -547,16 +547,15 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Name ..........: _WD_FrameEnter
 ; Description ...: This will enter the specified frame for subsequent WebDriver operations.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $vIdentifier         - Index (as 0-based Integer) or HTMLElement @ID (as String) or Null (Keyword)
-; Return values .: Success      - True
-;                  Failure      - WD Response error message (E.g. "no such frame")
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
+; Parameters ....: $sSession    - Session ID from _WD_CreateSession
+;                  $vIdentifier - Index (as 0-based Integer) or HTMLElement @ID (as String) or Null (Keyword)
+; Return values .: Success - True. @error is set to $_WD_ERROR_Success
+;                  Failure - WD Response error message (E.g. "no such frame"), sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -598,13 +597,14 @@ EndFunc   ;==>_WD_FrameEnter
 ; Name ..........: _WD_FrameLeave
 ; Description ...: This will leave the current frame, to its parent, not necessarily the Top, for subsequent WebDriver operations.
 ; Syntax ........: _WD_FrameLeave($sSession)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-; Return values .: Success      True
-;                  Failure      - WD Response error message (E.g. "chrome not reachable")
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - True. @error is set to $_WD_ERROR_Success
+;                  Failure - WD Response error message (E.g. "chrome not reachable"), sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
 ; ===============================================================================================================================
@@ -654,21 +654,22 @@ EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
 ; Name ..........: _WD_HighlightElement
-; Description ...: Highlights the specified element
+; Description ...: Highlights the specified element.
 ; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sElement            - Element ID from _WD_FindElement
-;                  $iMethod             - [optional] an integer value. Default is 1.
-;                  0=style -> Remove highlight
-;                  1=style -> Highlight border dotted red
-;                  2=style -> Highlight yellow rounded box
-;                  3=style -> Highlight yellow rounded box + border  dotted red
-; Return values .: Success      - True
-;                  Failure      - False
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sElement - Element ID from _WD_FindElement
+;                  $iMethod  - [optional] an integer value to set the style (default = 1)
+;                  0 - Remove highlight
+;                  1 - Highlight border dotted red
+;                  2 - Highlight yellow rounded box
+;                  3 - Highlight yellow rounded box + border  dotted red
+; Return values .: Success - True. @error is set to $_WD_ERROR_Success
+;                  Failure - False, sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danyfirex
 ; Modified ......: 04/03/2021
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_HighlightElements
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -690,21 +691,22 @@ EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_HighlightElements
-; Description ...: Highlights the specified elements
+; Description ...: Highlights the specified elements.
 ; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $aElements           - an array of Elements ID from _WD_FindElement
-;                  $iMethod             - [optional] an integer value. Default is 1.
-;                  1=style -> Highlight border dotted red
-;                  2=style -> Highlight yellow rounded box
-;                  3=style -> Highlight yellow rounded box + border  dotted red
-; Return values .: Success      - True
-;                  Failure      - False
-;                  @Extended Number of Highlighted Elements
+; Parameters ....: $sSession  - Session ID from _WD_CreateSession
+;                  $aElements - an array of Elements ID from _WD_FindElement
+;                  $iMethod   - [optional] an integer value to set the style (default = 1)
+;                  0 - Remove highlight
+;                  1 - Highlight border dotted red
+;                  2 - Highlight yellow rounded box
+;                  3 - Highlight yellow rounded box + border  dotted red
+; Return values .: Success - True. @error is set to $_WD_ERROR_Success, @extended is set to the number of highlighted elements
+;                  Failure - False, sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danyfirex
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_HighlightElement
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -721,16 +723,17 @@ EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LoadWait
-; Description ...: Wait for a browser page load to complete before returning
+; Description ...: Wait for a browser page load to complete before returning.
 ; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $iDelay              - [optional] Milliseconds to wait before checking status
-;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
-;                  $sElement            - [optional] Element ID to confirm DOM invalidation
-; Return values .: Success      - 1
-;                  Failure      - 0 and sets the @error flag to non-zero
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $iDelay   - [optional] Milliseconds to wait before initially checking status
+;                  $iTimeout - [optional] Period of time (in milliseconds) to wait before exiting function
+;                  $sElement - [optional] Element ID to confirm DOM invalidation
+; Return values .: Success - 1. @error is set to $_WD_ERROR_Success
+;                  Failure - 0, sets @error to one of the following values:
+;                  - $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -744,45 +747,39 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $sElement = Default Then $sElement = ""
 
-	If $iDelay Then __WD_Sleep($iDelay)
+	__WD_Sleep($iDelay)
+	$iErr = @error
 
-	If @error Then
-		$iErr = $_WD_ERROR_UserAbort
-	Else
-		Local $hLoadWaitTimer = TimerInit()
+	Local $hLoadWaitTimer = TimerInit()
+	While True
+		If $iErr Then ExitLoop
 
-		While True
-			If $sElement <> '' Then
-				_WD_ElementAction($sSession, $sElement, 'name')
+		If $sElement <> '' Then
+			_WD_ElementAction($sSession, $sElement, 'name')
 
-				If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
-			Else
-				$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
-				$iErr = @error
+			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
+		Else
+			$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
+			$iErr = @error
 
-				If $iErr Then
-					ExitLoop
-				EndIf
-
-				$oJSON = Json_Decode($sResponse)
-				$sReadyState = Json_Get($oJSON, "[value]")
-
-				If $sReadyState = 'complete' Then ExitLoop
-			EndIf
-
-			If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
-				$iErr = $_WD_ERROR_Timeout
+			If $iErr Then
 				ExitLoop
 			EndIf
 
-			__WD_Sleep(100)
+			$oJSON = Json_Decode($sResponse)
+			$sReadyState = Json_Get($oJSON, "[value]")
 
-			If @error Then
-				$iErr = $_WD_ERROR_UserAbort
-				ExitLoop
-			EndIf
-		WEnd
-	EndIf
+			If $sReadyState = 'complete' Then ExitLoop
+		EndIf
+
+		If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
+			$iErr = $_WD_ERROR_Timeout
+			ExitLoop
+		EndIf
+
+		__WD_Sleep(10)
+		$iErr = @error
+	WEnd
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, 0)
@@ -793,25 +790,24 @@ EndFunc   ;==>_WD_LoadWait
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
-; Description ...: Takes a screenshot of the Window or Element
+; Description ...: Takes a screenshot of the Window or Element.
 ; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $nOutputType = Default]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sElement            - [optional] Element ID from _WD_FindElement
-;                  $nOutputType         - [optional] One of the following output types:
-;                               | 1 - String (Default)
-;                               | 2 - Binary
-;                               | 3 - Base64
-; Return values .: Success      - output of specified type (PNG format)
-;                  Failure      - empty string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_NoMatch
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidDataType
-;                  				- $_WD_ERROR_InvalidExpression
+; Parameters ....: $sSession    - Session ID from _WD_CreateSession
+;                  $sElement    - [optional] Element ID from _WD_FindElement
+;                  $nOutputType - [optional] One of the following output types:
+;                  |1 - String (Default)
+;                  |2 - Binary
+;                  |3 - Base64
+; Return values .: Success - Output of specified type (PNG format). @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_Window, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -848,20 +844,18 @@ EndFunc   ;==>_WD_Screenshot
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_PrintToPDF
-; Description ...: Print the current tab in paginated PDF format
+; Description ...: Print the current tab in paginated PDF format.
 ; Syntax ........: _WD_PrintToPDF($sSession[, $sOptions = Default]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                : $sOptions            - [optional] JSON string of formatting directives
-; Return values .: Success      - String containing PDF contents
-;                  Failure      - empty string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidDataType
-;
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sOptions - [optional] JSON string of formatting directives
+; Return values .: Success - String containing PDF contents. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517)
-; Related .......:
+; Related .......: _WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver/#print-page
 ; Example .......: No
 ; ===============================================================================================================================
@@ -885,19 +879,19 @@ EndFunc   ;==>_WD_PrintToPDF
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_jQuerify
-; Description ...: Inject jQuery library into current session
+; Description ...: Inject jQuery library into current session.
 ; Syntax ........: _WD_jQuerify($sSession[, $sjQueryFile = Default[, $iTimeout = Default]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                : $sjQueryFile         - [optional] Path or URL to jQuery source file
-;                  $iTimeout            - [optional] Period of time (in milliseconds) to wait before exiting function
-; Return values .: None
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Timeout
-;                  				- $_WD_ERROR_GeneralError
+; Parameters ....: $sSession    - Session ID from _WD_CreateSession
+;                  $sjQueryFile - [optional] Path or URL to jQuery source file
+;                  $iTimeout    - [optional] Period of time (in milliseconds) to wait before exiting function
+; Return values .: Success - None. @error is set to $_WD_ERROR_Success
+;                  Failure - None, sets @error to one of the following values:
+;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
 ; Example .......: No
 ; ===============================================================================================================================
@@ -945,12 +939,14 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 		Local $hWaitTimer = TimerInit()
 
 		Do
+			__WD_Sleep(10)
+			If @error Then ExitLoop
+
 			If TimerDiff($hWaitTimer) > $iTimeout Then
 				SetError($_WD_ERROR_Timeout)
 				ExitLoop
 			EndIf
 
-			__WD_Sleep(250)
 			_WD_ExecuteScript($sSession, "jQuery")
 		Until @error = $_WD_ERROR_Success
 	EndIf
@@ -967,23 +963,22 @@ EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementOptionSelect
-; Description ...: Find and click on an option from a Select element
+; Description ...: Find and click on an option from a Select element.
 ; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector           - Value to find
-;                  $sStartElement       - [optional] Element ID of element to use as starting point
-; Return values .: None
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_NoMatch
-;                  				- $_WD_ERROR_InvalidDataType
-;                  				- $_WD_ERROR_InvalidExpression
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector     - Value to find
+;                  $sStartElement - [optional] Element ID of element to use as starting point
+; Return values .: Success - None. @error is set to $_WD_ERROR_Success
+;                  Failure - None, sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1002,24 +997,24 @@ EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
-; Description ...: Perform action on desginated Select element
+; Description ...: Perform action on desginated Select element.
 ; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sSelectElement      - Element ID of Select element from _WD_FindElement
-;                  $sCommand            - Action to be performed
-; Return values .: Success      - Requested data returned by web driver
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_NoMatch
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidDataType
-;                  				- $_WD_ERROR_InvalidExpression
-;                  				- $_WD_ERROR_InvalidArgue
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession       - Session ID from _WD_CreateSession
+;                  $sSelectElement - Element ID of Select element from _WD_FindElement
+;                  $sCommand       - Action to be performed. Can be one of the following:
+;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's options
+;                  |VALUE - Retrieve current value
+; Return values .: Success - Requested data returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidExpression
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1086,10 +1081,11 @@ EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ConsoleVisible
-; Description ...: Control visibility of the webdriver console app
+; Description ...: Control visibility of the webdriver console app.
 ; Syntax ........: _WD_ConsoleVisible([$bVisible = Default])
-; Parameters ....: $bVisible            - [optional] Set to true to show the console
-; Return values .: None
+; Parameters ....: $bVisible - [optional] Set to true to show the console
+; Return values .: Success - None
+;                  Failure - None
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1126,22 +1122,20 @@ EndFunc   ;==>_WD_ConsoleVisible
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetShadowRoot
-; Description ...: Retrieves the shadow root of an element
+; Description ...: Retrieves the shadow root of an element.
 ; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector           - Value to find
-;                  $sStartElement       - [optional] a string value. Default is "".
-; Return values .: Success      - Element ID returned by web driver
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_NoMatch
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector     - Value to find
+;                  $sStartElement - [optional] a string value. Default is ""
+; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1170,23 +1164,20 @@ EndFunc   ;==>_WD_GetShadowRoot
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SelectFiles
-; Description ...: Select files for uploading to a website
+; Description ...: Select files for uploading to a website.
 ; Syntax ........: _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sStrategy           - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector           - Value to find. Should point to element of type <input type="file">
-;                  $sFilename           - Full path of file(s) to upload (use newline character [@LF] to separate files)
-;
-; Return values .: Number of selected files
-;
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_NoMatch
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession  - Session ID from _WD_CreateSession
+;                  $sStrategy - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector - Value to find. Should point to element of type '< input type="file" >'
+;                  $sFilename - Full path of file(s) to upload (use newline character [@LF] to separate files)
+; Return values .: Success - Number of selected files. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+;                  Failure - 0, sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......: If $sFilename is empty, then prior selection is cleared
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1232,16 +1223,13 @@ EndFunc   ;==>_WD_SelectFiles
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_IsLatestRelease
-; Description ...: Compares local UDF version to latest release on Github
+; Description ...: Compares local UDF version to latest release on Github.
 ; Syntax ........: _WD_IsLatestRelease()
 ; Parameters ....: None
-; Return values .: Success      - True if values match, otherwise False
-;                  Failure      - Null
-;
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidValue
-;                  				- $_WD_ERROR_InvalidDataType
+; Return values .: Success - True if the local UDF version is the latest, otherwise False
+;                  Failure - Null, sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1254,16 +1242,19 @@ Func _WD_IsLatestRelease()
 	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
 	Local $bResult = Null
 	Local $iErr = $_WD_ERROR_Success
+	Local $sRegex = '<a.*href="\/Danp2\/WebDriver\/releases\/tag\/(.*?)"'
 
 	Local $sResult = InetRead($sGitURL)
 	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), '<a href="/Danp2/WebDriver/releases/tag/(.*)">', $STR_REGEXPARRAYMATCH)
+		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), $sRegex, $STR_REGEXPARRAYMATCH)
 
 		If Not @error Then
 			Local $sLatestWDVersion = $aLatestWDVersion[0]
 			$bResult = ($__WDVERSION == $sLatestWDVersion)
+		Else
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
 
@@ -1277,27 +1268,26 @@ EndFunc   ;==>_WD_IsLatestRelease
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_UpdateDriver
-; Description ...: Replace web driver with newer version, if available
+; Description ...: Replace web driver with newer version, if available.
 ; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default]]])
-; Parameters ....: $sBrowser            - Name of browser
-;                  $sInstallDir         - [optional] Install directory. Default is @ScriptDir
-;                  $bFlag64             - [optional] Install 64bit version? Default is False
-;                  $bForce              - [optional] Force update? Default is False
-;
-; Return values .: True      - Driver was updated
-;                  False     - Driver not updated
-;
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_NoMatch
-;                  				- $_WD_ERROR_InvalidValue
-;                  				- $_WD_ERROR_GeneralError
-;
+; Parameters ....: $sBrowser    - Name of browser
+;                  $sInstallDir - [optional] Install directory. Default is @ScriptDir
+;                  $bFlag64     - [optional] Install 64bit version? Default is False
+;                  $bForce      - [optional] Force update? Default is False
+; Return values .: Success - True (Driver was updated). @error is set to $_WD_ERROR_Success
+;                  Failure - False (Driver was not updated), sets @error to one of the following values:
+;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak, CyCho
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing
+;                  the update. In this scenario, the return value indicates if an update is available.
+;+
+;                  Example: Local $bResult = _WD_UpdateDriver('FireFox')
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
-; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
+; Example .......: No
 ; ===============================================================================================================================
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
@@ -1389,42 +1379,49 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				EndIf
 		EndSwitch
 
-		If ($iErr = $_WD_ERROR_Success And $sDriverLatest > $sDriverVersion) Or $bForce Then
-			$sReturned = InetRead($sURLNewDriver)
+		If $iErr = $_WD_ERROR_Success Then
+			; When $bForce parameter equals Null, then return True if newer driver is available
+			If IsKeyword($bForce) = $KEYWORD_NULL Then
+				If $sDriverLatest > $sDriverVersion Then
+					$bResult = True
+				EndIf
+			ElseIf $sDriverLatest > $sDriverVersion Or $bForce Then
+				$sReturned = InetRead($sURLNewDriver)
 
-			$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
-			$hFile = FileOpen($sTempFile, 18)
-			FileWrite($hFile, $sReturned)
-			FileClose($hFile)
+				$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
+				$hFile = FileOpen($sTempFile, 18)
+				FileWrite($hFile, $sReturned)
+				FileClose($hFile)
 
-			; Close any instances of webdriver and delete from disk
-			__WD_CloseDriver($sDriverEXE)
-			FileDelete($sInstallDir & "\" & $sDriverEXE)
+				; Close any instances of webdriver and delete from disk
+				__WD_CloseDriver($sDriverEXE)
+				FileDelete($sInstallDir & "\" & $sDriverEXE)
 
-			; Handle COM Errors
-			Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
-			#forceref $oErr
+				; Handle COM Errors
+				Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+				#forceref $oErr
 
-			; Extract new instance of webdriver
-			$oShell = ObjCreate("Shell.Application")
-			If @error Then
-				$iErr = $_WD_ERROR_GeneralError
-			Else
-				$FilesInZip = $oShell.NameSpace($sTempFile).items
+				; Extract new instance of webdriver
+				$oShell = ObjCreate("Shell.Application")
 				If @error Then
 					$iErr = $_WD_ERROR_GeneralError
 				Else
-					$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
+					$FilesInZip = $oShell.NameSpace($sTempFile).items
 					If @error Then
 						$iErr = $_WD_ERROR_GeneralError
 					Else
-						$iErr = $_WD_ERROR_Success
-						$bResult = True
+						$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
+						If @error Then
+							$iErr = $_WD_ERROR_GeneralError
+						Else
+							$iErr = $_WD_ERROR_Success
+							$bResult = True
+						EndIf
 					EndIf
 				EndIf
-			EndIf
 
-			FileDelete($sTempFile)
+				FileDelete($sTempFile)
+			EndIf
 		EndIf
 	EndIf
 
@@ -1440,20 +1437,19 @@ EndFunc   ;==>_WD_UpdateDriver
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetBrowserVersion
-; Description ...: Get version number of specifed browser
+; Description ...: Get version number of specified browser.
 ; Syntax ........: _WD_GetBrowserVersion($sBrowser)
-; Parameters ....: $sBrowser            - a string value. 'chrome', 'firefox', 'msedge'
-; Return values .: $sBrowserVersion
-;                  Failure      - blank string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_InvalidValue
-;                  				- $_WD_ERROR_NotFound
+; Parameters ....: $sBrowser - a string value. 'chrome', 'firefox', 'msedge'
+; Return values .: Success - Version number ("#.#.#.#" format) returned by FileGetVersion for the browser exe
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotFound
 ; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
-; Remarks .......:
-; Related .......:
+; Remarks .......: Example: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
+; Related .......: _WD_GetWebDriverVersion
 ; Link ..........:
-; Example .......: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
+; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
@@ -1484,21 +1480,20 @@ EndFunc   ;==>_WD_GetBrowserVersion
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetWebDriverVersion
-; Description ...: Get version number of specifed webdriver
+; Description ...: Get version number of specifed webdriver.
 ; Syntax ........: _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
-; Parameters ....: $sInstallDir         - a string value. Directory where $sDriverEXE is located
-;                  $sDriverEXE          - a string value. File name of "WebDriver.exe"
-; Return values .: $sDriverVersion
-;                  Failure      - blank string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_InvalidValue
-;                  				- $_WD_ERROR_NotFound
+; Parameters ....: $sInstallDir - a string value. Directory where $sDriverEXE is located
+;                  $sDriverEXE  - a string value. File name of "WebDriver.exe"
+; Return values .: Success - The value you get when you call WebDriver with the --version parameter
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
-; Remarks .......:
-; Related .......:
+; Remarks .......: Example: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
+; Related .......: _WD_GetBrowserVersion
 ; Link ..........:
-; Example .......: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
+; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local Const $sFuncName = "_WD_GetWebDriverVersion"
@@ -1526,19 +1521,15 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DownloadFile
-; Description ...: Download file and save to disk
+; Description ...: Download file and save to disk.
 ; Syntax ........: _WD_DownloadFile($sURL, $sDest[, $iOptions = Default])
-; Parameters ....: $sURL                - URL representing file to be downloaded
-;                  $sDest               - Full path, including filename, of destination file
-;                  $iOptions            - [optional] Download options
-;
-; Return values .: True      - Download succeeded
-;                  False     - Download failed
-;
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_GeneralError
-;                  				- $_WD_ERROR_NotFound
-;
+; Parameters ....: $sURL     - URL representing file to be downloaded
+;                  $sDest    - Full path, including filename, of destination file
+;                  $iOptions - [optional] Download options
+; Return values .: Success - True (Download succeeded). @error is set to $_WD_ERROR_Success
+;                  Failure - False (Download failed), sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_NotFound
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1580,28 +1571,26 @@ EndFunc   ;==>_WD_DownloadFile
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SetTimeouts
-; Description ...: User friendly function to set webdriver session timeouts
+; Description ...: User friendly function to set webdriver session timeouts.
 ; Syntax ........: _WD_SetTimeouts($sSession[, $iPageLoad = Default[, $iScript = Default[, $iImplicitWait = Default]]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $iPageLoad           - [optional] Page load timeout in milliseconds
-;                  $iScript             - [optional] Script timeout in milliseconds
-;                  $iImplicitWait       - [optional] Implicit wait timeout in milliseconds
-; Return values .: Success      - Raw return value from web driver in JSON format
-;                  Failure      - 0
-;
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_InvalidArgue
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidDataType
-;
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $iPageLoad     - [optional] Page load timeout in milliseconds
+;                  $iScript       - [optional] Script timeout in milliseconds
+;                  $iImplicitWait - [optional] Implicit wait timeout in milliseconds
+; Return values .: Success - Raw return value from web driver in JSON format. @error is set to $_WD_ERROR_Success
+;                  Failure - 0, sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidArgue
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
-;				 : When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
-;
+;				   When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
+;+
+;                  Example: _WD_SetTimeouts($sSession, 50000)
 ; Related .......: _WD_Timeouts
 ; Link ..........: https://www.w3.org/TR/webdriver/#set-timeouts
-; Example .......: _WD_SetTimeouts($sSession, 50000)
+; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
 	Local Const $sFuncName = "_WD_SetTimeouts"
@@ -1661,16 +1650,14 @@ EndFunc   ;==>_WD_SetTimeouts
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetElementById
-; Description ...: Locate element by id
+; Description ...: Locate element by id.
 ; Syntax ........: _WD_GetElementById($sSession, $sID)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sID                 - ID of desired element
-; Return values .: Success      - Element ID returned by web driver
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_NoMatch
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sID      - ID of desired element
+; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -1690,16 +1677,14 @@ EndFunc   ;==>_WD_GetElementById
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetElementByName
-; Description ...: Locate element by name
+; Description ...: Locate element by name.
 ; Syntax ........: _WD_GetElementByName($sSession, $sName)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sName               - Name of desired element
-; Return values .: Success      - Element ID returned by web driver
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_NoMatch
-;                  @EXTENDED    - WinHTTP status code
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sName    - Name of desired element
+; Return values .: Success - Element ID returned by web driver
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
 ;
 ; Modified ......:
@@ -1720,29 +1705,24 @@ EndFunc   ;==>_WD_GetElementByName
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SetElementValue
-; Description ...: Set value of designated element
+; Description ...: Set value of designated element.
 ; Syntax ........: _WD_SetElementValue($sSession, $sElement, $sValue[, $iStyle = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sElement            - Element ID from _WD_FindElement
-;                  $sValue              - New value for element
-;                  $iStyle              - [optional] Update style. Default is $_WD_OPTION_Standard.
-;
-;                                         $_WD_OPTION_Standard (0) = Set value using _WD_ElementAction
-;                                         $_WD_OPTION_Advanced (1) = set value using _WD_ExecuteScript
-;
-; Return values .: Success      - Requested data returned by web driver
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_NoMatch
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidDataType
-;                  				- $_WD_ERROR_InvalidExpression
-;                  @EXTENDED    - WinHTTP status code
-;
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sElement - Element ID from _WD_FindElement
+;                  $sValue   - New value for element
+;                  $iStyle   - [optional] Update style. Default is $_WD_OPTION_Standard
+;                  |$_WD_OPTION_Standard (0) = Set value using _WD_ElementAction
+;                  |$_WD_OPTION_Advanced (1) = set value using _WD_ExecuteScript
+; Return values .: Success - Requested data returned by web driver
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Dan Pollak
 ; Modified ......: 03/31/2021
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1771,36 +1751,35 @@ EndFunc   ;==>_WD_SetElementValue
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementActionEx
-; Description ...: Perform advanced action on desginated element
-; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[,
-;                  $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default]]]]])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sElement            - Element ID from _WD_FindElement
-;                  $sCommand            - one of the following actions:
-;                                           | hover
-;                                           | doubleclick
-;                                           | rightclick
-;                                           | clickandhold
-;                                           | hide
-;                                           | show
-;                                           | childcount
-;                                           | modifierclick
-;
-;                  $iXOffset            - [optional] X Offset. Default is 0
-;                  $iYOffset            - [optional] Y Offset. Default is 0
-;                  $iButton             - [optional] Mouse button. Default is 0
-;                  $iHoldDelay          - [optional] Hold time in ms. Default is 1000
-;                  $sModifier           - [optional] Modifier key. Default is "\uE008" (shift key)
-;
-; Return values .: Success      - Return value from web driver (could be an empty string)
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_InvalidDataType
-;                  @EXTENDED    - WinHTTP status code
+; Description ...: Perform advanced action on desginated element.
+; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default]]]]])
+; Parameters ....: $sSession   - Session ID from _WD_CreateSession
+;                  $sElement   - Element ID from _WD_FindElement
+;                  $sCommand   - one of the following actions:
+;                  |
+;                  |CHECK - Checks a checkbox input element
+;                  |CHILDCOUNT - Returns the number of child elements
+;                  |CLICKANDHOLD - Clicks on the target element and holds the button down for the designated timeframe ($iHoldDelay)
+;                  |DOUBLECLICK - Do a double click on the selected element
+;                  |HIDE - Change the element's style to 'display: none' to hide the element
+;                  |HOVER - Move the mouse pointer so that it is located above the target element
+;                  |MODIFIERCLICK - Holds down a modifier key on the keyboard before clicking on the target element. This can be used to perform advanced actions such as shift-clicking an element
+;                  |RIGHTCLICK - Do a rightclick on the selected element
+;                  |SHOW - Change the element's style to 'display: normal' to unhide/show the element
+;                  |UNCHECK - Unchecks a checkbox input element
+;                  $iXOffset   - [optional] X Offset. Default is 0
+;                  $iYOffset   - [optional] Y Offset. Default is 0
+;                  $iButton    - [optional] Mouse button. Default is 0
+;                  $iHoldDelay - [optional] Hold time in ms. Default is 1000
+;                  $sModifier  - [optional] Modifier key. Default is "\uE008" (shift key)
+; Return values .: Success - Return value from web driver (could be an empty string)
+;                  Failure - "", sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
-; Modified ......:
-; Remarks .......:
+; Modified ......: TheDcoder
+; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
+;                  There are examples in DemoElements function in wd_demo
 ; Related .......: _WD_ElementAction, _WD_Action
 ; Link ..........:
 ; Example .......: No
@@ -1867,6 +1846,12 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			; Release modifier key
 			$sPostAction = ',{"type": "key", "id": "keyboard_2", "actions": [{"type": "keyUp", "value": "' & $sModifier & '"}]}'
 
+		Case 'check'
+			ContinueCase
+		Case 'uncheck'
+			$iActionType = 2
+			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
+
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick) $sCommand=>" & $sCommand), 0, "")
 
@@ -1915,20 +1900,18 @@ EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
-; Description ...: Return all elements of a table
+; Description ...: Return all elements of a table.
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sBaseElement - XPath of the table to return
-; Return values .: Success      - 2D array
-;                  Failure      - ""
-;                  @ERROR       - $_WD_ERROR_Success
-;                               - $_WD_ERROR_Exception
-;                               - $_WD_ERROR_NoMatch
-;                  @EXTENDED    - WinHTTP status code
+; Return values .: Success - 2D array. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
 ; Modified ......: water, danp2
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1974,14 +1957,12 @@ EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_IsFullScreen
-; Description ...: Return a boolean indicating if the session is in full screen mode
+; Description ...: Return a boolean indicating if the session is in full screen mode.
 ; Syntax ........: _WD_IsFullScreen($sSession)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-; Return values .: Success      - True or False
-;                  Failure      - Raw response from webdriver
-;                  @ERROR       - $_WD_ERROR_Success
-;                               - $_WD_ERROR_Exception
-;
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - True or False. @error is set to $_WD_ERROR_Success
+;                  Failure - Raw response from webdriver, sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -2003,11 +1984,73 @@ Func _WD_IsFullScreen($sSession)
 	Return SetError($_WD_ERROR_Success, 0, $bResult)
 EndFunc   ;==>_WD_IsFullScreen
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_CheckContext
+; Description ...: Check if browser context is still valid.
+; Syntax ........: _WD_CheckContext($sSession[, $bReconnect = Default[, $vTarget = Default]])
+; Parameters ....: $sSession   - Session ID from _WD_CreateSession
+;                  $bReconnect - [optional] Auto reconnect? Default is True
+;                  $vTarget    - [optional] Tab to target in reconnect attempt. Default is $_WD_TARGET_FirstTab. This can be the handle for an existing tab if known
+; Return values .: Success - Returns one of the following values:
+;                  |$_WD_STATUS_Valid (1) - Current browser context is valid
+;                  |$_WD_STATUS_Reconnect (2) - Context was invalid; Successfully reconnected to existing tab
+;                  Failure - Returns one of the following values:
+;                  |$_WD_STATUS_Invalid (0) - Browser context is invalid
+;                  |$_WD_ERROR_Exception
+; Author ........: Dan Pollak
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Action, _WD_Window
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
+	Local Const $sFuncName = "_WD_CheckContext"
+	Local $iResult = $_WD_STATUS_Invalid
+
+	If $bReconnect = Default Then $bReconnect = True
+	If $vTarget = Default Then $vTarget = $_WD_TARGET_FirstTab
+
+	_WD_Action($sSession, 'url')
+	Local $iErr = @error
+
+	If $iErr = $_WD_ERROR_Success Then
+		$iResult = $_WD_STATUS_Valid
+
+	ElseIf $iErr = $_WD_ERROR_Exception Then
+		If $bReconnect Then
+			If IsInt($vTarget) Then
+				; To recover, get an array of window handles and use one
+				Local $aHandles = _WD_Window($sSession, "handles")
+
+				If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
+					Select
+						Case $vTarget = $_WD_TARGET_FirstTab
+							$vTarget = $aHandles[0]
+
+						Case $vTarget = $_WD_TARGET_LastTab
+							$vTarget = $aHandles[UBound($aHandles) - 1]
+
+					EndSelect
+				EndIf
+			EndIf
+
+			_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
+
+			If @error = $_WD_ERROR_Success Then
+				$iResult = $_WD_STATUS_Reconnect
+			EndIf
+		EndIf
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
+EndFunc   ;==>_WD_CheckContext
+
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
 ; Name ..........: __WD_Base64Decode
-; Description ...: Decodes Base64 strings into binary
+; Description ...: Decodes Base64 strings into binary.
 ; Syntax ........: __WD_Base64Decode($input_string)
-; Parameters ....: $input_string        - string to be decoded
+; Parameters ....: $input_string - string to be decoded
 ; Return values .: Decoded string
 ; Author ........: trancexx
 ; Modified ......:
@@ -2054,4 +2097,4 @@ EndFunc   ;==>__WD_Base64Decode
 
 Func __WD_ErrHnd()
 
-EndFunc
+EndFunc   ;==>__WD_ErrHnd

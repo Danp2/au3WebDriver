@@ -1,22 +1,27 @@
-#include "wd_core.au3"
-#include "wd_helper.au3"
+#Region - include files
+; standard UDF's
+#include <ButtonConstants.au3>
+#include <ColorConstants.au3>
 #include <GuiComboBoxEx.au3>
 #include <GUIConstantsEx.au3>
-#include <ButtonConstants.au3>
 #include <WindowsConstants.au3>
+; non standard UDF's
+#include "wd_helper.au3"
+#include "wd_capabilities.au3"
+#EndRegion - include files
 
-Local Const $sElementSelector = "//input[@name='q']"
-
-Local $sDesiredCapabilities, $iIndex, $sSession
-Local $nMsg, $bProcess = False
-
-Local $aBrowsers[][2] = _
-		[["Firefox", SetupGecko], _
+#Region - Global's declarations
+Global Const $sElementSelector = "//input[@name='q']"
+Global Const $aBrowsers[][2] = _
+		[ _
+		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
-		["Edge", SetupEdge]]
+		["Edge", SetupEdge] _
+		]
 
-Local $aDemoSuite[][2] = _
-		[["DemoTimeouts", False], _
+Global $aDemoSuite[][2] = _
+		[ _
+		["DemoTimeouts", False], _
 		["DemoNavigation", True], _
 		["DemoElements", False], _
 		["DemoScript", False], _
@@ -26,100 +31,124 @@ Local $aDemoSuite[][2] = _
 		["DemoActions", False], _
 		["DemoDownload", False], _
 		["DemoWindows", False], _
-		["DemoUpload", False]]
+		["DemoUpload", False], _
+		["DemoSleep", False] _
+		]
 
-Local $aDebugLevel[][2] = _
-		[["None", $_WD_DEBUG_None], _
+Global Const $aDebugLevel[][2] = _
+		[ _
+		["None", $_WD_DEBUG_None], _
 		["Error", $_WD_DEBUG_Error], _
-		["Full", $_WD_DEBUG_Info]]
+		["Full", $_WD_DEBUG_Info] _
+		]
 
-Local $iSpacing = 50
-Local $iCount = UBound($aDemoSuite)
-Local $aCheckboxes[$iCount]
+Global $sSession
+Global $__g_idButton_Abort
+#EndRegion - Global's declarations
 
-Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+_WD_Demo()
+Exit
 
-GUICtrlCreateLabel("Browser", 15, 12)
-Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
-Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
-GUICtrlSetData($idBrowsers, $sData)
-GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
+Func _WD_Demo()
+	Local $nMsg
+	Local $iSpacing = 50
+	Local $iCount = UBound($aDemoSuite)
+	Local $aCheckboxes[$iCount]
 
-GUICtrlCreateLabel("Demos", 15, 52)
-For $i = 0 To $iCount - 1
-	$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
-	If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
-Next
+	Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+	GUISetBkColor($CLR_SILVER)
+	GUICtrlCreateLabel("Browser", 15, 12)
+	Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
+	Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
+	GUICtrlSetData($idBrowsers, $sData)
+	GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
 
-Local $iPos = $iSpacing + 20 * ($iCount + 1)
-GUICtrlCreateLabel("Debug", 15, $iPos + 2)
-Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
-$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
-GUICtrlSetData($idDebugging, $sData)
-GUICtrlSetData($idDebugging, "Full")
-Local $idButton = GUICtrlCreateButton("Run Demo!", 60, $iPos + 40, 85, 25)
-
-GUISetState(@SW_SHOW)
-
-While 1
-	$nMsg = GUIGetMsg()
-	Switch $nMsg
-		Case $GUI_EVENT_CLOSE
-			ExitLoop
-
-		Case $idBrowsers
-
-		Case $idDebugging
-
-		Case $idButton
-			$bProcess = True
-			ExitLoop
-
-		Case Else
-			For $i = 0 To $iCount - 1
-				If $aCheckboxes[$i] = $nMsg Then
-					$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
-					ExitLoop
-
-				EndIf
-
-			Next
-	EndSwitch
-WEnd
-
-; Set debug level
-$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
-
-; Execute browser setup routine for user's browser selection
-Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
-
-GUIDelete($hGUI)
-If Not $bProcess Then Exit
-
-_WD_Startup()
-
-If @error <> $_WD_ERROR_Success Then
-	Exit -1
-EndIf
-
-$sSession = _WD_CreateSession($sDesiredCapabilities)
-
-If @error = $_WD_ERROR_Success Then
-	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
-		If $aDemoSuite[$iIndex][1] Then
-			ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-			Call($aDemoSuite[$iIndex][0])
-			ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
-		Else
-			ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
-		EndIf
+	GUICtrlCreateLabel("Demos", 15, 52)
+	For $i = 0 To $iCount - 1
+		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
+		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
 	Next
-EndIf
 
-MsgBox($MB_ICONINFORMATION, "Demo complete!", "Click ok to shutdown the browser and console")
+	Local $iPos = $iSpacing + 20 * ($iCount + 1)
+	GUICtrlCreateLabel("Debug", 15, $iPos + 2)
+	Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
+	GUICtrlSetData($idDebugging, $sData)
+	GUICtrlSetData($idDebugging, "Full")
+	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos + 40, 85, 25)
+	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
+	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
 
-_WD_DeleteSession($sSession)
-_WD_Shutdown()
+	GUISetState(@SW_SHOW)
+	While 1
+		$nMsg = GUIGetMsg()
+		Switch $nMsg
+			Case $GUI_EVENT_NONE
+				; do nothing
+			Case $GUI_EVENT_CLOSE
+				ExitLoop
+
+			Case $idBrowsers
+
+			Case $idDebugging
+
+			Case $idButton_Run
+				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
+				RunDemo($idDebugging, $idBrowsers)
+				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
+
+			Case Else
+				For $i = 0 To $iCount - 1
+					If $aCheckboxes[$i] = $nMsg Then
+						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
+					EndIf
+				Next
+
+		EndSwitch
+	WEnd
+
+	GUIDelete($hGUI)
+EndFunc   ;==>_WD_Demo
+
+Func RunDemo($idDebugging, $idBrowsers)
+	; Set debug level
+	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
+
+	; Execute browser setup routine for user's browser selection
+	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
+
+	_WD_Startup()
+	If @error <> $_WD_ERROR_Success Then Return
+
+	$sSession = _WD_CreateSession($sDesiredCapabilities)
+
+	Local $iError
+	If @error = $_WD_ERROR_Success Then
+		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
+			If $aDemoSuite[$iIndex][1] Then
+				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+				Call($aDemoSuite[$iIndex][0])
+				$iError = @error
+				If $iError = $_WD_ERROR_UserAbort Then
+					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
+					ExitLoop
+				EndIf
+				ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			Else
+				ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			EndIf
+		Next
+	EndIf
+
+	If $iError = $_WD_ERROR_UserAbort Then
+		MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
+	Else
+		MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
+	EndIf
+
+	_WD_DeleteSession($sSession)
+	_WD_Shutdown()
+EndFunc   ;==>RunDemo
 
 Func DemoTimeouts()
 	; Retrieve current settings and save
@@ -164,7 +193,7 @@ Func DemoElements()
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 
 	; Get element's coordinates
-	$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
+	Local $oERect = _WD_ElementAction($sSession, $sElement, 'rect')
 
 	If IsObj($oERect) Then
 		ConsoleWrite("Element Coords = " & $oERect.Item('x') & " / " & $oERect.Item('y') & " / " & $oERect.Item('width') & " / " & $oERect.Item('height') & @CRLF)
@@ -192,8 +221,8 @@ Func DemoElements()
 
 	_WD_ElementAction($sSession, $sElement, 'value', "fujimo")
 	Sleep(500)
-	$sValue1 = _WD_ElementAction($sSession, $sElement, 'property', 'value')
-	$sValue2 = _WD_ElementAction($sSession, $sElement, 'value')
+	Local $sValue1 = _WD_ElementAction($sSession, $sElement, 'property', 'value')
+	Local $sValue2 = _WD_ElementAction($sSession, $sElement, 'value')
 	MsgBox(0, 'result', $sValue1 & " / " & $sValue2)
 
 	; Click input element
@@ -283,7 +312,7 @@ Func DemoFrames()
 	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
 	_WD_FrameEnter($sSession, $sElement)
-	$sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
+	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
 	_WD_ElementAction($sSession, $sButton, 'click')
 	_WD_LoadWait($sSession, 2000)
 	_WD_FrameLeave($sSession)
@@ -294,6 +323,7 @@ EndFunc   ;==>DemoFrames
 
 Func DemoActions()
 	Local $sElement, $aElements, $sValue, $sAction
+	#forceref $aElements, $sValue
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
@@ -318,10 +348,10 @@ Func DemoDownload()
 	_WD_Navigate($sSession, "http://google.com")
 
 	; Get the website's URL
-	$sUrl = _WD_Action($sSession, 'url')
+	Local $sUrl = _WD_Action($sSession, 'url')
 
 	; Find the element
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@id='hplogo']")
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@id='hplogo']")
 
 	If @error <> $_WD_ERROR_Success Then
 		; Try alternate element
@@ -330,7 +360,7 @@ Func DemoDownload()
 
 	If @error = $_WD_ERROR_Success Then
 		;  Retrieve it's source attribute
-		$sSource = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
+		Local $sSource = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
 
 		; Combine the URL and element link
 		$sUrl = _WinAPI_UrlCombine($sUrl, $sSource)
@@ -385,13 +415,61 @@ Func DemoUpload()
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
 
+Func DemoSleep()
+	; enable Abort button
+	GUICtrlSetState($__g_idButton_Abort, $GUI_ENABLE)
+
+	; set up outer/user specific sleep function to take control
+	_WD_Option("Sleep", _USER_WD_Sleep)
+
+	_WD_Navigate($sSession, "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win/")
+	Local $iError = @error
+	If Not $iError Then
+		; it can take a long time to load full content of this webpage
+		; this following function is waiting to the progress spinner will hide
+		_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//img[@class="loader-spinner ng-hide" and @ng-show="loading"]', Default, 3 * 60 * 1000)
+		$iError = @error
+
+		; normaly it will wait as webpage will load full content (hidden spinner) or will end with TimeOut
+		; but thanks to using _WD_Option("Sleep", _USER_WD_Sleep) you can abort waiting by clicking scecial Abourt button or by clicking X closing button on the "Webdriver Demo" GUI window
+	EndIf
+
+	; disable Abort button
+	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+
+	; set up internal sleep function - back to standard route
+	_WD_Option("Sleep", Sleep)
+
+	Return SetError($iError)
+EndFunc   ;==>DemoSleep
+
+Func _USER_WD_Sleep($iDelay)
+	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
+	Do
+		Switch GUIGetMsg()
+			Case $GUI_EVENT_CLOSE ; in case when X closing button on the "Webdriver Demo" GUI window was clicked
+				ConsoleWrite("! Abort by GUI Close button pressed." & @CRLF)
+				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
+			Case $__g_idButton_Abort ; in case when Abort button was clicked
+				ConsoleWrite("! Abort button pressed." & @CRLF)
+				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
+		EndSwitch
+	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
+EndFunc   ;==>_USER_WD_Sleep
+
 Func SetupGecko()
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
 
-	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
-
+;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
+	_WD_CapabilitiesAdd('browserName', 'firefox')
+	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
+	Return $sDesiredCapabilities
 EndFunc   ;==>SetupGecko
 
 Func SetupChrome()
@@ -399,7 +477,14 @@ Func SetupChrome()
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
-	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'chrome')
+	_WD_CapabilitiesAdd('w3c', True)
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
+	Return $sDesiredCapabilities
 EndFunc   ;==>SetupChrome
 
 Func SetupEdge()
@@ -407,5 +492,11 @@ Func SetupEdge()
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
-	$sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
+;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
+	Return $sDesiredCapabilities
 EndFunc   ;==>SetupEdge
