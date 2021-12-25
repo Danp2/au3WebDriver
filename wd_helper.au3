@@ -426,7 +426,7 @@ EndFunc   ;==>_WD_GetMouseElement
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $bFrame = False, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
-	Local $sScript2 = "X = window.pageXOffset; Y = window.pageYOffset; return new Array(X, Y);"
+	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
 
 	While True
 		$sParams = $iX & ", " & $iY
@@ -445,8 +445,8 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 
 			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
 
-			$iX -= ($oERect.Item('x') - $aCoords[0])
-			$iY -= ($oERect.Item('y') - $aCoords[1])
+			$iX -= ($oERect.Item('x') - Int($aCoords[0]))
+			$iY -= ($oERect.Item('y') - Int($aCoords[1]))
 
 			_WD_FrameEnter($sSession, $sElement)
 			$bFrame = True
