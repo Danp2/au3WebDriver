@@ -780,7 +780,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 		Switch $_WD_HTTPRESULT
 			Case $HTTP_STATUS_OK
 				Switch $sCommand
-					Case 'clear', 'click'
+					Case 'clear', 'click', 'shadow'
 						$sResult = $sResponse
 
 					Case 'value'
