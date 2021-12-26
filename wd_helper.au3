@@ -1891,14 +1891,14 @@ EndFunc   ;==>_WD_ElementActionEx
 ; Name ..........: _WD_DispatchEvent
 ; Description ...:
 ; Syntax ........: _WD_DispatchEvent($sSession, $sEvent[, $sElement = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sEvent              - a string value.
-;                  $sElement            - [optional] a string value. Default is Default.
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sEvent   - a string value.
+;                  $sElement - [optional] a string value. Default is Default.
 ; Return values .: None
-; Author ........: Your Name
+; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
