@@ -1,3 +1,10 @@
+	v0.5.0.3
+	- Changed (_WD_ExecuteScript): Optionally return value node instead of raw JSON (mLipok)
+	- Changed (_WD_ElementActionEx): Added support for "check" and "uncheck" commands (TheDcoder)
+	- Changed (_WD_GetElementFromPoint): Added support for frames
+	- Fixed (_WD_ElementAction): Return raw response for 'shadow' command
+	- Fixed (_WD_GetShadowRoot): Use shadow root identifier
+
 	v0.5.0.2
 	- Added: CHM help file (water)
 	- Changed (_WD_Capabilities): Added support for "binary" option (mLipok)
