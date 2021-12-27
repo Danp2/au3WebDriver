@@ -250,7 +250,7 @@ EndFunc   ;==>_WD_Attach
 ;                  $sText    - Text to find in link
 ;                  $bPartial - [optional] Search by partial text? Default is True
 ; Return values .: Success - None. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
@@ -1004,8 +1004,8 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's options
 ;                  |VALUE - Retrieve current value
-; Return values .: Success - Requested data returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Requested data returned by web driver. @error is set to $_WD_ERROR_Success
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
@@ -1128,8 +1128,8 @@ EndFunc   ;==>_WD_ConsoleVisible
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector     - Value to find
 ;                  $sStartElement - [optional] a string value. Default is ""
-; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
@@ -1173,8 +1173,8 @@ EndFunc   ;==>_WD_GetShadowRoot
 ;                  $sStrategy - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector - Value to find. Should point to element of type '< input type="file" >'
 ;                  $sFilename - Full path of file(s) to upload (use newline character [@LF] to separate files)
-; Return values .: Success - Number of selected files. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - 0, sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Number of selected files. @error is set to $_WD_ERROR_Success
+;                  Failure - 0, sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
@@ -1230,7 +1230,7 @@ EndFunc   ;==>_WD_SelectFiles
 ; Syntax ........: _WD_IsLatestRelease()
 ; Parameters ....: None
 ; Return values .: Success - True if the local UDF version is the latest, otherwise False
-;                  Failure - Null, sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  Failure - Null, sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
@@ -1907,8 +1907,8 @@ EndFunc   ;==>_WD_ElementActionEx
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sBaseElement - XPath of the table to return
-; Return values .: Success - 2D array. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - 2D array. @error is set to $_WD_ERROR_Success
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
