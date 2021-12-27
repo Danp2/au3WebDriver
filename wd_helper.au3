@@ -77,7 +77,7 @@ Global Enum _
 ;                  $sURL      - [optional] URL to be loaded in new tab
 ;                  $sFeatures - [optional] Comma-separated list of requested features of the new tab
 ; Return values .: Success - String representing handle of new tab. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
@@ -181,7 +181,7 @@ EndFunc   ;==>_WD_NewTab
 ;                  |URL
 ;                  |HTML
 ; Return values .: Success - String representing handle of matching tab. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_GeneralError
@@ -297,7 +297,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ;                  |$_WD_OPTION_Enabled (2) = Confirm element is enabled
 ;                  |$_WD_OPTION_NoMatch (8) = Confirm element not found
 ; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_UserAbort
@@ -486,8 +486,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Syntax ........: _WD_GetFrameCount($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Numeric count of frames, 0 or positive number. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
 ; Modified ......: 2018-04-27
 ; Remarks .......: The function will not traverse to nested frames
@@ -517,8 +516,7 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Syntax ........: _WD_IsWindowTop($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Boolean response. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......:
@@ -550,8 +548,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
 ;                  $vIdentifier - Index (as 0-based Integer) or HTMLElement @ID (as String) or Null (Keyword)
 ; Return values .: Success - True. @error is set to $_WD_ERROR_Success
-;                  Failure - WD Response error message (E.g. "no such frame"), sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "no such frame"), sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters
@@ -599,8 +596,7 @@ EndFunc   ;==>_WD_FrameEnter
 ; Syntax ........: _WD_FrameLeave($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True. @error is set to $_WD_ERROR_Success
-;                  Failure - WD Response error message (E.g. "chrome not reachable"), sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "chrome not reachable"), sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
@@ -664,8 +660,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  2 - Highlight yellow rounded box
 ;                  3 - Highlight yellow rounded box + border  dotted red
 ; Return values .: Success - True. @error is set to $_WD_ERROR_Success
-;                  Failure - False, sets @error to one of the following values:
-;                  - $_WD_ERROR_GeneralError
+;                  Failure - False, sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danyfirex
 ; Modified ......: 04/03/2021
 ; Remarks .......:
@@ -701,8 +696,7 @@ EndFunc   ;==>_WD_HighlightElement
 ;                  2 - Highlight yellow rounded box
 ;                  3 - Highlight yellow rounded box + border  dotted red
 ; Return values .: Success - True. @error is set to $_WD_ERROR_Success, @extended is set to the number of highlighted elements
-;                  Failure - False, sets @error to one of the following values:
-;                  - $_WD_ERROR_GeneralError
+;                  Failure - False, sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danyfirex
 ; Modified ......:
 ; Remarks .......:
@@ -730,8 +724,7 @@ EndFunc   ;==>_WD_HighlightElements
 ;                  $iTimeout - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sElement - [optional] Element ID to confirm DOM invalidation
 ; Return values .: Success - 1. @error is set to $_WD_ERROR_Success
-;                  Failure - 0, sets @error to one of the following values:
-;                  - $_WD_ERROR_Timeout
+;                  Failure - 0, sets @error to $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -799,7 +792,7 @@ EndFunc   ;==>_WD_LoadWait
 ;                  |2 - Binary
 ;                  |3 - Base64
 ; Return values .: Success - Output of specified type (PNG format). @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
@@ -849,7 +842,7 @@ EndFunc   ;==>_WD_Screenshot
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sOptions - [optional] JSON string of formatting directives
 ; Return values .: Success - String containing PDF contents. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
@@ -1444,7 +1437,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ; Syntax ........: _WD_GetBrowserVersion($sBrowser)
 ; Parameters ....: $sBrowser - a string value. 'chrome', 'firefox', 'msedge'
 ; Return values .: Success - Version number ("#.#.#.#" format) returned by FileGetVersion for the browser exe
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Dan Pollak, mLipok
@@ -1488,7 +1481,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Parameters ....: $sInstallDir - a string value. Directory where $sDriverEXE is located
 ;                  $sDriverEXE  - a string value. File name of "WebDriver.exe"
 ; Return values .: Success - The value you get when you call WebDriver with the --version parameter
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak, mLipok
@@ -1658,7 +1651,7 @@ EndFunc   ;==>_WD_SetTimeouts
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sID      - ID of desired element
 ; Return values .: Success - Element ID returned by web driver. @error is set to $_WD_ERROR_Success
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
@@ -1685,7 +1678,7 @@ EndFunc   ;==>_WD_GetElementById
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sName    - Name of desired element
 ; Return values .: Success - Element ID returned by web driver
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
@@ -1717,7 +1710,7 @@ EndFunc   ;==>_WD_GetElementByName
 ;                  |$_WD_OPTION_Standard (0) = Set value using _WD_ElementAction
 ;                  |$_WD_OPTION_Advanced (1) = set value using _WD_ExecuteScript
 ; Return values .: Success - Requested data returned by web driver
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
@@ -1776,7 +1769,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  $iHoldDelay - [optional] Hold time in ms. Default is 1000
 ;                  $sModifier  - [optional] Modifier key. Default is "\uE008" (shift key)
 ; Return values .: Success - Return value from web driver (could be an empty string)
-;                  Failure - "", sets @error to one of the following values:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
@@ -1964,8 +1957,7 @@ EndFunc   ;==>_WD_GetTable
 ; Syntax ........: _WD_IsFullScreen($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True or False. @error is set to $_WD_ERROR_Success
-;                  Failure - Raw response from webdriver, sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
+;                  Failure - Raw response from webdriver, sets @error to $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
