@@ -39,9 +39,8 @@
 ;                  $sCommand      - Name of the command
 ;                  $oParams       - Parameters of the command as an object
 ;                  $sWebSocketURL - [optional] Websocket URL
-; Return values .: Success - Raw return value from web driver in JSON format. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
-;                  - $_WD_ERROR_Exception
+; Return values .: Success - Raw return value from web driver in JSON format.
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......: Danp2
 ; Remarks .......: The original version of this function is specific to ChromeDriver, you can execute "Chrome DevTools Protocol"
@@ -245,11 +244,11 @@ EndFunc   ;==>_WD_CDPExecuteCommand
 ;                  |DEBUGGER - Returns the Websocket target originally returned by _WD_CreateSession
 ;                  |LIST - Lists websocket targets
 ;                  |VERSION - Reurns an array containing version metadata
-; Return values .: Success - The returned value depends on the selected $sOption. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
+; Return values .: Success - The returned value depends on the selected $sOption.
 ;                  |DEBUGGER: Websocket target originally returned by _WD_CreateSession
 ;                  |LIST: Array containing websocket targets
 ;                  |VERSION: Array containing version metadata
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
