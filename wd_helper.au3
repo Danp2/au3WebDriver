@@ -1076,7 +1076,7 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Name ..........: _WD_ConsoleVisible
 ; Description ...: Control visibility of the webdriver console app.
 ; Syntax ........: _WD_ConsoleVisible([$bVisible = Default])
-; Parameters ....: $bVisible - [optional] Set to true to show the console
+; Parameters ....: $bVisible - [optional] Set to true to show the console. Default is False.
 ; Return values .: Success - None
 ;                  Failure - None
 ; Author ........: Dan Pollak

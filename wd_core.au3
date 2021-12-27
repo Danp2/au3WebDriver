@@ -212,7 +212,7 @@ EndFunc   ;==>_WD_CreateSession
 ; Syntax ........: _WD_DeleteSession($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - 1
-;                  Failure - 0
+;                  Failure - 0, sets @error to $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
