@@ -59,6 +59,7 @@
 	- Jonathan Bennett and the AutoIt Team
 	- Thorsten Willert, author of FF.au3, which I've used as a model
 	- Michal Lipok for all his feedback / suggestions
+	- @water for his work on the help file
 #ce
 #EndRegion Many thanks to:
 
@@ -162,11 +163,10 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CreateSession
 ; Description ...: Request new session from web driver.
-; Syntax ........: _WD_CreateSession([$sDesiredCapabilities = Default])
-; Parameters ....: $sDesiredCapabilities - [optional] a string value. Default is "{}"
-; Return values .: Success - Session ID to be used in future requests to web driver session. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
-;                  - $_WD_ERROR_Exception
+; Syntax ........: _WD_CreateSession([$sCapabilities = Default])
+; Parameters ....: $sCapabilities - [optional] Requested features in JSON format. Default is "{}"
+; Return values .: Success - Session ID to be used in future requests to web driver session.
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -211,9 +211,8 @@ EndFunc   ;==>_WD_CreateSession
 ; Description ...:  Delete existing session.
 ; Syntax ........: _WD_DeleteSession($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - 1, @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - 0, sets @error to one of the following values and @extended to the WinHTTP status code:
-;                  - $_WD_ERROR_Exception
+; Return values .: Success - 1
+;                  Failure - 0
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -243,9 +242,8 @@ EndFunc   ;==>_WD_DeleteSession
 ; Description ...: Get current web driver state.
 ; Syntax ........: _WD_Status()
 ; Parameters ....:
-; Return values .: Success - Dictionary object with "message" and "ready" properties. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
-;                  - $_WD_ERROR_Exception
+; Return values .: Success - Dictionary object with "message" and "ready" properties.
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
@@ -279,9 +277,8 @@ EndFunc   ;==>_WD_Status
 ; Description ...:  Get details on existing session.
 ; Syntax ........: _WD_GetSession($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - Dictionary object with "sessionId" and "capabilities" items. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
-;                  - $_WD_ERROR_Exception
+; Return values .: Success - Dictionary object with "sessionId" and "capabilities" items.
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
@@ -296,7 +293,7 @@ Func _WD_GetSession($sSession)
 	Local $sResult
 	#forceref $sSession, $sFuncName
 
-	#cs
+	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
 
@@ -324,13 +321,12 @@ EndFunc   ;==>_WD_GetSession
 ; Description ...:  Set or retrieve the session timeout parameters.
 ; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = Default])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
-;                  $sTimeouts - [optional] a string value. Default is ""
-; Return values .: Success - Raw return value from web driver in JSON format. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - 0, sets @error to one of the following values and @extended to the WinHTTP status code:
-;                  - $_WD_ERROR_Exception
+;                  $sTimeouts - [optional] Requested timouts in JSON format. Default is ""
+; Return values .: Success - Raw return value from web driver in JSON format.
+;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: Separate timeouts can be set for "script", "pageLoad", and "implicit"
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#get-timeouts
 ;                  https://www.w3.org/TR/webdriver#set-timeouts
@@ -369,8 +365,8 @@ EndFunc   ;==>_WD_Timeouts
 ; Syntax ........: _WD_Navigate($sSession, $sURL)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sURL     - Destination URL
-; Return values .: Success - 1. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - 0, sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - 1.
+;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
@@ -410,9 +406,9 @@ EndFunc   ;==>_WD_Navigate
 ;                  |REFRESH - Causes the browser to reload the page in current top-level browsing context
 ;                  |TITLE   - Returns the document title of the current top-level browsing context
 ;                  |URL     - Protocol binding to load the URL of the browser. If a baseUrl is specified in the config, it will be prepended to the url parameter. Calling this function with the same url as last time will trigger a page reload
-;                  $sOption  - [optional] a string value. Default is ""
-; Return values .: Success - Return value from web driver (could be an empty string). @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  $sOption  - [optional] a JSON string of actions to perform. Default is ""
+; Return values .: Success - Return value from web driver (could be an empty string).
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
@@ -492,8 +488,8 @@ EndFunc   ;==>_WD_Action
 ;                  |SWITCH     - Switch to designated tab
 ;                  |WINDOW     - Get or set the current window
 ;                  $sOption  - [optional] a string value. Default is ""
-; Return values .: Success - Return value from web driver (could be an empty string). @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Return value from web driver (could be an empty string).
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
@@ -611,17 +607,17 @@ EndFunc   ;==>_WD_Window
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector    - Value to find
-;                  $sStartNodeID - [optional] ID to use as starting node. Default is ""
+;                  $sStartNodeID - [optional] Element ID to use as starting node. Default is ""
 ;                  $bMultiple    - [optional] Return multiple matching elements? Default is False
 ;                  $bShadowRoot  - [optional] Starting node is a shadow root? Default is False
-; Return values .: Success - Element ID(s) returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Element ID(s) returned by web driver.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Dan Pollak
 ; Modified ......: 01/10/2021
-; Remarks .......:
+; Remarks .......: An array of matching elements is returned when $bMultiple is True
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#element-retrieval
 ; Example .......: No
@@ -721,8 +717,8 @@ EndFunc   ;==>_WD_FindElement
 ;                  |TEXT       - Get element's rendered text
 ;                  |VALUE      - Get or set element's value. If $sOption = "" the value of the element is returned, else set
 ;                  $sOption  - [optional] a string value. Default is ""
-; Return values .: Success - Requested data returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Requested data returned by web driver.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
@@ -815,14 +811,14 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands.
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $bReturnAsValue = False]]])
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $bValueNode = False]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $bReturnAsValue      - [optional] Extract and return value node from Webdriver response. Default is False.
-; Return values .: Success - Raw response from web driver or value. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+;                  $bValueNode - [optional] Return value node from Webdriver response. Default is False.
+; Return values .: Success - Raw response from web driver or value node.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
@@ -881,8 +877,8 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  |SENDTEXT - Set the text field of the current user prompt to the given value
 ;                  |STATUS   - Return logical value indicating the presence or absence of an alert
 ;                  $sOption  - [optional] a string value. Default is ""
-; Return values .: Success - Requested data returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Requested data returned by web driver.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
@@ -959,8 +955,8 @@ EndFunc   ;==>_WD_Alert
 ; Description ...: Get page source.
 ; Syntax ........: _WD_GetSource($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - Source code from page. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Source code from page.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -1004,8 +1000,8 @@ EndFunc   ;==>_WD_GetSource
 ;                  |GET    - Retrieve the value of a single cookie. The name of the cookie to retrieve has to be specified in $sOption
 ;                  |GETALL - Retrieve the values of all cookies
 ;                  $sOption  - [optional] a string value. Default is ""
-; Return values .: Success - Requested data returned by web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - "", sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - Requested data returned by web driver.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
@@ -1080,9 +1076,8 @@ EndFunc   ;==>_WD_Cookies
 ;                  |PORT           - Port used for web driver communication
 ;                  |SLEEP          - Function to be called when UDF pauses the script execution
 ;                  $vValue  - [optional] if no value is given, the current value is returned (default = "")
-; Return values .: Success - 1 or current value. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - 0 or "", sets @error to one of the following values and @extended to the WinHTTP status code:
-;                  - $_WD_ERROR_InvalidDataType
+; Return values .: Success - 1 or current value.
+;                  Failure - 0 or "" (empty string) and sets @error to $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1181,8 +1176,8 @@ EndFunc   ;==>_WD_Option
 ; Description ...: Launch the designated web driver console app.
 ; Syntax ........: _WD_Startup()
 ; Parameters ....: None
-; Return values .: Success - PID for the WD console. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - 0, sets @error to one of the following values and @extended to the WinHTTP status code:
+; Return values .: Success - PID for the WD console.
+;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Dan Pollak
@@ -1276,9 +1271,9 @@ EndFunc   ;==>_WD_Shutdown
 ; Name ..........: __WD_Get
 ; Description ...: Submit GET request to WD console app.
 ; Syntax ........: __WD_Get($sURL)
-; Parameters ....: $sURL -
-; Return values..: Success - Response from web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - Response from web driver, sets @error to one of the following values and @extended to the WinHTTP status code:
+; Parameters ....: $sURL - Location to access via WinHTTP
+; Return values..: Success - Response from web driver.
+;                  Failure - Response from web driver, sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_InvalidDataType
@@ -1357,10 +1352,10 @@ EndFunc   ;==>__WD_Get
 ; Name ..........: __WD_Post
 ; Description ...: Submit POST request to WD console app.
 ; Syntax ........: __WD_Post($sURL, $sData)
-; Parameters ....: $sURL  - a string value
-;                  $sData - a string value
-; Return values..: Success - Response from web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - Response from web driver, sets @error to one of the following values and @extended to the WinHTTP status code:
+; Parameters ....: $sURL  - Location to access via WinHTTP
+;                  $sData - String representing data to be sent
+; Return values..: Success - Response from web driver.
+;                  Failure - Response from web driver, sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
@@ -1440,9 +1435,9 @@ EndFunc   ;==>__WD_Post
 ; Name ..........: __WD_Delete
 ; Description ...: Submit DELETE request to WD console app.
 ; Syntax ........: __WD_Delete($sURL)
-; Parameters ....: $sURL -
-; Return values..: Success - Response from web driver. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - Response from web driver, sets @error to one of the following values and @extended to the WinHTTP status code:
+; Parameters ....: $sURL - Location to access via WinHTTP
+; Return values..: Success - Response from web driver.
+;                  Failure - Response from web driver, sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Dan Pollak
@@ -1614,8 +1609,7 @@ EndFunc   ;==>__WD_CloseDriver
 ; Description ...: Escapes designated characters in string.
 ; Syntax ........: __WD_EscapeString($sData)
 ; Parameters ....: $sData - the string to be escaped
-; Return values..: Success - Escaped string. @error is set to $_WD_ERROR_Success and @extended to the WinHTTP status code
-;                  Failure - None
+; Return values..: Escaped string.
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
