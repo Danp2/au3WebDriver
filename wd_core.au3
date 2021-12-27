@@ -174,13 +174,13 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CreateSession($sDesiredCapabilities = Default)
+Func _WD_CreateSession($sCapabilities = Default)
 	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = ""
 
-	If $sDesiredCapabilities = Default Then $sDesiredCapabilities = $_WD_EmptyDict
+	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyDict
 
-	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sDesiredCapabilities)
+	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -834,13 +834,13 @@ EndFunc   ;==>_WD_ElementAction
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $bReturnAsValue = Default)
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $bValueNode = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $bReturnAsValue = Default Then $bReturnAsValue = False
+	If $bValueNode = Default Then $bValueNode = False
 
 	$sScript = __WD_EscapeString($sScript)
 
@@ -859,7 +859,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResponse)
 	EndIf
 
-	If $bReturnAsValue Then
+	If $bValueNode Then
 		Local $oJSON = Json_Decode($sResponse)
 		Local $vValue = Json_Get($oJSON, "[value]")
 		$sResponse = $vValue
