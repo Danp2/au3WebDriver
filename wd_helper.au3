@@ -416,19 +416,19 @@ EndFunc   ;==>_WD_GetMouseElement
 ;                  $iX       - an integer value
 ;                  $iY       - an integer value
 ; Return values .: Success - Element ID returned by web driver.
-;                  Failure - None
+;                  Failure - "" (empty string) and @error is set to $_WD_ERROR_RetValue
 ; Author ........: Dan Pollak
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: @extended is set to True if the browsing context changed during the function call
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $bFrame = False, $oERect
-	#forceref $bFrame
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
+	Local $iErr = $_WD_ERROR_Success
 
 	While True
 		$sParams = $iX & ", " & $iY
@@ -436,7 +436,10 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 		$oJSON = Json_Decode($sResponse)
 		$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
 
-		If Not @error Then
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+			ExitLoop
+		Else
 			$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
 
 			If Not StringInStr("iframe", $sTagName) Then ExitLoop
@@ -455,12 +458,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 		EndIf
 	WEnd
 
-	; Exit to top-most window
-;~ 	If $bFrame Then
-;~ 		$sResponse = _WD_Window($sSession, "frame", '{"id":null}')
-;~ 	EndIf
-
-	Return SetError($_WD_ERROR_Success, 0, $sElement)
+	Return SetError($iErr, $bFrame, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
