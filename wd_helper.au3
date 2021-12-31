@@ -419,13 +419,13 @@ EndFunc   ;==>_WD_GetMouseElement
 ;                  Failure - "" (empty string) and @error is set to $_WD_ERROR_RetValue
 ; Author ........: Dan Pollak
 ; Modified ......:
-; Remarks .......: @extended is set to True if the browsing context changed during the function call
+; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
-	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $bFrame = False, $oERect
+	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $iFrame, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
 	Local $iErr = $_WD_ERROR_Success
@@ -433,6 +433,12 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	While True
 		$sParams = $iX & ", " & $iY
 		$sResponse = _WD_ExecuteScript($sSession, $sScript1, $sParams)
+
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+			ExitLoop
+		EndIf
+
 		$oJSON = Json_Decode($sResponse)
 		$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
 
@@ -445,6 +451,11 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			If Not StringInStr("iframe", $sTagName) Then ExitLoop
 
 			$sResponse = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict)
+			If @error Then
+				$iErr = $_WD_ERROR_RetValue
+				ExitLoop
+			EndIf
+
 			$oJSON = Json_Decode($sResponse)
 			$aCoords = Json_Get($oJSON, "[value]")
 
@@ -454,11 +465,11 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			$iY -= ($oERect.Item('y') - Int($aCoords[1]))
 
 			_WD_FrameEnter($sSession, $sElement)
-			$bFrame = True
+			$iFrame = 1
 		EndIf
 	WEnd
 
-	Return SetError($iErr, $bFrame, $sElement)
+	Return SetError($iErr, $iFrame, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
