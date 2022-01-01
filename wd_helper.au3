@@ -447,7 +447,9 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 		EndIf
 
 		$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
-		If Not StringInStr("iframe", $sTagName) Then ExitLoop
+		If Not StringInStr("iframe", $sTagName) Then
+			ExitLoop
+		EndIf
 
 		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, True)
 		If @error Then
