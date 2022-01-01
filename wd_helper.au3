@@ -451,7 +451,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			ExitLoop
 		EndIf
 
-		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, True)
+		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, "[value]")
 		If @error Then
 			$iErr = $_WD_ERROR_RetValue
 			ExitLoop

@@ -23,7 +23,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 - _WD_CreateSession($sDesiredCapabilities = Default)
 - _WD_DeleteSession($sSession)
 - _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
-- _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default)
+- _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $sJSONNode = Default)
 - _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
 - _WD_GetSession($sSession)
 - _WD_GetSource($sSession)
