@@ -836,7 +836,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $bValueNode = Default Then $bValueNode = False
+	If $vValueMode = Default Then $vValueMode = False
 
 	$sScript = __WD_EscapeString($sScript)
 
