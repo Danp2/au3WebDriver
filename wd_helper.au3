@@ -1393,7 +1393,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				$sReturned = InetRead($sURLNewDriver)
 
 				$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
-				$hFile = FileOpen($sTempFile, 18)
+				$hFile = FileOpen($sTempFile, $FO_OVERWRITE + $FO_BINARY)
 				FileWrite($hFile, $sReturned)
 				FileClose($hFile)
 
@@ -1552,7 +1552,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $hFile = FileOpen($sDest, 18)
+		Local $hFile = FileOpen($sDest, $FO_OVERWRITE + $FO_BINARY)
 
 		If $hFile <> -1 Then
 			FileWrite($hFile, $sData)
