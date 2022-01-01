@@ -416,50 +416,58 @@ EndFunc   ;==>_WD_GetMouseElement
 ;                  $iX       - an integer value
 ;                  $iY       - an integer value
 ; Return values .: Success - Element ID returned by web driver.
-;                  Failure - None
+;                  Failure - "" (empty string) and @error is set to $_WD_ERROR_RetValue
 ; Author ........: Dan Pollak
-; Modified ......:
-; Remarks .......:
+; Modified ......: mLipok
+; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
-	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $bFrame = False, $oERect
+	Local Const $sFuncName = "_WD_GetElementFromPoint"
+	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
+	Local $iErr = $_WD_ERROR_Success
 
 	While True
 		$sParams = $iX & ", " & $iY
 		$sResponse = _WD_ExecuteScript($sSession, $sScript1, $sParams)
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+			ExitLoop
+		EndIf
+
 		$oJSON = Json_Decode($sResponse)
 		$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
-
-		If Not @error Then
-			$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
-
-			If Not StringInStr("iframe", $sTagName) Then ExitLoop
-
-			$sResponse = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict)
-			$oJSON = Json_Decode($sResponse)
-			$aCoords = Json_Get($oJSON, "[value]")
-
-			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
-
-			$iX -= ($oERect.Item('x') - Int($aCoords[0]))
-			$iY -= ($oERect.Item('y') - Int($aCoords[1]))
-
-			_WD_FrameEnter($sSession, $sElement)
-			$bFrame = True
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+			ExitLoop
 		EndIf
+
+		$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
+		If Not StringInStr("iframe", $sTagName) Then
+			ExitLoop
+		EndIf
+
+		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, True)
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+			ExitLoop
+		EndIf
+
+		$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
+
+		; changing the coordinates in relation to left top corner of frame
+		$iX -= ($oERect.Item('x') - Int($aCoords[0]))
+		$iY -= ($oERect.Item('y') - Int($aCoords[1]))
+
+		_WD_FrameEnter($sSession, $sElement)
+		$iFrame = 1
 	WEnd
 
-	; Exit to top-most window
-;~ 	If $bFrame Then
-;~ 		$sResponse = _WD_Window($sSession, "frame", '{"id":null}')
-;~ 	EndIf
-
-	Return SetError($_WD_ERROR_Success, 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iFrame, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
