@@ -425,6 +425,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
+	Local Const $sFuncName = "_WD_GetElementFromPoint"
 	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
