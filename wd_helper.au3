@@ -450,14 +450,11 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 
 			If Not StringInStr("iframe", $sTagName) Then ExitLoop
 
-			$sResponse = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict)
+			$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, True)
 			If @error Then
 				$iErr = $_WD_ERROR_RetValue
 				ExitLoop
 			EndIf
-
-			$oJSON = Json_Decode($sResponse)
-			$aCoords = Json_Get($oJSON, "[value]")
 
 			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
 
