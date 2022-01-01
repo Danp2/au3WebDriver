@@ -466,7 +466,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 		EndIf
 	WEnd
 
-	Return SetError($iErr, $iFrame, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iFrame, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
