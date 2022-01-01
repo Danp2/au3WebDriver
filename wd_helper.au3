@@ -418,7 +418,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and @error is set to $_WD_ERROR_RetValue
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
