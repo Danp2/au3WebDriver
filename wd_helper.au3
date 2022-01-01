@@ -433,7 +433,6 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	While True
 		$sParams = $iX & ", " & $iY
 		$sResponse = _WD_ExecuteScript($sSession, $sScript1, $sParams)
-
 		If @error Then
 			$iErr = $_WD_ERROR_RetValue
 			ExitLoop
@@ -441,29 +440,28 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 
 		$oJSON = Json_Decode($sResponse)
 		$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
-
 		If @error Then
 			$iErr = $_WD_ERROR_RetValue
 			ExitLoop
-		Else
-			$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
-
-			If Not StringInStr("iframe", $sTagName) Then ExitLoop
-
-			$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, True)
-			If @error Then
-				$iErr = $_WD_ERROR_RetValue
-				ExitLoop
-			EndIf
-
-			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
-
-			$iX -= ($oERect.Item('x') - Int($aCoords[0]))
-			$iY -= ($oERect.Item('y') - Int($aCoords[1]))
-
-			_WD_FrameEnter($sSession, $sElement)
-			$iFrame = 1
 		EndIf
+
+		$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
+		If Not StringInStr("iframe", $sTagName) Then ExitLoop
+
+		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, True)
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+			ExitLoop
+		EndIf
+
+		$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
+
+		; changing the coordinates in relation to left top corner of frame
+		$iX -= ($oERect.Item('x') - Int($aCoords[0]))
+		$iY -= ($oERect.Item('y') - Int($aCoords[1]))
+
+		_WD_FrameEnter($sSession, $sElement)
+		$iFrame = 1
 	WEnd
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $iFrame, $sElement)
