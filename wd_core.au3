@@ -816,7 +816,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $sJSONNode  - [optional] Return value according to given $sJSONNode instead raw response. Default is ""
+;                  $sJSONNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is ""
 ; Return values .: Success - Raw response from web driver or value requested by given $sJSONNode
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
