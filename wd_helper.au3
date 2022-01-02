@@ -679,7 +679,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Return values .: Success - True. @extended is set to the number of highlighted elements
 ;                  Failure - False and sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danyfirex
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_HighlightElement
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
@@ -986,7 +986,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  - $_WD_ERROR_InvalidExpression
 ;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
@@ -1140,7 +1140,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......: If $sFilename is empty, then prior selection is cleared
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
@@ -1742,7 +1742,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
-; Modified ......: TheDcoder
+; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
 ; Related .......: _WD_ElementAction, _WD_Action
@@ -1926,7 +1926,7 @@ EndFunc   ;==>_WD_GetTable
 ; Return values .: Success - True or False.
 ;                  Failure - Raw response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/?do=findComment&comment=1480527
