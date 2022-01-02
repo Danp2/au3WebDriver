@@ -497,7 +497,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
 ; Modified ......: 2018-04-27
-; Remarks .......: The function will not traverse to nested frames - will count frames only from current context/document
+; Remarks .......: The function will not traverse to nested frames - it will count frames only from the current context/document
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
 ; Example .......: No
