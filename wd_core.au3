@@ -818,7 +818,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
 ;                  $sJSONNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is ""
 ; Return values .: Success - Raw response from web driver or value requested by given $sJSONNode
-;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  Failure - "" (empty string) and set @error to $_WD_ERROR_RetValue, or raw response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
@@ -1354,8 +1354,8 @@ EndFunc   ;==>__WD_Get
 ; Syntax ........: __WD_Post($sURL, $sData)
 ; Parameters ....: $sURL  - Location to access via WinHTTP
 ;                  $sData - String representing data to be sent
-; Return values..: Success - Response from web driver.
-;                  Failure - Response from web driver, sets @error to one of the following values:
+; Return values..: Success - Raw response from web driver.
+;                  Failure - Raw response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
