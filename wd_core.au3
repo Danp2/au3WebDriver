@@ -816,7 +816,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $sJSONNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is ""
+;                  $sJSONNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" which mean return raw response from web driver
 ; Return values .: Success - Raw response from web driver or value requested by given $sJSONNode
 ;                  Failure - "" (empty string) and set @error to $_WD_ERROR_RetValue, or raw response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -852,6 +852,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
+		If $sJSONNode = True Then $sJSONNode = '[value]'
 		If IsString($sJSONNode) And StringLen($sJSONNode) then
 			Local $oJSON = Json_Decode($sResponse)
 			$sResponse = Json_Get($oJSON, $sJSONNode)
