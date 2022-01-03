@@ -1018,7 +1018,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 					$sText = ""
 					For $sElement In $aOptions
 						$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-						$sText = (($sText <> "") ? @CRLF : "") & _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement, Default, "[value]")
+						$sText &= (($sText <> "") ? @CRLF : "") & _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement, Default, "[value]")
 						$iErr = @error
 					Next
 
