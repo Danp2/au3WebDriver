@@ -493,7 +493,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Description ...: This will return how many frames/iframes are in your current context (window/frame/document).
 ; Syntax ........: _WD_GetFrameCount($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - Numeric count of frames, 0 or positive number.
+; Return values .: Success - Number of frames, 0 means that no frames were found in the current context
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
 ; Modified ......: 2018-04-27
