@@ -490,14 +490,14 @@ EndFunc   ;==>_WD_LastHTTPResult
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
-; Description ...: This will return how many frames/iframes are in your current context (window/frame/document).
+; Description ...: This will return how many frames/iframes are in your current document context
 ; Syntax ........: _WD_GetFrameCount($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - Number of frames, 0 means that no frames were found in the current context
+; Return values .: Success - Number of frames 
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
 ; Modified ......: 2018-04-27
-; Remarks .......: The function will not traverse to nested frames - it will count frames only from the current context (window/frame/document)
+; Remarks .......: Nested frames are not included in the frame count
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
 ; Example .......: No
