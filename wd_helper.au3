@@ -490,7 +490,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
-; Description ...: This will return the number of frames iframes in the current document context
+; Description ...: This will return the number of frames/iframes in the current document context
 ; Syntax ........: _WD_GetFrameCount($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Number of frames 
