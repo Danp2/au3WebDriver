@@ -364,13 +364,13 @@ EndFunc   ;==>_WD_Timeouts
 ; Description ...: Navigate to the designated URL.
 ; Syntax ........: _WD_Navigate($sSession, $sURL)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-;                  $sURL     - Destination URL
+;                  $sURL     - - Destination URL or local file full path to open in browser
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#navigate-to
@@ -379,6 +379,13 @@ EndFunc   ;==>_WD_Timeouts
 Func _WD_Navigate($sSession, $sURL)
 	Local Const $sFuncName = "_WD_Navigate"
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
+
+	If StringInStr($sURL,'\') Then
+		If Not FileExists($sURL) Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "File not exist: " & $sURL), 0, 0)
+		EndIf
+		$sURL= "file:///" & StringReplace($sURL, "\", "/")
+	EndIf
 
 	Local $iErr = @error
 
