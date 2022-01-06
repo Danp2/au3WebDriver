@@ -658,7 +658,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 			If $bMultiple Then
 
 				$oJSON = Json_Decode($sResponse)
-				$oValues = Json_Get($oJSON, '[value]')
+				$oValues = Json_Get($oJSON, $_WD_JSON_Value)
 
 				If UBound($oValues) > 0 Then
 					$sKey = "[" & $_WD_ELEMENT_ID & "]"
@@ -842,7 +842,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	If $bAsync = Default Then $bAsync = False
 	If $vSubNode = Default Then $vSubNode = ''
 
-	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? '[value]' : ''
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : ''
 
 	If IsString($vSubNode) Then
 		$sScript = __WD_EscapeString($sScript)
