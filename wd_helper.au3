@@ -485,7 +485,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Return values .: Success - Number of frames
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
-; Modified ......: 2018-04-27
+; Modified ......: mLipok
 ; Remarks .......: Nested frames are not included in the frame count
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
