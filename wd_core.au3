@@ -76,8 +76,11 @@ Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
+Global Const $_WD_JSON_RawResponse = ""
 Global Const $_WD_JSON_Value = "[value]"
 Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
+Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
+Global Const $_WD_JSON_Error = "[value][error]"
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
@@ -819,7 +822,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" which returns the entire response from web driver
+;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is $_WD_JSON_RawResponse an raw response from web driver
 ; Return values .: Success - Raw response from web driver or value requested by given $vSubNode
 ;                  Failure - "" (empty string) and set @error to $_WD_ERROR_RetValue, or raw response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -840,9 +843,9 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $vSubNode = Default Then $vSubNode = ''
+	If $vSubNode = Default Then $vSubNode = $_WD_JSON_RawResponse
 
-	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : ''
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : $_WD_JSON_RawResponse
 
 	If IsString($vSubNode) Then
 		$sScript = __WD_EscapeString($sScript)
