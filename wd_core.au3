@@ -76,6 +76,9 @@ Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
+Global Const $_WD_JSON_Value = "[value]"
+Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
+
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
 		$_WD_DEBUG_Error, _    ; Error logging to console
@@ -258,7 +261,7 @@ Func _WD_Status()
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$oResult = Json_Get($oJSON, "[value]")
+		$oResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -299,7 +302,7 @@ Func _WD_GetSession($sSession)
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, "[value]")
+		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -439,7 +442,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 
 			If $iErr = $_WD_ERROR_Success Then
 				$oJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($oJSON, "[value]")
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndIf
 
 		Case 'actions'
@@ -581,7 +584,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 
 				Case Else
 					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, "[value]")
+					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndSwitch
 		Else
 			$iErr = $_WD_ERROR_Exception
@@ -672,7 +675,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 			Else
 				$oJSON = Json_Decode($sResponse)
 
-				$sResult = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+				$sResult = Json_Get($oJSON, $_WD_JSON_Element)
 			EndIf
 
 		Else
@@ -784,12 +787,12 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 							$sResult = $sResponse
 						Else
 							$oJSON = Json_Decode($sResponse)
-							$sResult = Json_Get($oJSON, "[value]")
+							$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 						EndIf
 
 					Case Else
 						$oJSON = Json_Decode($sResponse)
-						$sResult = Json_Get($oJSON, "[value]")
+						$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 				EndSwitch
 
 			Case Else
@@ -916,7 +919,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 					$iErr = $_WD_ERROR_NoAlert
 				Else
 					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, "[value]")
+					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 				EndIf
 			EndIf
 
@@ -975,7 +978,7 @@ Func _WD_GetSource($sSession)
 
 	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, "[value]")
+		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -1657,7 +1660,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		EndIf
 
 		Local $oJSON = Json_Decode($vResult)
-		$vResult = Json_Get($oJSON, "[value]")
+		$vResult = Json_Get($oJSON, $_WD_JSON_Value)
 
 		If @error Or $vResult == Null Then Return
 	EndIf
