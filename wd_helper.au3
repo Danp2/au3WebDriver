@@ -561,7 +561,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 
 	;*** Evaluate the response
 	If $sValue <> Null Then
-		$sValue = Json_Get($oJSON, "[value][error]")
+		$sValue = Json_Get($oJSON, $_WD_JSON_Error)
 	Else
 		$sValue = True
 	EndIf
@@ -1117,7 +1117,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 
 		If $iErr = $_WD_ERROR_Success Then
 			$oJSON = Json_Decode($sResponse)
-			$sResult = Json_Get($oJSON, "[value][" & $_WD_SHADOW_ID & "]")
+			$sResult = Json_Get($oJSON, $_WD_JSON_Shadow)
 		EndIf
 	EndIf
 
