@@ -814,18 +814,19 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands.
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $sJSONNode = Default]]])
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $vSubNode = Default]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $sJSONNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" which mean return raw response from web driver
-; Return values .: Success - Raw response from web driver or value requested by given $sJSONNode
+;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" which returns the entire response from web driver
+; Return values .: Success - Raw response from web driver or value requested by given $vSubNode
 ;                  Failure - "" (empty string) and set @error to $_WD_ERROR_RetValue, or raw response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
 ;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -833,36 +834,41 @@ EndFunc   ;==>_WD_ElementAction
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $sJSONNode = Default)
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $sJSONNode = Default Then $sJSONNode = ''
+	If $vSubNode = Default Then $vSubNode = ''
 
-	$sScript = __WD_EscapeString($sScript)
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? '[value]' : ''
 
-	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
-	$sCmd = ($bAsync) ? 'async' : 'sync'
+	If IsString($vSubNode) Then
+		$sScript = __WD_EscapeString($sScript)
 
-	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
+		$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
+		$sCmd = ($bAsync) ? 'async' : 'sync'
 
-	Local $iErr = @error
+		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
-	EndIf
+		Local $iErr = @error
 
-	If $iErr = $_WD_ERROR_Success Then
-		If $sJSONNode = True Then $sJSONNode = '[value]'
-		If IsString($sJSONNode) And StringLen($sJSONNode) then
-			Local $oJSON = Json_Decode($sResponse)
-			$sResponse = Json_Get($oJSON, $sJSONNode)
-			If @error Then
-				$iErr = $_WD_ERROR_RetValue
-			Endif
+		If $_WD_DEBUG = $_WD_DEBUG_Info Then
+			__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 		EndIf
+
+		If $iErr = $_WD_ERROR_Success Then
+			If StringLen($vSubNode) then
+				Local $oJSON = Json_Decode($sResponse)
+				$sResponse = Json_Get($oJSON, $vSubNode)
+				If @error Then
+					$iErr = $_WD_ERROR_RetValue
+				Endif
+			EndIf
+		EndIf
+	Else
+		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResponse)
