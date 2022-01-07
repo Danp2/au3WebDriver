@@ -369,7 +369,7 @@ EndFunc   ;==>_WD_Timeouts
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
-;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotFound
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -383,7 +383,7 @@ Func _WD_Navigate($sSession, $sURL)
 
 	If StringInStr($sURL, '\') Then
 		If Not FileExists($sURL) Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "File not exist: " & $sURL), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotFound, "File not exist: " & $sURL), 0, 0)
 		EndIf
 		$sURL = "file:///" & StringReplace($sURL, "\", "/")
 	EndIf
