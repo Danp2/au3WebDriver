@@ -369,6 +369,7 @@ EndFunc   ;==>_WD_Timeouts
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
