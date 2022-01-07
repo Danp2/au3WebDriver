@@ -1997,9 +1997,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Return values .: Success - Returns one of the following values:
 ;                  |$_WD_STATUS_Valid (1) - Current browser context is valid
 ;                  |$_WD_STATUS_Reconnect (2) - Context was invalid; Successfully reconnected to existing tab
-;                  Failure - Returns one of the following values:
-;                  |$_WD_STATUS_Invalid (0) - Browser context is invalid
-;                  |$_WD_ERROR_Exception
+;                  Failure - $_WD_STATUS_Invalid (0) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
