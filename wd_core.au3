@@ -380,11 +380,11 @@ Func _WD_Navigate($sSession, $sURL)
 	Local Const $sFuncName = "_WD_Navigate"
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 
-	If StringInStr($sURL,'\') Then
+	If StringInStr($sURL, '\') Then
 		If Not FileExists($sURL) Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "File not exist: " & $sURL), 0, 0)
 		EndIf
-		$sURL= "file:///" & StringReplace($sURL, "\", "/")
+		$sURL = "file:///" & StringReplace($sURL, "\", "/")
 	EndIf
 
 	Local $iErr = @error
