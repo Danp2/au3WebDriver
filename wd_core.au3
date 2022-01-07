@@ -364,7 +364,7 @@ EndFunc   ;==>_WD_Timeouts
 ; Description ...: Navigate to the designated URL.
 ; Syntax ........: _WD_Navigate($sSession, $sURL)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-;                  $sURL     - - Destination URL or local file full path to open in browser
+;                  $sURL     - - Destination URL
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -372,7 +372,7 @@ EndFunc   ;==>_WD_Timeouts
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: Destination URL could be any internet location or local file full path
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#navigate-to
 ; Example .......: No
