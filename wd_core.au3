@@ -1362,8 +1362,8 @@ EndFunc   ;==>__WD_Get
 ; Syntax ........: __WD_Post($sURL, $sData)
 ; Parameters ....: $sURL  - Location to access via WinHTTP
 ;                  $sData - String representing data to be sent
-; Return values..: Success - Raw response from web driver.
-;                  Failure - Raw response from web driver and sets @error to one of the following values:
+; Return values..: Success - Response from web driver in JSON format
+;                  Failure - Response from web driver in JSON format and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
