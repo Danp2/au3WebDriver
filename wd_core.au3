@@ -862,12 +862,12 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
-			If StringLen($vSubNode) then
+			If StringLen($vSubNode) Then
 				Local $oJSON = Json_Decode($sResponse)
 				$sResponse = Json_Get($oJSON, $vSubNode)
 				If @error Then
 					$iErr = $_WD_ERROR_RetValue
-				Endif
+				EndIf
 			EndIf
 		EndIf
 	Else
