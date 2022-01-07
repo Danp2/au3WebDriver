@@ -823,13 +823,9 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
 ;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is $_WD_JSON_RawResponse an raw response from web driver
-; Return values .: Success - Raw response from web driver or value requested by given $vSubNode
-;                  Failure - "" (empty string) and set @error to $_WD_ERROR_RetValue, or raw response from web driver and sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_Timeout
-;                  - $_WD_ERROR_SocketError
-;                  - $_WD_ERROR_InvalidValue
-;                  - $_WD_ERROR_InvalidArgue
+; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
+;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
+;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -854,7 +850,6 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		$sCmd = ($bAsync) ? 'async' : 'sync'
 
 		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
-
 		Local $iErr = @error
 
 		If $_WD_DEBUG = $_WD_DEBUG_Info Then
