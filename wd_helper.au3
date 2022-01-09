@@ -1334,6 +1334,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
 				$sDriverLatest = BinaryToString(InetRead('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort))
 				$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
+				; to manually check visit this site:  https://sites.google.com/chromium.org/driver/
 
 			Case 'firefox'
 				$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
