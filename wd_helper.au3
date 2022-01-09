@@ -1334,7 +1334,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
 				$sDriverLatest = BinaryToString(InetRead('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort))
 				$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
-				ConsoleWrite("! #" & @ScriptLineNumber & @CRLF)
 
 			Case 'firefox'
 				$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
@@ -1435,7 +1434,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': Current DriverVersion = ' & $sDriverVersion & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': DriverLatest = ' & $sDriverLatest & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ': $sURLNewDriver = ' & $sURLNewDriver & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
 	EndIf
 
