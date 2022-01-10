@@ -382,7 +382,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Syntax ........: _WD_GetMouseElement($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Element ID returned by web driver.
-;                  Failure - Raw response from web driver and sets @error returned from _WD_ExecuteScript()
+;                  Failure - Response from web driver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -505,7 +505,7 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Syntax ........: _WD_IsWindowTop($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Boolean response.
-;                  Failure - Raw response from webdriver and sets @error returned from _WD_ExecuteScript()
+;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1543,7 +1543,7 @@ EndFunc   ;==>_WD_DownloadFile
 ;                  $iPageLoad     - [optional] Page load timeout in milliseconds
 ;                  $iScript       - [optional] Script timeout in milliseconds
 ;                  $iImplicitWait - [optional] Implicit wait timeout in milliseconds
-; Return values .: Success - Raw return value from web driver in JSON format.
+; Return values .: Success - Return value from web driver in JSON format.
 ;                  Failure - 0, sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_Exception
@@ -1925,7 +1925,7 @@ EndFunc   ;==>_WD_GetTable
 ; Syntax ........: _WD_IsFullScreen($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True or False.
-;                  Failure - Raw response from webdriver and sets @error returned from _WD_ExecuteScript()
+;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:

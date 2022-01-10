@@ -327,7 +327,7 @@ EndFunc   ;==>_WD_GetSession
 ; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = Default])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
 ;                  $sTimeouts - [optional] Requested timouts in JSON format. Default is ""
-; Return values .: Success - Raw return value from web driver in JSON format.
+; Return values .: Success - Return value from web driver in JSON format.
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -825,6 +825,7 @@ EndFunc   ;==>_WD_ElementAction
 ; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
 ;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
 ;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
+;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -865,6 +866,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_InvalidArgue
+		$sResponse = ""
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResponse)
