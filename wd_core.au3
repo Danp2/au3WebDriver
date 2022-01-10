@@ -76,6 +76,11 @@ Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
+Global Const $_WD_JSON_Value = "[value]"
+Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
+Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
+Global Const $_WD_JSON_Error = "[value][error]"
+
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
 		$_WD_DEBUG_Error, _    ; Error logging to console
@@ -258,7 +263,7 @@ Func _WD_Status()
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$oResult = Json_Get($oJSON, "[value]")
+		$oResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -299,7 +304,7 @@ Func _WD_GetSession($sSession)
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, "[value]")
+		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -439,7 +444,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 
 			If $iErr = $_WD_ERROR_Success Then
 				$oJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($oJSON, "[value]")
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndIf
 
 		Case 'actions'
@@ -581,7 +586,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 
 				Case Else
 					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, "[value]")
+					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndSwitch
 		Else
 			$iErr = $_WD_ERROR_Exception
@@ -655,7 +660,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 			If $bMultiple Then
 
 				$oJSON = Json_Decode($sResponse)
-				$oValues = Json_Get($oJSON, '[value]')
+				$oValues = Json_Get($oJSON, $_WD_JSON_Value)
 
 				If UBound($oValues) > 0 Then
 					$sKey = "[" & $_WD_ELEMENT_ID & "]"
@@ -672,7 +677,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 			Else
 				$oJSON = Json_Decode($sResponse)
 
-				$sResult = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+				$sResult = Json_Get($oJSON, $_WD_JSON_Element)
 			EndIf
 
 		Else
@@ -784,12 +789,12 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 							$sResult = $sResponse
 						Else
 							$oJSON = Json_Decode($sResponse)
-							$sResult = Json_Get($oJSON, "[value]")
+							$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 						EndIf
 
 					Case Else
 						$oJSON = Json_Decode($sResponse)
-						$sResult = Json_Get($oJSON, "[value]")
+						$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 				EndSwitch
 
 			Case Else
@@ -811,18 +816,15 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands.
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $sJSONNode = Default]]])
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $vSubNode = Default]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $sJSONNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is ""
-; Return values .: Success - Raw response from web driver or value requested by given $sJSONNode
-;                  Failure - "" (empty string) and sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_Timeout
-;                  - $_WD_ERROR_SocketError
-;                  - $_WD_ERROR_InvalidValue
+;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
+; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
+;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
+;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -830,35 +832,39 @@ EndFunc   ;==>_WD_ElementAction
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $sJSONNode = Default)
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $sJSONNode = Default Then $sJSONNode = ''
+	If $vSubNode = Default Then $vSubNode = ""
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; True = the JSON value node is returned , False = entire JSON response is returned
 
-	$sScript = __WD_EscapeString($sScript)
+	If IsString($vSubNode) Then
+		$sScript = __WD_EscapeString($sScript)
 
-	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
-	$sCmd = ($bAsync) ? 'async' : 'sync'
+		$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
+		$sCmd = ($bAsync) ? 'async' : 'sync'
 
-	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
+		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
+		Local $iErr = @error
 
-	Local $iErr = @error
-
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
-	EndIf
-
-	If $iErr = $_WD_ERROR_Success Then
-		If IsString($sJSONNode) And StringLen($sJSONNode) then
-			Local $oJSON = Json_Decode($sResponse)
-			$sResponse = Json_Get($oJSON, $sJSONNode)
-			If @error Then
-				$iErr = $_WD_ERROR_RetValue
-			Endif
+		If $_WD_DEBUG = $_WD_DEBUG_Info Then
+			__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 		EndIf
+
+		If $iErr = $_WD_ERROR_Success Then
+			If StringLen($vSubNode) Then
+				Local $oJSON = Json_Decode($sResponse)
+				$sResponse = Json_Get($oJSON, $vSubNode)
+				If @error Then
+					$iErr = $_WD_ERROR_RetValue
+				EndIf
+			EndIf
+		EndIf
+	Else
+		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResponse)
@@ -915,7 +921,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 					$iErr = $_WD_ERROR_NoAlert
 				Else
 					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, "[value]")
+					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 				EndIf
 			EndIf
 
@@ -974,7 +980,7 @@ Func _WD_GetSource($sSession)
 
 	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, "[value]")
+		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -1354,8 +1360,8 @@ EndFunc   ;==>__WD_Get
 ; Syntax ........: __WD_Post($sURL, $sData)
 ; Parameters ....: $sURL  - Location to access via WinHTTP
 ;                  $sData - String representing data to be sent
-; Return values..: Success - Response from web driver.
-;                  Failure - Response from web driver, sets @error to one of the following values:
+; Return values..: Success - Response from web driver in JSON format
+;                  Failure - Response from web driver in JSON format and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
@@ -1656,7 +1662,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		EndIf
 
 		Local $oJSON = Json_Decode($vResult)
-		$vResult = Json_Get($oJSON, "[value]")
+		$vResult = Json_Get($oJSON, $_WD_JSON_Value)
 
 		If @error Or $vResult == Null Then Return
 	EndIf

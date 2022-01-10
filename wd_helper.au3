@@ -139,7 +139,6 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 		EndIf
 
 		_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
-
 		If @error <> $_WD_ERROR_Success Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 		EndIf
@@ -383,9 +382,9 @@ EndFunc   ;==>_WD_WaitElement
 ; Syntax ........: _WD_GetMouseElement($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Element ID returned by web driver.
-;                  Failure - None
+;                  Failure - Raw response from web driver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/24538450/get-element-currently-under-mouse-without-using-mouse-events
@@ -393,19 +392,15 @@ EndFunc   ;==>_WD_WaitElement
 ; ===============================================================================================================================
 Func _WD_GetMouseElement($sSession)
 	Local Const $sFuncName = "_WD_GetMouseElement"
-	Local $sResponse, $oJSON, $sElement
 	Local $sScript = "return Array.from(document.querySelectorAll(':hover')).pop()"
-
-	$sResponse = _WD_ExecuteScript($sSession, $sScript, '')
-	$oJSON = Json_Decode($sResponse)
-	$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+	Local $sElement = _WD_ExecuteScript($sSession, $sScript, '', Default, $_WD_JSON_Element)
+	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sElement & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ': ' & IsObj($sElement) & @CRLF)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
 EndFunc   ;==>_WD_GetMouseElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -426,21 +421,14 @@ EndFunc   ;==>_WD_GetMouseElement
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local Const $sFuncName = "_WD_GetElementFromPoint"
-	Local $sResponse, $sElement, $oJSON, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
+	Local $sElement, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
 	Local $iErr = $_WD_ERROR_Success
 
 	While True
 		$sParams = $iX & ", " & $iY
-		$sResponse = _WD_ExecuteScript($sSession, $sScript1, $sParams)
-		If @error Then
-			$iErr = $_WD_ERROR_RetValue
-			ExitLoop
-		EndIf
-
-		$oJSON = Json_Decode($sResponse)
-		$sElement = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+		$sElement = _WD_ExecuteScript($sSession, $sScript1, $sParams, Default, $_WD_JSON_Element)
 		If @error Then
 			$iErr = $_WD_ERROR_RetValue
 			ExitLoop
@@ -451,7 +439,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			ExitLoop
 		EndIf
 
-		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, "[value]")
+		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, $_WD_JSON_Value)
 		If @error Then
 			$iErr = $_WD_ERROR_RetValue
 			ExitLoop
@@ -493,10 +481,11 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Description ...: This will return the number of frames/iframes in the current document context
 ; Syntax ........: _WD_GetFrameCount($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - Number of frames 
+
+; Return values .: Success - Number of frames
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
-; Modified ......: 2018-04-27
+; Modified ......: mLipok
 ; Remarks .......: Nested frames are not included in the frame count
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
@@ -504,18 +493,10 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; ===============================================================================================================================
 Func _WD_GetFrameCount($sSession)
 	Local Const $sFuncName = "_WD_GetFrameCount"
-	Local $sResponse, $oJSON, $iValue
-
-	$sResponse = _WD_ExecuteScript($sSession, "return window.frames.length")
-
-	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
-	EndIf
-
-	$oJSON = Json_Decode($sResponse)
-	$iValue = Json_Get($oJSON, "[value]")
-
-	Return SetError($_WD_ERROR_Success, 0, Number($iValue))
+	Local $iValue = _WD_ExecuteScript($sSession, "return window.frames.length", Default, Default, $_WD_JSON_Value)
+	Local $iErr = @error
+	If @error Then $iValue = 0
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, Number($iValue))
 EndFunc   ;==>_WD_GetFrameCount
 
 ; #FUNCTION# ====================================================================================================================
@@ -524,9 +505,9 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Syntax ........: _WD_IsWindowTop($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Boolean response.
-;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
+;                  Failure - Raw response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Decibel
-; Modified ......: 2018-04-27
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_top.asp
@@ -534,19 +515,9 @@ EndFunc   ;==>_WD_GetFrameCount
 ; ===============================================================================================================================
 Func _WD_IsWindowTop($sSession)
 	Local Const $sFuncName = "_WD_IsWindowTop"
-	Local $sResponse, $oJSON
-	Local $blnResult
-
-	$sResponse = _WD_ExecuteScript($sSession, "return window.top == window.self")
-
-	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
-	EndIf
-
-	$oJSON = Json_Decode($sResponse)
-	$blnResult = Json_Get($oJSON, "[value]")
-
-	Return SetError($_WD_ERROR_Success, 0, $blnResult)
+	Local $blnResult = _WD_ExecuteScript($sSession, "return window.top == window.self", Default, Default, $_WD_JSON_Value)
+	Local $iErr = @error
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $blnResult)
 EndFunc   ;==>_WD_IsWindowTop
 
 ; #FUNCTION# ====================================================================================================================
@@ -586,11 +557,11 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	EndIf
 
 	$oJSON = Json_Decode($sResponse)
-	$sValue = Json_Get($oJSON, "[value]")
+	$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
 	;*** Evaluate the response
 	If $sValue <> Null Then
-		$sValue = Json_Get($oJSON, "[value][error]")
+		$sValue = Json_Get($oJSON, $_WD_JSON_Error)
 	Else
 		$sValue = True
 	EndIf
@@ -634,7 +605,7 @@ Func _WD_FrameLeave($sSession)
 	;   Bad: '{"value":{"error":"unknown error","message":"Failed to decode response from marionette","stacktrace":""}}'
 
 	$oJSON = Json_Decode($sResponse)
-	$sValue = Json_Get($oJSON, "[value]")
+	$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
 	;*** Is this something besides a Chrome PASS?
 	If $sValue <> Null Then
@@ -668,28 +639,31 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  2 - Highlight yellow rounded box
 ;                  3 - Highlight yellow rounded box + border  dotted red
 ; Return values .: Success - True.
-;                  Failure - False, sets @error to $_WD_ERROR_GeneralError
+;                  Failure - False and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Danyfirex
-; Modified ......: 04/03/2021
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_HighlightElements
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
-	Local Const $aMethod[] = ["border: 0px", _
+	Local Const $aMethod[] = _
+			[ _
+			"border: 0px", _
 			"border: 2px dotted red", _
 			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
-			"border:2px dotted  red;background: #FFFF66; border-radius: 5px; padding-left: 3px;"]
+			"border:2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
+			]
 
 	If $iMethod = Default Then $iMethod = 1
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
+	Local $sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
 	Local $sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-	Local $sResponse = _WD_ExecuteScript($sSession, "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;", $sJsonElement)
-	Local $oJSON = Json_Decode($sResponse)
-	Local $sResult = Json_Get($oJSON, "[value]")
-	Return ($sResult = "true" ? SetError(0, 0, $sResult) : SetError(1, 0, False))
+	Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement, Default, $_WD_JSON_Value)
+	Local $iErr = @error
+	Return ($sResult = "true" ? SetError(0, 0, True) : SetError($iErr, 0, False))
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -704,9 +678,9 @@ EndFunc   ;==>_WD_HighlightElement
 ;                  2 - Highlight yellow rounded box
 ;                  3 - Highlight yellow rounded box + border  dotted red
 ; Return values .: Success - True. @extended is set to the number of highlighted elements
-;                  Failure - False, sets @error to $_WD_ERROR_GeneralError
+;                  Failure - False and sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danyfirex
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_HighlightElement
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
@@ -720,7 +694,7 @@ Func _WD_HighlightElements($sSession, $aElements, $iMethod = Default)
 	For $i = 0 To UBound($aElements) - 1
 		$iHighlightedElements += (_WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
 	Next
-	Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError(1, 0, False))
+	Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError($_WD_ERROR_GeneralError, 0, False))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
@@ -768,7 +742,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 			EndIf
 
 			$oJSON = Json_Decode($sResponse)
-			$sReadyState = Json_Get($oJSON, "[value]")
+			$sReadyState = Json_Get($oJSON, $_WD_JSON_Value)
 
 			If $sReadyState = 'complete' Then ExitLoop
 		EndIf
@@ -1013,7 +987,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  - $_WD_ERROR_InvalidExpression
 ;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
@@ -1021,7 +995,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local $sNodeName, $sJsonElement, $sResponse, $oJSON, $vResult
+	Local $sNodeName, $sJsonElement, $vResult
 	Local $sText, $aOptions
 
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
@@ -1033,36 +1007,24 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 			Case 'value'
 				; Retrieve current value of designated Select element
 				$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sSelectElement & '"}'
-				$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].value", $sJsonElement)
+				$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", $sJsonElement, Default, $_WD_JSON_Value)
 				$iErr = @error
-
-				If $iErr = $_WD_ERROR_Success Then
-					$oJSON = Json_Decode($sResponse)
-					$vResult = Json_Get($oJSON, "[value]")
-				EndIf
 
 			Case 'options'
 				; Retrieve array containing value / label attributes from the Select element's options
 				$aOptions = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "./option", $sSelectElement, True)
-
 				$iErr = @error
 
 				If $iErr = $_WD_ERROR_Success Then
 					$sText = ""
 					For $sElement In $aOptions
 						$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-						$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement)
-
+						$sText &= (($sText <> "") ? @CRLF : "") & _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement, Default, $_WD_JSON_Value)
 						$iErr = @error
-
-						If $iErr = $_WD_ERROR_Success Then
-							$oJSON = Json_Decode($sResponse)
-							$sText &= (($sText <> "") ? @CRLF : "") & Json_Get($oJSON, "[value]")
-						EndIf
 					Next
 
 					Local $aOut[0][2]
-					_ArrayAdd($aOut, $sText, 0, Default, Default, 1)
+					_ArrayAdd($aOut, $sText, 0, Default, @CRLF, 1)
 					$vResult = $aOut
 				EndIf
 			Case Else
@@ -1155,7 +1117,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 
 		If $iErr = $_WD_ERROR_Success Then
 			$oJSON = Json_Decode($sResponse)
-			$sResult = Json_Get($oJSON, "[value][" & $_WD_SHADOW_ID & "]")
+			$sResult = Json_Get($oJSON, $_WD_JSON_Shadow)
 		EndIf
 	EndIf
 
@@ -1179,7 +1141,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......: If $sFilename is empty, then prior selection is cleared
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
@@ -1188,7 +1150,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
 
-	Local $sResponse, $sResult, $sJsonElement, $oJSON, $sSavedEscape
+	Local $sResult, $sJsonElement, $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
@@ -1199,20 +1161,20 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 			$sFilename = StringReplace(__WD_EscapeString($sFilename), @LF, "\n")
 			; Prevent further string escaping
 			$_WD_ESCAPE_CHARS = ""
-			$sResponse = _WD_ElementAction($sSession, $sElement, 'value', $sFilename)
+			_WD_ElementAction($sSession, $sElement, 'value', $sFilename)
 			$iErr = @error
 			; Restore setting
 			$_WD_ESCAPE_CHARS = $sSavedEscape
 		Else
-			$sResponse = _WD_ElementAction($sSession, $sElement, 'clear')
+			_WD_ElementAction($sSession, $sElement, 'clear')
 			$iErr = @error
 		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
 			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-			$sResponse = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement)
-			$oJSON = Json_Decode($sResponse)
-			$sResult = Json_Get($oJSON, "[value]")
+			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement, Default, $_WD_JSON_Value)
+			$iErr = @error
+			If @error Then $sResult = "0"
 		Else
 			$sResult = "0"
 		EndIf
@@ -1716,7 +1678,7 @@ EndFunc   ;==>_WD_GetElementByName
 ;                  $sValue   - New value for element
 ;                  $iStyle   - [optional] Update style. Default is $_WD_OPTION_Standard
 ;                  |$_WD_OPTION_Standard (0) = Set value using _WD_ElementAction
-;                  |$_WD_OPTION_Advanced (1) = set value using _WD_ExecuteScript
+;                  |$_WD_OPTION_Advanced (1) = Set value using _WD_ExecuteScript
 ; Return values .: Success - Requested data returned by web driver
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1781,7 +1743,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
-; Modified ......: TheDcoder
+; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
 ; Related .......: _WD_ElementAction, _WD_Action
@@ -1790,7 +1752,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
-	Local $sAction, $sJavascript, $iErr, $sResult, $sJsonElement, $sResponse, $oJSON, $iActionType = 1
+	Local $sAction, $sJavascript, $iErr, $sResult, $sJsonElement, $iActionType = 1
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -1893,10 +1855,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iErr = @error
 		Case 2
 			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-			$sResponse = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement)
+			$sResult = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement, Default, $_WD_JSON_Value)
 			$iErr = @error
-			$oJSON = Json_Decode($sResponse)
-			$sResult = Json_Get($oJSON, "[value]")
 	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
@@ -1965,9 +1925,9 @@ EndFunc   ;==>_WD_GetTable
 ; Syntax ........: _WD_IsFullScreen($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True or False.
-;                  Failure - Raw response from webdriver, sets @error to $_WD_ERROR_Exception
+;                  Failure - Raw response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/?do=findComment&comment=1480527
@@ -1975,16 +1935,9 @@ EndFunc   ;==>_WD_GetTable
 ; ===============================================================================================================================
 Func _WD_IsFullScreen($sSession)
 	Local Const $sFuncName = "_WD_IsFullScreen"
-	Local $sResponse = _WD_ExecuteScript($sSession, 'return screen.width == window.innerWidth and screen.height == window.innerHeight;')
-
-	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResponse)
-	EndIf
-
-	Local $oJSON = Json_Decode($sResponse)
-	Local $bResult = Json_Get($oJSON, "[value]")
-
-	Return SetError($_WD_ERROR_Success, 0, $bResult)
+	Local $bResult = _WD_ExecuteScript($sSession, 'return screen.width == window.innerWidth and screen.height == window.innerHeight;', Default, Default, $_WD_JSON_Value)
+	Local $iErr = @error
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
 EndFunc   ;==>_WD_IsFullScreen
 
 ; #FUNCTION# ====================================================================================================================
