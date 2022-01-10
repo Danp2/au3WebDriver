@@ -821,7 +821,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" which lead to return entire response from web driver in JSON format
+;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
 ; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
 ;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
 ;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
@@ -839,7 +839,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
 	If $vSubNode = Default Then $vSubNode = "" ; Response from web driver in JSON format
-	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; Return JSON value node or entire response from web driver in JSON format
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; Return JSON value node or entire JSON response
 
 	If IsString($vSubNode) Then
 		$sScript = __WD_EscapeString($sScript)
