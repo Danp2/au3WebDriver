@@ -76,7 +76,6 @@ Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
 
-Global Const $_WD_JSON_RawResponse = ""
 Global Const $_WD_JSON_Value = "[value]"
 Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
 Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
@@ -822,7 +821,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is $_WD_JSON_RawResponse an raw response from web driver
+;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" which lead to return entire response from web driver in JSON format
 ; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
 ;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
 ;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
@@ -839,9 +838,8 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $vSubNode = Default Then $vSubNode = $_WD_JSON_RawResponse
-
-	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : $_WD_JSON_RawResponse
+	If $vSubNode = Default Then $vSubNode = "" ; Response from web driver in JSON format
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; Return JSON value node or entire response from web driver in JSON format
 
 	If IsString($vSubNode) Then
 		$sScript = __WD_EscapeString($sScript)
