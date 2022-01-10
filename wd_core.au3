@@ -838,8 +838,8 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $vSubNode = Default Then $vSubNode = "" ; Response from web driver in JSON format
-	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; Return JSON value node or entire JSON response
+	If $vSubNode = Default Then $vSubNode = ""
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; True = the JSON value node is returned , False = entire JSON response is returned
 
 	If IsString($vSubNode) Then
 		$sScript = __WD_EscapeString($sScript)
