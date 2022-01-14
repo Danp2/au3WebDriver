@@ -1304,132 +1304,123 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	If $bForce = Default Then $bForce = False
 
 	; If the Install directory doesn't exist and it can't be created, then set error
-	If (Not FileExists($sInstallDir)) And (Not DirCreate($sInstallDir)) Then $iErr = $_WD_ERROR_InvalidValue
+	If (Not FileExists($sInstallDir)) And (Not DirCreate($sInstallDir)) Then
+		$iErr = $_WD_ERROR_InvalidValue
+	Else
+		; Save current debug level and set to none
+		Local $WDDebugSave = $_WD_DEBUG
+		$_WD_DEBUG = $_WD_DEBUG_None
 
-	; Save current debug level and set to none
-	Local $WDDebugSave = $_WD_DEBUG
-	$_WD_DEBUG = $_WD_DEBUG_None
-
-	Switch $sBrowser
-		Case 'chrome'
-			$sDriverEXE = "chromedriver.exe"
-		Case 'firefox'
-			$sDriverEXE = "geckodriver.exe"
-		Case 'msedge'
-			$sDriverEXE = "msedgedriver.exe"
-		Case Else
-			$iErr = $_WD_ERROR_InvalidValue
-	EndSwitch
-
-	If $iErr = $_WD_ERROR_Success Then
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
-		If @error Then $iErr = @error
-
-		$sDriverVersion = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
-
-		; Determine latest available webdriver version
-		; for the designated browser
-		Switch $sBrowser
-			Case 'chrome'
-				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
-				$sDriverLatest = BinaryToString(InetRead('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort))
-				$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
-
-			Case 'firefox'
-				$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
-
-				If @error = $_WD_ERROR_Success Then
-					$sDriverLatest = StringRegExp($sResult, '<a href="/mozilla/geckodriver/releases/tag/(.*)">', 1)[0]
-					If StringLeft($sDriverLatest, 1) = 'v' Then $sDriverLatest = StringMid($sDriverLatest, 2)
-
-					$sURLNewDriver = "https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest
-					$sURLNewDriver &= ($bFlag64) ? "-win64.zip" : "-win32.zip"
-				Else
-					$iErr = $_WD_ERROR_GeneralError
-				EndIf
-
-			Case 'msedge'
-				$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
-				$sDriverLatest = InetRead('https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort)
-
-				If @error = $_WD_ERROR_Success Then
-					Select
-						Case BinaryMid($sDriverLatest, 1, 4) = '0x0000FEFF'                   ; UTF-32 BE
-							$iStartPos = 5
-							$iConversion = $SB_UTF16LE
-						Case BinaryMid($sDriverLatest, 1, 4) = '0xFFFE0000'                   ; UTF-32 LE
-							$iStartPos = 5
-							$iConversion = $SB_UTF16LE
-						Case BinaryMid($sDriverLatest, 1, 2) = '0xFEFF'                       ; UTF-16 BE
-							$iStartPos = 3
-							$iConversion = $SB_UTF16BE
-						Case BinaryMid($sDriverLatest, 1, 2) = '0xFFFE'                       ; UTF-16 LE
-							$iStartPos = 3
-							$iConversion = $SB_UTF16LE
-						Case BinaryMid($sDriverLatest, 1, 3) = '0xEFBBBF'                     ; UTF-8
-							$iStartPos = 4
-							$iConversion = $SB_UTF8
-						Case Else
-							$iStartPos = 1
-							$iConversion = $SB_ANSI
-					EndSelect
-
-					$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
-					$sURLNewDriver = "https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_"
-					$sURLNewDriver &= ($bFlag64) ? "win64.zip" : "win32.zip"
-				Else
-					$iErr = $_WD_ERROR_GeneralError
-				EndIf
-		EndSwitch
+		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success Then
-			; When $bForce parameter equals Null, then return True if newer driver is available
-			If IsKeyword($bForce) = $KEYWORD_NULL Then
-				If $sDriverLatest > $sDriverVersion Then
-					$bResult = True
-				EndIf
-			ElseIf $sDriverLatest > $sDriverVersion Or $bForce Or $sDriverVersion = 'None' Then
-				$sReturned = InetRead($sURLNewDriver)
+			$sDriverVersion = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 
-				$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
-				$hFile = FileOpen($sTempFile, $FO_OVERWRITE + $FO_BINARY)
-				FileWrite($hFile, $sReturned)
-				FileClose($hFile)
+			; Determine latest available webdriver version
+			; for the designated browser
+			Switch $sBrowser
+				Case 'chrome'
+					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
+					$sDriverLatest = BinaryToString(InetRead('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort))
+					$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
 
-				; Close any instances of webdriver and delete from disk
-				__WD_CloseDriver($sDriverEXE)
-				FileDelete($sInstallDir & "\" & $sDriverEXE)
+				Case 'firefox'
+					$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
 
-				; Handle COM Errors
-				Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
-				#forceref $oErr
+					If @error = $_WD_ERROR_Success Then
+						$sDriverLatest = StringRegExp($sResult, '<a href="/mozilla/geckodriver/releases/tag/(.*)">', 1)[0]
+						If StringLeft($sDriverLatest, 1) = 'v' Then $sDriverLatest = StringMid($sDriverLatest, 2)
 
-				; Extract new instance of webdriver
-				$oShell = ObjCreate("Shell.Application")
-				If @error Then
-					$iErr = $_WD_ERROR_GeneralError
-				Else
-					$FilesInZip = $oShell.NameSpace($sTempFile).items
+						$sURLNewDriver = "https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest
+						$sURLNewDriver &= ($bFlag64) ? "-win64.zip" : "-win32.zip"
+					Else
+						$iErr = $_WD_ERROR_GeneralError
+					EndIf
+
+				Case 'msedge'
+					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
+					$sDriverLatest = InetRead('https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort)
+
+					If @error = $_WD_ERROR_Success Then
+						Select
+							Case BinaryMid($sDriverLatest, 1, 4) = '0x0000FEFF'                   ; UTF-32 BE
+								$iStartPos = 5
+								$iConversion = $SB_UTF16LE
+							Case BinaryMid($sDriverLatest, 1, 4) = '0xFFFE0000'                   ; UTF-32 LE
+								$iStartPos = 5
+								$iConversion = $SB_UTF16LE
+							Case BinaryMid($sDriverLatest, 1, 2) = '0xFEFF'                       ; UTF-16 BE
+								$iStartPos = 3
+								$iConversion = $SB_UTF16BE
+							Case BinaryMid($sDriverLatest, 1, 2) = '0xFFFE'                       ; UTF-16 LE
+								$iStartPos = 3
+								$iConversion = $SB_UTF16LE
+							Case BinaryMid($sDriverLatest, 1, 3) = '0xEFBBBF'                     ; UTF-8
+								$iStartPos = 4
+								$iConversion = $SB_UTF8
+							Case Else
+								$iStartPos = 1
+								$iConversion = $SB_ANSI
+						EndSelect
+
+						$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
+						$sURLNewDriver = "https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_"
+						$sURLNewDriver &= ($bFlag64) ? "win64.zip" : "win32.zip"
+					Else
+						$iErr = $_WD_ERROR_GeneralError
+					EndIf
+			EndSwitch
+
+			If $iErr = $_WD_ERROR_Success Then
+				; When $bForce parameter equals Null, then return True if newer driver is available
+				If IsKeyword($bForce) = $KEYWORD_NULL Then
+					If $sDriverLatest > $sDriverVersion Then
+						$bResult = True
+					EndIf
+				ElseIf $sDriverLatest > $sDriverVersion Or $bForce Or $sDriverVersion = 'None' Then
+					$sReturned = InetRead($sURLNewDriver)
+
+					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
+					$hFile = FileOpen($sTempFile, $FO_OVERWRITE + $FO_BINARY)
+					FileWrite($hFile, $sReturned)
+					FileClose($hFile)
+
+					; Close any instances of webdriver and delete from disk
+					__WD_CloseDriver($sDriverEXE)
+					FileDelete($sInstallDir & "\" & $sDriverEXE)
+
+					; Handle COM Errors
+					Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+					#forceref $oErr
+
+					; Extract new instance of webdriver
+					$oShell = ObjCreate("Shell.Application")
 					If @error Then
 						$iErr = $_WD_ERROR_GeneralError
 					Else
-						$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
+						$FilesInZip = $oShell.NameSpace($sTempFile).items
 						If @error Then
 							$iErr = $_WD_ERROR_GeneralError
 						Else
-							$iErr = $_WD_ERROR_Success
-							$bResult = True
+							$oShell.NameSpace($sInstallDir).CopyHere($FilesInZip, 20)
+							If @error Then
+								$iErr = $_WD_ERROR_GeneralError
+							Else
+								$iErr = $_WD_ERROR_Success
+								$bResult = True
+							EndIf
 						EndIf
 					EndIf
-				EndIf
 
-				FileDelete($sTempFile)
+					FileDelete($sTempFile)
+				EndIf
 			EndIf
 		EndIf
-	EndIf
 
-	; Restore prior setting
-	$_WD_DEBUG = $WDDebugSave
+		; Restore prior setting
+		$_WD_DEBUG = $WDDebugSave
+	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': Current DriverVersion = ' & $sDriverVersion & @CRLF)
