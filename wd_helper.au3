@@ -1518,7 +1518,6 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 			ProcessWaitClose($iPID)
 			Local $sOutput = StdoutRead($iPID)
 			$sDriverVersion = StringRegExp($sOutput, "\s+([^\s]+)", 1)[0]
-			$iErr = $_WD_ERROR_Success
 		EndIf
 	EndIf
 
