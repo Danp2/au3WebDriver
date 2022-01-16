@@ -1300,7 +1300,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
 
 					If @error = $_WD_ERROR_Success Then
-						$sDriverLatest = StringRegExp($sResult, '<a href="/mozilla/geckodriver/releases/tag/(.*)">', 1)[0]
+						$sDriverLatest = StringRegExp($sResult, '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(.*?)"', 1)[0]
 						If StringLeft($sDriverLatest, 1) = 'v' Then $sDriverLatest = StringMid($sDriverLatest, 2)
 
 						$sURLNewDriver = "https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest
