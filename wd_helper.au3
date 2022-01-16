@@ -3,6 +3,7 @@
 #include <WinAPIFiles.au3> ; Needed For _WD_UpdateDriver >> _WinAPI_GetBinaryType
 #include <File.au3> ; Needed For _WD_UpdateDriver
 #include <InetConstants.au3>
+#include <Misc.au3> ; Needed For _WD_UpdateDriver >> _VersionCompare
 
 ; WebDriver related UDF's
 #include "wd_core.au3"
@@ -1248,8 +1249,8 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak, CyCho
 ; Modified ......: mLipok
-; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing
-;                  the update. In this scenario, the return value indicates if an update is available.
+; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
+;                  In this scenario, the return value indicates if an update is available.
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
 ; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
@@ -1351,14 +1352,12 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			EndSwitch
 
 			If $iErr = $_WD_ERROR_Success Then
-				Local $bDriverExists = ($sDriverCurrent <> 'None')
+				Local $bUpdatePossible = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
 
 				; When $bForce parameter equals Null, then return True if newer driver is available
-				If IsKeyword($bForce) = $KEYWORD_NULL Then
-					If $sDriverLatest > $sDriverCurrent Or Not $bDriverExists Then
-						$bResult = True
-					EndIf
-				ElseIf $sDriverLatest > $sDriverCurrent Or $bForce Or Not $bDriverExists Then
+				If IsKeyword($bForce) = $KEYWORD_NULL And $bUpdatePossible Then
+					$bResult = True
+				ElseIf $bUpdatePossible Or $bForce Then
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 
@@ -1404,6 +1403,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': Local File = ' & $sInstallDir & $sDriverEXE & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': Result = ' & $bResult & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
@@ -1459,7 +1459,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Parameters ....: $sInstallDir - a string value. Directory where $sDriverEXE is located
 ;                  $sDriverEXE  - a string value. File name of "WebDriver.exe"
 ; Return values .: Success - The value you get when you call WebDriver with the --version parameter
-;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
@@ -1471,7 +1471,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; ===============================================================================================================================
 Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local Const $sFuncName = "_WD_GetWebDriverVersion"
-	Local $sDriverVersion = "None"
+	Local $sDriverVersion = 0
 	Local $iErr = $_WD_ERROR_Success
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
