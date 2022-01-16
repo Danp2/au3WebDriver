@@ -1286,8 +1286,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 
-			; Determine latest available webdriver version
-			; for the designated browser
+			; Determine latest available webdriver version for the designated browser
 			Switch $sBrowser
 				Case 'chrome'
 					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
