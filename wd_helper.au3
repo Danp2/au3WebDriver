@@ -1315,6 +1315,15 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success Then
+			Switch $sBrowser
+				Case 'chrome'
+					$sDriverEXE = "chromedriver.exe"
+				Case 'firefox'
+					$sDriverEXE = "geckodriver.exe"
+				Case 'msedge'
+					$sDriverEXE = "msedgedriver.exe"
+			EndSwitch
+
 			$sDriverVersion = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 
 			; Determine latest available webdriver version
@@ -1373,12 +1382,14 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			EndSwitch
 
 			If $iErr = $_WD_ERROR_Success Then
+				Local $bDriverExists = ($sDriverVersion <> 'None')
+
 				; When $bForce parameter equals Null, then return True if newer driver is available
 				If IsKeyword($bForce) = $KEYWORD_NULL Then
-					If $sDriverLatest > $sDriverVersion Then
+					If $sDriverLatest > $sDriverVersion Or Not $bDriverExists Then
 						$bResult = True
 					EndIf
-				ElseIf $sDriverLatest > $sDriverVersion Or $bForce Or $sDriverVersion = 'None' Then
+				ElseIf $sDriverLatest > $sDriverVersion Or $bForce Or Not $bDriverExists Then
 					$sReturned = InetRead($sURLNewDriver)
 
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
@@ -1423,7 +1434,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': Current DriverVersion = ' & $sDriverVersion & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverVersion & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': DriverLatest = ' & $sDriverLatest & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
