@@ -1,8 +1,6 @@
 
 #include-once
 ; standard UDF's
-#include <WinAPIFiles.au3> ; Needed For _WinAPI_GetBinaryType()
-#include <APIFilesConstants.au3> ; Needed For _WinAPI_GetBinaryType()
 #include <File.au3> ; Needed For _WD_UpdateDriver
 #include <InetConstants.au3>
 
@@ -1263,6 +1261,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Local $sReturned, $sTempFile, $hFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
+	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 	If $bFlag64 = Default Then $bFlag64 = False
 	If $bForce = Default Then $bForce = False
 
@@ -1285,14 +1284,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				Case 'msedge'
 					$sDriverEXE = "msedgedriver.exe"
 			EndSwitch
-
-			; Determine current local webdriver Architecture
-			If FileExists($sInstallDir & $sDriverEXE) Then
-				Local $bDriverIs64Bit = (_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE) = $SCS_64BIT_BINARY)
-				If $sBrowser = 'firefox' Or $sBrowser = 'msedge' Then
-					If $bDriverIs64Bit <> $bFlag64 Then FileDelete($sInstallDir & $sDriverEXE)
-				EndIf
-			EndIf
 
 			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 
@@ -1368,7 +1359,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 					; Close any instances of webdriver and delete from disk
 					__WD_CloseDriver($sDriverEXE)
-					FileDelete($sInstallDir & "\" & $sDriverEXE)
+					FileDelete($sInstallDir & $sDriverEXE)
 
 					; Handle COM Errors
 					Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
@@ -1406,7 +1397,8 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverCurrent & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': DriverLatest = ' & $sDriverLatest & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': Local File = ' & $sInstallDir & $sDriverEXE & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
