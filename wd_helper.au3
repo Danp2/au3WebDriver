@@ -1,4 +1,3 @@
-
 #include-once
 ; standard UDF's
 #include <File.au3> ; Needed For _WD_UpdateDriver
@@ -1258,7 +1257,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
 	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
-	Local $sReturned, $sTempFile, $hFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
+	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
@@ -1350,12 +1349,8 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						$bResult = True
 					EndIf
 				ElseIf $sDriverLatest > $sDriverCurrent Or $bForce Or Not $bDriverExists Then
-					$sReturned = InetRead($sURLNewDriver)
-
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
-					$hFile = FileOpen($sTempFile, $FO_OVERWRITE + $FO_BINARY)
-					FileWrite($hFile, $sReturned)
-					FileClose($hFile)
+					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 
 					; Close any instances of webdriver and delete from disk
 					__WD_CloseDriver($sDriverEXE)
