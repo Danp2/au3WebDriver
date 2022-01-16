@@ -1460,10 +1460,10 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
-; Remarks .......: Example: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
+; Remarks .......:
 ; Related .......: _WD_GetBrowserVersion
 ; Link ..........:
-; Example .......: No
+; Example .......: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
 ; ===============================================================================================================================
 Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local Const $sFuncName = "_WD_GetWebDriverVersion"
