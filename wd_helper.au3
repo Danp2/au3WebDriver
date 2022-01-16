@@ -1412,8 +1412,8 @@ EndFunc   ;==>_WD_UpdateDriver
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_NotFound
-; Author ........: Dan Pollak, mLipok
-; Modified ......: 18/06/2021
+; Author ........: Dan Pollak
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_GetWebDriverVersion
 ; Link ..........:
@@ -1456,8 +1456,8 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_GeneralError
-; Author ........: Dan Pollak, mLipok
-; Modified ......: 18/06/2021
+; Author ........: Dan Pollak
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_GetBrowserVersion
 ; Link ..........:
