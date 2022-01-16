@@ -1258,7 +1258,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
-	Local $sDriverVersion, $sVersionShort, $sDriverLatest, $sURLNewDriver
+	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sReturned, $sTempFile, $hFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
@@ -1286,7 +1286,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					$sDriverEXE = "msedgedriver.exe"
 			EndSwitch
 
-			$sDriverVersion = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
+			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 
 			; Determine latest available webdriver version
 			; for the designated browser
@@ -1344,14 +1344,14 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			EndSwitch
 
 			If $iErr = $_WD_ERROR_Success Then
-				Local $bDriverExists = ($sDriverVersion <> 'None')
+				Local $bDriverExists = ($sDriverCurrent <> 'None')
 
 				; When $bForce parameter equals Null, then return True if newer driver is available
 				If IsKeyword($bForce) = $KEYWORD_NULL Then
-					If $sDriverLatest > $sDriverVersion Or Not $bDriverExists Then
+					If $sDriverLatest > $sDriverCurrent Or Not $bDriverExists Then
 						$bResult = True
 					EndIf
-				ElseIf $sDriverLatest > $sDriverVersion Or $bForce Or Not $bDriverExists Then
+				ElseIf $sDriverLatest > $sDriverCurrent Or $bForce Or Not $bDriverExists Then
 					$sReturned = InetRead($sURLNewDriver)
 
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
@@ -1396,7 +1396,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverVersion & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverCurrent & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': DriverLatest = ' & $sDriverLatest & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
