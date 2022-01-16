@@ -1249,11 +1249,9 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing
 ;                  the update. In this scenario, the return value indicates if an update is available.
-;+
-;                  Example: Local $bResult = _WD_UpdateDriver('FireFox')
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
-; Example .......: No
+; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
 ; ===============================================================================================================================
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
