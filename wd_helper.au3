@@ -1414,10 +1414,10 @@ EndFunc   ;==>_WD_UpdateDriver
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Dan Pollak, mLipok
 ; Modified ......: 18/06/2021
-; Remarks .......: Example: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
+; Remarks .......:
 ; Related .......: _WD_GetWebDriverVersion
 ; Link ..........:
-; Example .......: No
+; Example .......: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
