@@ -1,5 +1,8 @@
+
 #include-once
 ; standard UDF's
+#include <WinAPIFiles.au3> ; Needed For _WinAPI_GetBinaryType()
+#include <APIFilesConstants.au3> ; Needed For _WinAPI_GetBinaryType()
 #include <File.au3> ; Needed For _WD_UpdateDriver
 #include <InetConstants.au3>
 
@@ -1273,7 +1276,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
-
 		If $iErr = $_WD_ERROR_Success Then
 			Switch $sBrowser
 				Case 'chrome'
@@ -1283,6 +1285,14 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				Case 'msedge'
 					$sDriverEXE = "msedgedriver.exe"
 			EndSwitch
+
+			; Determine current local webdriver Architecture
+			If FileExists($sInstallDir & $sDriverEXE) Then
+				Local $bDriverIs64Bit = (_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE) = $SCS_64BIT_BINARY)
+				If $sBrowser = 'firefox' Or $sBrowser = 'msedge' Then
+					If $bDriverIs64Bit <> $bFlag64 Then FileDelete($sInstallDir & $sDriverEXE)
+				EndIf
+			EndIf
 
 			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 
