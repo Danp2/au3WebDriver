@@ -1343,6 +1343,9 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			If $iErr = $_WD_ERROR_Success Then
 				Local $bDriverExists = ($sDriverCurrent <> 'None')
 
+				; Determine if the remote and local files are the same size, just in case they are different, force a download. This is needed because 32/64 bit versions have different file sizes.
+				If FileGetSize($sInstallDir & $sDriverEXE) <> InetGetSize($sURLNewDriver, $INET_FORCERELOAD) Then $bForce = True
+
 				; When $bForce parameter equals Null, then return True if newer driver is available
 				If IsKeyword($bForce) = $KEYWORD_NULL Then
 					If $sDriverLatest > $sDriverCurrent Or Not $bDriverExists Then
