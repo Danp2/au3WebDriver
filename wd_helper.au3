@@ -716,7 +716,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; ===============================================================================================================================
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
-	Local $iErr, $sResponse, $oJSON, $sReadyState
+	Local $iErr, $sReadyState
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -734,17 +734,11 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 
 			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
 		Else
-			$sResponse = _WD_ExecuteScript($sSession, 'return document.readyState', '')
+			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
-
-			If $iErr Then
+			If $iErr Or $sReadyState = 'complete' Then
 				ExitLoop
 			EndIf
-
-			$oJSON = Json_Decode($sResponse)
-			$sReadyState = Json_Get($oJSON, $_WD_JSON_Value)
-
-			If $sReadyState = 'complete' Then ExitLoop
 		EndIf
 
 		If (TimerDiff($hLoadWaitTimer) > $iTimeout) Then
