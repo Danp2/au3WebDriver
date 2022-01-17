@@ -1887,18 +1887,22 @@ Func _WD_GetTable($sSession, $sBaseElement)
 	If @error = 0xDEAD And @extended = 0xBEEF Then
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
 		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		
 		$iLines = UBound($aElements)
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/td", "", True) ; Retrieve the number of table columns by checking the first table row
 		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		
 		$iColumns = UBound($aElements)
 		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/td", "", True) ; Retrieve all table cells
 		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		
 		For $i = 0 To UBound($aElements) - 1
 			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
 			$iColumn = Mod($i, $iColumns)
 			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
 			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+			
 		Next
 	Else
 		; Get the table element
