@@ -1475,7 +1475,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; ===============================================================================================================================
 Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local Const $sFuncName = "_WD_GetWebDriverVersion"
-	Local $sDriverVersion = 0
+	Local $sDriverVersion = "0"
 	Local $iErr = $_WD_ERROR_Success
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
