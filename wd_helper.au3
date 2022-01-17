@@ -1054,7 +1054,7 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
-; Example .......: No
+; Example .......: _WD_ConsoleVisible(False)
 ; ===============================================================================================================================
 Func _WD_ConsoleVisible($bVisible = Default)
 	Local $sFile = __WD_StripPath($_WD_DRIVER)
