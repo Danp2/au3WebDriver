@@ -1462,7 +1462,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Parameters ....: $sInstallDir - a string value. Directory where $sDriverEXE is located
 ;                  $sDriverEXE  - a string value. File name of "WebDriver.exe"
 ; Return values .: Success - The value you get when you call WebDriver with the --version parameter
-;                  Failure - 0 and sets @error to one of the following values:
+;                  Failure - "None" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
@@ -1474,7 +1474,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; ===============================================================================================================================
 Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local Const $sFuncName = "_WD_GetWebDriverVersion"
-	Local $sDriverVersion = "0"
+	Local $sDriverVersion = "None"
 	Local $iErr = $_WD_ERROR_Success
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
