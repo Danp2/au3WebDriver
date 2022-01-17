@@ -527,7 +527,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
 ;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword)
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "no such frame"), sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters
@@ -575,7 +575,7 @@ EndFunc   ;==>_WD_FrameEnter
 ; Syntax ........: _WD_FrameLeave($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "chrome not reachable"), sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "chrome not reachable") and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
@@ -706,7 +706,7 @@ EndFunc   ;==>_WD_HighlightElements
 ;                  $iTimeout - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sElement - [optional] Element ID to confirm DOM invalidation
 ; Return values .: Success - 1.
-;                  Failure - 0, sets @error to $_WD_ERROR_Timeout
+;                  Failure - 0 and sets @error to $_WD_ERROR_Timeout
 ; Author ........: Dan Pollak
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -860,7 +860,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ;                  $sjQueryFile - [optional] Path or URL to jQuery source file
 ;                  $iTimeout    - [optional] Period of time (in milliseconds) to wait before exiting function
 ; Return values .: Success - None.
-;                  Failure - None, sets @error to one of the following values:
+;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
@@ -945,7 +945,7 @@ EndFunc   ;==>_WD_jQuerify
 ;                  $sSelector     - Value to find
 ;                  $sStartElement - [optional] Element ID of element to use as starting point
 ; Return values .: Success - None.
-;                  Failure - None, sets @error to one of the following values:
+;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidDataType
@@ -1193,7 +1193,7 @@ EndFunc   ;==>_WD_SelectFiles
 ; Syntax ........: _WD_IsLatestRelease()
 ; Parameters ....: None
 ; Return values .: Success - True if the local UDF version is the latest, otherwise False
-;                  Failure - Null, sets @error to one of the following values:
+;                  Failure - Null and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
@@ -1241,7 +1241,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  $bFlag64     - [optional] Install 64bit version? Default is False
 ;                  $bForce      - [optional] Force update? Default is False
 ; Return values .: Success - True (Driver was updated).
-;                  Failure - False (Driver was not updated), sets @error to one of the following values:
+;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
@@ -1493,7 +1493,7 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  $sDest    - Full path, including filename, of destination file
 ;                  $iOptions - [optional] Download options
 ; Return values .: Success - True (Download succeeded).
-;                  Failure - False (Download failed), sets @error to one of the following values:
+;                  Failure - False (Download failed) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Dan Pollak
@@ -1544,7 +1544,7 @@ EndFunc   ;==>_WD_DownloadFile
 ;                  $iScript       - [optional] Script timeout in milliseconds
 ;                  $iImplicitWait - [optional] Implicit wait timeout in milliseconds
 ; Return values .: Success - Return value from web driver in JSON format.
-;                  Failure - 0, sets @error to one of the following values:
+;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
