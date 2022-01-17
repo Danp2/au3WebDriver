@@ -1863,6 +1863,7 @@ Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement,
 			"		" & $sPostAction & _
 			"	]" & _ ; Close main action
 			"}"
+	Return $sAction
 EndFunc   ;==>__WD_ElementBuildActionString
 
 ; #FUNCTION# ====================================================================================================================
