@@ -1825,33 +1825,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $iActionType
 		Case 1
-			; Build action string
-			$sAction = _
-					'{' & _
-					'	"actions": [' & _
-					'		' & $sPreAction & _
-					'		{' & _ ; Default "hover" action
-					'			"id":"hover",' & _
-					'			"type":"pointer",' & _
-					'			"parameters": {"pointerType": "mouse"},' & _
-					'			"actions": [' & _
-					'				{' & _
-					'					"duration": 100,' & _
-					'					"x": ' & $iXOffset & ',' & _
-					'					"y": ' & $iYOffset & ',' & _
-					'					"type": "pointerMove",' & _
-					' 					"origin": {' & _
-					' 						"ELEMENT": "' & $sElement & '",' & _
-					' 						"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"' & _
-					' 					}' & _
-					'				}' & _
-					'				' & $sPostHoverAction & _
-					"			]" & _ ; Close mouse actions
-					"		}" & _
-					"		" & $sPostAction & _
-					"	]" & _ ; Close main action
-					"}"
-
+			$sAction = __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
 		Case 2
@@ -1862,6 +1836,34 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_ElementActionEx
+
+Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+	Local $sAction = _
+			'{' & @CR & _
+			'	"actions": [' & _
+			'		' & $sPreAction & _
+			'		{' & _ ; Default "hover" action
+			'			"id":"hover",' & _
+			'			"type":"pointer",' & _
+			'			"parameters": {"pointerType": "mouse"},' & _
+			'			"actions": [' & _
+			'				{' & _
+			'					"duration": 100,' & _
+			'					"x": ' & $iXOffset & ',' & _
+			'					"y": ' & $iYOffset & ',' & _
+			'					"type": "pointerMove",' & _
+			' 					"origin": {' & _
+			' 						"ELEMENT": "' & $sElement & '",' & _
+			' 						"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"' & _
+			' 					}' & _
+			'				}' & _
+			'				' & $sPostHoverAction & _
+			"			]" & _ ; Close mouse actions
+			"		}" & _
+			"		" & $sPostAction & _
+			"	]" & _ ; Close main action
+			"}"
+EndFunc   ;==>__WD_ElementBuildActionString
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
