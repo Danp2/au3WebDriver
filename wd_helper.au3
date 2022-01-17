@@ -1722,7 +1722,6 @@ EndFunc   ;==>_WD_SetElementValue
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sElement   - Element ID from _WD_FindElement
 ;                  $sCommand   - one of the following actions:
-;                  |
 ;                  |CHECK - Checks a checkbox input element
 ;                  |CHILDCOUNT - Returns the number of child elements
 ;                  |CLICKANDHOLD - Clicks on the target element and holds the button down for the designated timeframe ($iHoldDelay)
