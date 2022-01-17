@@ -1104,7 +1104,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; ===============================================================================================================================
 Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_GetShadowRoot"
-	Local $sResponse, $sResult, $oJSON
+	Local $sResponse, $sResult = "", $oJSON
 
 	If $sStartElement = Default Then $sStartElement = ""
 
