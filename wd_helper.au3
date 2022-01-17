@@ -788,7 +788,7 @@ EndFunc   ;==>_WD_LoadWait
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
-	Local $sResponse, $sResult, $iErr
+	Local $sResponse, $sResult = "", $iErr
 
 	If $sElement = Default Then $sElement = ""
 	If $nOutputType = Default Then $nOutputType = 1
