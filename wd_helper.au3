@@ -483,7 +483,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 
 ; Return values .: Success - Number of frames
-;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
+;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Nested frames are not included in the frame count
