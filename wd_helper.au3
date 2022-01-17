@@ -1262,9 +1262,10 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
-	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 	If $bFlag64 = Default Then $bFlag64 = False
 	If $bForce = Default Then $bForce = False
+
+	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 
 	; If the Install directory doesn't exist and it can't be created, then set error
 	If (Not FileExists($sInstallDir)) And (Not DirCreate($sInstallDir)) Then
@@ -1276,6 +1277,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
+
 		If $iErr = $_WD_ERROR_Success Then
 			Switch $sBrowser
 				Case 'chrome'
