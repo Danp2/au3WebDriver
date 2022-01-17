@@ -1825,31 +1825,32 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $iActionType
 		Case 1
-			; Build dynamic action string
-			$sAction = '{"actions":['
-
-			If $sPreAction Then
-				$sAction &= $sPreAction
-			EndIf
-
-			; Default "hover" action
-			$sAction &= '{"id":"hover","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,'
-			$sAction &= '"x":' & $iXOffset & ',"y":' & $iYOffset & ',"type":"pointerMove","origin":{"ELEMENT":"'
-			$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}'
-
-			If $sPostHoverAction Then
-				$sAction &= $sPostHoverAction
-			EndIf
-
-			; Close mouse actions
-			$sAction &= "]}"
-
-			If $sPostAction Then
-				$sAction &= $sPostAction
-			EndIf
-
-			; Close main action
-			$sAction &= "]}"
+			; Build action string
+			$sAction = _
+					'{' & _
+					'	"actions": [' & _
+					'		' & $sPreAction & _
+					'		{' & _ ; Default "hover" action
+					'			"id":"hover",' & _
+					'			"type":"pointer",' & _
+					'			"parameters": {"pointerType": "mouse"},' & _
+					'			"actions": [' & _
+					'				{' & _
+					'					"duration": 100,' & _
+					'					"x": ' & $iXOffset & ',' & _
+					'					"y": ' & $iYOffset & ',' & _
+					'					"type": "pointerMove",' & _
+					' 					"origin": {' & _
+					' 						"ELEMENT": "' & $sElement & '",' & _
+					' 						"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"' & _
+					' 					}' & _
+					'				}' & _
+					'				' & $sPostHoverAction & _
+					"			]" & _ ; Close mouse actions
+					"		}" & _
+					"		" & $sPostAction & _
+					"	]" & _ ; Close main action
+					"}"
 
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
