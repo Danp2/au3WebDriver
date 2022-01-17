@@ -1137,7 +1137,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ;                  $sSelector - Value to find. Should point to element of type '< input type="file" >'
 ;                  $sFilename - Full path of file(s) to upload (use newline character [@LF] to separate files)
 ; Return values .: Success - Number of selected files.
-;                  Failure - 0, sets @error to one of the following values:
+;                  Failure - "0" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
@@ -1150,7 +1150,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
 
-	Local $sResult, $sJsonElement, $sSavedEscape
+	Local $sResult = "0", $sJsonElement, $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
