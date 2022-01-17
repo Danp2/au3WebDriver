@@ -653,7 +653,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 			"border: 0px", _
 			"border: 2px dotted red", _
 			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
-			"border:2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
+			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
 			]
 
 	If $iMethod = Default Then $iMethod = 1
