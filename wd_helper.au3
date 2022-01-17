@@ -1552,11 +1552,9 @@ EndFunc   ;==>_WD_DownloadFile
 ; Modified ......:
 ; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
 ;				   When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
-;+
-;                  Example: _WD_SetTimeouts($sSession, 50000)
 ; Related .......: _WD_Timeouts
 ; Link ..........: https://www.w3.org/TR/webdriver/#set-timeouts
-; Example .......: No
+; Example .......: _WD_SetTimeouts($sSession, 50000)
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
 	Local Const $sFuncName = "_WD_SetTimeouts"
