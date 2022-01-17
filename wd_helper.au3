@@ -1355,12 +1355,12 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			EndSwitch
 
 			If $iErr = $_WD_ERROR_Success Then
-				Local $bUpdatePossible = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
+				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
 
 				; When $bForce parameter equals Null, then return True if newer driver is available
-				If IsKeyword($bForce) = $KEYWORD_NULL And $bUpdatePossible Then
+				If IsKeyword($bForce) = $KEYWORD_NULL And $bUpdateAvail Then
 					$bResult = True
-				ElseIf $bUpdatePossible Or $bForce Then
+				ElseIf $bUpdateAvail Or $bForce Then
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 
