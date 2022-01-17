@@ -549,7 +549,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		$sOption = '{"id":{"' & $_WD_ELEMENT_ID & '":"' & $vIdentifier & '"}}'
+		$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
 	EndIf
 
 	$sResponse = _WD_Window($sSession, "frame", $sOption)
@@ -662,7 +662,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
 	Local $sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-	Local $sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+	Local $sJsonElement = __WD_JsonElement($sElement)
 	Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement, Default, $_WD_JSON_Value)
 	Local $iErr = @error
 	Return ($sResult = "true" ? SetError(0, 0, True) : SetError($iErr, 0, False))
@@ -1002,7 +1002,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 		Switch $sCommand
 			Case 'value'
 				; Retrieve current value of designated Select element
-				$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sSelectElement & '"}'
+				$sJsonElement = __WD_JsonElement($sSelectElement)
 				$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", $sJsonElement, Default, $_WD_JSON_Value)
 				$iErr = @error
 
@@ -1014,7 +1014,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 				If $iErr = $_WD_ERROR_Success Then
 					$sText = ""
 					For $sElement In $aOptions
-						$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+						$sJsonElement = __WD_JsonElement($sElement)
 						$sText &= (($sText <> "") ? @CRLF : "") & _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement, Default, $_WD_JSON_Value)
 						$iErr = @error
 					Next
@@ -1167,7 +1167,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
-			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+			$sJsonElement = __WD_JsonElement($sElement)
 			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement, Default, $_WD_JSON_Value)
 			$iErr = @error
 			If @error Then $sResult = "0"
@@ -1714,7 +1714,7 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 
 		Case $_WD_OPTION_Advanced
 			$sScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'value').set.call(arguments[0], arguments[1]);arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
-			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+			$sJsonElement = __WD_JsonElement($sElement)
 			$sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement & ',"' & $sValue & '"')
 			$iErr = @error
 
@@ -1862,7 +1862,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
 		Case 2
-			$sJsonElement = '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+			$sJsonElement = __WD_JsonElement($sElement)
 			$sResult = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement, Default, $_WD_JSON_Value)
 			$iErr = @error
 	EndSwitch
@@ -2060,3 +2060,20 @@ EndFunc   ;==>__WD_Base64Decode
 Func __WD_ErrHnd()
 
 EndFunc   ;==>__WD_ErrHnd
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_JsonElement
+; Description ...: Convert Element ID into JSON string
+; Syntax ........: __WD_JsonElement($sElement)
+; Parameters ....: $sElement - Element ID from _WD_FindElement
+; Return values .: Formatted JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_JsonElement($sElement)
+	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+EndFunc
