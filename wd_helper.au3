@@ -12,7 +12,7 @@
 	*
 	* MIT License
 	*
-	* Copyright (c) 2022 Dan Pollak
+	* Copyright (c) 2022 Dan Pollak (@Danp2)
 	*
 	* Permission is hereby granted, free of charge, to any person obtaining a copy
 	* of this software and associated documentation files (the "Software"), to deal
@@ -80,7 +80,7 @@ Global Enum _
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: For list of $sFeatures take a look in the following link
 ; Related .......: _WD_Window
@@ -184,7 +184,7 @@ EndFunc   ;==>_WD_NewTab
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_GeneralError
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Window
@@ -252,7 +252,7 @@ EndFunc   ;==>_WD_Attach
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ElementAction
@@ -300,7 +300,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_UserAbort
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ElementAction
@@ -383,7 +383,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - Response from web driver and sets @error returned from _WD_ExecuteScript()
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_ExecuteScript
@@ -412,7 +412,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ;                  $iY       - an integer value
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and @error is set to $_WD_ERROR_RetValue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
 ; Related .......: _WD_ExecuteScript
@@ -465,7 +465,7 @@ EndFunc   ;==>_WD_GetElementFromPoint
 ; Parameters ....: None
 ; Return values .: Success - Result of last WinHTTP request
 ;                  Failure - None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -707,7 +707,7 @@ EndFunc   ;==>_WD_HighlightElements
 ;                  $sElement - [optional] Element ID to confirm DOM invalidation
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Timeout
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
@@ -779,7 +779,7 @@ EndFunc   ;==>_WD_LoadWait
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Window, _WD_ElementAction
@@ -827,7 +827,7 @@ EndFunc   ;==>_WD_Screenshot
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517)
 ; Related .......: _WD_Window
@@ -863,7 +863,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_GeneralError
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_ExecuteScript
@@ -950,7 +950,7 @@ EndFunc   ;==>_WD_jQuerify
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ElementAction
@@ -986,7 +986,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
 ;                  - $_WD_ERROR_InvalidArgue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ExecuteScript
@@ -1049,7 +1049,7 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Parameters ....: $bVisible - [optional] Set to true to show the console. Default is False.
 ; Return values .: Success - None
 ;                  Failure - None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1095,7 +1095,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ElementAction
@@ -1140,7 +1140,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ;                  Failure - "0" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: If $sFilename is empty, then prior selection is cleared
 ; Related .......: _WD_FindElement, _WD_ElementAction
@@ -1196,7 +1196,7 @@ EndFunc   ;==>_WD_SelectFiles
 ;                  Failure - Null and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_GeneralError
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
@@ -1245,7 +1245,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
-; Author ........: Dan Pollak, CyCho
+; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing
 ;                  the update. In this scenario, the return value indicates if an update is available.
@@ -1410,8 +1410,8 @@ EndFunc   ;==>_WD_UpdateDriver
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_NotFound
-; Author ........: Dan Pollak, mLipok
-; Modified ......: 18/06/2021
+; Author ........: Danp2
+; Modified ......: mLipok
 ; Remarks .......: Example: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
 ; Related .......: _WD_GetWebDriverVersion
 ; Link ..........:
@@ -1454,8 +1454,8 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_GeneralError
-; Author ........: Dan Pollak, mLipok
-; Modified ......: 18/06/2021
+; Author ........: Danp2
+; Modified ......: mLipok
 ; Remarks .......: Example: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
 ; Related .......: _WD_GetBrowserVersion
 ; Link ..........:
@@ -1496,7 +1496,7 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  Failure - False (Download failed) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotFound
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1548,7 +1548,7 @@ EndFunc   ;==>_WD_DownloadFile
 ;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
 ;				   When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
@@ -1622,7 +1622,7 @@ EndFunc   ;==>_WD_SetTimeouts
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_FindElement
@@ -1649,7 +1649,7 @@ EndFunc   ;==>_WD_GetElementById
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_FindElement
@@ -1682,7 +1682,7 @@ EndFunc   ;==>_WD_GetElementByName
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_ElementAction
@@ -1739,7 +1739,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
@@ -1927,7 +1927,7 @@ EndFunc   ;==>_WD_GetTable
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True or False.
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript()
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
@@ -1952,7 +1952,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ;                  |$_WD_STATUS_Valid (1) - Current browser context is valid
 ;                  |$_WD_STATUS_Reconnect (2) - Context was invalid; Successfully reconnected to existing tab
 ;                  Failure - $_WD_STATUS_Invalid (0) and sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Action, _WD_Window
