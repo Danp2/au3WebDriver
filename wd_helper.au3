@@ -1650,7 +1650,6 @@ EndFunc   ;==>_WD_GetElementById
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Dan Pollak
-;
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_FindElement
@@ -1684,7 +1683,7 @@ EndFunc   ;==>_WD_GetElementByName
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Dan Pollak
-; Modified ......: 03/31/2021
+; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_ElementAction
 ; Link ..........:
