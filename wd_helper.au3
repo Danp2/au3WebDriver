@@ -800,8 +800,8 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 		Switch $nOutputType
 			Case 1, 2 ; String or Binary
 				$dBinary = __WD_Base64Decode($sResponse)
-				$iErr = @error
 				If Not @error Then ContinueCase
+				$iErr = $_WD_ERROR_GeneralError
 			Case 1 ; String
 				$sResult = BinaryToString($dBinary)
 			Case 2 ; Binary
