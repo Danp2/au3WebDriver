@@ -1832,8 +1832,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 					'	,"actions": [' & _
 					'		{' & _
 					'			"type": "keyDown"' & _
-					'			,"value": "' & $sModifier &_
-					'		}' & _
+					'			,"value": "' & $sModifier & _
+			'		}' & _
 					'	]' & _
 					'},'
 
@@ -1862,7 +1862,6 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'check'
 			ContinueCase
-			
 		Case 'uncheck'
 			$iActionType = 2
 			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
