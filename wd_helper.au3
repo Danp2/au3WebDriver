@@ -1839,7 +1839,7 @@ EndFunc   ;==>_WD_ElementActionEx
 
 Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
 	Local $sAction = _
-			'{' & @CR & _
+			'{' & _
 			'	"actions": [' & _
 			'		' & $sPreAction & _
 			'		{' & _ ; Default "hover" action
@@ -1848,10 +1848,10 @@ Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement,
 			'			"parameters": {"pointerType": "mouse"},' & _
 			'			"actions": [' & _
 			'				{' & _
-			'					"duration": 100,' & _
+			'					"type": "pointerMove"' & ',' & _
+			'					"duration": 100' & '' & _
 			'					"x": ' & $iXOffset & ',' & _
 			'					"y": ' & $iYOffset & ',' & _
-			'					"type": "pointerMove",' & _
 			' 					"origin": {' & _
 			' 						"ELEMENT": "' & $sElement & '",' & _
 			' 						"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"' & _
