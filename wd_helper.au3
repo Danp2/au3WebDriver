@@ -1849,7 +1849,7 @@ Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement,
 			'			"actions": [' & _
 			'				{' & _
 			'					"type": "pointerMove"' & ',' & _
-			'					"duration": 100' & '' & _
+			'					"duration": 100' & ',' & _
 			'					"x": ' & $iXOffset & ',' & _
 			'					"y": ' & $iYOffset & ',' & _
 			' 					"origin": {' & _
