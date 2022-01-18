@@ -795,7 +795,7 @@ Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	EndIf
 	$iErr = @error
 
-	If $iErr = $_WD_ERROR_Success  Then
+	If $iErr = $_WD_ERROR_Success Then
 		If $iOutputType < 3 Then $dBinary = __WD_Base64Decode($sResponse)
 		If @error Then ; Recheck after __WD_Base64Decode() usage
 			$iErr = $_WD_ERROR_GeneralError
