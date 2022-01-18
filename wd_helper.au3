@@ -781,8 +781,7 @@ EndFunc   ;==>_WD_LoadWait
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Screenshot($sSession, $sElement = Default,
-	OutputType = Default)
+Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
 	Local $sResponse, $sResult = "", $iErr, $dBinary
 
