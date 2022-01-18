@@ -2073,4 +2073,5 @@ EndFunc   ;==>__WD_ErrHnd
 ; ===============================================================================================================================
 Func __WD_JsonElement($sElement)
 	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
-EndFunc
+EndFunc   ;==>__WD_JsonElement
+
