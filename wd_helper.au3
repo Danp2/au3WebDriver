@@ -1782,13 +1782,34 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 		Case 'hover'
 
 		Case 'doubleclick'
-			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"button":' & $iButton & ',"type":"pointerUp"},{"button":' & $iButton & ',"type":"pointerDown"},{"button":' & $iButton & ',"type":"pointerUp"}'
+			$sPostHoverAction = _
+					',{"button": ' & $iButton & ', "type": "pointerDown"}' & _
+					',{"button": ' & $iButton & ', "type": "pointerUp"}' & _
+					',{"button": ' & $iButton & ', "type": "pointerDown"}' & _
+					',{"button": ' & $iButton & ', "type": "pointerUp"}'
 
 		Case 'rightclick'
-			$sPostHoverAction = ',{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}'
+			$sPostHoverAction = _
+					',{' & _
+					'	"button": 2' & _
+					'	,"type": "pointerDown"}' & _
+					',{' & _
+					'	"button": 2' & _
+					'	,"type": "pointerUp"' & _
+					'}'
 
 		Case 'clickandhold'
-			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"type": "pause", "duration": ' & $iHoldDelay & '},{"button":' & $iButton & ',"type":"pointerUp"}'
+			$sPostHoverAction = _
+					',{' & _
+					'	"button": ' & $iButton & _
+					'	,"type": "pointerDown"' & _
+					'}, {' & _
+					'	"type": "pause"' & _
+					'	,"duration": ' & $iHoldDelay & _
+					'}, {' & _
+					'	"button": ' & $iButton & _
+					'	,"type": "pointerUp"' & _
+					'}'
 
 		Case 'hide'
 			$iActionType = 2
@@ -1804,16 +1825,44 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'modifierclick'
 			; Hold modifier key down
-			$sPreAction = '{"type": "key", "id": "keyboard_1", "actions": [{"type": "keyDown", "value": "' & $sModifier & '"}]},'
+			$sPreAction = _
+					'{' & _
+					'	"type": "key"' & _
+					'	,"id": "keyboard_1"' & _
+					'	,"actions": [' & _
+					'		{' & _
+					'			"type": "keyDown"' & _
+					'			,"value": "' & $sModifier &_
+					'		}' & _
+					'	]' & _
+					'},'
 
 			; Perform click
-			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"}, {"button":' & $iButton & ',"type":"pointerUp"}'
+			$sPostHoverAction = _
+					',{' & _
+					'	"button":' & $iButton & _
+					'	,"type": "pointerDown"' & _
+					'}, {' & _
+					'	"button": ' & $iButton & _
+					'	,"type": "pointerUp"' & _
+					'}'
 
 			; Release modifier key
-			$sPostAction = ',{"type": "key", "id": "keyboard_2", "actions": [{"type": "keyUp", "value": "' & $sModifier & '"}]}'
+			$sPostAction = _
+					',{' & _
+					'	"type": "key"' & _
+					'	,"id": "keyboard_2"' & _
+					'	,"actions": [' & _
+					'		{' & _
+					'			"type": "keyUp"' & _
+					'			,"value": "' & $sModifier & '"' & _
+					'		}' & _
+					'	]' & _
+					'}'
 
 		Case 'check'
 			ContinueCase
+			
 		Case 'uncheck'
 			$iActionType = 2
 			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
