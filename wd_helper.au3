@@ -775,7 +775,7 @@ EndFunc   ;==>_WD_LoadWait
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_Window, _WD_ElementAction
 ; Link ..........:
@@ -783,30 +783,32 @@ EndFunc   ;==>_WD_LoadWait
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
-	Local $sResponse, $sResult, $iErr
+	Local $sResponse, $sResult = "", $iErr
 
 	If $sElement = Default Then $sElement = ""
 	If $nOutputType = Default Then $nOutputType = 1
 
 	If $sElement = '' Then
 		$sResponse = _WD_Window($sSession, 'Screenshot')
-		$iErr = @error
 	Else
 		$sResponse = _WD_ElementAction($sSession, $sElement, 'Screenshot')
-		$iErr = @error
 	EndIf
+	$iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
+		Local $dBinary
 		Switch $nOutputType
+			Case 1, 2 ; String or Binary
+				$dBinary = __WD_Base64Decode($sResponse)
+				$iErr = @error
+				If Not @error Then ContinueCase
 			Case 1 ; String
-				$sResult = BinaryToString(__WD_Base64Decode($sResponse))
+				$sResult = BinaryToString($dBinary)
 			Case 2 ; Binary
-				$sResult = __WD_Base64Decode($sResponse)
+				$sResult = $dBinary
 			Case 3 ; Base64
 				$sResult = $sResponse
 		EndSwitch
-	Else
-		$sResult = ''
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
