@@ -783,7 +783,7 @@ EndFunc   ;==>_WD_LoadWait
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
-	Local $sResponse, $sResult = "", $iErr, $dBinary
+	Local $sResponse, $vResult = "", $iErr, $dBinary
 
 	If $sElement = Default Then $sElement = ""
 	If $iOutputType = Default Then $iOutputType = 1
@@ -796,24 +796,22 @@ Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	$iErr = @error
 
 	If $iErr = $_WD_ERROR_Success  Then
-		If $iOutputType < 3 Then
-			$dBinary = __WD_Base64Decode($sResponse)
-			If @error Then $iErr = $_WD_ERROR_GeneralError
-		EndIf
-
-		If $iErr = $_WD_ERROR_Success Then ; Recheck after __WD_Base64Decode() usage
+		If $iOutputType < 3 Then $dBinary = __WD_Base64Decode($sResponse)
+		If @error Then ; Recheck after __WD_Base64Decode() usage
+			$iErr = $_WD_ERROR_GeneralError
+		Else
 			Switch $iOutputType
 				Case 1 ; String
-					$sResult = BinaryToString($dBinary)
+					$vResult = BinaryToString($dBinary)
 				Case 2 ; Binary
-					$sResult = $dBinary
+					$vResult = $dBinary
 				Case 3 ; Base64
-					$sResult = $sResponse
+					$vResult = $sResponse
 			EndSwitch
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
 EndFunc   ;==>_WD_Screenshot
 
 ; #FUNCTION# ====================================================================================================================
