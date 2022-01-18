@@ -783,7 +783,7 @@ EndFunc   ;==>_WD_LoadWait
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
-	Local $sResponse, $sResult = "", $iErr
+	Local $sResponse, $sResult = "", $iErr, $dBinary
 
 	If $sElement = Default Then $sElement = ""
 	If $nOutputType = Default Then $nOutputType = 1
@@ -795,13 +795,13 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	EndIf
 	$iErr = @error
 
+	If $iErr = $_WD_ERROR_Success And $nOutputType < 3 Then
+		$dBinary = __WD_Base64Decode($sResponse)
+		If @error Then $iErr = $_WD_ERROR_GeneralError
+	EndIf
+
 	If $iErr = $_WD_ERROR_Success Then
-		Local $dBinary
 		Switch $nOutputType
-			Case 1, 2 ; String or Binary - pre processing
-				$dBinary = __WD_Base64Decode($sResponse)
-				If Not @error Then ContinueCase
-				$iErr = $_WD_ERROR_GeneralError
 			Case 1 ; String
 				$sResult = BinaryToString($dBinary)
 			Case 2 ; Binary
