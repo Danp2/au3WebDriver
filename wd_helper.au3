@@ -483,7 +483,6 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Description ...: This will return the number of frames/iframes in the current document context
 ; Syntax ........: _WD_GetFrameCount($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-
 ; Return values .: Success - Number of frames
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel, Danp2
@@ -1376,7 +1375,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 							$iErr = $_WD_ERROR_GeneralError
 						Else
 							For $FileItem In $FilesInZip ; Check the files in the archive separately
-								If StringRight($FileItem.Name, 4) = ".exe" then ; extract only EXE files
+								If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
 									$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
 								EndIf
 							Next
@@ -1557,14 +1556,14 @@ EndFunc   ;==>_WD_DownloadFile
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
-;				   When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
+;                  When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
 ; Related .......: _WD_Timeouts
 ; Link ..........: https://www.w3.org/TR/webdriver/#set-timeouts
 ; Example .......: _WD_SetTimeouts($sSession, 50000)
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
 	Local Const $sFuncName = "_WD_SetTimeouts"
-	Local $sTimeouts = '', $sResult = '', $bIsNull
+	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
 
 	; Build string to pass to _WD_Timeouts
 	If $iPageLoad <> Default Then
@@ -1600,7 +1599,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 
 		; Set webdriver timeouts
 		$sResult = _WD_Timeouts($sSession, $sTimeouts)
-		Local $iErr = @error
+		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success And $iPageLoad <> Default Then
 			; Adjust WinHTTP receive timeouts to prevent send/recv errors
@@ -1608,7 +1607,6 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_InvalidArgue
-		$sResult = 0
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -1893,22 +1891,22 @@ Func _WD_GetTable($sSession, $sBaseElement)
 	If @error = 0xDEAD And @extended = 0xBEEF Then
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
 		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-		
+
 		$iLines = UBound($aElements)
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/td", "", True) ; Retrieve the number of table columns by checking the first table row
 		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-		
+
 		$iColumns = UBound($aElements)
 		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/td", "", True) ; Retrieve all table cells
 		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-		
+
 		For $i = 0 To UBound($aElements) - 1
 			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
 			$iColumn = Mod($i, $iColumns)
 			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
 			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
-			
+
 		Next
 	Else
 		; Get the table element
