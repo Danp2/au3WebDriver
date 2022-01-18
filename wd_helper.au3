@@ -465,8 +465,7 @@ EndFunc   ;==>_WD_GetElementFromPoint
 ; Description ...: Return the result of the last WinHTTP request.
 ; Syntax ........: _WD_LastHTTPResult()
 ; Parameters ....: None
-; Return values .: Success - Result of last WinHTTP request
-;                  Failure - None
+; Return values .: Result of last WinHTTP request
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
