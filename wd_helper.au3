@@ -1375,7 +1375,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 							$iErr = $_WD_ERROR_GeneralError
 						Else
 							For $FileItem In $FilesInZip ; Check the files in the archive separately
-								If StringRight($FileItem.Name, 4) = ".exe" then ; extract only EXE files
+								If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
 									$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
 								EndIf
 							Next
