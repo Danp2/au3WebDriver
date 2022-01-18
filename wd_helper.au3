@@ -771,6 +771,7 @@ EndFunc   ;==>_WD_LoadWait
 ; Return values .: Success - Output of specified type (PNG format).
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
