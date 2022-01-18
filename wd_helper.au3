@@ -795,20 +795,22 @@ Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	EndIf
 	$iErr = @error
 
-	If $iErr = $_WD_ERROR_Success And $iOutputType < 3 Then
-		$dBinary = __WD_Base64Decode($sResponse)
-		If @error Then $iErr = $_WD_ERROR_GeneralError
-	EndIf
+	If $iErr = $_WD_ERROR_Success  Then
+		If $iOutputType < 3 Then
+			$dBinary = __WD_Base64Decode($sResponse)
+			If @error Then $iErr = $_WD_ERROR_GeneralError
+		EndIf
 
-	If $iErr = $_WD_ERROR_Success Then ; it need to be rechecked after __WD_Base64Decode() usage
-		Switch $iOutputType
-			Case 1 ; String
-				$sResult = BinaryToString($dBinary)
-			Case 2 ; Binary
-				$sResult = $dBinary
-			Case 3 ; Base64
-				$sResult = $sResponse
-		EndSwitch
+		If $iErr = $_WD_ERROR_Success Then ; Recheck after __WD_Base64Decode() usage
+			Switch $iOutputType
+				Case 1 ; String
+					$sResult = BinaryToString($dBinary)
+				Case 2 ; Binary
+					$sResult = $dBinary
+				Case 3 ; Base64
+					$sResult = $sResponse
+			EndSwitch
+		EndIf
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
