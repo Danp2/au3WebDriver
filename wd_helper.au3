@@ -761,17 +761,16 @@ EndFunc   ;==>_WD_LoadWait
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
 ; Description ...: Takes a screenshot of the Window or Element.
-; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $nOutputType = Default]])
+; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $iOutputType = Default]])
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
 ;                  $sElement    - [optional] Element ID from _WD_FindElement
-;                  $nOutputType - [optional] One of the following output types:
+;                  $iOutputType - [optional] One of the following output types:
 ;                  |1 - String (Default)
 ;                  |2 - Binary
 ;                  |3 - Base64
 ; Return values .: Success - Output of specified type (PNG format).
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
-;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
@@ -782,12 +781,13 @@ EndFunc   ;==>_WD_LoadWait
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
+Func _WD_Screenshot($sSession, $sElement = Default,
+	OutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
 	Local $sResponse, $sResult = "", $iErr, $dBinary
 
 	If $sElement = Default Then $sElement = ""
-	If $nOutputType = Default Then $nOutputType = 1
+	If $iOutputType = Default Then $iOutputType = 1
 
 	If $sElement = '' Then
 		$sResponse = _WD_Window($sSession, 'Screenshot')
@@ -796,13 +796,13 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	EndIf
 	$iErr = @error
 
-	If $iErr = $_WD_ERROR_Success And $nOutputType < 3 Then
+	If $iErr = $_WD_ERROR_Success And $iOutputType < 3 Then
 		$dBinary = __WD_Base64Decode($sResponse)
 		If @error Then $iErr = $_WD_ERROR_GeneralError
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
-		Switch $nOutputType
+		Switch $iOutputType
 			Case 1 ; String
 				$sResult = BinaryToString($dBinary)
 			Case 2 ; Binary
