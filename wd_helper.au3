@@ -798,7 +798,7 @@ Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
 	If $iErr = $_WD_ERROR_Success Then
 		Local $dBinary
 		Switch $nOutputType
-			Case 1, 2 ; String or Binary
+			Case 1, 2 ; String or Binary - pre processing
 				$dBinary = __WD_Base64Decode($sResponse)
 				If Not @error Then ContinueCase
 				$iErr = $_WD_ERROR_GeneralError
