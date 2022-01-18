@@ -1837,35 +1837,6 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_ElementActionEx
 
-Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
-	Local $sAction = _
-			'{' & _
-			'	"actions": [' & _
-			'		' & $sPreAction & _
-			'		{' & _ ; Default "hover" action
-			'			"id":"hover",' & _
-			'			"type":"pointer",' & _
-			'			"parameters": {"pointerType": "mouse"},' & _
-			'			"actions": [' & _
-			'				{' & _
-			'					"type": "pointerMove"' & ',' & _
-			'					"duration": 100' & ',' & _
-			'					"x": ' & $iXOffset & ',' & _
-			'					"y": ' & $iYOffset & ',' & _
-			' 					"origin": {' & _
-			' 						"ELEMENT": "' & $sElement & '",' & _
-			' 						"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"' & _
-			' 					}' & _
-			'				}' & _
-			'				' & $sPostHoverAction & _
-			"			]" & _ ; Close mouse actions
-			"		}" & _
-			"		" & $sPostAction & _
-			"	]" & _ ; Close main action
-			"}"
-	Return $sAction
-EndFunc   ;==>__WD_ElementBuildActionString
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table.
@@ -2052,6 +2023,53 @@ Func __WD_Base64Decode($input_string)
 	Return DllStructGetData($a, 1)
 
 EndFunc   ;==>__WD_Base64Decode
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_ElementBuildActionString
+; Description ...: JSON String builder for _WD_ElementActionEx
+; Syntax ........: __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+; Parameters ....: $sPreAction          - a string value declared in _WD_ElementActionEx
+;                  $iXOffset            - an integer value declared in _WD_ElementActionEx
+;                  $iYOffset            - an integer value declared in _WD_ElementActionEx
+;                  $sElement            - a string value declared in _WD_ElementActionEx
+;                  $sPostHoverAction    - a string value declared in _WD_ElementActionEx
+;                  $sPostAction         - a string value declared in _WD_ElementActionEx
+; Return values .: Formatted JSON string
+; Author ........: Danp2
+; Modified ......: mLipok
+; Remarks .......:
+; Related .......: _WD_ElementActionEx
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+	Local $sAction = _
+			'{' & _
+			'	"actions": [' & _ ; Open main action
+			'		' & $sPreAction & _
+			'		{' & _ ; Start of default "hover" action
+			'			"id":"hover",' & _
+			'			"type":"pointer",' & _
+			'			"parameters": {"pointerType": "mouse"},' & _
+			'			"actions": [' & _ ; Open mouse actions
+			'				{' & _
+			'					"type": "pointerMove"' & ',' & _
+			'					"duration": 100' & '' & _
+			'					"x": ' & $iXOffset & ',' & _
+			'					"y": ' & $iYOffset & ',' & _
+			' 					"origin": {' & _
+			' 						"ELEMENT": "' & $sElement & '",' & _
+			' 						"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"' & _
+			' 					}' & _
+			'				}' & _
+			'				' & $sPostHoverAction & _
+			"			]" & _ ; Close mouse actions
+			"		}" & _ ; End of default "hover" action
+			"		" & $sPostAction & _
+			"	]" & _ ; Close main action
+			"}"
+	Return $sAction
+EndFunc   ;==>__WD_ElementBuildActionString
 
 Func __WD_ErrHnd()
 
