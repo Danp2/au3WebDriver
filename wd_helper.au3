@@ -801,7 +801,7 @@ Func _WD_Screenshot($sSession, $sElement = Default,
 		If @error Then $iErr = $_WD_ERROR_GeneralError
 	EndIf
 
-	If $iErr = $_WD_ERROR_Success Then
+	If $iErr = $_WD_ERROR_Success Then ; it need to be rechecked after __WD_Base64Decode() usage
 		Switch $iOutputType
 			Case 1 ; String
 				$sResult = BinaryToString($dBinary)
