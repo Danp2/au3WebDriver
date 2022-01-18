@@ -1171,8 +1171,6 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement, Default, $_WD_JSON_Value)
 			$iErr = @error
 			If @error Then $sResult = "0"
-		Else
-			$sResult = "0"
 		EndIf
 	EndIf
 
