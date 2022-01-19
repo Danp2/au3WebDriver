@@ -479,7 +479,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
-; Description ...: This will return the number of frames/iframes in the current document context
+; Description ...: Returns the number of frames/iframes in the current document context.
 ; Syntax ........: _WD_GetFrameCount($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Number of frames
@@ -501,7 +501,7 @@ EndFunc   ;==>_WD_GetFrameCount
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_IsWindowTop
-; Description ...: This will return a boolean of the session being at the top level, or in a frame(s).
+; Description ...: Returns a boolean of the session being at the top level, or in a frame(s).
 ; Syntax ........: _WD_IsWindowTop($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Boolean response.
@@ -522,7 +522,7 @@ EndFunc   ;==>_WD_IsWindowTop
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameEnter
-; Description ...: This will enter the specified frame for subsequent WebDriver operations.
+; Description ...: Enter the specified frame.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
 ;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword)
@@ -571,7 +571,7 @@ EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameLeave
-; Description ...: This will leave the current frame, to its parent, not necessarily the Top, for subsequent WebDriver operations.
+; Description ...: Leave the current frame, to its parent.
 ; Syntax ........: _WD_FrameLeave($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True.
