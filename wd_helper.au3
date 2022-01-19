@@ -760,10 +760,10 @@ EndFunc   ;==>_WD_LoadWait
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
 ; Description ...: Takes a screenshot of the Window or Element.
-; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $nOutputType = Default]])
+; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $iOutputType = Default]])
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
 ;                  $sElement    - [optional] Element ID from _WD_FindElement
-;                  $nOutputType - [optional] One of the following output types:
+;                  $iOutputType - [optional] One of the following output types:
 ;                  |1 - String (Default)
 ;                  |2 - Binary
 ;                  |3 - Base64
@@ -771,44 +771,48 @@ EndFunc   ;==>_WD_LoadWait
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_Window, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Screenshot($sSession, $sElement = Default, $nOutputType = Default)
+Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
-	Local $sResponse, $sResult, $iErr
+	Local $sResponse, $vResult = "", $iErr, $dBinary
 
 	If $sElement = Default Then $sElement = ""
-	If $nOutputType = Default Then $nOutputType = 1
+	If $iOutputType = Default Then $iOutputType = 1
 
 	If $sElement = '' Then
 		$sResponse = _WD_Window($sSession, 'Screenshot')
-		$iErr = @error
 	Else
 		$sResponse = _WD_ElementAction($sSession, $sElement, 'Screenshot')
-		$iErr = @error
 	EndIf
+	$iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		Switch $nOutputType
-			Case 1 ; String
-				$sResult = BinaryToString(__WD_Base64Decode($sResponse))
-			Case 2 ; Binary
-				$sResult = __WD_Base64Decode($sResponse)
-			Case 3 ; Base64
-				$sResult = $sResponse
-		EndSwitch
-	Else
-		$sResult = ''
+		If $iOutputType < 3 Then
+			$dBinary = __WD_Base64Decode($sResponse)
+			If @error Then $iErr = $_WD_ERROR_GeneralError
+		EndIf
+		If $iErr = $_WD_ERROR_Success Then ; Recheck after __WD_Base64Decode() usage
+			Switch $iOutputType
+				Case 1 ; String
+					$vResult = BinaryToString($dBinary)
+				Case 2 ; Binary
+					$vResult = $dBinary
+				Case 3 ; Base64
+					$vResult = $sResponse
+			EndSwitch
+		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
 EndFunc   ;==>_WD_Screenshot
 
 ; #FUNCTION# ====================================================================================================================
