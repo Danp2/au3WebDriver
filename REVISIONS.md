@@ -1,5 +1,24 @@
+	v0.5.1.0
+	- Changed: _WD_GetElementFromPoint
+		- Sets @Extended to shown context changed
+		- Additional error checking
+	- Changed (_WD_ExecuteScript): Add support for return of additional subnodes
+	- Added: $_WD_JSON_* constants
+	- Chore: Update various functions to use $_WD_JSON_* constants
+	- Changed (_WD_GetBrowserVersion): Returns "0" on failure instead of "" 			*** Script breaking change ***
+	- Changed (_WD_GetWebDriverVersion): Returns "0" on failure instead of "None" 		*** Script breaking change ***
+	- Changed: _WD_UpdateDriver
+		- Added checks for valid installation directory
+		- Added check for existing 32/64 bit driver
+		- Fixed $bForce / $KEYWORD_NULL implementation
+		- Improved version comparison
+		- Improved zip extraction
+		- Fixed regex used with geckodriver
+	- Changed (_WD_Screenshot): Improved error handling
+	- Fixed (_WD_GetShadowRoot, _WD_SelectFiles, _WD_SetTimeouts): Correctly initialize return value
+
 	v0.5.0.3
-	- Changed (_WD_ExecuteScript): Optionally return value node instead of raw JSON (mLipok)
+	- Changed (_WD_ExecuteScript): Optionally return value node instead of entire JSON response (mLipok)
 	- Changed (_WD_ElementActionEx): Added support for "check" and "uncheck" commands (TheDcoder)
 	- Changed (_WD_GetElementFromPoint): Added support for frames
 	- Fixed (_WD_ElementAction): Return raw response for 'shadow' command
