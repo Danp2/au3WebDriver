@@ -772,6 +772,7 @@ EndFunc   ;==>_WD_LoadWait
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
