@@ -314,7 +314,7 @@ Func _WD_GetSession($sSession)
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
 	EndIf
-	#ce
+	#ce See remarks in header
 
 	$sResult = $_WD_SESSION_DETAILS
 
