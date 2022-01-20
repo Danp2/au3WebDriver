@@ -1783,23 +1783,23 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @cr & _
-					__WD_JsonButtonAction($iButton, "pointerUp") & @cr & _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @cr & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
+					__WD_JsonButtonAction($iButton, "pointerUp") & @CR & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 		Case 'rightclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction("2", "pointerDown") & @cr & _
+					__WD_JsonButtonAction("2", "pointerDown") & @CR & _
 					__WD_JsonButtonAction("2", "pointerUp")
 
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @cr & _
-					', {' & @cr & _
-					'	"type": "pause"' & @cr & _
-					'	,"duration": ' & $iHoldDelay & @cr & _
-					'}' & @cr & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
+					', {' & @CR & _
+					'	"type": "pause"' & @CR & _
+					'	,"duration": ' & $iHoldDelay & @CR & _
+					'}' & @CR & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 		Case 'hide'
@@ -1817,33 +1817,33 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
-					'{' & @cr & _
-					'	"type": "key"' & @cr & _
-					'	,"id": "keyboard_1"' & @cr & _
-					'	,"actions": [' & @cr & _
-					'		{' & @cr & _
-					'			"type": "keyDown"' & @cr & _
-					'			,"value": "' & $sModifier & @cr & _
-					'		}' & @cr & _
-					'	]' & @cr & _
+					'{' & @CR & _
+					'	"type": "key"' & @CR & _
+					'	,"id": "keyboard_1"' & @CR & _
+					'	,"actions": [' & @CR & _
+					'		{' & @CR & _
+					'			"type": "keyDown"' & @CR & _
+					'			,"value": "' & $sModifier & @CR & _
+					'		}' & @CR & _
+					'	]' & @CR & _
 					'},'
 
 			; Perform click
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @cr & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 			; Release modifier key
 			$sPostAction = _
-					',{' & @cr & _
-					'	"type": "key"' & @cr & _
-					'	,"id": "keyboard_2"' & @cr & _
-					'	,"actions": [' & @cr & _
-					'		{' & @cr & _
-					'			"type": "keyUp"' & @cr & _
-					'			,"value": "' & $sModifier & '"' & @cr & _
-					'		}' & @cr & _
-					'	]' & @cr & _
+					',{' & @CR & _
+					'	"type": "key"' & @CR & _
+					'	,"id": "keyboard_2"' & @CR & _
+					'	,"actions": [' & @CR & _
+					'		{' & @CR & _
+					'			"type": "keyUp"' & @CR & _
+					'			,"value": "' & $sModifier & '"' & @CR & _
+					'		}' & @CR & _
+					'	]' & @CR & _
 					'}'
 
 		Case 'check', 'uncheck'
