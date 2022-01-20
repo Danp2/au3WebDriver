@@ -458,6 +458,7 @@ Func _USER_WD_Sleep($iDelay)
 EndFunc   ;==>_USER_WD_Sleep
 
 Func SetupGecko()
+	_WD_UpdateDriver('firefox', @ScriptDir , False)
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
@@ -473,6 +474,7 @@ Func SetupGecko()
 EndFunc   ;==>SetupGecko
 
 Func SetupChrome()
+	_WD_UpdateDriver('chrome', @ScriptDir , False)
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
@@ -488,6 +490,7 @@ Func SetupChrome()
 EndFunc   ;==>SetupChrome
 
 Func SetupEdge()
+	_WD_UpdateDriver('msedge', @ScriptDir , False)
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
