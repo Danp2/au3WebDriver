@@ -1846,9 +1846,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 					'	]' & _
 					'}'
 
-		Case 'check'
-			ContinueCase
-		Case 'uncheck'
+		Case 'check', 'uncheck'
 			$iActionType = 2
 			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
