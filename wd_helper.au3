@@ -2088,8 +2088,8 @@ Func __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElemen
 			'	"actions": [' & @CR & _ ; Open main action
 			'		' & $sPreAction & @CR & _
 			'		{' & @CR & _ ; Start of default "hover" action
-			'			"id":"hover"' & @CR & _
-			'			,"type":"pointer"' & @CR & _
+			'			"id": "hover"' & @CR & _
+			'			,"type": "pointer"' & @CR & _
 			'			,"parameters": {"pointerType": "mouse"}' & @CR & _
 			'			,"actions": [' & @CR & _ ; Open mouse actions
 			'				{' & @CR & _
@@ -2151,5 +2151,5 @@ EndFunc   ;==>__WD_JsonButtonAction
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_JsonElement($sElement)
-	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
+	Return '{"' & $_WD_ELEMENT_ID & '": "' & $sElement & '"}'
 EndFunc   ;==>__WD_JsonElement
