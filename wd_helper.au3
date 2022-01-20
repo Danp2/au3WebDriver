@@ -1746,7 +1746,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
-; Related .......: _WD_ElementAction, _WD_Action
+; Related .......: _WD_ElementAction, _WD_Action, __WD_ElementActionExStringBuilder, __WD_JsonButtonAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1783,33 +1783,24 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					',{"button": ' & $iButton & ', "type": "pointerDown"}' & _
-					',{"button": ' & $iButton & ', "type": "pointerUp"}' & _
-					',{"button": ' & $iButton & ', "type": "pointerDown"}' & _
-					',{"button": ' & $iButton & ', "type": "pointerUp"}'
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
+					__WD_JsonButtonAction($iButton, "pointerUp") & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
+					__WD_JsonButtonAction($iButton, "pointerUp")
 
 		Case 'rightclick'
 			$sPostHoverAction = _
-					',{' & _
-					'	"button": 2' & _
-					'	,"type": "pointerDown"}' & _
-					',{' & _
-					'	"button": 2' & _
-					'	,"type": "pointerUp"' & _
-					'}'
+					__WD_JsonButtonAction("2", "pointerDown") & _
+					__WD_JsonButtonAction("2", "pointerUp")
 
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					',{' & _
-					'	"button": ' & $iButton & _
-					'	,"type": "pointerDown"' & _
-					'}, {' & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
+					', {' & _
 					'	"type": "pause"' & _
 					'	,"duration": ' & $iHoldDelay & _
-					'}, {' & _
-					'	"button": ' & $iButton & _
-					'	,"type": "pointerUp"' & _
-					'}'
+					'}' & _
+					__WD_JsonButtonAction($iButton, "pointerUp") & _
 
 		Case 'hide'
 			$iActionType = 2
@@ -1839,13 +1830,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 			; Perform click
 			$sPostHoverAction = _
-					',{' & _
-					'	"button":' & $iButton & _
-					'	,"type": "pointerDown"' & _
-					'}, {' & _
-					'	"button": ' & $iButton & _
-					'	,"type": "pointerUp"' & _
-					'}'
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
+					__WD_JsonButtonAction($iButton, "pointerUp")
 
 			; Release modifier key
 			$sPostAction = _
@@ -2122,3 +2108,20 @@ EndFunc   ;==>__WD_ElementBuildActionString
 Func __WD_ErrHnd()
 
 EndFunc   ;==>__WD_ErrHnd
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_JsonButtonAction
+; Description ...: Create JSON string for button actions
+; Syntax ........: __WD_JsonButtonAction($iButton, $sAction)
+; Parameters ....: $iButton             - an integer value.
+;                  $sAction             - a string value.
+; Return values .: Formatted JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_ElementActionEx
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_JsonButtonAction($iButton, $sAction)
+	Return ',{"button": ' & $iButton & ', "type": "' & $sAction & '"}'
+EndFunc   ;==>__WD_JsonButtonAction
