@@ -1750,7 +1750,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
-; Related .......: _WD_ElementAction, _WD_Action, __WD_ElementActionExJsonBuilder, __WD_JsonButtonAction
+; Related .......: _WD_ElementAction, _WD_Action, __WD_ElementActionExJsonTemplate, __WD_JsonButtonAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1787,23 +1787,23 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
-					__WD_JsonButtonAction($iButton, "pointerUp") & @CR & _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
+					__WD_JsonButtonAction($iButton, "pointerDown")  & _
+					__WD_JsonButtonAction($iButton, "pointerUp")  & _
+					__WD_JsonButtonAction($iButton, "pointerDown")  & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 		Case 'rightclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction("2", "pointerDown") & @CR & _
+					__WD_JsonButtonAction("2", "pointerDown")  & _
 					__WD_JsonButtonAction("2", "pointerUp")
 
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
-					', {' & @CR & _
-					'	"type": "pause"' & @CR & _
-					'	,"duration": ' & $iHoldDelay & @CR & _
-					'}' & @CR & _
+					__WD_JsonButtonAction($iButton, "pointerDown")  & _
+					', {'  & _
+					'	"type":"pause"'  & _
+					'	,"duration":' & $iHoldDelay  & _
+					'}'  & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 		Case 'hide'
@@ -1821,33 +1821,33 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
-					'{' & @CR & _
-					'	"type": "key"' & @CR & _
-					'	,"id": "keyboard_1"' & @CR & _
-					'	,"actions": [' & @CR & _
-					'		{' & @CR & _
-					'			"type": "keyDown"' & @CR & _
-					'			,"value": "' & $sModifier & @CR & _
-					'		}' & @CR & _
-					'	]' & @CR & _
+					'{'  & _
+					'	"type":"key"'  & _
+					'	,"id":"keyboard_1"'  & _
+					'	,"actions":['  & _
+					'		{'  & _
+					'			"type":"keyDown"'  & _
+					'			,"value":"' & $sModifier  & _
+					'		}'  & _
+					'	]'  & _
 					'},'
 
 			; Perform click
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & @CR & _
+					__WD_JsonButtonAction($iButton, "pointerDown")  & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 			; Release modifier key
 			$sPostAction = _
-					',{' & @CR & _
-					'	"type": "key"' & @CR & _
-					'	,"id": "keyboard_2"' & @CR & _
-					'	,"actions": [' & @CR & _
-					'		{' & @CR & _
-					'			"type": "keyUp"' & @CR & _
-					'			,"value": "' & $sModifier & '"' & @CR & _
-					'		}' & @CR & _
-					'	]' & @CR & _
+					',{'  & _
+					'	"type":"key"'  & _
+					'	,"id":"keyboard_2"'  & _
+					'	,"actions":['  & _
+					'		{'  & _
+					'			"type":"keyUp"'  & _
+					'			,"value":"' & $sModifier & '"'  & _
+					'		}'  & _
+					'	]'  & _
 					'}'
 
 		Case 'check', 'uncheck'
@@ -1861,7 +1861,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $iActionType
 		Case 1
-			$sAction = __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+			Local Static $sJSONTemplate = __WD_ElementActionExJsonTemplate()
+			$sAction = StringFormat($sJSONTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction)
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
 		Case 2
@@ -2065,16 +2066,11 @@ Func __WD_Base64Decode($input_string)
 EndFunc   ;==>__WD_Base64Decode
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_ElementActionExJsonBuilder
-; Description ...: JSON String builder for _WD_ElementActionEx
-; Syntax ........:__WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
-; Parameters ....: $sPreAction          - a string value declared in _WD_ElementActionEx
-;                  $iXOffset            - an integer value declared in _WD_ElementActionEx
-;                  $iYOffset            - an integer value declared in _WD_ElementActionEx
-;                  $sElement            - a string value declared in _WD_ElementActionEx
-;                  $sPostHoverAction    - a string value declared in _WD_ElementActionEx
-;                  $sPostAction         - a string value declared in _WD_ElementActionEx
-; Return values .: Formatted JSON string
+; Name ..........: __WD_ElementActionExJsonTemplate
+; Description ...: create JSON String Template for _WD_ElementActionEx
+; Syntax ........: __WD_ElementActionExJsonTemplate()
+; Parameters ....: None
+; Return values .: JSON string template
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -2082,39 +2078,35 @@ EndFunc   ;==>__WD_Base64Decode
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+Func __WD_ElementActionExJsonTemplate()
 	Local $sAction = _
-			'{' & @CR & _
-			'	"actions": [' & @CR & _ ; Open main action
-			$sPreAction & @CR & _
-			'		{' & @CR & _ ; Start of default "hover" action
-			'			"id": "hover"' & @CR & _
-			'			,"type": "pointer"' & @CR & _
-			'			,"parameters": {"pointerType": "mouse"}' & @CR & _
-			'			,"actions": [' & @CR & _ ; Open mouse actions
-			'				{' & @CR & _
-			'					"type": "pointerMove"' & @CR & _
-			'					,"duration": 100' & @CR & _
-			'					,"x": ' & $iXOffset & @CR & _
-			'					,"y": ' & $iYOffset & @CR & _
-			' 					,"origin": {' & @CR & _
-			' 						"ELEMENT": "' & $sElement & '"' & @CR & _
-			' 						,"' & $_WD_ELEMENT_ID & '": "' & $sElement & '"' & @CR & _
-			' 					}' & @CR & _
-			'				}' & @CR & _
-			$sPostHoverAction & @CR & _
-			'			]' & @CR & _ ; Close mouse actions
-			'		}' & @CR & _ ; End of default 'hover' action
-			$sPostAction & @CR & _
-			'	]' & @CR & _ ; Close main action
+			'{'  & _
+			'	"actions":['  & _ ; Open main action
+			'		%s'  & _ ; %s > $sPreAction
+			'		{'  & _ ; Start of default "hover" action
+			'			"id":"hover"'  & _
+			'			,"type":"pointer"'  & _
+			'			,"parameters":{"pointerType":"mouse"}'  & _
+			'			,"actions":['  & _ ; Open mouse actions
+			'				{'  & _
+			'					"type":"pointerMove"'  & _
+			'					,"duration":100'  & _
+			'					,"x":%s'  & _ ; %s > $iXOffset
+			'					,"y":%s'  & _ ; %s > $iYOffset
+			' 					,"origin":{'  & _
+			' 						"ELEMENT":"%s"'  & _ ; %s > $sElement
+			' 						,"' & $_WD_ELEMENT_ID & '":"%s"'  & _ ; %s > $sElement
+			' 					}'  & _
+			'				}'  & _
+			'				%s'  & _ ; %s > $sPostHoverAction
+			'			]'  & _ ; Close mouse actions
+			'		}'  & _ ; End of default 'hover' action
+			'		%s'  & _ ; %s > $sPostAction
+			'	]'  & _ ; Close main action
 			'}'
-;~ 	ConsoleWrite($sAction & @CRLF) ; Only for testing
-	; The @CR are only for testing purposes, for better / easier JSON analysis
-	; The JSON string sent to WebDriver should not contain the end of the line
-	$sAction = StringRegExpReplace($sAction, '[\r\t]', '')
-;~ 	ConsoleWrite(@CRLF & $sAction & @CRLF) ; Only for testing
-	Return $sAction
-EndFunc   ;==>__WD_ElementActionExJsonBuilder
+
+	Return StringReplace($sAction, @TAB, '')
+EndFunc   ;==>__WD_ElementActionExJsonTemplate
 
 Func __WD_ErrHnd()
 
