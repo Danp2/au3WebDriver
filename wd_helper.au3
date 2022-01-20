@@ -2109,6 +2109,9 @@ Func __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElemen
 			"	]" & @CR & _ ; Close main action
 			"}"
 ;~ 	ConsoleWrite($sAction & @CRLF) ; Only for testing
+	; The @CR are only for testing purposes, for better / easier JSON analysis
+	; The JSON string sent to WebDriver should not contain the end of the line
+	$sAction = StringReplace($sAction, @CR, '') 
 	Return $sAction
 EndFunc   ;==>__WD_ElementActionExJsonBuilder
 
