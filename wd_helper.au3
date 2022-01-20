@@ -1794,8 +1794,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'rightclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction("2", "pointerDown") & _
-					__WD_JsonButtonAction("2", "pointerUp")
+					__WD_JsonButtonAction(2, "pointerDown") & _
+					__WD_JsonButtonAction(2, "pointerUp")
 
 		Case 'clickandhold'
 			$sPostHoverAction = _
