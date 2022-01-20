@@ -2086,7 +2086,7 @@ Func __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElemen
 	Local $sAction = _
 			'{' & @CR & _
 			'	"actions": [' & @CR & _ ; Open main action
-			'		' & $sPreAction & @CR & _
+			$sPreAction & @CR & _
 			'		{' & @CR & _ ; Start of default "hover" action
 			'			"id": "hover"' & @CR & _
 			'			,"type": "pointer"' & @CR & _
@@ -2102,16 +2102,17 @@ Func __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElemen
 			' 						,"' & $_WD_ELEMENT_ID & '": "' & $sElement & '"' & @CR & _
 			' 					}' & @CR & _
 			'				}' & @CR & _
-			'				' & $sPostHoverAction & @CR & _
-			"			]" & @CR & _ ; Close mouse actions
-			"		}" & @CR & _ ; End of default "hover" action
-			"		" & $sPostAction & @CR & _
-			"	]" & @CR & _ ; Close main action
-			"}"
+			$sPostHoverAction & @CR & _
+			'			]' & @CR & _ ; Close mouse actions
+			'		}' & @CR & _ ; End of default 'hover' action
+			$sPostAction & @CR & _
+			'	]' & @CR & _ ; Close main action
+			'}'
 ;~ 	ConsoleWrite($sAction & @CRLF) ; Only for testing
 	; The @CR are only for testing purposes, for better / easier JSON analysis
 	; The JSON string sent to WebDriver should not contain the end of the line
-	$sAction = StringReplace($sAction, @CR, '') 
+	$sAction = StringRegExpReplace($sAction, '[\r\t]', '')
+;~ 	ConsoleWrite(@CRLF & $sAction & @CRLF) ; Only for testing
 	Return $sAction
 EndFunc   ;==>__WD_ElementActionExJsonBuilder
 
