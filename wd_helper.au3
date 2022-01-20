@@ -1787,23 +1787,23 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown")  & _
-					__WD_JsonButtonAction($iButton, "pointerUp")  & _
-					__WD_JsonButtonAction($iButton, "pointerDown")  & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
+					__WD_JsonButtonAction($iButton, "pointerUp") & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 		Case 'rightclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction("2", "pointerDown")  & _
+					__WD_JsonButtonAction("2", "pointerDown") & _
 					__WD_JsonButtonAction("2", "pointerUp")
 
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown")  & _
-					', {'  & _
-					'	"type":"pause"'  & _
-					'	,"duration":' & $iHoldDelay  & _
-					'}'  & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
+					', {' & _
+					'	"type":"pause"' & _
+					'	,"duration":' & $iHoldDelay & _
+					'}' & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 		Case 'hide'
@@ -1821,33 +1821,33 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
-					'{'  & _
-					'	"type":"key"'  & _
-					'	,"id":"keyboard_1"'  & _
-					'	,"actions":['  & _
-					'		{'  & _
-					'			"type":"keyDown"'  & _
-					'			,"value":"' & $sModifier  & _
-					'		}'  & _
-					'	]'  & _
+					'{' & _
+					'	"type":"key"' & _
+					'	,"id":"keyboard_1"' & _
+					'	,"actions":[' & _
+					'		{' & _
+					'			"type":"keyDown"' & _
+					'			,"value":"' & $sModifier & _
+					'		}' & _
+					'	]' & _
 					'},'
 
 			; Perform click
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown")  & _
+					__WD_JsonButtonAction($iButton, "pointerDown") & _
 					__WD_JsonButtonAction($iButton, "pointerUp")
 
 			; Release modifier key
 			$sPostAction = _
-					',{'  & _
-					'	"type":"key"'  & _
-					'	,"id":"keyboard_2"'  & _
-					'	,"actions":['  & _
-					'		{'  & _
-					'			"type":"keyUp"'  & _
-					'			,"value":"' & $sModifier & '"'  & _
-					'		}'  & _
-					'	]'  & _
+					',{' & _
+					'	"type":"key"' & _
+					'	,"id":"keyboard_2"' & _
+					'	,"actions":[' & _
+					'		{' & _
+					'			"type":"keyUp"' & _
+					'			,"value":"' & $sModifier & '"' & _
+					'		}' & _
+					'	]' & _
 					'}'
 
 		Case 'check', 'uncheck'
@@ -2080,29 +2080,29 @@ EndFunc   ;==>__WD_Base64Decode
 ; ===============================================================================================================================
 Func __WD_ElementActionExJsonTemplate()
 	Local $sAction = _
-			'{'  & _
-			'	"actions":['  & _ ; Open main action
-			'		%s'  & _ ; %s > $sPreAction
-			'		{'  & _ ; Start of default "hover" action
-			'			"id":"hover"'  & _
-			'			,"type":"pointer"'  & _
-			'			,"parameters":{"pointerType":"mouse"}'  & _
-			'			,"actions":['  & _ ; Open mouse actions
-			'				{'  & _
-			'					"type":"pointerMove"'  & _
-			'					,"duration":100'  & _
-			'					,"x":%s'  & _ ; %s > $iXOffset
-			'					,"y":%s'  & _ ; %s > $iYOffset
-			' 					,"origin":{'  & _
-			' 						"ELEMENT":"%s"'  & _ ; %s > $sElement
-			' 						,"' & $_WD_ELEMENT_ID & '":"%s"'  & _ ; %s > $sElement
-			' 					}'  & _
-			'				}'  & _
-			'				%s'  & _ ; %s > $sPostHoverAction
-			'			]'  & _ ; Close mouse actions
-			'		}'  & _ ; End of default 'hover' action
-			'		%s'  & _ ; %s > $sPostAction
-			'	]'  & _ ; Close main action
+			'{' & _
+			'	"actions":[' & _  ; Open main action
+			'		%s' & _  ; %s > $sPreAction
+			'		{' & _  ; Start of default "hover" action
+			'			"id":"hover"' & _
+			'			,"type":"pointer"' & _
+			'			,"parameters":{"pointerType":"mouse"}' & _
+			'			,"actions":[' & _  ; Open mouse actions
+			'				{' & _
+			'					"type":"pointerMove"' & _
+			'					,"duration":100' & _
+			'					,"x":%s' & _  ; %s > $iXOffset
+			'					,"y":%s' & _  ; %s > $iYOffset
+			' 					,"origin":{' & _
+			' 						"ELEMENT":"%s"' & _  ; %s > $sElement
+			' 						,"' & $_WD_ELEMENT_ID & '":"%s"' & _  ; %s > $sElement
+			' 					}' & _
+			'				}' & _
+			'				%s' & _  ; %s > $sPostHoverAction
+			'			]' & _  ; Close mouse actions
+			'		}' & _  ; End of default 'hover' action
+			'		%s' & _  ; %s > $sPostAction
+			'	]' & _  ; Close main action
 			'}'
 
 	Return StringReplace($sAction, @TAB, '')
