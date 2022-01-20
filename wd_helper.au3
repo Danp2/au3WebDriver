@@ -1746,7 +1746,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
-; Related .......: _WD_ElementAction, _WD_Action, __WD_ElementActionExStringBuilder, __WD_JsonButtonAction
+; Related .......: _WD_ElementAction, _WD_Action, __WD_ElementActionExJsonBuilder, __WD_JsonButtonAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1857,7 +1857,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $iActionType
 		Case 1
-			$sAction = __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+			$sAction = __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
 		Case 2
@@ -2057,9 +2057,9 @@ Func __WD_Base64Decode($input_string)
 EndFunc   ;==>__WD_Base64Decode
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_ElementBuildActionString
+; Name ..........: __WD_ElementActionExJsonBuilder
 ; Description ...: JSON String builder for _WD_ElementActionEx
-; Syntax ........: __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+; Syntax ........:__WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
 ; Parameters ....: $sPreAction          - a string value declared in _WD_ElementActionEx
 ;                  $iXOffset            - an integer value declared in _WD_ElementActionEx
 ;                  $iYOffset            - an integer value declared in _WD_ElementActionEx
@@ -2074,7 +2074,7 @@ EndFunc   ;==>__WD_Base64Decode
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
+Func __WD_ElementActionExJsonBuilder($sPreAction, $iXOffset, $iYOffset, $sElement, $sPostHoverAction, $sPostAction)
 	Local $sAction = _
 			'{' & @CR & _
 			'	"actions": [' & @CR & _ ; Open main action
@@ -2102,7 +2102,7 @@ Func __WD_ElementBuildActionString($sPreAction, $iXOffset, $iYOffset, $sElement,
 			"}"
 ;~ 	ConsoleWrite($sAction & @CRLF) ; Only for testing
 	Return $sAction
-EndFunc   ;==>__WD_ElementBuildActionString
+EndFunc   ;==>__WD_ElementActionExJsonBuilder
 
 Func __WD_ErrHnd()
 
