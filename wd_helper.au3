@@ -1750,7 +1750,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements function in wd_demo
-; Related .......: _WD_ElementAction, _WD_Action, __WD_ElementActionExJsonTemplate, __WD_JsonButtonAction
+; Related .......: _WD_ElementAction, _WD_Action
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2074,7 +2074,7 @@ EndFunc   ;==>__WD_Base64Decode
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ElementActionEx
+; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2122,7 +2122,7 @@ EndFunc   ;==>__WD_ErrHnd
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ElementActionEx
+; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
