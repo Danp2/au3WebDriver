@@ -2099,8 +2099,8 @@ EndFunc   ;==>__WD_ErrHnd
 ; Name ..........: __WD_JsonButtonAction
 ; Description ...: Create JSON string for button actions
 ; Syntax ........: __WD_JsonButtonAction($iButton, $sAction)
-; Parameters ....: $iButton             - an integer value declared in _WD_ElementActionEx
-;                  $sAction             - a string value declared in _WD_ElementActionEx
+; Parameters ....: $iButton             - an integer value - button that should be used for the action
+;                  $sAction             - a string value - action type that should be performed
 ; Return values .: Formatted JSON string
 ; Author ........: Danp2
 ; Modified ......: mLipok
