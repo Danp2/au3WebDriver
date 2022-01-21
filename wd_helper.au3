@@ -1859,10 +1859,36 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	EndSwitch
 
+	Local Static $sActionTemplate = StringReplace( _ ; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
+			'{' & _
+			'	"actions":[' & _ ; Open main action
+			'		%s' & _ ; %s > $sPreAction
+			'		{' & _ ; Start of default "hover" action
+			'			"id":"hover"' & _
+			'			,"type":"pointer"' & _
+			'			,"parameters":{"pointerType":"mouse"}' & _
+			'			,"actions":[' & _ ; Open mouse actions
+			'				{' & _
+			'					"type":"pointerMove"' & _
+			'					,"duration":100' & _
+			'					,"x":%s' & _ ; %s > $iXOffset
+			'					,"y":%s' & _ ; %s > $iYOffset
+			'					,"origin":{' & _
+			'						"ELEMENT":"%s"' & _ ; %s > $sElement
+			'						,"' & $_WD_ELEMENT_ID & '":"%s"' & _ ; %s > $sElement
+			'					}' & _
+			'				}' & _
+			'				%s' & _ ; %s > $sPostHoverAction
+			'			]' & _ ; Close mouse actions
+			'		}' & _ ; End of default 'hover' action
+			'		%s' & _ ; %s > $sPostAction
+			'	]' & _ ; Close main action
+			'}', @TAB, '')
+
+	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintaince
 	Switch $iActionType
 		Case 1
-			Local Static $sJSONTemplate = __WD_ElementActionExJsonTemplate()
-			$sAction = StringFormat($sJSONTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction)
+			$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction) ; StringFormat() usage is significantly faster than building JSON string each time from scratch
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
 		Case 2
@@ -2065,49 +2091,6 @@ Func __WD_Base64Decode($input_string)
 
 EndFunc   ;==>__WD_Base64Decode
 
-; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_ElementActionExJsonTemplate
-; Description ...: create JSON String Template for _WD_ElementActionEx
-; Syntax ........: __WD_ElementActionExJsonTemplate()
-; Parameters ....: None
-; Return values .: JSON string template
-; Author ........: Danp2
-; Modified ......: mLipok
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func __WD_ElementActionExJsonTemplate()
-	Local $sAction = _
-			'{' & _
-			'	"actions":[' & _  ; Open main action
-			'		%s' & _  ; %s > $sPreAction
-			'		{' & _  ; Start of default "hover" action
-			'			"id":"hover"' & _
-			'			,"type":"pointer"' & _
-			'			,"parameters":{"pointerType":"mouse"}' & _
-			'			,"actions":[' & _  ; Open mouse actions
-			'				{' & _
-			'					"type":"pointerMove"' & _
-			'					,"duration":100' & _
-			'					,"x":%s' & _  ; %s > $iXOffset
-			'					,"y":%s' & _  ; %s > $iYOffset
-			' 					,"origin":{' & _
-			' 						"ELEMENT":"%s"' & _  ; %s > $sElement
-			' 						,"' & $_WD_ELEMENT_ID & '":"%s"' & _  ; %s > $sElement
-			' 					}' & _
-			'				}' & _
-			'				%s' & _  ; %s > $sPostHoverAction
-			'			]' & _  ; Close mouse actions
-			'		}' & _  ; End of default 'hover' action
-			'		%s' & _  ; %s > $sPostAction
-			'	]' & _  ; Close main action
-			'}'
-
-	Return StringReplace($sAction, @TAB, '')
-EndFunc   ;==>__WD_ElementActionExJsonTemplate
-
 Func __WD_ErrHnd()
 
 EndFunc   ;==>__WD_ErrHnd
@@ -2128,9 +2111,9 @@ EndFunc   ;==>__WD_ErrHnd
 ; ===============================================================================================================================
 Func __WD_JsonButtonAction($iButton, $sAction)
 	Return _
-			',{' & @CR & _
-			'	"button": ' & $iButton & @CR & _
-			'	,"type": "' & $sAction & '"' & @CR & _
+			',{' & _
+			'	"button":' & $iButton & _
+			'	,"type":"' & $sAction & '"' & _
 			'}'
 EndFunc   ;==>__WD_JsonButtonAction
 
@@ -2147,5 +2130,5 @@ EndFunc   ;==>__WD_JsonButtonAction
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_JsonElement($sElement)
-	Return '{"' & $_WD_ELEMENT_ID & '": "' & $sElement & '"}'
+	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
 EndFunc   ;==>__WD_JsonElement
