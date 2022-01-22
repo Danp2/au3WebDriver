@@ -1859,8 +1859,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	EndSwitch
 
-	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
-	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintenance
+	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintaince
+	; This following line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
 	Local Static $sActionTemplate = StringReplace( _
 			'{' & _
 			'	"actions":[' & _ ; Open main action
@@ -1889,9 +1889,12 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $iActionType
 		Case 1
-			$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction) ; StringFormat() usage is significantly faster than building JSON string each time from scratch
+			; StringFormat() usage is significantly faster than building JSON string each time from scratch
+			; StringReplace() removes all possible @TAB's because they was used only for indentation and are not needed in JSON string
+			$sAction = StringReplace(StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction), @TAB, '')
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
+
 		Case 2
 			$sJsonElement = __WD_JsonElement($sElement)
 			$sResult = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement, Default, $_WD_JSON_Value)
