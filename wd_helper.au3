@@ -1787,25 +1787,22 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & _
-					__WD_JsonButtonAction($iButton, "pointerUp") & _
-					__WD_JsonButtonAction($iButton, "pointerDown") & _
-					__WD_JsonButtonAction($iButton, "pointerUp")
-
+					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
 		Case 'rightclick'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction(2, "pointerDown") & _
-					__WD_JsonButtonAction(2, "pointerUp")
-
+					',' & __WD_JsonAction("mouse", 2, "pointerDown") & _
+					',' & __WD_JsonAction("mouse", 2, "pointerUp") & _
+					''
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & _
-					', {' & _
-					'	"type":"pause"' & _
-					'	,"duration":' & $iHoldDelay & _
-					'}' & _
-					__WD_JsonButtonAction($iButton, "pointerUp")
-
+					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & __WD_JsonAction("pause", $iHoldDelay) & _
+					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
 		Case 'hide'
 			$iActionType = 2
 			$sJavascript = "arguments[0].style='display: none'; return true;"
@@ -1821,34 +1818,19 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
-					'{' & _
-					'	"type":"key"' & _
-					'	,"id":"keyboard_1"' & _
-					'	,"actions":[' & _
-					'		{' & _
-					'			"type":"keyDown"' & _
-					'			,"value":"' & $sModifier & _
-					'		}' & _
-					'	]' & _
-					'},'
+					__WD_JsonAction("key", 1, "keyDown", $sModifier) & _
+					','
 
 			; Perform click
 			$sPostHoverAction = _
-					__WD_JsonButtonAction($iButton, "pointerDown") & _
-					__WD_JsonButtonAction($iButton, "pointerUp")
+					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
 
 			; Release modifier key
 			$sPostAction = _
-					',{' & _
-					'	"type":"key"' & _
-					'	,"id":"keyboard_2"' & _
-					'	,"actions":[' & _
-					'		{' & _
-					'			"type":"keyUp"' & _
-					'			,"value":"' & $sModifier & '"' & _
-					'		}' & _
-					'	]' & _
-					'}'
+					',' & __WD_JsonAction("key", 2, "keyUp", $sModifier) & _
+					''
 
 		Case 'check', 'uncheck'
 			$iActionType = 2
@@ -2099,28 +2081,6 @@ Func __WD_ErrHnd()
 
 EndFunc   ;==>__WD_ErrHnd
 
-; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_JsonButtonAction
-; Description ...: Create JSON string for button actions
-; Syntax ........: __WD_JsonButtonAction($iButton, $sAction)
-; Parameters ....: $iButton             - an integer value - button that should be used for the action
-;                  $sAction             - a string value - action type that should be performed
-; Return values .: Formatted JSON string
-; Author ........: Danp2
-; Modified ......: mLipok
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func __WD_JsonButtonAction($iButton, $sAction)
-	Return _
-			',{' & _
-			'	"button":' & $iButton & _
-			'	,"type":"' & $sAction & '"' & _
-			'}'
-EndFunc   ;==>__WD_JsonButtonAction
-
 ; Name ..........: __WD_JsonElement
 ; Description ...: Convert Element ID into JSON string
 ; Syntax ........: __WD_JsonElement($sElement)
@@ -2136,3 +2096,53 @@ EndFunc   ;==>__WD_JsonButtonAction
 Func __WD_JsonElement($sElement)
 	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
 EndFunc   ;==>__WD_JsonElement
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: __WD_JsonAction
+; Description ...:
+; Syntax ........: __WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
+; Parameters ....: $sAction             - a string value.
+;                  $iValue              - an integer value.
+;                  $sType               - [optional] a string value. Default is "".
+;                  $sKey                - [optional] a string value. Default is "".
+; Return values .: Desired JSON string snippet
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
+	Local $sJSON = ''
+	Switch $sAction
+		Case 'mouse'
+			$sJSON = _
+					'{' & _
+					'	"button":' & $iValue & _
+					'	,"type":"' & $sType & '"' & _
+					'}'
+		Case 'pause'
+			$sJSON = _
+					'{' & _
+					'	"type":"pause"' & _
+					'	,"duration":' & $iValue & _
+					'}'
+
+		Case 'key'
+			$sJSON = _
+					'{' & _
+					'	"type":"key"' & _
+					'	,"id":"keyboard_' & $iValue & '"' & _
+					'	,"actions":[' & _
+					'		{' & _
+					'			"type":"' & $sType & '"' & _
+					'			,"value":"' & $sKey & _
+					'		}' & _
+					'	]' & _
+					'}'
+
+	EndSwitch
+
+	Return $sJSON
+EndFunc   ;==>__WD_JsonAction
