@@ -1787,37 +1787,37 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
 					''
 		Case 'rightclick'
 			$sPostHoverAction = _
-					',' & __WD_JsonAction("mouse", 2, "pointerDown") & _
-					',' & __WD_JsonAction("mouse", 2, "pointerUp") & _
+					',' & _WD_JsonAction("mouse", 2, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", 2, "pointerUp") & _
 					''
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & __WD_JsonAction("pause", $iHoldDelay) & _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("pause", $iHoldDelay) & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
 					''
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
-					__WD_JsonAction("key", 1, "keyDown", $sModifier) & _
+					_WD_JsonAction("key", 1, "keyDown", $sModifier) & _
 					','
 
 			; Perform click
 			$sPostHoverAction = _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
 					''
 
 			; Release modifier key
 			$sPostAction = _
-					',' & __WD_JsonAction("key", 2, "keyUp", $sModifier) & _
+					',' & _WD_JsonAction("key", 2, "keyUp", $sModifier) & _
 					''
 
 		Case 'hide'
@@ -2098,9 +2098,9 @@ Func __WD_JsonElement($sElement)
 EndFunc   ;==>__WD_JsonElement
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: __WD_JsonAction
+; Name ..........: _WD_JsonAction
 ; Description ...:
-; Syntax ........: __WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
+; Syntax ........: _WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
 ; Parameters ....: $sAction             - a string value.
 ;                  $iValue              - an integer value.
 ;                  $sType               - [optional] a string value. Default is "".
@@ -2113,7 +2113,7 @@ EndFunc   ;==>__WD_JsonElement
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
+Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
 	Local $sJSON = ''
 	Switch $sAction
 		Case 'mouse'
@@ -2145,4 +2145,4 @@ Func __WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
 	EndSwitch
 
 	Return $sJSON
-EndFunc   ;==>__WD_JsonAction
+EndFunc   ;==>_WD_JsonAction
