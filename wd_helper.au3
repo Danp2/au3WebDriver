@@ -1859,7 +1859,9 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	EndSwitch
 
-	Local Static $sActionTemplate = StringReplace( _ ; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
+	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
+	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintenance
+	Local Static $sActionTemplate = StringReplace( _
 			'{' & _
 			'	"actions":[' & _ ; Open main action
 			'		%s' & _ ; %s > $sPreAction
@@ -1885,7 +1887,6 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			'	]' & _ ; Close main action
 			'}', @TAB, '')
 
-	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintaince
 	Switch $iActionType
 		Case 1
 			$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction) ; StringFormat() usage is significantly faster than building JSON string each time from scratch
