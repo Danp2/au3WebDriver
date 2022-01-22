@@ -1803,18 +1803,6 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 					',' & __WD_JsonAction("pause", $iHoldDelay) & _
 					',' & __WD_JsonAction("mouse", $iButton, "pointerUp") & _
 					''
-		Case 'hide'
-			$iActionType = 2
-			$sJavascript = "arguments[0].style='display: none'; return true;"
-
-		Case 'show'
-			$iActionType = 2
-			$sJavascript = "arguments[0].style='display: normal'; return true;"
-
-		Case 'childcount'
-			$iActionType = 2
-			$sJavascript = "return arguments[0].children.length;"
-
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
@@ -1832,12 +1820,24 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 					',' & __WD_JsonAction("key", 2, "keyUp", $sModifier) & _
 					''
 
+		Case 'hide'
+			$iActionType = 2
+			$sJavascript = "arguments[0].style='display: none'; return true;"
+
+		Case 'show'
+			$iActionType = 2
+			$sJavascript = "arguments[0].style='display: normal'; return true;"
+
+		Case 'childcount'
+			$iActionType = 2
+			$sJavascript = "return arguments[0].children.length;"
+
 		Case 'check', 'uncheck'
 			$iActionType = 2
 			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
