@@ -1721,7 +1721,7 @@ EndFunc   ;==>_WD_SetElementValue
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementActionEx
-; Description ...: Perform advanced action on desginated element.
+; Description ...: Perform advanced action on designated element.
 ; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default]]]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sElement   - Element ID from _WD_FindElement
@@ -1842,11 +1842,11 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	EndSwitch
 
 	#Region - JSON builder
-	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintaince
+	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintenance
 	; StringFormat() usage is significantly faster than building JSON string each time from scratch
 	; StringReplace() removes all possible @TAB's because they was used only for indentation and are not needed in JSON string
 	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
-	Local Static $sActionTemplate = _
+	Local Static $sActionTemplate = StringReplace( _
 			'{' & _
 			'	"actions":[' & _ ; Open main action
 			'		%s' & _ ; %s > $sPreAction
@@ -1870,12 +1870,12 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			'		}' & _ ; End of default 'hover' action
 			'		%s' & _ ; %s > $sPostAction
 			'	]' & _ ; Close main action
-			'}'
+			'}', @TAB, '')
 	#EndRegion - JSON builder
 
 	Switch $iActionType
 		Case 1
-			$sAction = StringReplace(StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction), @TAB, '')
+			$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction)
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
 
