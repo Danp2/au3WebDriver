@@ -1842,7 +1842,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	EndSwitch
 
 	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintaince
-	; This following line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
+	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
 	Local Static $sActionTemplate = StringReplace( _
 			'{' & _
 			'	"actions":[' & _ ; Open main action
