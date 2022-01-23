@@ -1841,9 +1841,12 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	EndSwitch
 
+	#Region - JSON builder
 	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintaince
+	; StringFormat() usage is significantly faster than building JSON string each time from scratch
+	; StringReplace() removes all possible @TAB's because they was used only for indentation and are not needed in JSON string
 	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
-	Local Static $sActionTemplate = StringReplace( _
+	Local Static $sActionTemplate = _
 			'{' & _
 			'	"actions":[' & _ ; Open main action
 			'		%s' & _ ; %s > $sPreAction
@@ -1867,12 +1870,11 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			'		}' & _ ; End of default 'hover' action
 			'		%s' & _ ; %s > $sPostAction
 			'	]' & _ ; Close main action
-			'}', @TAB, '')
+			'}'
+	#EndRegion - JSON builder
 
 	Switch $iActionType
 		Case 1
-			; StringFormat() usage is significantly faster than building JSON string each time from scratch
-			; StringReplace() removes all possible @TAB's because they was used only for indentation and are not needed in JSON string
 			$sAction = StringReplace(StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction), @TAB, '')
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
