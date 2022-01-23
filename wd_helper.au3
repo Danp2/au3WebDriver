@@ -1721,7 +1721,7 @@ EndFunc   ;==>_WD_SetElementValue
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementActionEx
-; Description ...: Perform advanced action on desginated element.
+; Description ...: Perform advanced action on designated element.
 ; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default]]]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sElement   - Element ID from _WD_FindElement
@@ -1729,6 +1729,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |
 ;                  |CHECK - Checks a checkbox input element
 ;                  |CHILDCOUNT - Returns the number of child elements
+;                  |CLICK - Clicks on the target element
 ;                  |CLICKANDHOLD - Clicks on the target element and holds the button down for the designated timeframe ($iHoldDelay)
 ;                  |DOUBLECLICK - Do a double click on the selected element
 ;                  |HIDE - Change the element's style to 'display: none' to hide the element
@@ -1785,14 +1786,45 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	Switch $sCommand
 		Case 'hover'
 
+		Case 'click'
+			$sPostHoverAction = _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
 		Case 'doubleclick'
-			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"button":' & $iButton & ',"type":"pointerUp"},{"button":' & $iButton & ',"type":"pointerDown"},{"button":' & $iButton & ',"type":"pointerUp"}'
-
+			$sPostHoverAction = _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
 		Case 'rightclick'
-			$sPostHoverAction = ',{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}'
-
+			$sPostHoverAction = _
+					',' & _WD_JsonAction("mouse", 2, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", 2, "pointerUp") & _
+					''
 		Case 'clickandhold'
-			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"},{"type": "pause", "duration": ' & $iHoldDelay & '},{"button":' & $iButton & ',"type":"pointerUp"}'
+			$sPostHoverAction = _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("pause", $iHoldDelay) & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
+		Case 'modifierclick'
+			; Hold modifier key down
+			$sPreAction = _
+					_WD_JsonAction("key", 1, "keyDown", $sModifier) & _
+					','
+
+			; Perform click
+			$sPostHoverAction = _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
+
+			; Release modifier key
+			$sPostAction = _
+					',' & _WD_JsonAction("key", 2, "keyUp", $sModifier) & _
+					''
 
 		Case 'hide'
 			$iActionType = 2
@@ -1806,57 +1838,53 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iActionType = 2
 			$sJavascript = "return arguments[0].children.length;"
 
-		Case 'modifierclick'
-			; Hold modifier key down
-			$sPreAction = '{"type": "key", "id": "keyboard_1", "actions": [{"type": "keyDown", "value": "' & $sModifier & '"}]},'
-
-			; Perform click
-			$sPostHoverAction = ',{"button":' & $iButton & ',"type":"pointerDown"}, {"button":' & $iButton & ',"type":"pointerUp"}'
-
-			; Release modifier key
-			$sPostAction = ',{"type": "key", "id": "keyboard_2", "actions": [{"type": "keyUp", "value": "' & $sModifier & '"}]}'
-
-		Case 'check'
-			ContinueCase
-		Case 'uncheck'
+		Case 'check', 'uncheck'
 			$iActionType = 2
 			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
+	#Region - JSON builder
+	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintenance
+	; StringFormat() usage is significantly faster than building JSON string each time from scratch
+	; StringReplace() removes all possible @TAB's because they was used only for indentation and are not needed in JSON string
+	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
+	Local Static $sActionTemplate = StringReplace( _
+			'{' & _
+			'	"actions":[' & _ ; Open main action
+			'		%s' & _ ; %s > $sPreAction
+			'		{' & _ ; Start of default "hover" action
+			'			"id":"hover"' & _
+			'			,"type":"pointer"' & _
+			'			,"parameters":{"pointerType":"mouse"}' & _
+			'			,"actions":[' & _ ; Open mouse actions
+			'				{' & _
+			'					"type":"pointerMove"' & _
+			'					,"duration":100' & _
+			'					,"x":%s' & _ ; %s > $iXOffset
+			'					,"y":%s' & _ ; %s > $iYOffset
+			'					,"origin":{' & _
+			'						"ELEMENT":"%s"' & _ ; %s > $sElement
+			'						,"' & $_WD_ELEMENT_ID & '":"%s"' & _ ; %s > $sElement
+			'					}' & _
+			'				}' & _
+			'				%s' & _ ; %s > $sPostHoverAction
+			'			]' & _ ; Close mouse actions
+			'		}' & _ ; End of default 'hover' action
+			'		%s' & _ ; %s > $sPostAction
+			'	]' & _ ; Close main action
+			'}', @TAB, '')
+	#EndRegion - JSON builder
+
 	Switch $iActionType
 		Case 1
-			; Build dynamic action string
-			$sAction = '{"actions":['
-
-			If $sPreAction Then
-				$sAction &= $sPreAction
-			EndIf
-
-			; Default "hover" action
-			$sAction &= '{"id":"hover","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,'
-			$sAction &= '"x":' & $iXOffset & ',"y":' & $iYOffset & ',"type":"pointerMove","origin":{"ELEMENT":"'
-			$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}}'
-
-			If $sPostHoverAction Then
-				$sAction &= $sPostHoverAction
-			EndIf
-
-			; Close mouse actions
-			$sAction &= "]}"
-
-			If $sPostAction Then
-				$sAction &= $sPostAction
-			EndIf
-
-			; Close main action
-			$sAction &= "]}"
-
+			$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction)
 			$sResult = _WD_Action($sSession, 'actions', $sAction)
 			$iErr = @error
+
 		Case 2
 			$sJsonElement = __WD_JsonElement($sElement)
 			$sResult = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement, Default, $_WD_JSON_Value)
@@ -2007,6 +2035,55 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
 EndFunc   ;==>_WD_CheckContext
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_JsonAction
+; Description ...: Formats "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
+; Parameters ....: $sAction - The type of "action" string to be built
+;                  $iValue  - Specify button #, pause duration, etc.
+;                  $sType   - [optional] Subaction to be performed
+;                  $sKey    - [optional] Keystroke to be pressed or released
+; Return values .: Requested JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Action
+; Link ..........: https://www.w3.org/TR/webdriver/#actions
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
+	Local $sJSON = ''
+	Switch $sAction
+		Case 'mouse'
+			$sJSON = _
+					'{' & _
+					'	"button":' & $iValue & _
+					'	,"type":"' & $sType & '"' & _
+					'}'
+		Case 'pause'
+			$sJSON = _
+					'{' & _
+					'	"type":"pause"' & _
+					'	,"duration":' & $iValue & _
+					'}'
+
+		Case 'key'
+			$sJSON = _
+					'{' & _
+					'	"type":"key"' & _
+					'	,"id":"keyboard_' & $iValue & '"' & _
+					'	,"actions":[' & _
+					'		{' & _
+					'			"type":"' & $sType & '"' & _
+					'			,"value":"' & $sKey & _
+					'		}' & _
+					'	]' & _
+					'}'
+	EndSwitch
+
+	Return $sJSON
+EndFunc   ;==>_WD_JsonAction
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
 ; Name ..........: __WD_Base64Decode
