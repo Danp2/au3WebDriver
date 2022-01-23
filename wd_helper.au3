@@ -2101,18 +2101,18 @@ EndFunc   ;==>__WD_JsonElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonAction
-; Description ...:
+; Description ...: Formats "action" strings for use in _WD_Action
 ; Syntax ........: _WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
-; Parameters ....: $sAction             - a string value.
-;                  $iValue              - an integer value.
-;                  $sType               - [optional] a string value. Default is "".
-;                  $sKey                - [optional] a string value. Default is "".
-; Return values .: Desired JSON string snippet
+; Parameters ....: $sAction - The type of "action" string to be built
+;                  $iValue  - Specify button #, pause duration, etc.
+;                  $sType   - [optional] Subaction to be performed
+;                  $sKey    - [optional] Keystroke to be pressed or released
+; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
-; Link ..........:
+; Related .......: _WD_Action
+; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
@@ -2143,7 +2143,6 @@ Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
 					'		}' & _
 					'	]' & _
 					'}'
-
 	EndSwitch
 
 	Return $sJSON
