@@ -1729,6 +1729,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |
 ;                  |CHECK - Checks a checkbox input element
 ;                  |CHILDCOUNT - Returns the number of child elements
+;                  |CLICK - Clicks on the target element
 ;                  |CLICKANDHOLD - Clicks on the target element and holds the button down for the designated timeframe ($iHoldDelay)
 ;                  |DOUBLECLICK - Do a double click on the selected element
 ;                  |HIDE - Change the element's style to 'display: none' to hide the element
@@ -1785,6 +1786,11 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	Switch $sCommand
 		Case 'hover'
 
+		Case 'click'
+			$sPostHoverAction = _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
+					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					''
 		Case 'doubleclick'
 			$sPostHoverAction = _
 					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
@@ -1837,7 +1843,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
