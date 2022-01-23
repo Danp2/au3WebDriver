@@ -2030,6 +2030,55 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
 EndFunc   ;==>_WD_CheckContext
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_JsonAction
+; Description ...: Formats "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
+; Parameters ....: $sAction - The type of "action" string to be built
+;                  $iValue  - Specify button #, pause duration, etc.
+;                  $sType   - [optional] Subaction to be performed
+;                  $sKey    - [optional] Keystroke to be pressed or released
+; Return values .: Requested JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Action
+; Link ..........: https://www.w3.org/TR/webdriver/#actions
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
+	Local $sJSON = ''
+	Switch $sAction
+		Case 'mouse'
+			$sJSON = _
+					'{' & _
+					'	"button":' & $iValue & _
+					'	,"type":"' & $sType & '"' & _
+					'}'
+		Case 'pause'
+			$sJSON = _
+					'{' & _
+					'	"type":"pause"' & _
+					'	,"duration":' & $iValue & _
+					'}'
+
+		Case 'key'
+			$sJSON = _
+					'{' & _
+					'	"type":"key"' & _
+					'	,"id":"keyboard_' & $iValue & '"' & _
+					'	,"actions":[' & _
+					'		{' & _
+					'			"type":"' & $sType & '"' & _
+					'			,"value":"' & $sKey & _
+					'		}' & _
+					'	]' & _
+					'}'
+	EndSwitch
+
+	Return $sJSON
+EndFunc   ;==>_WD_JsonAction
+
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
 ; Name ..........: __WD_Base64Decode
 ; Description ...: Decodes Base64 strings into binary.
@@ -2083,6 +2132,7 @@ Func __WD_ErrHnd()
 
 EndFunc   ;==>__WD_ErrHnd
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_JsonElement
 ; Description ...: Convert Element ID into JSON string
 ; Syntax ........: __WD_JsonElement($sElement)
@@ -2099,51 +2149,3 @@ Func __WD_JsonElement($sElement)
 	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
 EndFunc   ;==>__WD_JsonElement
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_JsonAction
-; Description ...: Formats "action" strings for use in _WD_Action
-; Syntax ........: _WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
-; Parameters ....: $sAction - The type of "action" string to be built
-;                  $iValue  - Specify button #, pause duration, etc.
-;                  $sType   - [optional] Subaction to be performed
-;                  $sKey    - [optional] Keystroke to be pressed or released
-; Return values .: Requested JSON string
-; Author ........: Danp2
-; Modified ......:
-; Remarks .......:
-; Related .......: _WD_Action
-; Link ..........: https://www.w3.org/TR/webdriver/#actions
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
-	Local $sJSON = ''
-	Switch $sAction
-		Case 'mouse'
-			$sJSON = _
-					'{' & _
-					'	"button":' & $iValue & _
-					'	,"type":"' & $sType & '"' & _
-					'}'
-		Case 'pause'
-			$sJSON = _
-					'{' & _
-					'	"type":"pause"' & _
-					'	,"duration":' & $iValue & _
-					'}'
-
-		Case 'key'
-			$sJSON = _
-					'{' & _
-					'	"type":"key"' & _
-					'	,"id":"keyboard_' & $iValue & '"' & _
-					'	,"actions":[' & _
-					'		{' & _
-					'			"type":"' & $sType & '"' & _
-					'			,"value":"' & $sKey & _
-					'		}' & _
-					'	]' & _
-					'}'
-	EndSwitch
-
-	Return $sJSON
-EndFunc   ;==>_WD_JsonAction
