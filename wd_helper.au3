@@ -1260,6 +1260,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	If $bForce = Default Then $bForce = False
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
+	Local $bNoUpdate = (IsKeyword($bForce) = $KEYWORD_NULL) ; Flag to track if updates should be performed
 
 	; If the Install directory doesn't exist and it can't be created, then set error
 	If (Not FileExists($sInstallDir)) And (Not DirCreate($sInstallDir)) Then
@@ -1286,7 +1287,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			If FileExists($sInstallDir & $sDriverEXE) Then
 				_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE)
 				Local $bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
-				If IsKeyword($bForce) <> $KEYWORD_NULL And $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
+				If $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
 ;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
 ;~ 						__WD_ConsoleWrite($sFuncName & ': ' & $sDriverEXE & ' = ' & (($bDriverIs64Bit) ? ("switching 64>32 Bit") : ("switching 32>64 Bit")) & @CRLF)
@@ -1353,9 +1354,9 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			If $iErr = $_WD_ERROR_Success Then
 				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
 
-				; When $bForce parameter equals Null, then return True if newer driver is available
-				If IsKeyword($bForce) = $KEYWORD_NULL And $bUpdateAvail Then
-					$bResult = True
+				If $bNoUpdate Then
+					; Return True if newer driver is available and No Updates flag is set
+					If $bUpdateAvail Then $bResult = True
 				ElseIf $bUpdateAvail Or $bForce Then
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
