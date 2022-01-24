@@ -1286,7 +1286,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			If FileExists($sInstallDir & $sDriverEXE) Then
 				_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE)
 				Local $bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
-				If $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
+				If IsKeyword($bForce) <> $KEYWORD_NULL And $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
 ;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
 ;~ 						__WD_ConsoleWrite($sFuncName & ': ' & $sDriverEXE & ' = ' & (($bDriverIs64Bit) ? ("switching 64>32 Bit") : ("switching 32>64 Bit")) & @CRLF)
