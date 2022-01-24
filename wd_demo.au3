@@ -64,8 +64,8 @@ Func _WD_Demo()
 	Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idBrowsers, $sData)
 	GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
-
 	$iPos += $iSpacing
+
 	GUICtrlCreateLabel("Demos", 15, 52)
 	For $i = 0 To $iCount - 1
 		$iPos += $iSpacing
@@ -73,7 +73,7 @@ Func _WD_Demo()
 		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
 	Next
 
-	$iPos += $iSpacing
+	$iPos += $iSpacing * 2
 	GUICtrlCreateLabel("Update", 15, $iPos + 2)
 	Local $idUpdate = GUICtrlCreateCombo("Null - check", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "Null - check")
