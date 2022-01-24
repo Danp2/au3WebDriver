@@ -1260,6 +1260,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	If $bForce = Default Then $bForce = False
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
+	Local $bNoUpdate = (IsKeyword($bForce) = $KEYWORD_NULL) ; Flag to track if updates should be performed
 
 	; If the Install directory doesn't exist and it can't be created, then set error
 	If (Not FileExists($sInstallDir)) And (Not DirCreate($sInstallDir)) Then
@@ -1353,9 +1354,9 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			If $iErr = $_WD_ERROR_Success Then
 				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
 
-				; When $bForce parameter equals Null, then return True if newer driver is available
-				If IsKeyword($bForce) = $KEYWORD_NULL And $bUpdateAvail Then
-					$bResult = True
+				If $bNoUpdate Then
+					; Set return value to indicate if newer driver is available
+					$bResult = $bUpdateAvail
 				ElseIf $bUpdateAvail Or $bForce Then
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
