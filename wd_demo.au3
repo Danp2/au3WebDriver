@@ -75,8 +75,8 @@ Func _WD_Demo()
 
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Update", 15, $iPos + 2)
-	Local $idUpdate = GUICtrlCreateCombo("No", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
-	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "No")
+	Local $idUpdate = GUICtrlCreateCombo("Null - check", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "Null - check")
 
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Debug", 15, $iPos + 2)
@@ -129,13 +129,22 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
 	#Region - WebeDriver update
+	; Store Debug Level
+	Local $WDDebugSave = $_WD_DEBUG
+	$_WD_DEBUG = $_WD_DEBUG_Info
+
 	Local $sUpdate
 	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
-	If $sUpdate <> 'No' Then
-		Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
-		Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
-		_WD_UpdateDriver($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0], @ScriptDir, $bFlag64, $bForce)
-	EndIf
+
+	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
+	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
+	If $sUpdate = 'Null - check' Then $bForce = Null
+
+	Local $bUpdateResult = _WD_UpdateDriver($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0], @ScriptDir, $bFlag64, $bForce)
+	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
+
+	; Restore Debug Level
+	$_WD_DEBUG = $WDDebugSave
 	#EndRegion - WebeDriver update
 
 	; Execute browser setup routine for user's browser selection
