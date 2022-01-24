@@ -270,12 +270,16 @@ Func DemoElements()
 EndFunc   ;==>DemoElements
 
 Func DemoScript()
-	_WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
-	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
-	_WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}')
-	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
-	_WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});")
-	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
+	Local $sValue
+
+	$sValue = _WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}', Default, $_WD_JSON_Value)
+	ConsoleWrite("- " & @ScriptLineNumber & ' ' & @error & ' $sValue = ' & $sValue & @CRLF & $_WD_HTTPRESULT & @CRLF)
+
+	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}', Default, $_WD_JSON_Value)
+	ConsoleWrite("- " & @ScriptLineNumber & ' ' & @error & ' $sValue = ' & $sValue & @CRLF & $_WD_HTTPRESULT & @CRLF)
+
+	$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
+	ConsoleWrite("- " & @ScriptLineNumber & ' ' & @error & ' $sValue = ' & $sValue & @CRLF & $_WD_HTTPRESULT & @CRLF)
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()
