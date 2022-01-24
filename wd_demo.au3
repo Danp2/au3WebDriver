@@ -57,38 +57,48 @@ Func _WD_Demo()
 	Local $aCheckboxes[$iCount]
 
 	Local $hGUI = GUICreate("Webdriver Demo", 200, 100, 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
-
 	GUISetBkColor($CLR_SILVER)
+
+	#Region - browsers
 	GUICtrlCreateLabel("Browser", 15, 12)
 	Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
 	Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idBrowsers, $sData)
 	GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
-	$iPos += $iSpacing
+	#EndRegion - browsers
 
+	#Region - demos
+	$iPos += $iSpacing
 	GUICtrlCreateLabel("Demos", 15, 52)
 	For $i = 0 To $iCount - 1
 		$iPos += $iSpacing
 		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 75, $iPos, 100, 20, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
 		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
 	Next
+	#EndRegion - demos
 
+	#Region - update
 	$iPos += $iSpacing * 2
 	GUICtrlCreateLabel("Update", 15, $iPos + 2)
 	Local $idUpdate = GUICtrlCreateCombo("Null - check", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "Null - check")
+	#EndRegion - update
 
+	#Region - debug
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Debug", 15, $iPos + 2)
 	Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idDebugging, $sData)
 	GUICtrlSetData($idDebugging, "Full")
+	#EndRegion - debug
 
+	#Region - run / abort
 	$iPos += 2 * $iSpacing
 	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos, 85, 25)
 	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos, 85, 25)
 	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+	#EndRegion - run / abort
 
 	; Resize window
 	WinMove($hGUI, "", 100, 200, 200, $iPos + 3 * $iSpacing)
