@@ -51,11 +51,13 @@ Exit
 
 Func _WD_Demo()
 	Local $nMsg
-	Local $iSpacing = 50
+	Local $iPos
+	Local $iSpacing = 25
 	Local $iCount = UBound($aDemoSuite)
 	Local $aCheckboxes[$iCount]
 
-	Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+	Local $hGUI = GUICreate("Webdriver Demo", 200, 100, 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+
 	GUISetBkColor($CLR_SILVER)
 	GUICtrlCreateLabel("Browser", 15, 12)
 	Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
@@ -63,21 +65,35 @@ Func _WD_Demo()
 	GUICtrlSetData($idBrowsers, $sData)
 	GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
 
+	$iPos += $iSpacing
 	GUICtrlCreateLabel("Demos", 15, 52)
 	For $i = 0 To $iCount - 1
-		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
+		$iPos += $iSpacing
+		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 75, $iPos, 100, 20, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
 		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
 	Next
 
-	Local $iPos = $iSpacing + 20 * ($iCount + 1)
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Update", 15, $iPos + 2)
+	Local $idUpdate = GUICtrlCreateCombo("No", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "No")
+
+	$iPos += $iSpacing
 	GUICtrlCreateLabel("Debug", 15, $iPos + 2)
 	Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idDebugging, $sData)
 	GUICtrlSetData($idDebugging, "Full")
-	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos + 40, 85, 25)
-	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
+
+	$iPos += 2 * $iSpacing
+	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos, 85, 25)
+	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos, 85, 25)
 	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+
+	$iPos += $iSpacing
+
+	; Resize window
+	WinMove($hGUI, "", 100, 200, 200, $iPos)
 
 	GUISetState(@SW_SHOW)
 	While 1
@@ -458,7 +474,6 @@ Func _USER_WD_Sleep($iDelay)
 EndFunc   ;==>_USER_WD_Sleep
 
 Func SetupGecko()
-	_WD_UpdateDriver('firefox', @ScriptDir , False)
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
@@ -474,7 +489,6 @@ Func SetupGecko()
 EndFunc   ;==>SetupGecko
 
 Func SetupChrome()
-	_WD_UpdateDriver('chrome', @ScriptDir , False)
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
@@ -490,7 +504,6 @@ Func SetupChrome()
 EndFunc   ;==>SetupChrome
 
 Func SetupEdge()
-	_WD_UpdateDriver('msedge', @ScriptDir , False)
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
