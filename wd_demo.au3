@@ -406,11 +406,18 @@ Func DemoWindows()
 EndFunc   ;==>DemoWindows
 
 Func DemoUpload()
-	; Uses files created in DemoWindows
+	; REMARK This example uses PNG files created in DemoWindows
+
+	; navigate to "file storing" website
 	_WD_Navigate($sSession, "https://www.htmlquick.com/reference/tags/input-file.html")
+
+	; select single file
 	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//section[@id='examples']//input[@name='uploadedfile']", @ScriptDir & "\Screen1.png")
+
+	; select two files at once
 	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[@name='uploadedfiles[]']", @ScriptDir & "\Screen1.png" & @LF & @ScriptDir & "\Screen2.png")
 
+	; accept/start uploading
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[2]")
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
