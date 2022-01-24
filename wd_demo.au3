@@ -395,6 +395,9 @@ Func DemoWindows()
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
 
+	; show the result in default viewer
+	ShellExecute("Screen1.png")
+
 	; Take another one
 	_WD_Window($sSession, "switch", $sHnd2)
 	$sResponse = _WD_Window($sSession, 'screenshot')
@@ -403,6 +406,10 @@ Func DemoWindows()
 	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
+
+	; show the result in default viewer
+	ShellExecute("Screen2.png")
+
 EndFunc   ;==>DemoWindows
 
 Func DemoUpload()
