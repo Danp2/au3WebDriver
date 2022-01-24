@@ -16,7 +16,7 @@ Global Const $aBrowsers[][2] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
-		["Edge", SetupEdge] _
+		["MSEdge", SetupEdge] _
 		]
 
 Global $aDemoSuite[][2] = _
@@ -90,10 +90,8 @@ Func _WD_Demo()
 	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos, 85, 25)
 	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
 
-	$iPos += $iSpacing
-
 	; Resize window
-	WinMove($hGUI, "", 100, 200, 200, $iPos)
+	WinMove($hGUI, "", 100, 200, 200, $iPos + 3 * $iSpacing)
 
 	GUISetState(@SW_SHOW)
 	While 1
@@ -110,7 +108,7 @@ Func _WD_Demo()
 
 			Case $idButton_Run
 				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
-				RunDemo($idDebugging, $idBrowsers)
+				RunDemo($idDebugging, $idBrowsers, $idUpdate)
 				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
 
 			Case Else
@@ -126,9 +124,19 @@ Func _WD_Demo()
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers)
+Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
+
+	#Region - WebeDriver update
+	Local $sUpdate
+	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
+	If $sUpdate <> 'No' Then
+		Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
+		Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
+		_WD_UpdateDriver($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0], @ScriptDir, $bFlag64, $bForce)
+	EndIf
+	#EndRegion - WebeDriver update
 
 	; Execute browser setup routine for user's browser selection
 	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
@@ -338,8 +346,7 @@ Func DemoFrames()
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
-	Local $sElement, $aElements, $sValue, $sAction
-	#forceref $aElements, $sValue
+	Local $sElement, $sAction
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
