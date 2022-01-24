@@ -80,8 +80,8 @@ Func _WD_Demo()
 	#Region - update
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Update", 15, $iPos + 2)
-	Local $idUpdate = GUICtrlCreateCombo("Null - check", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
-	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "Null - check")
+	Local $idUpdate = GUICtrlCreateCombo("Report only", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
 	#EndRegion - update
 
 	#Region - demos
@@ -145,7 +145,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 
 	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
 	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
-	If $sUpdate = 'Null - check' Then $bForce = Null
+	If $sUpdate = 'Report only' Then $bForce = Null
 
 	Local $bUpdateResult = _WD_UpdateDriver($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0], @ScriptDir, $bFlag64, $bForce)
 	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
