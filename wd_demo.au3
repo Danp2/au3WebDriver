@@ -140,10 +140,6 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
 	#Region - WebeDriver update
-	; Store Debug Level
-	Local $WDDebugSave = $_WD_DEBUG
-	$_WD_DEBUG = $_WD_DEBUG_Info
-
 	Local $sUpdate
 	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
 
@@ -153,9 +149,6 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 
 	Local $bUpdateResult = _WD_UpdateDriver($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0], @ScriptDir, $bFlag64, $bForce)
 	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
-
-	; Restore Debug Level
-	$_WD_DEBUG = $WDDebugSave
 	#EndRegion - WebeDriver update
 
 	; Execute browser setup routine for user's browser selection
