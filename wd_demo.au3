@@ -293,7 +293,6 @@ Func DemoAlerts()
 	Local $sStatus, $sText
 
 	; check status before displaying Alert
-	; check status before displaying Alert
 	$sStatus = _WD_Alert($sSession, 'status')
 	ConsoleWrite("- " & 'Alert Detected => ' & $sStatus & @CRLF)
 
