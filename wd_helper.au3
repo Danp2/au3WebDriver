@@ -1234,7 +1234,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default]]])
 ; Parameters ....: $sBrowser    - Name of browser
 ;                  $sInstallDir - [optional] Install directory. Default is @ScriptDir
-;                  $bFlag64     - [optional] Install 64bit version? Default is False
+;                  $bFlag64     - [optional] Install 64bit version? Default is current driver architecture or False
 ;                  $bForce      - [optional] Force update? Default is False
 ; Return values .: Success - True (Driver was updated).
 ;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
