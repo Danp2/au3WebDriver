@@ -294,14 +294,36 @@ Func DemoCookies()
 EndFunc   ;==>DemoCookies
 
 Func DemoAlerts()
-	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
+	Local $sStatus, $sText
+
+	; check status before displaying Alert
+	$sStatus = _WD_Alert($sSession, 'status')
+	ConsoleWrite("- " & 'Alert Detected => ' & $sStatus & @CRLF)
+
+	; show Alert for testing
 	_WD_ExecuteScript($sSession, "alert('testing 123')")
-	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
-	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
-	_WD_Alert($sSession, 'sendtext', 'new text')
-	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
+
+	; get/check Alert status and text
+	$sStatus = _WD_Alert($sSession, 'status')
+	$sText = _WD_Alert($sSession, 'gettext')
+	ConsoleWrite("- " & 'Alert Detected => ' & $sStatus & @CRLF)
+	ConsoleWrite("- " & 'Text Detected => ' & $sText & @CRLF)
+
 	Sleep(5000)
+	; close Alert
 	_WD_Alert($sSession, 'Dismiss')
+
+	; show Prompt for testing
+	_WD_ExecuteScript($sSession, "prompt('User Prompt', 'Default value')")
+
+	Sleep(2000)
+
+	; Set value of text field
+	_WD_Alert($sSession, 'sendtext', 'new text')
+
+	Sleep(5000)
+	; close Alert
+	_WD_Alert($sSession, 'Accept')
 
 EndFunc   ;==>DemoAlerts
 
