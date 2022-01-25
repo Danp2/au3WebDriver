@@ -131,6 +131,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 Global Const $WD_ErrorInvalidSession = "invalid session id"
 Global Const $WD_ErrorUnknownCommand = "unknown command"
 Global Const $WD_ErrorTimeout = "timeout"
+Global Const $WD_NoSuchAlert = "no such alert"
 
 Global Const $WD_Element_NotFound = "no such element"
 Global Const $WD_Element_Stale = "stale element reference"
@@ -1693,6 +1694,9 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 			Case $WD_Element_Intercept, $WD_Element_NotInteract
 				$iErr = $_WD_ERROR_ElementIssue
+
+			Case $WD_NoSuchAlert
+				$iErr = $_WD_ERROR_NoAlert
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception
