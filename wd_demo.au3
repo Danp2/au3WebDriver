@@ -81,7 +81,7 @@ Func _WD_Demo()
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Update", 15, $iPos + 2)
 	Local $idUpdate = GUICtrlCreateCombo("Report only", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
-	GUICtrlSetData($idUpdate, "32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
+	GUICtrlSetData($idUpdate, "Check current|32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
 	#EndRegion - update
 
 	#Region - demos
@@ -144,6 +144,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
 
 	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
+	If StringInStr($sUpdate, 'Check current') Then $bFlag64 = Default
 	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
 	If $sUpdate = 'Report only' Then $bForce = Null
 
