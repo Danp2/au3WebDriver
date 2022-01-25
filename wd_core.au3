@@ -888,7 +888,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  $sOption  - [optional] a string value. Default is ""
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoAlert
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Dan Pollak
 ; Modified ......:
@@ -910,39 +910,24 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-				$iErr = $_WD_ERROR_NoAlert
-			EndIf
-
 		Case 'gettext'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-					$sResult = ""
-					$iErr = $_WD_ERROR_NoAlert
-				Else
-					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
-				EndIf
+				$oJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndIf
 
 		Case 'sendtext'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-				$iErr = $_WD_ERROR_NoAlert
-			EndIf
-
 		Case 'status'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				$sResult = ($_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND) ? False : True
-			EndIf
+			$sResult = ($iErr = $_WD_ERROR_NoAlert) ? False : True
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
@@ -952,11 +937,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, "")
-	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Alert
 
 ; #FUNCTION# ====================================================================================================================
