@@ -1251,7 +1251,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; ===============================================================================================================================
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
-	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
+	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False, $bDriverIs64Bit = False
 	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 
@@ -1286,7 +1286,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			; Determine current local webdriver Architecture
 			If FileExists($sInstallDir & $sDriverEXE) Then
 				_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE)
-				Local $bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
+				$bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
 				If $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
 ;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
@@ -1404,7 +1404,9 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 ;~ 		__WD_ConsoleWrite($sFuncName & ': Local File = ' & $sInstallDir & $sDriverEXE & @CRLF)
 ;~ 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest & @CRLF)
+		Local $sBitnes = (($bDriverIs64Bit) ? (' (64Bit)') : (' (32Bit)')) ; convert Boolean to String
+		$sBitnes = (($sDriverCurrent <> 0) ? ($sBitnes) : ('')) ; check if exist
+		__WD_ConsoleWrite($sFuncName & ': ' & $sBrowser & ': DriverCurrent = ' & $sDriverCurrent & $sBitnes & ' : DriverLatest = ' & $sDriverLatest & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Result = ' & $bResult & @CRLF)
 	EndIf
 
