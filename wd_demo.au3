@@ -32,6 +32,7 @@ Global $aDemoSuite[][2] = _
 		["DemoDownload", False], _
 		["DemoWindows", False], _
 		["DemoUpload", False], _
+		["DemoPrint", False], _
 		["DemoSleep", False] _
 		]
 
@@ -165,7 +166,12 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 			If $aDemoSuite[$iIndex][1] Then
 				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				Call($aDemoSuite[$iIndex][0])
+				Switch $aDemoSuite[$iIndex][0]
+					Case 'DemoPrint'
+						Call($aDemoSuite[$iIndex][0], $idBrowsers)
+					Case Else
+						Call($aDemoSuite[$iIndex][0])
+				EndSwitch
 				$iError = @error
 				If $iError = $_WD_ERROR_UserAbort Then
 					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -491,6 +497,47 @@ Func DemoUpload()
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[2]")
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
+
+Func DemoPrint($idBrowsers)
+	; navigate to website
+	_WD_Navigate($sSession, "https://www.w3.org/TR/webdriver/#print-page")
+
+	; Wait for page will be fully load - max 10 seconds
+	_WD_LoadWait($sSession, Default, 10 * 1000)
+
+	; create Print Options
+	Local $sOptions = StringReplace( _
+			'{' & _
+			'	"page": {' & _
+			'			"width": 29.70' & _
+			'			,"height": 42.00' & _
+			'		}' & _
+			'	,"margin": {' & _
+			'			"top": 2' & _
+			'			,"bottom": 2' & _
+			'			,"left": 2' & _
+			'			,"right": 2' & _
+			'		}' & _
+			'	,"scale": 0.5' & _
+			'	,"orientation": "landscape"' & _
+			'	,"shrinkToFit": true' & _
+			'	,"background": true' & _
+			'	,"pageRanges": ["1", "10-20"]' & _
+			'}', @TAB, '')
+
+	; print WebSite content to PDF as Binary
+	Local $dBinaryData = _WD_PrintToPdf($sSession, $sOptions)
+	If @error Then Return SetError(@error, @extended, $dBinaryData)
+
+	; save PDF to file
+	Local $sPDFFileFullPath = @ScriptDir & "\" & $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0] & " - DemoPrint.pdf"
+	Local $hFile = FileOpen($sPDFFileFullPath, $FO_OVERWRITE + $FO_BINARY)
+	FileWrite($hFile, $dBinaryData)
+	FileClose($hFile)
+
+	; open PDF in default viewer configured in Windows
+	ShellExecute($sPDFFileFullPath)
+EndFunc   ;==>DemoPrint
 
 Func DemoSleep()
 	; enable Abort button
