@@ -128,7 +128,12 @@ Func RunDemo($idDebugging, $idBrowsers)
 		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 			If $aDemoSuite[$iIndex][1] Then
 				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				Call($aDemoSuite[$iIndex][0])
+				Switch $aDemoSuite[$iIndex][0]
+					Case 'DemoPrint'
+						Call($aDemoSuite[$iIndex][0], $idBrowsers)
+					Case Else
+						Call($aDemoSuite[$iIndex][0])
+				EndSwitch
 				$iError = @error
 				If $iError = $_WD_ERROR_UserAbort Then
 					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -456,9 +461,9 @@ Func DemoUpload()
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
 
-Func DemoPrint()
+Func DemoPrint($idBrowsers)
 	; navigate to website
-	_WD_Navigate($sSession, "https://www.w3.org/TR/webdriver/")
+	_WD_Navigate($sSession, "https://www.w3.org/TR/webdriver/#print-page")
 
 	; Wait for page will be fully load - max 10 seconds
 	_WD_LoadWait($sSession, Default, 10 * 1000)
@@ -480,7 +485,7 @@ Func DemoPrint()
 			'	,"orientation": "landscape"' & _
 			'	,"shrinkToFit": true' & _
 			'	,"background": true' & _
-			'	,"pageRanges": [1, "1-1"]' & _
+			'	,"pageRanges": ["1", "10-20"]' & _
 			'}', @TAB, '')
 
 	; print WebSite content to PDF as Binary
@@ -488,7 +493,7 @@ Func DemoPrint()
 	If @error Then Return SetError(@error, @extended, $dBinaryData)
 
 	; save PDF to file
-	Local $sPDFFileFullPath = @ScriptDir & "\DemoPrint.pdf"
+	Local $sPDFFileFullPath = @ScriptDir & "\" & $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0] & " - DemoPrint.pdf"
 	Local $hFile = FileOpen($sPDFFileFullPath, $FO_OVERWRITE + $FO_BINARY)
 	FileWrite($hFile, $dBinaryData)
 	FileClose($hFile)
