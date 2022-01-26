@@ -81,8 +81,15 @@ Func _WD_Demo()
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Update", 15, $iPos + 2)
 	Local $idUpdate = GUICtrlCreateCombo("Report only", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
-	GUICtrlSetData($idUpdate, "Current|32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
+	GUICtrlSetData($idUpdate, "Check current|32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
 	#EndRegion - update
+
+	#Region - Headless
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Headless", 15, $iPos + 2)
+	Local $idHeadless = GUICtrlCreateCombo("No", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idHeadless, "Yes", "No")
+	#EndRegion - Headless
 
 	#Region - demos
 	$iPos += $iSpacing
@@ -119,7 +126,7 @@ Func _WD_Demo()
 
 			Case $idButton_Run
 				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
-				RunDemo($idDebugging, $idBrowsers, $idUpdate)
+				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
 
 			Case Else
@@ -135,7 +142,7 @@ Func _WD_Demo()
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
+Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
@@ -144,7 +151,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
 
 	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
-	If StringInStr($sUpdate, 'Current') Then $bFlag64 = Default
+	If StringInStr($sUpdate, 'Check current') Then $bFlag64 = Default
 	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
 	If $sUpdate = 'Report only' Then $bForce = Null
 
@@ -152,8 +159,14 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
 	#EndRegion - WebeDriver update
 
+	#Region - Headless
+	Local $sHeadless
+	_GUICtrlComboBox_GetLBText($idHeadless, _GUICtrlComboBox_GetCurSel($idHeadless), $sHeadless)
+	Local $bHeadless = ($sHeadless = 'Yes')
+	#EndRegion - Headless
+
 	; Execute browser setup routine for user's browser selection
-	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
+	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
 
 	_WD_Startup()
 	If @error <> $_WD_ERROR_Success Then Return
@@ -366,23 +379,43 @@ Func DemoAlerts()
 EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
-	Local $sElement
+	Local $sElement, $bIsWindowTop
 
 	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe")
-	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+
+	Local $iFrameCount = _WD_GetFrameCount($sSession)
+	ConsoleWrite("- Frames=" & $iFrameCount & @CRLF)
+
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; just after navigate current context should be on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
+	; changing context to first frame
 	_WD_FrameEnter($sSession, $sElement)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after changing context to first frame the current context is not on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
+	; changing context to first sub frame
 	_WD_FrameEnter($sSession, $sElement)
+
 	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
 	_WD_ElementAction($sSession, $sButton, 'click')
 	_WD_LoadWait($sSession, 2000)
+
 	_WD_FrameLeave($sSession)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after leaving sub frame, the current context is back to first frame but still is not on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	_WD_FrameLeave($sSession)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after leaving first frame, the current context should back on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
@@ -390,14 +423,40 @@ Func DemoActions()
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
-
 	ConsoleWrite("$sElement = " & $sElement & @CRLF)
 
-	$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,"x":0,"y":0,"type":"pointerMove","origin":{"ELEMENT":"'
-	$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}},{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}]}]}'
+	$sAction = _
+			'{' & _
+			'	"actions":[' & _
+			'		{' & _
+			'			"id":"default mouse",' & _
+			'			"type":"pointer",' & _
+			'			"parameters":{"pointerType":"mouse"},' & _
+			'			"actions":[' & _
+			'				{' & _
+			'					"duration":100,' & _
+			'					"x":0,' & _
+			'					"y":0,' & _
+			'					"type":"pointerMove",' & _
+			'					"origin":{"ELEMENT":"' & $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}' & _
+			'				},' & _
+			'				{' & _
+			'					"button":2,' & _
+			'					"type":"pointerDown"' & _
+			'				},' & _
+			'				{' & _
+			'					"button":2,' & _
+			'					"type":"pointerUp"' & _
+			'				}' & _
+			'			]' & _
+			'		}' & _
+			'	]' & _
+			'}' & _
+			''
 
 	ConsoleWrite("$sAction = " & $sAction & @CRLF)
 
+	; perform Action
 	_WD_Action($sSession, "actions", $sAction)
 	Sleep(2000)
 	Send("Q")
@@ -534,7 +593,7 @@ Func _USER_WD_Sleep($iDelay)
 	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
 EndFunc   ;==>_USER_WD_Sleep
 
-Func SetupGecko()
+Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
@@ -544,12 +603,13 @@ Func SetupGecko()
 	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
 EndFunc   ;==>SetupGecko
 
-Func SetupChrome()
+Func SetupChrome($bHeadless)
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
@@ -559,12 +619,13 @@ Func SetupChrome()
 	_WD_CapabilitiesAdd('alwaysMatch', 'chrome')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
 EndFunc   ;==>SetupChrome
 
-Func SetupEdge()
+Func SetupEdge($bHeadless)
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
@@ -573,6 +634,7 @@ Func SetupEdge()
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
