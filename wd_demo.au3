@@ -554,7 +554,6 @@ Func SetupGecko()
 	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
-	_WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
@@ -570,7 +569,6 @@ Func SetupChrome()
 	_WD_CapabilitiesAdd('alwaysMatch', 'chrome')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
-	_WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
@@ -585,7 +583,6 @@ Func SetupEdge()
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
-	_WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
