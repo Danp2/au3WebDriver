@@ -19,21 +19,21 @@ Global Const $aBrowsers[][2] = _
 		["MSEdge", SetupEdge] _
 		]
 
-Global $aDemoSuite[][2] = _
+Global $aDemoSuite[][3] = _
 		[ _
-		["DemoTimeouts", False], _
-		["DemoNavigation", True], _
-		["DemoElements", False], _
-		["DemoScript", False], _
-		["DemoCookies", False], _
-		["DemoAlerts", False], _
-		["DemoFrames", False], _
-		["DemoActions", False], _
-		["DemoDownload", False], _
-		["DemoWindows", False], _
-		["DemoUpload", False], _
-		["DemoPrint", False], _
-		["DemoSleep", False] _
+		["DemoTimeouts", False, False], _
+		["DemoNavigation", True, False], _
+		["DemoElements", False, False], _
+		["DemoScript", False, False], _
+		["DemoCookies", False, False], _
+		["DemoAlerts", False, False], _
+		["DemoFrames", False, False], _
+		["DemoActions", False, False], _
+		["DemoDownload", False, False], _
+		["DemoWindows", False, False], _
+		["DemoUpload", False, False], _
+		["DemoPrint", False, True], _
+		["DemoSleep", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
