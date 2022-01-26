@@ -149,7 +149,8 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
 	If $sUpdate = 'Report only' Then $bForce = Null
 
-	Local $bUpdateResult = _WD_UpdateDriver($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0], @ScriptDir, $bFlag64, $bForce)
+	Local $sBrowser = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
+	Local $bUpdateResult = _WD_UpdateDriver($sBrowser, @ScriptDir, $bFlag64, $bForce)
 	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
 	#EndRegion - WebeDriver update
 
@@ -166,12 +167,11 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 			If $aDemoSuite[$iIndex][1] Then
 				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				Switch $aDemoSuite[$iIndex][0]
-					Case 'DemoPrint'
-						Call($aDemoSuite[$iIndex][0], $idBrowsers)
-					Case Else
-						Call($aDemoSuite[$iIndex][0])
-				EndSwitch
+				If $aDemoSuite[$iIndex][2] Then
+					Call($aDemoSuite[$iIndex][0], $sBrowser)
+				Else
+					Call($aDemoSuite[$iIndex][0])
+				EndIf
 				$iError = @error
 				If $iError = $_WD_ERROR_UserAbort Then
 					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -498,7 +498,7 @@ Func DemoUpload()
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
 
-Func DemoPrint($idBrowsers)
+Func DemoPrint($sBrowser)
 	; navigate to website
 	_WD_Navigate($sSession, "https://www.w3.org/TR/webdriver/#print-page")
 
@@ -530,7 +530,7 @@ Func DemoPrint($idBrowsers)
 	If @error Then Return SetError(@error, @extended, $dBinaryData)
 
 	; save PDF to file
-	Local $sPDFFileFullPath = @ScriptDir & "\" & $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0] & " - DemoPrint.pdf"
+	Local $sPDFFileFullPath = @ScriptDir & "\" & $sBrowser & " - DemoPrint.pdf"
 	Local $hFile = FileOpen($sPDFFileFullPath, $FO_OVERWRITE + $FO_BINARY)
 	FileWrite($hFile, $dBinaryData)
 	FileClose($hFile)
