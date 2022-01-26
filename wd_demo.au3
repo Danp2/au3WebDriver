@@ -16,7 +16,7 @@ Global Const $aBrowsers[][2] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
-		["Edge", SetupEdge] _
+		["MSEdge", SetupEdge] _
 		]
 
 Global $aDemoSuite[][2] = _
@@ -51,33 +51,58 @@ Exit
 
 Func _WD_Demo()
 	Local $nMsg
-	Local $iSpacing = 50
+	Local $iSpacing = 25
+	Local $iPos
 	Local $iCount = UBound($aDemoSuite)
 	Local $aCheckboxes[$iCount]
 
-	Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+	Local $hGUI = GUICreate("Webdriver Demo", 200, 100, 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
 	GUISetBkColor($CLR_SILVER)
-	GUICtrlCreateLabel("Browser", 15, 12)
-	Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
+
+	#Region - browsers
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Browser", 15, $iPos + 2)
+	Local $idBrowsers = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idBrowsers, $sData)
 	GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
+	#EndRegion - browsers
 
-	GUICtrlCreateLabel("Demos", 15, 52)
-	For $i = 0 To $iCount - 1
-		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
-		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
-	Next
-
-	Local $iPos = $iSpacing + 20 * ($iCount + 1)
+	#Region - debug
+	$iPos += $iSpacing
 	GUICtrlCreateLabel("Debug", 15, $iPos + 2)
 	Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idDebugging, $sData)
 	GUICtrlSetData($idDebugging, "Full")
-	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos + 40, 85, 25)
-	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
+	#EndRegion - debug
+
+	#Region - update
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Update", 15, $iPos + 2)
+	Local $idUpdate = GUICtrlCreateCombo("Report only", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idUpdate, "Current|32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
+	#EndRegion - update
+
+	#Region - demos
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Demos", 15, $iPos + $iSpacing + 2)
+	For $i = 0 To $iCount - 1
+		$iPos += $iSpacing
+		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 75, $iPos, 100, 20, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
+		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
+	Next
+	#EndRegion - demos
+
+	#Region - run / abort
+	$iPos += $iSpacing * 2
+	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos, 85, 25)
+	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos, 85, 25)
 	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+	#EndRegion - run / abort
+
+	; Resize window
+	WinMove($hGUI, "", 100, 200, 200, $iPos + 3 * $iSpacing)
 
 	GUISetState(@SW_SHOW)
 	While 1
@@ -94,7 +119,7 @@ Func _WD_Demo()
 
 			Case $idButton_Run
 				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
-				RunDemo($idDebugging, $idBrowsers)
+				RunDemo($idDebugging, $idBrowsers, $idUpdate)
 				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
 
 			Case Else
@@ -110,9 +135,22 @@ Func _WD_Demo()
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers)
+Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
+
+	#Region - WebeDriver update
+	Local $sUpdate
+	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
+
+	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
+	If StringInStr($sUpdate, 'Current') Then $bFlag64 = Default
+	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
+	If $sUpdate = 'Report only' Then $bForce = Null
+
+	Local $bUpdateResult = _WD_UpdateDriver($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0], @ScriptDir, $bFlag64, $bForce)
+	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
+	#EndRegion - WebeDriver update
 
 	; Execute browser setup routine for user's browser selection
 	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
@@ -348,8 +386,7 @@ Func DemoFrames()
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
-	Local $sElement, $aElements, $sValue, $sAction
-	#forceref $aElements, $sValue
+	Local $sElement, $sAction
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
