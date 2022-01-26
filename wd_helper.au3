@@ -1254,9 +1254,14 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
 	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
+	Local $bKeepArch = False
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
 	If $bForce = Default Then $bForce = False
+	If $bFlag64 = Default Then
+		$bFlag64 = False
+		$bKeepArch = True
+	EndIf
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 	Local $bNoUpdate = (IsKeyword($bForce) = $KEYWORD_NULL) ; Flag to track if updates should be performed
@@ -1286,15 +1291,13 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			If FileExists($sInstallDir & $sDriverEXE) Then
 				_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE)
 				Local $bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
-				If $bFlag64 = Default Then $bFlag64 = $bDriverIs64Bit
+				If $bKeepArch Then $bFlag64 = $bDriverIs64Bit
 				If $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
 ;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
 ;~ 						__WD_ConsoleWrite($sFuncName & ': ' & $sDriverEXE & ' = ' & (($bDriverIs64Bit) ? ("switching 64>32 Bit") : ("switching 32>64 Bit")) & @CRLF)
 ;~ 					EndIf
 				EndIf
-			ElseIf $bFlag64 = Default Then
-				$bFlag64 = False
 			EndIf
 
 			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
