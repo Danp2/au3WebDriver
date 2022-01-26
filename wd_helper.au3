@@ -1254,7 +1254,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
 	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
-	Local $bCheckArch = False
+	Local $bKeepArch = False
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
 	If $bForce = Default Then $bForce = False
