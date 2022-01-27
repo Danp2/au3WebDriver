@@ -38,8 +38,8 @@
 
 #Region Many thanks to:
 #cs
-	- Jonathan Bennett and the AutoIt Team
-	- Thorsten Willert, author of FF.au3, which I've used as a model
+	- Jonathan Bennett (@Jon) and the AutoIt Team
+	- Thorsten Willert (@Stilgar), author of FF.au3, which I've used as a model
 	- Michał Lipok (@mLipok) for all his contribution
 #ce
 #EndRegion Many thanks to:
