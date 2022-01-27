@@ -434,7 +434,7 @@ Func DemoActions()
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	ConsoleWrite("$sElement = " & $sElement & @CRLF)
 
-	$sAction = _
+	$sAction = StringReplace( _
 			'{' & _
 			'	"actions":[' & _
 			'		{' & _
@@ -461,7 +461,7 @@ Func DemoActions()
 			'		}' & _
 			'	]' & _
 			'}' & _
-			''
+			'', @TAB, '')
 
 	ConsoleWrite("$sAction = " & $sAction & @CRLF)
 
