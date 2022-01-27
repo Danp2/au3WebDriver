@@ -457,8 +457,6 @@ Func DemoActions()
 			'}' & _
 			'', @TAB, '')
 
-	_WD_JsonAction(
-
 	ConsoleWrite("$sAction = " & $sAction & @CRLF)
 
 	; perform Action
