@@ -88,6 +88,13 @@ Func _WD_Demo()
 	GUICtrlSetData($idUpdate, "Current|32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
 	#EndRegion - update
 
+	#Region - Headless
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Headless", 15, $iPos + 2)
+	Local $idHeadless = GUICtrlCreateCombo("No", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idHeadless, "Yes", "No")
+	#EndRegion - Headless
+
 	#Region - demos
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Demos", 15, $iPos + $iSpacing + 2)
@@ -123,7 +130,7 @@ Func _WD_Demo()
 
 			Case $idButton_Run
 				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
-				RunDemo($idDebugging, $idBrowsers, $idUpdate)
+				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
 
 			Case Else
@@ -139,7 +146,7 @@ Func _WD_Demo()
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
+Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
@@ -157,8 +164,14 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate)
 	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
 	#EndRegion - WebeDriver update
 
+	#Region - Headless
+	Local $sHeadless
+	_GUICtrlComboBox_GetLBText($idHeadless, _GUICtrlComboBox_GetCurSel($idHeadless), $sHeadless)
+	Local $bHeadless = ($sHeadless = 'Yes')
+	#EndRegion - Headless
+
 	; Execute browser setup routine for user's browser selection
-	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
+	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
 
 	_WD_Startup()
 	If @error <> $_WD_ERROR_Success Then Return
@@ -604,7 +617,7 @@ Func _USER_WD_Sleep($iDelay)
 	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
 EndFunc   ;==>_USER_WD_Sleep
 
-Func SetupGecko()
+Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
@@ -614,12 +627,13 @@ Func SetupGecko()
 	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
 EndFunc   ;==>SetupGecko
 
-Func SetupChrome()
+Func SetupChrome($bHeadless)
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
@@ -629,12 +643,13 @@ Func SetupChrome()
 	_WD_CapabilitiesAdd('alwaysMatch', 'chrome')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
 EndFunc   ;==>SetupChrome
 
-Func SetupEdge()
+Func SetupEdge($bHeadless)
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
@@ -643,6 +658,7 @@ Func SetupEdge()
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
 	Return $sDesiredCapabilities
