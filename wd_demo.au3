@@ -429,44 +429,18 @@ Func DemoFrames()
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
-	Local $sElement, $sAction
+	Local $sElement, $aElements, $sValue, $sAction
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
+
 	ConsoleWrite("$sElement = " & $sElement & @CRLF)
 
-	$sAction = _
-			'{' & _
-			'	"actions":[' & _
-			'		{' & _
-			'			"id":"default mouse",' & _
-			'			"type":"pointer",' & _
-			'			"parameters":{"pointerType":"mouse"},' & _
-			'			"actions":[' & _
-			'				{' & _
-			'					"duration":100,' & _
-			'					"x":0,' & _
-			'					"y":0,' & _
-			'					"type":"pointerMove",' & _
-			'					"origin":{"ELEMENT":"' & $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}' & _
-			'				},' & _
-			'				{' & _
-			'					"button":2,' & _
-			'					"type":"pointerDown"' & _
-			'				},' & _
-			'				{' & _
-			'					"button":2,' & _
-			'					"type":"pointerUp"' & _
-			'				}' & _
-			'			]' & _
-			'		}' & _
-			'	]' & _
-			'}' & _
-			''
+	$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,"x":0,"y":0,"type":"pointerMove","origin":{"ELEMENT":"'
+	$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}},{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}]}]}'
 
 	ConsoleWrite("$sAction = " & $sAction & @CRLF)
 
-	; perform Action
 	_WD_Action($sSession, "actions", $sAction)
 	Sleep(2000)
 	Send("Q")
