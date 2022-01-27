@@ -1615,9 +1615,9 @@ EndFunc   ;==>__WD_EscapeString
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_TranslateQuotes
-; Description ...: Translate " into '
+; Description ...: Translate double quotes into single quotes
 ; Syntax ........: __WD_TranslateQuotes($sData)
-; Parameters ....: $sData               - a string value.
+; Parameters ....: $sData - The string to be translated
 ; Return values .: Translated string
 ; Author ........: Danp2
 ; Modified ......:
