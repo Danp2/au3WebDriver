@@ -9,7 +9,7 @@
 	*
 	* MIT License
 	*
-	* Copyright (c) 2022 Dan Pollak
+	* Copyright (c) 2022 Dan Pollak (@Danp2)
 	*
 	* Permission is hereby granted, free of charge, to any person obtaining a copy
 	* of this software and associated documentation files (the "Software"), to deal
@@ -56,9 +56,9 @@
 
 #Region Many thanks to:
 #cs
-	- Jonathan Bennett and the AutoIt Team
-	- Thorsten Willert, author of FF.au3, which I've used as a model
-	- Michal Lipok for all his feedback / suggestions
+	- Jonathan Bennett (@Jon) and the AutoIt Team
+	- Thorsten Willert (@Stilgar), author of FF.au3, which I've used as a model
+	- Michał Lipok (@mLipok) for all his feedback / suggestions
 	- @water for his work on the help file
 #ce
 #EndRegion Many thanks to:
@@ -173,7 +173,7 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; Parameters ....: $sCapabilities - [optional] Requested features in JSON format. Default is "{}"
 ; Return values .: Success - Session ID to be used in future requests to web driver session.
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_DeleteSession
@@ -218,8 +218,8 @@ EndFunc   ;==>_WD_CreateSession
 ; Syntax ........: _WD_DeleteSession($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - 1
-;                  Failure - 0, sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_CreateSession
@@ -247,10 +247,10 @@ EndFunc   ;==>_WD_DeleteSession
 ; Name ..........: _WD_Status
 ; Description ...: Get current web driver state.
 ; Syntax ........: _WD_Status()
-; Parameters ....:
+; Parameters ....: None
 ; Return values .: Success - Dictionary object with "message" and "ready" properties.
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -285,7 +285,7 @@ EndFunc   ;==>_WD_Status
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Dictionary object with "sessionId" and "capabilities" items.
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
 ;                  until they determine how this should function. See w3c/webdriver@35df53a for details. Meanwhile, I temporarily
@@ -330,7 +330,7 @@ EndFunc   ;==>_WD_GetSession
 ;                  $sTimeouts - [optional] Requested timouts in JSON format. Default is ""
 ; Return values .: Success - Return value from web driver in JSON format.
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Separate timeouts can be set for "script", "pageLoad", and "implicit"
 ; Related .......:
@@ -375,7 +375,7 @@ EndFunc   ;==>_WD_Timeouts
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -417,7 +417,7 @@ EndFunc   ;==>_WD_Navigate
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -498,7 +498,7 @@ EndFunc   ;==>_WD_Action
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -621,7 +621,7 @@ EndFunc   ;==>_WD_Window
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidExpression
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: 01/10/2021
 ; Remarks .......: An array of matching elements is returned when $bMultiple is True
 ; Related .......:
@@ -729,7 +729,7 @@ EndFunc   ;==>_WD_FindElement
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -748,7 +748,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
-		Case 'name', 'rect', 'text', 'selected', 'enabled', 'displayed', 'screenshot', 'shadow', 'comprole', 'complabel'
+		Case 'complabel', 'comprole', 'displayed', 'enabled', 'name', 'rect', 'selected', 'shadow', 'screenshot', 'text'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand)
 			$iErr = @error
 
@@ -756,7 +756,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sCommand)
 			$iErr = @error
 
-		Case 'attribute', 'property', 'css'
+		Case 'attribute', 'css', 'property'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand & "/" & $sOption)
 			$iErr = @error
 
@@ -774,7 +774,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value|Screenshot|Shadow|CompRole|CompLabel) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Active|Attribute|CompRole|CompLabel|Clear|Click|CSS|Displayed|Enabled|Name|Property|Rect|Selected|Shadow|Screenshot|Text|Value) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -827,7 +827,7 @@ EndFunc   ;==>_WD_ElementAction
 ;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
 ;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
 ;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
@@ -890,7 +890,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoAlert
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -948,7 +948,7 @@ EndFunc   ;==>_WD_Alert
 ; Return values .: Success - Source code from page.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -980,7 +980,7 @@ EndFunc   ;==>_WD_GetSource
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Cookies
-; Description ...: Gets, sets, or deletes the session's cookies.
+; Description ...: Gets and sets, or deletes the session's cookies.
 ; Syntax ........: _WD_Cookies($sSession, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sCommand - One of the following actions:
@@ -994,7 +994,7 @@ EndFunc   ;==>_WD_GetSource
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Please have a look at WD_Demo.au3 > DemoCookies function for how to add a new cookie
 ; Related .......:
@@ -1068,7 +1068,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  $vValue  - [optional] if no value is given, the current value is returned (default = "")
 ; Return values .: Success - 1 or current value.
 ;                  Failure - 0 or "" (empty string) and sets @error to $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
@@ -1170,7 +1170,7 @@ EndFunc   ;==>_WD_Option
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidValue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Shutdown
@@ -1246,7 +1246,7 @@ EndFunc   ;==>_WD_Startup
 ; Syntax ........: _WD_Shutdown([$vDriver = Default])
 ; Parameters ....: $vDriver - [optional] The name or PID of Web driver console to shutdown
 ; Return values .: None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Startup
@@ -1263,11 +1263,11 @@ EndFunc   ;==>_WD_Shutdown
 ; Syntax ........: __WD_Get($sURL)
 ; Parameters ....: $sURL - Location to access via WinHTTP
 ; Return values..: Success - Response from web driver.
-;                  Failure - Response from web driver, sets @error to one of the following values:
+;                  Failure - Response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1350,7 +1350,7 @@ EndFunc   ;==>__WD_Get
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
 ;                  - $_WD_ERROR_InvalidValue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1427,10 +1427,10 @@ EndFunc   ;==>__WD_Post
 ; Syntax ........: __WD_Delete($sURL)
 ; Parameters ....: $sURL - Location to access via WinHTTP
 ; Return values..: Success - Response from web driver.
-;                  Failure - Response from web driver, sets @error to one of the following values:
+;                  Failure - Response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidValue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1553,7 +1553,7 @@ EndFunc   ;==>__WD_Error
 ; Syntax ........: __WD_CloseDriver([$sDriver = Default])
 ; Parameters ....: $vDriver - [optional] The name or PID of Web driver console to shutdown. Default is $_WD_DRIVER
 ; Return values .: None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1600,7 +1600,7 @@ EndFunc   ;==>__WD_CloseDriver
 ; Syntax ........: __WD_EscapeString($sData)
 ; Parameters ....: $sData - the string to be escaped
 ; Return values..: Escaped string.
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1613,6 +1613,19 @@ Func __WD_EscapeString($sData)
 	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
 EndFunc   ;==>__WD_EscapeString
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_TranslateQuotes
+; Description ...: Translate " into '
+; Syntax ........: __WD_TranslateQuotes($sData)
+; Parameters ....: $sData               - a string value.
+; Return values .: Translated string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func __WD_TranslateQuotes($sData)
 	Local $sResult = StringReplace($sData, '"', "'")
 	Return SetError($_WD_ERROR_Success, 0, $sResult)
@@ -1625,7 +1638,7 @@ EndFunc   ;==>__WD_TranslateQuotes
 ; Parameters ....: $iErr    - [in/out] Error code
 ;                  $vResult - Result from webdriver
 ; Return values .: None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1704,8 +1717,8 @@ EndFunc   ;==>__WD_ConsoleWrite
 ; Syntax ........: __WD_Sleep($iPause)
 ; Parameters ....: $iPause - Amount of time to pause (in milliseconds)
 ; Return values .: Success - None
-;                  Failure - None, sets @error $_WD_ERROR_UserAbort
-; Author ........: Dan Pollak
+;                  Failure - None and sets @error $_WD_ERROR_UserAbort
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Calls standard Sleep() by default. This can be overridden with _WD_Option so that a user supplied function
 ;                  gets called instead. User's function can throw error which will lead to $_WD_ERROR_UserAbort
