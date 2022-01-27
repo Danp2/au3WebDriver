@@ -980,7 +980,7 @@ EndFunc   ;==>_WD_GetSource
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Cookies
-; Description ...: Gets and sets, or deletes the session's cookies.
+; Description ...: Gets, sets, or deletes the session's cookies.
 ; Syntax ........: _WD_Cookies($sSession, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sCommand - One of the following actions:
