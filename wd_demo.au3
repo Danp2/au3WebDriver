@@ -372,23 +372,43 @@ Func DemoAlerts()
 EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
-	Local $sElement
+	Local $sElement, $bIsWindowTop
 
 	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe")
-	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+
+	Local $iFrameCount = _WD_GetFrameCount($sSession)
+	ConsoleWrite("- Frames=" & $iFrameCount & @CRLF)
+
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; just after navigate current context should be on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
+	; changing context to first frame
 	_WD_FrameEnter($sSession, $sElement)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after changing context to first frame the current context is not on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
+	; changing context to first sub frame
 	_WD_FrameEnter($sSession, $sElement)
+
 	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
 	_WD_ElementAction($sSession, $sButton, 'click')
 	_WD_LoadWait($sSession, 2000)
+
 	_WD_FrameLeave($sSession)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after leaving sub frame, the current context is back to first frame but still is not on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	_WD_FrameLeave($sSession)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after leaving first frame, the current context should back on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
