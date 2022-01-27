@@ -19,6 +19,9 @@ Global Const $aBrowsers[][2] = _
 		["MSEdge", SetupEdge] _
 		]
 
+; Column 0 - Function Name
+; Column 1 - Selected at start
+; Column 2 - Pass browser name as parameter to callad function
 Global $aDemoSuite[][3] = _
 		[ _
 		["DemoTimeouts", False, False], _
