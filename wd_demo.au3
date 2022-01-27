@@ -429,7 +429,7 @@ Func DemoFrames()
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
-	Local $sElement, $aElements, $sValue, $sAction
+	Local $sElement, $sAction
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
