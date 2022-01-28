@@ -67,6 +67,10 @@ Global Enum _
 		$_WD_TARGET_FirstTab, _
 		$_WD_TARGET_LastTab
 
+Global Enum _
+		$_WD_BUTTON_Left = 0, _
+		$_WD_BUTTON_Middle = 1, _
+		$_WD_BUTTON_Right = 2
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
@@ -1746,7 +1750,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |UNCHECK - Unchecks a checkbox input element
 ;                  $iXOffset   - [optional] X Offset. Default is 0
 ;                  $iYOffset   - [optional] Y Offset. Default is 0
-;                  $iButton    - [optional] Mouse button. Default is 0
+;                  $iButton    - [optional] Mouse button. Default is $_WD_BUTTON_Left
 ;                  $iHoldDelay - [optional] Hold time in ms. Default is 1000
 ;                  $sModifier  - [optional] Modifier key. Default is "\uE008" (shift key)
 ; Return values .: Success - Return value from web driver (could be an empty string)
@@ -1767,7 +1771,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
-	If $iButton = Default Then $iButton = 0
+	If $iButton = Default Then $iButton = $_WD_BUTTON_Left
 	If $iHoldDelay = Default Then $iHoldDelay = 1000
 	If $sModifier = Default Then $sModifier = "\uE008" ; shift
 
@@ -1806,8 +1810,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 					''
 		Case 'rightclick'
 			$sPostHoverAction = _
-					',' & _WD_JsonActionPointer("pointerDown", 2) & _
-					',' & _WD_JsonActionPointer("pointerUp", 2) & _
+					',' & _WD_JsonActionPointer("pointerDown", $_WD_BUTTON_Right) & _
+					',' & _WD_JsonActionPointer("pointerUp", $_WD_BUTTON_Right) & _
 					''
 		Case 'clickandhold'
 			$sPostHoverAction = _
@@ -2078,7 +2082,7 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Description ...: Formats pointer "action" strings for use in _WD_Action
 ; Syntax ........: _WD_JsonActionPointer($sType[, $iButton = 1])
 ; Parameters ....: $sType      - Type of action (Ex: pointerDown, pointerUp, pointerMove)
-;                  $iButton    - [optional] Mouse button to simulate. Default is 0.
+;                  $iButton    - [optional] Mouse button to simulate. Default is $_WD_BUTTON_Left.
 ; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
@@ -2087,7 +2091,7 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonActionPointer($sType, $iButton = 0, $iXOffset = 0, $iYOffset = 0, $iDuration = 100, $sElement = Default)
+Func _WD_JsonActionPointer($sType, $iButton = $_WD_BUTTON_Left, $iXOffset = 0, $iYOffset = 0, $iDuration = 100, $sElement = Default)
 	Local $sJSON = _
 			'{' & _
 			'	"type":"' & $sType & '"'
