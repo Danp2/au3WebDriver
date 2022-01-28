@@ -1794,26 +1794,26 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'click'
 			$sPostHoverAction = _
-					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
-					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
-					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
-					',' & _WD_JsonActionMouse("pointerDown, $iButton") & _
-					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 		Case 'rightclick'
 			$sPostHoverAction = _
-					',' & _WD_JsonActionMouse("pointerDown", 2) & _
-					',' & _WD_JsonActionMouse("pointerUp", 2) & _
+					',' & _WD_JsonActionPointer("pointerDown", 2) & _
+					',' & _WD_JsonActionPointer("pointerUp", 2) & _
 					''
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
 					',' & _WD_JsonActionPause($iHoldDelay) & _
-					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 		Case 'modifierclick'
 			; Hold modifier key down
@@ -1823,8 +1823,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 			; Perform click
 			$sPostHoverAction = _
-					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
-					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 
 			; Release modifier key
@@ -2045,10 +2045,10 @@ EndFunc   ;==>_WD_CheckContext
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionKey
 ; Description ...: Formats keyboard "action" strings for use in _WD_Action
-; Syntax ........: _WD_JsonActionKey($sType, $sKey[, $iKeyboard = 1])
+; Syntax ........: _WD_JsonActionKey($sType, $sKey[, $iSuffix = 1])
 ; Parameters ....: $sType      - Type of action (Ex: keyDown, keyUp)
 ;                  $sKey       - Keystroke to simulate
-;                  $iKeyboard  - [optional]
+;                  $iSuffix  - [optional] Value to append to action's "id" property. Default is 1.
 ; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
@@ -2057,11 +2057,11 @@ EndFunc   ;==>_WD_CheckContext
 ; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonActionKey($sType, $sKey, $iKeyboard = 1)
+Func _WD_JsonActionKey($sType, $sKey, $iSuffix = 1)
 	Local $sJSON = _
 			'{' & _
 			'	"type":"key"' & _
-			'	,"id":"keyboard_' & $iKeyboard & '"' & _
+			'	,"id":"keyboard_' & $iSuffix & '"' & _
 			'	,"actions":[' & _
 			'		{' & _
 			'			"type":"' & $sType & '"' & _
@@ -2070,15 +2070,15 @@ Func _WD_JsonActionKey($sType, $sKey, $iKeyboard = 1)
 			'	]' & _
 			'}'
 
-	Return $sJSON
+	Return StringReplace($sJSON, @TAB, "")
 EndFunc   ;==>_WD_JsonActionKey
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_JsonActionMouse
-; Description ...: Formats mouse "action" strings for use in _WD_Action
-; Syntax ........: _WD_JsonActionMouse($sType[, $iButton = 1])
-; Parameters ....: $sType      - Type of action (Ex: pointerDown, pointerUp)
-;                  $iButton    - [optional] Mouse button to simulate. Default is 1.
+; Name ..........: _WD_JsonActionPointer
+; Description ...: Formats pointer "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonActionPointer($sType[, $iButton = 1])
+; Parameters ....: $sType      - Type of action (Ex: pointerDown, pointerUp, pointerMove)
+;                  $iButton    - [optional] Mouse button to simulate. Default is 0.
 ; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
@@ -2087,15 +2087,27 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonActionMouse($sType, $iButton = 1)
+Func _WD_JsonActionPointer($sType, $iButton = 0, $iXOffset = 0, $iYOffset = 0, $iDuration = 100, $sElement = Default)
 	Local $sJSON = _
 			'{' & _
-			'	"button":' & $iButton & _
-			'	,"type":"' & $sType & '"' & _
-			'}'
+			'	"type":"' & $sType & '"'
 
-	Return $sJSON
-EndFunc   ;==>_WD_JsonActionMouse
+	Switch $sType
+		Case 'pointerDown', 'pointerUp'
+			$sJSON &= '	,"button":' & $iButton
+
+		Case 'pointerMove'
+			$sJSON &= '	"duration":' & $iDuration & _
+					'	"origin":{"ELEMENT":"' & $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}' & _
+					'	,"x":' & $iXOffset & _
+					'	,"y":' & $iYOffset & _
+					''
+	EndSwitch
+
+	$sJSON &= '}'
+
+	Return StringReplace($sJSON, @TAB, "")
+EndFunc   ;==>_WD_JsonActionPointer
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionPause
@@ -2117,7 +2129,7 @@ Func _WD_JsonActionPause($iDuration)
 			'	,"duration":' & $iDuration & _
 			'}'
 
-	Return $sJSON
+	Return StringReplace($sJSON, @TAB, "")
 EndFunc   ;==>_WD_JsonActionPause
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
