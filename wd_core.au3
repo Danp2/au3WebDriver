@@ -126,7 +126,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Element interaction issue", _
 		"Invalid session ID", _
 		"Unknown Command", _
-		"User Aborted" _
+		"User Aborted", _
+		"Error processing HTML" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
