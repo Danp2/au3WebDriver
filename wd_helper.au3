@@ -976,6 +976,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sSelectElement - Element ID of Select element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's options
+;                  |OPTIONS2 - Retrieve array containing value / label attributes from the Select element's options - using faster way - RegExp
 ;                  |VALUE - Retrieve current value
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -995,6 +996,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
 	Local $sNodeName, $sJsonElement, $vResult
 	Local $sText, $aOptions
+	Local $iSelectedOption = -1
 
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
@@ -1025,6 +1027,47 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 					_ArrayAdd($aOut, $sText, 0, Default, @CRLF, 1)
 					$vResult = $aOut
 				EndIf
+			Case 'options2'
+				; Retrieve array containing value / label attributes from the Select element's options - using faster way - RegExp
+				
+				; get outerHTML of Select Element
+				Local $sHTML = _WD_ElementAction($sSession, $sSelectElement, "Property", "outerHTML")
+				If @error Then
+					$iErr = @error
+				Else
+					; start checking if any is selected
+					Local $aOptions_outer = StringRegExp($sHTML, '(?is)(<option value="(.*?)"(.*?)>(.*?)<\/option>)', $STR_REGEXPARRAYGLOBALFULLMATCH)
+					If @error Then
+						$iErr = $_WD_ERROR_HtmlProcessing
+					Else
+						Local $aTemp
+						
+						; check which element is selected
+						For $iCheck = 0 To UBound($aOptions_outer) - 1
+							$aTemp = $aOptions_outer[$iCheck]
+							If StringInStr($aTemp[3], 'selected="selected"') Then
+								$iSelectedOption = $iCheck
+								ExitLoop
+							EndIf
+						Next
+
+						; Get the array
+						Local $aOptions_outer2 = StringRegExp($sHTML, '(?is)<option value="(.*?)"(?:.*?)>(.*?)<\/option>', $STR_REGEXPARRAYGLOBALFULLMATCH)
+						If @error Then
+							$iErr = $_WD_ERROR_HtmlProcessing
+						Else
+							$sText = ""
+							For $i2 = 0 To UBound($aOptions_outer2) - 1
+								$aTemp = $aOptions_outer2[$i2]
+								$sText &= (($sText <> "") ? @CRLF : "") & $aTemp[1] & '|' & $aTemp[2]
+							Next
+							Local $aOut[0][2]
+							_ArrayAdd($aOut, $sText, 0, Default, @CRLF, 1)
+							$vResult = $aOut
+						EndIf
+					EndIf
+				EndIf
+
 			Case Else
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
 
@@ -1037,7 +1080,12 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 		__WD_ConsoleWrite($sFuncName & ': ' & ((IsArray($vResult)) ? "(array)" : $vResult) & @CRLF)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
+	Local $iExt = $_WD_HTTPRESULT
+
+	; if $iSelectedOption was found then pass the ID ($iSelectedOption) to @extended
+	If $_WD_HTTPRESULT = $HTTP_STATUS_OK And $iSelectedOption <> -1 Then $iExt = $iSelectedOption
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
