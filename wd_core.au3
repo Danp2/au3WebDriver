@@ -105,6 +105,7 @@ Global Enum _
 		$_WD_ERROR_SessionInvalid, _ ;
 		$_WD_ERROR_UnknownCommand, _ ;
 		$_WD_ERROR_UserAbort, _ ;
+		$_WD_ERROR_HtmlProcessing, _ ;
 		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
