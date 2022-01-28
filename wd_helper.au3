@@ -1082,8 +1082,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 
 	Local $iExt = $_WD_HTTPRESULT
 
-	; if $iSelectedOption was found then pass the ID ($iSelectedOption) to @extended
-	If $_WD_HTTPRESULT = $HTTP_STATUS_OK And $iSelectedOption <> -1 Then $iExt = $iSelectedOption
+	; if OPTIONS2 was succesfully used then pass the ID ($iSelectedOption) to @extended
+	If $iErr = $_WD_ERROR_Success And $sCommand = 'options2' Then $iExt = $iSelectedOption
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
