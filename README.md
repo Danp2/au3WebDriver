@@ -11,6 +11,7 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 	- Chrome	[[download](https://sites.google.com/chromium.org/driver/)]	[[status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)]
 	- FireFox	[[download](https://github.com/mozilla/geckodriver/releases)]	[[status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status)]
 	- Edge	[[download](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)]	[[status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver#w3c-webdriver-specification-supporthttpsw3cgithubiowebdriverwebdriver-spechtml)]
+	- Opera	[[https://github.com/operasoftware/operachromiumdriver/releases)]	[[status](https://github.com/operasoftware/operachromiumdriver/releases)]
 
 
 # Function List
