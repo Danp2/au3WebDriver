@@ -1794,42 +1794,42 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'click'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
+					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
 					''
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
+					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
+					',' & _WD_JsonActionMouse("pointerDown, $iButton") & _
+					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
 					''
 		Case 'rightclick'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", 2, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", 2, "pointerUp") & _
+					',' & _WD_JsonActionMouse("pointerDown", 2) & _
+					',' & _WD_JsonActionMouse("pointerUp", 2) & _
 					''
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("pause", $iHoldDelay) & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPause($iHoldDelay) & _
+					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
 					''
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
-					_WD_JsonAction("key", 1, "keyDown", $sModifier) & _
+					_WD_JsonActionKey("keyDown", $sModifier) & _
 					','
 
 			; Perform click
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionMouse("pointerDown", $iButton) & _
+					',' & _WD_JsonActionMouse("pointerUp", $iButton) & _
 					''
 
 			; Release modifier key
 			$sPostAction = _
-					',' & _WD_JsonAction("key", 2, "keyUp", $sModifier) & _
+					',' & _WD_JsonActionKey("keyUp", $sModifier, 2) & _
 					''
 
 		Case 'hide'
@@ -2043,13 +2043,12 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_JsonAction
-; Description ...: Formats "action" strings for use in _WD_Action
-; Syntax ........: _WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
-; Parameters ....: $sAction - The type of "action" string to be built
-;                  $iValue  - Specify button #, pause duration, etc.
-;                  $sType   - [optional] Subaction to be performed
-;                  $sKey    - [optional] Keystroke to be pressed or released
+; Name ..........: _WD_JsonActionKey
+; Description ...: Formats keyboard "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonActionKey($sType, $sKey[, $iKeyboard = 1])
+; Parameters ....: $sType      - Type of action (Ex: keyDown, keyUp)
+;                  $sKey       - Keystroke to simulate
+;                  $iKeyboard  - [optional]
 ; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
@@ -2058,38 +2057,68 @@ EndFunc   ;==>_WD_CheckContext
 ; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
-	Local $sJSON = ''
-	Switch $sAction
-		Case 'mouse'
-			$sJSON = _
-					'{' & _
-					'	"button":' & $iValue & _
-					'	,"type":"' & $sType & '"' & _
-					'}'
-		Case 'pause'
-			$sJSON = _
-					'{' & _
-					'	"type":"pause"' & _
-					'	,"duration":' & $iValue & _
-					'}'
-
-		Case 'key'
-			$sJSON = _
-					'{' & _
-					'	"type":"key"' & _
-					'	,"id":"keyboard_' & $iValue & '"' & _
-					'	,"actions":[' & _
-					'		{' & _
-					'			"type":"' & $sType & '"' & _
-					'			,"value":"' & $sKey & _
-					'		}' & _
-					'	]' & _
-					'}'
-	EndSwitch
+Func _WD_JsonActionKey($sType, $sKey, $iKeyboard = 1)
+	Local $sJSON = _
+			'{' & _
+			'	"type":"key"' & _
+			'	,"id":"keyboard_' & $iKeyboard & '"' & _
+			'	,"actions":[' & _
+			'		{' & _
+			'			"type":"' & $sType & '"' & _
+			'			,"value":"' & $sKey & _
+			'		}' & _
+			'	]' & _
+			'}'
 
 	Return $sJSON
-EndFunc   ;==>_WD_JsonAction
+EndFunc   ;==>_WD_JsonActionKey
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_JsonActionMouse
+; Description ...: Formats mouse "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonActionMouse($sType[, $iButton = 1])
+; Parameters ....: $sType      - Type of action (Ex: pointerDown, pointerUp)
+;                  $iButton    - [optional] Mouse button to simulate. Default is 1.
+; Return values .: Requested JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Action
+; Link ..........: https://www.w3.org/TR/webdriver/#actions
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_JsonActionMouse($sType, $iButton = 1)
+	Local $sJSON = _
+			'{' & _
+			'	"button":' & $iButton & _
+			'	,"type":"' & $sType & '"' & _
+			'}'
+
+	Return $sJSON
+EndFunc   ;==>_WD_JsonActionMouse
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_JsonActionPause
+; Description ...: Formats pause "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonActionPause($iDuration)
+; Parameters ....: $iDuration - length of time to pause in ticks
+; Return values .: Requested JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Action
+; Link ..........: https://www.w3.org/TR/webdriver/#actions, https://www.w3.org/TR/webdriver/#ticks
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_JsonActionPause($iDuration)
+	Local $sJSON = _
+			'{' & _
+			'	"type":"pause"' & _
+			'	,"duration":' & $iDuration & _
+			'}'
+
+	Return $sJSON
+EndFunc   ;==>_WD_JsonActionPause
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
 ; Name ..........: __WD_Base64Decode
