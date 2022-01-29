@@ -2080,9 +2080,14 @@ EndFunc   ;==>_WD_JsonActionKey
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionPointer
 ; Description ...: Formats pointer "action" strings for use in _WD_Action
-; Syntax ........: _WD_JsonActionPointer($sType[, $iButton = 1])
-; Parameters ....: $sType      - Type of action (Ex: pointerDown, pointerUp, pointerMove)
-;                  $iButton    - [optional] Mouse button to simulate. Default is $_WD_BUTTON_Left.
+; Syntax ........: _WD_JsonActionPointer($sType[, $iButton = $_WD_BUTTON_Left[, $iXOffset = 0[, $iYOffset = 0[, $iDuration = 100[,
+;                  $sOrigin = Default]]]]])
+; Parameters ....: $sType     - Type of action (Ex: pointerDown, pointerUp, pointerMove)
+;                  $iButton   - [optional] Mouse button to simulate. Default is $_WD_BUTTON_Left.
+;                  $sOrigin   - [optional] Starting location. ('pointer', 'viewport', or Element ID). Default is 'viewport'.
+;                  $iXOffset  - [optional] X offset. Default is 0.
+;                  $iYOffset  - [optional] Y offset. Default is 0.
+;                  $iDuration - [optional] Duration in ticks. Default is 100.
 ; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
@@ -2091,7 +2096,14 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonActionPointer($sType, $iButton = $_WD_BUTTON_Left, $iXOffset = 0, $iYOffset = 0, $iDuration = 100, $sElement = Default)
+Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOffset = Default, $iYOffset = Default, $iDuration = Default)
+
+	If $iButton = Default Then $iButton = $_WD_BUTTON_Left
+	If $sOrigin = Default Then $sOrigin = 'viewport'
+	If $iXOffset = Default Then $iXOffset = 0
+	If $iYOffset = Default Then $iYOffset = 0
+	If $iDuration = Default Then $iDuration = 100
+
 	Local $sJSON = _
 			'{' & _
 			'	"type":"' & $sType & '"'
@@ -2101,11 +2113,20 @@ Func _WD_JsonActionPointer($sType, $iButton = $_WD_BUTTON_Left, $iXOffset = 0, $
 			$sJSON &= '	,"button":' & $iButton
 
 		Case 'pointerMove'
-			$sJSON &= '	"duration":' & $iDuration & _
-					'	"origin":{"ELEMENT":"' & $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}' & _
-					'	,"x":' & $iXOffset & _
-					'	,"y":' & $iYOffset & _
-					''
+			$sJSON &= _
+					'	"duration":' & $iDuration & _
+					'	,"origin":'
+
+			Switch $sOrigin
+				Case 'viewport', 'pointer'
+					$sJSON &= '"' & $sOrigin & '"'
+				Case Else
+					$sJSON &= '{"ELEMENT":"' & $sOrigin & '","' & $_WD_ELEMENT_ID & '":"' & $sOrigin & '"}'
+			EndSwitch
+
+			$sJSON &= _
+				'	,"x":' & $iXOffset & _
+				'	,"y":' & $iYOffset
 	EndSwitch
 
 	$sJSON &= '}'
