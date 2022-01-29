@@ -2052,7 +2052,7 @@ EndFunc   ;==>_WD_CheckContext
 ; Syntax ........: _WD_JsonActionKey($sType, $sKey[, $iSuffix = 1])
 ; Parameters ....: $sType      - Type of action (Ex: keyDown, keyUp)
 ;                  $sKey       - Keystroke to simulate
-;                  $iSuffix  - [optional] Value to append to action's "id" property. Default is 1.
+;                  $iSuffix  - [optional] Value to append to the "id" property. Default is 1.
 ; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
@@ -2061,7 +2061,10 @@ EndFunc   ;==>_WD_CheckContext
 ; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonActionKey($sType, $sKey, $iSuffix = 1)
+Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
+
+	If $iSuffix = Default Then $iSuffix = 1
+
 	Local $sJSON = _
 			'{' & _
 			'	"type":"key"' & _
