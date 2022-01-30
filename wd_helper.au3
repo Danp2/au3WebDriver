@@ -2062,29 +2062,24 @@ EndFunc   ;==>_WD_CheckContext
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
+	Local Const $sFuncName = "_WD_JsonActionKey"
 
 	If $iSuffix = Default Then $iSuffix = 1
 
-	Local $sJSON = _
-			'{' & _
-			'	"type":"key"' & _
-			'	,"id":"keyboard_' & $iSuffix & '"' & _
-			'	,"actions":[' & _
-			'		{' & _
-			'			"type":"' & $sType & '"' & _
-			'			,"value":"' & $sKey & _
-			'		}' & _
-			'	]' & _
-			'}'
-
-	Return StringReplace($sJSON, @TAB, "")
+	Local $vData = Json_ObjCreate()
+	Json_Put($vData, '.type', 'key')
+	Json_Put($vData, '.id', 'keyboard_' & $iSuffix)
+	Json_Put($vData, '.actions[0].type', $sType)
+	Json_Put($vData, '.actions[0].value', $sKey)
+ 	Local $sJSON = Json_Encode($vData)
+	Return $sJSON
 EndFunc   ;==>_WD_JsonActionKey
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionPointer
 ; Description ...: Formats pointer "action" strings for use in _WD_Action
-; Syntax ........: _WD_JsonActionPointer($sType[, $iButton = $_WD_BUTTON_Left[, $iXOffset = 0[, $iYOffset = 0[, $iDuration = 100[,
-;                  $sOrigin = Default]]]]])
+; Syntax ........: _WD_JsonActionPointer($sType[, $iButton = Default[, $sOrigin = Default[, $iXOffset = Default[, $iYOffset = Default[,
+;                  $iDuration = Default]]]]])
 ; Parameters ....: $sType     - Type of action (Ex: pointerDown, pointerUp, pointerMove)
 ;                  $iButton   - [optional] Mouse button to simulate. Default is $_WD_BUTTON_Left.
 ;                  $sOrigin   - [optional] Starting location. ('pointer', 'viewport', or Element ID). Default is 'viewport'.
@@ -2100,6 +2095,7 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOffset = Default, $iYOffset = Default, $iDuration = Default)
+	Local Const $sFuncName = "_WD_JsonActionPointer"
 
 	If $iButton = Default Then $iButton = $_WD_BUTTON_Left
 	If $sOrigin = Default Then $sOrigin = 'viewport'
@@ -2107,34 +2103,30 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 	If $iYOffset = Default Then $iYOffset = 0
 	If $iDuration = Default Then $iDuration = 100
 
-	Local $sJSON = _
-			'{' & _
-			'	"type":"' & $sType & '"'
+	Local $vData = Json_ObjCreate()
+	Json_Put($vData, '.type', $sType)
 
 	Switch $sType
 		Case 'pointerDown', 'pointerUp'
-			$sJSON &= '	,"button":' & $iButton
+			Json_Put($vData, '.button', $iButton)
 
 		Case 'pointerMove'
-			$sJSON &= _
-					'	"duration":' & $iDuration & _
-					'	,"origin":'
+			Json_Put($vData, '.duration', $iDuration)
 
 			Switch $sOrigin
 				Case 'viewport', 'pointer'
-					$sJSON &= '"' & $sOrigin & '"'
+					Json_Put($vData, '.origin', $sOrigin)
 				Case Else
-					$sJSON &= '{"ELEMENT":"' & $sOrigin & '","' & $_WD_ELEMENT_ID & '":"' & $sOrigin & '"}'
+					Json_Put($vData, '.origin.ELEMENT', $sOrigin)
+					Json_Put($vData, '.origin.' & $_WD_ELEMENT_ID, $sOrigin)
 			EndSwitch
 
-			$sJSON &= _
-				'	,"x":' & $iXOffset & _
-				'	,"y":' & $iYOffset
+			Json_Put($vData, '.x', $iXOffset)
+			Json_Put($vData, '.y', $iYOffset)
 	EndSwitch
 
-	$sJSON &= '}'
-
-	Return StringReplace($sJSON, @TAB, "")
+ 	Local $sJSON = Json_Encode($vData)
+	Return $sJSON
 EndFunc   ;==>_WD_JsonActionPointer
 
 ; #FUNCTION# ====================================================================================================================
@@ -2151,13 +2143,14 @@ EndFunc   ;==>_WD_JsonActionPointer
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_JsonActionPause($iDuration)
-	Local $sJSON = _
-			'{' & _
-			'	"type":"pause"' & _
-			'	,"duration":' & $iDuration & _
-			'}'
+	Local Const $sFuncName = "_WD_JsonActionPause"
 
-	Return StringReplace($sJSON, @TAB, "")
+	Local $vData = Json_ObjCreate()
+	Json_Put($vData, '.type', 'pause')
+	Json_Put($vData, '.duration', $iDuration)
+
+ 	Local $sJSON = Json_Encode($vData)
+	Return $sJSON
 EndFunc   ;==>_WD_JsonActionPause
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
