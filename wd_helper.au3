@@ -992,7 +992,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local $sNodeName, $sJsonElement, $vResult
+	Local $sNodeName, $vResult
 	Local $sText, $aOptions
 
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
@@ -1003,8 +1003,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 		Switch $sCommand
 			Case 'value'
 				; Retrieve current value of designated Select element
-				$sJsonElement = __WD_JsonElement($sSelectElement)
-				$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", $sJsonElement, Default, $_WD_JSON_Value)
+				$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 				$iErr = @error
 
 			Case 'options'
@@ -1015,8 +1014,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 				If $iErr = $_WD_ERROR_Success Then
 					$sText = ""
 					For $sElement In $aOptions
-						$sJsonElement = __WD_JsonElement($sElement)
-						$sText &= (($sText <> "") ? @CRLF : "") & _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement, Default, $_WD_JSON_Value)
+						$sText &= (($sText <> "") ? @CRLF : "") & _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 						$iErr = @error
 					Next
 
@@ -1147,7 +1145,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
 
-	Local $sResult = "0", $sJsonElement, $sSavedEscape
+	Local $sResult = "0", $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
@@ -1168,8 +1166,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
-			$sJsonElement = __WD_JsonElement($sElement)
-			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement, Default, $_WD_JSON_Value)
+			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 			$iErr = @error
 			If @error Then $sResult = "0"
 		EndIf
@@ -1761,7 +1758,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
-	Local $sAction, $sJavascript, $iErr, $sResult, $sJsonElement, $iActionType = 1
+	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -1890,8 +1887,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iErr = @error
 
 		Case 2
-			$sJsonElement = __WD_JsonElement($sElement)
-			$sResult = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement, Default, $_WD_JSON_Value)
+			$sResult = _WD_ExecuteScript($sSession, $sJavascript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 			$iErr = @error
 	EndSwitch
 
