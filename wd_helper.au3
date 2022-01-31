@@ -660,8 +660,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
 	Local $sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-	Local $sJsonElement = __WD_JsonElement($sElement)
-	Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement, Default, $_WD_JSON_Value)
+	Local $sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 	Local $iErr = @error
 	Return ($sResult = "true" ? SetError(0, 0, True) : SetError($iErr, 0, False))
 EndFunc   ;==>_WD_HighlightElement
