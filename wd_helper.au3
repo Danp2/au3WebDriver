@@ -994,7 +994,6 @@ EndFunc   ;==>_WD_ElementOptionSelect
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
 	Local $sNodeName, $vResult
-	Local $sText
 
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
@@ -1013,7 +1012,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 					If $iErr = $_WD_ERROR_Success Then
-						$sText = StringStripWS($vResult, $STR_STRIPTRAILING)
+						Local $sText = StringStripWS($vResult, $STR_STRIPTRAILING)
 						Local $aOut[0][2]
 						_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
 						$vResult = $aOut
