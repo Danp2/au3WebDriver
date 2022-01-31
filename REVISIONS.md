@@ -1,3 +1,20 @@
+	v0.5.1.1
+	- Added: _WD_JsonActionKey, _WD_JsonActionPause, and _WD_JsonActionPointer functions
+	- Changed (_WD_ElementActionEx): Added support for 'click' action
+	- Changed (_WD_UpdateDriver): Attempts to identify current architecture if $bFlag64 is Default.
+	- Changed (__WD_DetectError): Detect "no such alert"
+	- Changed (_WD_ElementSelectAction): Performance of "Options" significantly improved by reducing Webdriver calls
+	- Fixed (_WD_Alert): Improve alert detection
+	- Fixed (_WD_UpdateDriver): $bForce / $KEYWORD_NULL implementation (again)
+	- Chore: Updated wd_demo.au3
+		- Improved console output in DemoScript
+		- Display screenshots in DemoWindows
+		- Improved console output & in DemoAlerts
+		- Corrected 'sendtext' coding in DemoAlerts
+		- Added "update" option
+		- Added "headless" option
+		- Added DemoPrint routine
+
 	v0.5.1.0
 	- Changed: _WD_GetElementFromPoint
 		- Sets @Extended to shown context changed
