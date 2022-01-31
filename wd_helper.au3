@@ -664,8 +664,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
 	Local $sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-	Local $sJsonElement = __WD_JsonElement($sElement)
-	Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement, Default, $_WD_JSON_Value)
+	Local $sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 	Local $iErr = @error
 	Return ($sResult = "true" ? SetError(0, 0, True) : SetError($iErr, 0, False))
 EndFunc   ;==>_WD_HighlightElement
@@ -1145,7 +1144,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
 
-	Local $sResult = "0", $sJsonElement, $sSavedEscape
+	Local $sResult = "0", $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
@@ -1166,8 +1165,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
-			$sJsonElement = __WD_JsonElement($sElement)
-			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", $sJsonElement, Default, $_WD_JSON_Value)
+			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 			$iErr = @error
 			If @error Then $sResult = "0"
 		EndIf
@@ -1701,7 +1699,7 @@ EndFunc   ;==>_WD_GetElementByName
 ; ===============================================================================================================================
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 	Local Const $sFuncName = "_WD_SetElementValue"
-	Local $sResult, $iErr, $sScript, $sJsonElement
+	Local $sResult, $iErr, $sScript
 
 	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
 	If $iStyle < $_WD_OPTION_Standard Or $iStyle > $_WD_OPTION_Advanced Then $iStyle = $_WD_OPTION_Standard
@@ -1713,8 +1711,7 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 
 		Case $_WD_OPTION_Advanced
 			$sScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'value').set.call(arguments[0], arguments[1]);arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
-			$sJsonElement = __WD_JsonElement($sElement)
-			$sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement & ',"' & $sValue & '"')
+			$sResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sElement) & ',"' & $sValue & '"')
 			$iErr = @error
 
 	EndSwitch
@@ -1760,7 +1757,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
-	Local $sAction, $sJavascript, $iErr, $sResult, $sJsonElement, $iActionType = 1
+	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -1889,8 +1886,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iErr = @error
 
 		Case 2
-			$sJsonElement = __WD_JsonElement($sElement)
-			$sResult = _WD_ExecuteScript($sSession, $sJavascript, $sJsonElement, Default, $_WD_JSON_Value)
+			$sResult = _WD_ExecuteScript($sSession, $sJavascript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 			$iErr = @error
 	EndSwitch
 
