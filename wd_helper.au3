@@ -980,7 +980,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sSelectElement - Element ID of Select element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's options
-;                  |VALUE - Retrieve current value
+;                  |VALUE   - Retrieve current value
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -997,44 +997,37 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local $sNodeName, $sJsonElement, $vResult
-	Local $sText, $aOptions
+	Local $sNodeName, $vResult
 
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
 
-	If $iErr = $_WD_ERROR_Success And $sNodeName = 'select' Then
+	If $iErr = $_WD_ERROR_Success Then
+		If $sNodeName = 'select' Then
+			Switch $sCommand
+				Case 'value'
+					; Retrieve current value of designated Select element
+					$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
 
-		Switch $sCommand
-			Case 'value'
-				; Retrieve current value of designated Select element
-				$sJsonElement = __WD_JsonElement($sSelectElement)
-				$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", $sJsonElement, Default, $_WD_JSON_Value)
-				$iErr = @error
+				Case 'options'
+					; Retrieve array containing value / label attributes from the Select element's options
+					Local $sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
+					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
+					If $iErr = $_WD_ERROR_Success Then
+						Local $sText = StringStripWS($vResult, $STR_STRIPTRAILING)
+						Local $aOut[0][2]
+						_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
+						$vResult = $aOut
+					EndIf
+				Case Else
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
 
-			Case 'options'
-				; Retrieve array containing value / label attributes from the Select element's options
-				$aOptions = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "./option", $sSelectElement, True)
-				$iErr = @error
-
-				If $iErr = $_WD_ERROR_Success Then
-					$sText = ""
-					For $sElement In $aOptions
-						$sJsonElement = __WD_JsonElement($sElement)
-						$sText &= (($sText <> "") ? @CRLF : "") & _WD_ExecuteScript($sSession, "return arguments[0].value + '|' + arguments[0].label", $sJsonElement, Default, $_WD_JSON_Value)
-						$iErr = @error
-					Next
-
-					Local $aOut[0][2]
-					_ArrayAdd($aOut, $sText, 0, Default, @CRLF, 1)
-					$vResult = $aOut
-				EndIf
-			Case Else
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
-
-		EndSwitch
-	Else
-		$iErr = $_WD_ERROR_InvalidArgue
+			EndSwitch
+		Else
+			$iErr = $_WD_ERROR_InvalidArgue
+		EndIf
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
