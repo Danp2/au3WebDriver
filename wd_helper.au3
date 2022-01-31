@@ -976,8 +976,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sSelectElement - Element ID of Select element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's options
-;                  |OPTIONS2 - Retrieve array containing value / label attributes from the Select element's options - using faster way - RegExp
-;                  |VALUE - Retrieve current value
+;                  |VALUE   - Retrieve current value
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
