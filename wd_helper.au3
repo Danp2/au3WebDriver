@@ -1704,7 +1704,7 @@ EndFunc   ;==>_WD_GetElementByName
 ; ===============================================================================================================================
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 	Local Const $sFuncName = "_WD_SetElementValue"
-	Local $sResult, $iErr, $sScript, $sJsonElement
+	Local $sResult, $iErr, $sScript
 
 	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
 	If $iStyle < $_WD_OPTION_Standard Or $iStyle > $_WD_OPTION_Advanced Then $iStyle = $_WD_OPTION_Standard
@@ -1716,8 +1716,7 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 
 		Case $_WD_OPTION_Advanced
 			$sScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'value').set.call(arguments[0], arguments[1]);arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
-			$sJsonElement = __WD_JsonElement($sElement)
-			$sResult = _WD_ExecuteScript($sSession, $sScript, $sJsonElement & ',"' & $sValue & '"')
+			$sResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sElement) & ',"' & $sValue & '"')
 			$iErr = @error
 
 	EndSwitch
