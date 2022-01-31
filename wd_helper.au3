@@ -67,6 +67,10 @@ Global Enum _
 		$_WD_TARGET_FirstTab, _
 		$_WD_TARGET_LastTab
 
+Global Enum _
+		$_WD_BUTTON_Left = 0, _
+		$_WD_BUTTON_Middle = 1, _
+		$_WD_BUTTON_Right = 2
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
@@ -1746,7 +1750,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |UNCHECK - Unchecks a checkbox input element
 ;                  $iXOffset   - [optional] X Offset. Default is 0
 ;                  $iYOffset   - [optional] Y Offset. Default is 0
-;                  $iButton    - [optional] Mouse button. Default is 0
+;                  $iButton    - [optional] Mouse button. Default is $_WD_BUTTON_Left
 ;                  $iHoldDelay - [optional] Hold time in ms. Default is 1000
 ;                  $sModifier  - [optional] Modifier key. Default is "\uE008" (shift key)
 ; Return values .: Success - Return value from web driver (could be an empty string)
@@ -1767,7 +1771,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
-	If $iButton = Default Then $iButton = 0
+	If $iButton = Default Then $iButton = $_WD_BUTTON_Left
 	If $iHoldDelay = Default Then $iHoldDelay = 1000
 	If $sModifier = Default Then $sModifier = "\uE008" ; shift
 
@@ -1794,42 +1798,42 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'click'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 		Case 'doubleclick'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 		Case 'rightclick'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", 2, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", 2, "pointerUp") & _
+					',' & _WD_JsonActionPointer("pointerDown", $_WD_BUTTON_Right) & _
+					',' & _WD_JsonActionPointer("pointerUp", $_WD_BUTTON_Right) & _
 					''
 		Case 'clickandhold'
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("pause", $iHoldDelay) & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPause($iHoldDelay) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 		Case 'modifierclick'
 			; Hold modifier key down
 			$sPreAction = _
-					_WD_JsonAction("key", 1, "keyDown", $sModifier) & _
+					_WD_JsonActionKey("keyDown", $sModifier) & _
 					','
 
 			; Perform click
 			$sPostHoverAction = _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerDown") & _
-					',' & _WD_JsonAction("mouse", $iButton, "pointerUp") & _
+					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
+					',' & _WD_JsonActionPointer("pointerUp", $iButton) & _
 					''
 
 			; Release modifier key
 			$sPostAction = _
-					',' & _WD_JsonAction("key", 2, "keyUp", $sModifier) & _
+					',' & _WD_JsonActionKey("keyUp", $sModifier, 2) & _
 					''
 
 		Case 'hide'
@@ -2043,13 +2047,12 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_JsonAction
-; Description ...: Formats "action" strings for use in _WD_Action
-; Syntax ........: _WD_JsonAction($sAction, $iValue[, $sType = ""[, $sKey = ""]])
-; Parameters ....: $sAction - The type of "action" string to be built
-;                  $iValue  - Specify button #, pause duration, etc.
-;                  $sType   - [optional] Subaction to be performed
-;                  $sKey    - [optional] Keystroke to be pressed or released
+; Name ..........: _WD_JsonActionKey
+; Description ...: Formats keyboard "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonActionKey($sType, $sKey[, $iSuffix = 1])
+; Parameters ....: $sType      - Type of action (Ex: keyDown, keyUp)
+;                  $sKey       - Keystroke to simulate
+;                  $iSuffix  - [optional] Value to append to the "id" property. Default is 1.
 ; Return values .: Requested JSON string
 ; Author ........: Danp2
 ; Modified ......:
@@ -2058,38 +2061,112 @@ EndFunc   ;==>_WD_CheckContext
 ; Link ..........: https://www.w3.org/TR/webdriver/#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonAction($sAction, $iValue, $sType = "", $sKey = "")
-	Local $sJSON = ''
-	Switch $sAction
-		Case 'mouse'
-			$sJSON = _
-					'{' & _
-					'	"button":' & $iValue & _
-					'	,"type":"' & $sType & '"' & _
-					'}'
-		Case 'pause'
-			$sJSON = _
-					'{' & _
-					'	"type":"pause"' & _
-					'	,"duration":' & $iValue & _
-					'}'
+Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
+	Local Const $sFuncName = "_WD_JsonActionKey"
 
-		Case 'key'
-			$sJSON = _
-					'{' & _
-					'	"type":"key"' & _
-					'	,"id":"keyboard_' & $iValue & '"' & _
-					'	,"actions":[' & _
-					'		{' & _
-					'			"type":"' & $sType & '"' & _
-					'			,"value":"' & $sKey & _
-					'		}' & _
-					'	]' & _
-					'}'
-	EndSwitch
+	If $iSuffix = Default Then $iSuffix = 1
+
+	Local $vData = Json_ObjCreate()
+	Json_Put($vData, '.type', 'key')
+	Json_Put($vData, '.id', 'keyboard_' & $iSuffix)
+	Json_Put($vData, '.actions[0].type', $sType)
+	Json_Put($vData, '.actions[0].value', $sKey)
+ 	Local $sJSON = Json_Encode($vData)
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
+	EndIf
 
 	Return $sJSON
-EndFunc   ;==>_WD_JsonAction
+EndFunc   ;==>_WD_JsonActionKey
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_JsonActionPointer
+; Description ...: Formats pointer "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonActionPointer($sType[, $iButton = Default[, $sOrigin = Default[, $iXOffset = Default[, $iYOffset = Default[,
+;                  $iDuration = Default]]]]])
+; Parameters ....: $sType     - Type of action (Ex: pointerDown, pointerUp, pointerMove)
+;                  $iButton   - [optional] Mouse button to simulate. Default is $_WD_BUTTON_Left.
+;                  $sOrigin   - [optional] Starting location. ('pointer', 'viewport', or Element ID). Default is 'viewport'.
+;                  $iXOffset  - [optional] X offset. Default is 0.
+;                  $iYOffset  - [optional] Y offset. Default is 0.
+;                  $iDuration - [optional] Duration in ticks. Default is 100.
+; Return values .: Requested JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Action
+; Link ..........: https://www.w3.org/TR/webdriver/#actions
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOffset = Default, $iYOffset = Default, $iDuration = Default)
+	Local Const $sFuncName = "_WD_JsonActionPointer"
+
+	If $iButton = Default Then $iButton = $_WD_BUTTON_Left
+	If $sOrigin = Default Then $sOrigin = 'viewport'
+	If $iXOffset = Default Then $iXOffset = 0
+	If $iYOffset = Default Then $iYOffset = 0
+	If $iDuration = Default Then $iDuration = 100
+
+	Local $vData = Json_ObjCreate()
+	Json_Put($vData, '.type', $sType)
+
+	Switch $sType
+		Case 'pointerDown', 'pointerUp'
+			Json_Put($vData, '.button', $iButton)
+
+		Case 'pointerMove'
+			Json_Put($vData, '.duration', $iDuration)
+
+			Switch $sOrigin
+				Case 'viewport', 'pointer'
+					Json_Put($vData, '.origin', $sOrigin)
+				Case Else
+					Json_Put($vData, '.origin.ELEMENT', $sOrigin)
+					Json_Put($vData, '.origin.' & $_WD_ELEMENT_ID, $sOrigin)
+			EndSwitch
+
+			Json_Put($vData, '.x', $iXOffset)
+			Json_Put($vData, '.y', $iYOffset)
+	EndSwitch
+
+ 	Local $sJSON = Json_Encode($vData)
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
+	EndIf
+
+	Return $sJSON
+EndFunc   ;==>_WD_JsonActionPointer
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_JsonActionPause
+; Description ...: Formats pause "action" strings for use in _WD_Action
+; Syntax ........: _WD_JsonActionPause($iDuration)
+; Parameters ....: $iDuration - length of time to pause in ticks
+; Return values .: Requested JSON string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Action
+; Link ..........: https://www.w3.org/TR/webdriver/#actions, https://www.w3.org/TR/webdriver/#ticks
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_JsonActionPause($iDuration)
+	Local Const $sFuncName = "_WD_JsonActionPause"
+
+	Local $vData = Json_ObjCreate()
+	Json_Put($vData, '.type', 'pause')
+	Json_Put($vData, '.duration', $iDuration)
+
+ 	Local $sJSON = Json_Encode($vData)
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
+	EndIf
+
+	Return $sJSON
+EndFunc   ;==>_WD_JsonActionPause
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
 ; Name ..........: __WD_Base64Decode
