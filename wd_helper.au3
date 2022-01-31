@@ -1011,10 +1011,10 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 			Case 'options'
 				; Retrieve array containing value / label attributes from the Select element's options
 				Local $sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
-				$sText = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+				$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 				$iErr = @error
 				If $iErr = $_WD_ERROR_Success Then
-					$sText = StringStripWS($sText, $STR_STRIPTRAILING)
+					$sText = StringStripWS($vResult, $STR_STRIPTRAILING)
 					Local $aOut[0][2]
 					_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
 					$vResult = $aOut
