@@ -2072,6 +2072,11 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
  	Local $sJSON = Json_Encode($vData)
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
+	EndIf
+
 	Return $sJSON
 EndFunc   ;==>_WD_JsonActionKey
 
@@ -2126,6 +2131,11 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 	EndSwitch
 
  	Local $sJSON = Json_Encode($vData)
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
+	EndIf
+
 	Return $sJSON
 EndFunc   ;==>_WD_JsonActionPointer
 
@@ -2150,6 +2160,11 @@ Func _WD_JsonActionPause($iDuration)
 	Json_Put($vData, '.duration', $iDuration)
 
  	Local $sJSON = Json_Encode($vData)
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
+	EndIf
+
 	Return $sJSON
 EndFunc   ;==>_WD_JsonActionPause
 
