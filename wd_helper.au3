@@ -999,31 +999,32 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
 
-	If $iErr = $_WD_ERROR_Success And $sNodeName = 'select' Then
+	If $iErr = $_WD_ERROR_Success Then
+		If $sNodeName = 'select' Then
+			Switch $sCommand
+				Case 'value'
+					; Retrieve current value of designated Select element
+					$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
 
-		Switch $sCommand
-			Case 'value'
-				; Retrieve current value of designated Select element
-				$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-				$iErr = @error
+				Case 'options'
+					; Retrieve array containing value / label attributes from the Select element's options
+					Local $sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
+					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
+					If $iErr = $_WD_ERROR_Success Then
+						$sText = StringStripWS($vResult, $STR_STRIPTRAILING)
+						Local $aOut[0][2]
+						_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
+						$vResult = $aOut
+					EndIf
+				Case Else
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
 
-			Case 'options'
-				; Retrieve array containing value / label attributes from the Select element's options
-				Local $sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
-				$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-				$iErr = @error
-				If $iErr = $_WD_ERROR_Success Then
-					$sText = StringStripWS($vResult, $STR_STRIPTRAILING)
-					Local $aOut[0][2]
-					_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
-					$vResult = $aOut
-				EndIf
-			Case Else
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
-
-		EndSwitch
-	Else
-		$iErr = $_WD_ERROR_InvalidArgue
+			EndSwitch
+		Else
+			$iErr = $_WD_ERROR_InvalidArgue
+		EndIf
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
