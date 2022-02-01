@@ -1,395 +1,840 @@
-	v0.5.1.1
-	- Added: _WD_JsonActionKey, _WD_JsonActionPause, and _WD_JsonActionPointer functions
-	- Changed (_WD_ElementActionEx): Added support for 'click' action
-	- Changed (_WD_UpdateDriver): Attempts to identify current architecture if $bFlag64 is Default.
-	- Changed (__WD_DetectError): Detect "no such alert"
-	- Changed (_WD_ElementSelectAction): Performance of "Options" significantly improved by reducing Webdriver calls
-	- Fixed (_WD_Alert): Improve alert detection
-	- Fixed (_WD_UpdateDriver): $bForce / $KEYWORD_NULL implementation (again)
-	- Chore: Updated wd_demo.au3
-		- Improved console output in DemoScript
-		- Display screenshots in DemoWindows
-		- Improved console output & in DemoAlerts
-		- Corrected 'sendtext' coding in DemoAlerts
-		- Added "update" option
-		- Added "headless" option
-		- Added DemoPrint routine
+# Changelog
 
-	v0.5.1.0
-	- Changed: _WD_GetElementFromPoint
-		- Sets @Extended to shown context changed
-		- Additional error checking
-	- Changed (_WD_ExecuteScript): Add support for return of additional subnodes
-	- Added: $_WD_JSON_* constants
-	- Chore: Update various functions to use $_WD_JSON_* constants
-	- Changed (_WD_GetBrowserVersion): Returns "0" on failure instead of "" 			*** Script breaking change ***
-	- Changed (_WD_GetWebDriverVersion): Returns "0" on failure instead of "None" 		*** Script breaking change ***
-	- Changed: _WD_UpdateDriver
-		- Added checks for valid installation directory
-		- Added check for existing 32/64 bit driver
-		- Fixed $bForce / $KEYWORD_NULL implementation
-		- Improved version comparison
-		- Improved zip extraction
-		- Fixed regex used with geckodriver
-	- Changed (_WD_Screenshot): Improved error handling
-	- Fixed (_WD_GetShadowRoot, _WD_SelectFiles, _WD_SetTimeouts): Correctly initialize return value
+All notable changes to "WebDriver" will be documented in this file.
 
-	v0.5.0.3
-	- Changed (_WD_ExecuteScript): Optionally return value node instead of entire JSON response (mLipok)
-	- Changed (_WD_ElementActionEx): Added support for "check" and "uncheck" commands (TheDcoder)
-	- Changed (_WD_GetElementFromPoint): Added support for frames
-	- Fixed (_WD_ElementAction): Return raw response for 'shadow' command
-	- Fixed (_WD_GetShadowRoot): Use shadow root identifier
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-	v0.5.0.2
-	- Added: CHM help file (water)
-	- Changed (_WD_Capabilities): Added support for "binary" option (mLipok)
-	- Changed (_WD_Startup): Detect webdriver console exiting with error when launched
-	- Chore: Updated function headers (water)
-	- Chore: Updated wd_demo.au3
-		- Added DemoSleep routine (mLipok)
-		- Changed GUI background color for better visibility in Windows 11 (mLipok)
-		- Disable "Run Demo" button during demo execution
+## [0.5.1.1] - 2022-01-31
 
-	v0.5.0.1
-	- Added: _WD_Capabilities functions (mLipok)
-	- Changed (_WD_UpdateDriver): Added ability to check for newer webdriver without performing update
-	- Chore: Updated wd_demo.au3 (mLipok)
-		- Au3Check compatibility
-		- Script no longer exits after running selected demos
-		- Demonstrate usage of new _WD_Capabilities functions
-	- Changed (__WD_Sleep): Set @error to $_WD_ERROR_UserAbort in case of error (mLipok)
+### Added
 
-	v0.4.1.2
-	- Added: _WD_CheckContext
-	- Fixed (_WD_NewTab): Return error on _WD_Window failure
-	- Fixed (_WD_IsLatestRelease)
-		- Update regex
-		- Return $_WD_ERROR_Exception if regex fails
-	- Changed (_WD_ExecuteCDPCommand): Added http status check
-	- Changed (__WD_DetectError): Detect unknown end point
-	- Chore: Updated wd_cdp.au3
-		- Rename functions so that they begin with _WD_CDP
-		- Tidy code
+- _WD_JsonActionKey, _WD_JsonActionPause, and _WD_JsonActionPointer functions
+- wd_demo.au3: "update" option
+- wd_demo.au3: "headless" option
+- wd_demo.au3: DemoPrint routine
 
-	v0.4.1.1
-	- Fixed (_WD_NewTab): Properly detect $sCurrentTabHandle retrieval
-	- Changed (_WD_UpdateDriver): Improve error handling (seadoggie01)
-	- Added: __WD_Sleep
-		- Changed (_WD_Option): Added support for "Sleep" option
-		- Chore: Use __WD_Sleep instead of Sleep in "helper" functions
-	- Chore: Updated wd_demo.au3
-		- Call correct Base64 decode function
-		- Remove "binary" portion of MS Edge Capabilities string
-	- Chore: Add remark to _WD_GetSession
+### Changed
 
-	v0.4.1.0
-	- Changed: Moved CDP-related functions to separate file (wd_cdp.au3)
-	- Changed (_WD_ExecuteCDPCommand): Now supports additional browsers via WebSockets
-	- Added: _WD_GetCDPSettings
-	- Changed (_WD_Option): Added support for "DefaultTimeout" option (mLipok)
+- _WD_ElementActionEx: Added support for 'click' action
+- _WD_UpdateDriver: Attempts to identify current architecture if $bFlag64 is Default.
+- __WD_DetectError: Detect "no such alert"
+- _WD_ElementSelectAction: Performance of "Options" significantly improved by reducing Webdriver calls
+- Improved console output in DemoScript (wd_demo.au3)
+- Display screenshots in DemoWindows (wd_demo.au3)
+- Improved console output & in DemoAlerts (wd_demo.au3)
+- Corrected 'sendtext' coding in DemoAlerts (wd_demo.au3)
 
-	v0.4.0.5
-	- Changed (_WD_WaitElement): Added support for $_WD_OPTION_NoMatch (mLipok)
-	- Changed (_WD_WaitElement): Always return Element ID
-	- Fixed: InetRead() @error handling (mLipok)
-	- Changed: Expose _WD_GetBrowserVersion and _WD_GetWebDriverVersion (mLipok)
-	- Changed: Renamed _Base64Decode to __WD_Base64Decode
+### Fixed
 
-	v0.4.0.4
-	- Added: _WD_IsFullScreen
-	- Changed (_WD_SetElementValue): Advanced option now works with more element types
-	- Fixed (_WD_ElementSelectAction): Use relative xpath when calling _WD_FindElement
+- _WD_Alert: Improve alert detection
+- _WD_UpdateDriver: $bForce / $KEYWORD_NULL implementation (again)
 
-	v0.4.0.3
-	- Changed (_WD_HighlightElement): Option to remove highlight
-	- Fix (_WD_SetElementValue): Corrected leftover $iMethod reference
-	- Fix (_WD_FrameEnter) Properly handle Null index (mLipok)
-	- Fix (_WD_SelectFiles) Properly set value of $sFuncName (mLipok)
-	- Fix (_WD_ElementActionEx) Properly terminate JSON string
-	- Chore (_WD_IsLatestRelease) Remove unneeded code for saving debug level (seadoggie01)
-	- Chore (_WD_GetShadowRoot) Remove unused variable (seadoggie01)
+## [0.5.1.0] - 2022-01-19
 
-	v0.4.0.2
-	- Added: _WD_GetSession
-	- Changed (_WD_FrameEnter): Allow Null as valid index value
-	- Changed (_WD_ElementActionEx): Added support for childCount action
-	- Changed (_WD_WaitElement): Switch to single parameter for options 		*** Script breaking change ***
-	- Changed: _WD_ElementActionEx
-		- Fixed: doubleclick and clickandhold now honor button parameter
-		- Added: modifierclick
-	- Changed (_WD_SetElementValue): Added "advanced" option
+### Added
 
-	v0.4.0.1
-	- Added: _WD_PrintToPDF
-	- Fix (_WD_Window): Properly handle 'print' result
-	- Changed (_WD_ElementActionEx): Added 'hide' and 'show' options
-	- Changed (_WD_ElementAction): Added support for Shadow, CompRole & CompLabel actions
-	- Changed (_WD_GetShadowRoot): Use _WD_ElementAction instead of _WD_ExecuteScript
-	- Changed (_WD_NewTab): Use native Webdriver commands when Javascript isn't required
-	- Changed (_WD_FindElement): Support shadow roots
-	- Changed (_WD_Window): Support 'full' option for screenshots
+- $_WD_JSON_* constants
+- Checks for valid installation directory (_WD_UpdateDriver)
+- Check for existing 32/64 bit driver (_WD_UpdateDriver)
 
-	v0.3.1.1
-	- Fix (_WD_ElementOptionSelect): Correctly capture and re-throw errors (seadoggie01)
-	- Fix (__WD_CloseDriver): Call ProcessWaitClose to ensure each process closes
-	- Chore: Updated wd_demo.au3
-		- Update DemoFrames example
+### Changed
 
-	v0.3.1.0
-	- Changed: Cleanup _WD_DownloadFile
-		- Revise error list in header
-		- Remove leftover $_WD_HTTPRESULT coding
-		- Return $_WD_ERROR_NotFound instead of $_WD_ERROR_InvalidValue
-	- Changed (_WD_WaitElement): Added optional parameter to return element instead of 0/1
-	- Chore: Update function headers (Danp2 and seadoggie01)
-	- Fix (_WD_Screenshot): Edit return value for Base64 screenshots (seadoggie01)
-	- Fix (_WD_WaitElement): Clear variable holding element ID if visibility or enabled check fails
+- Sets @Extended to shown context changed (_WD_GetElementFromPoint)
+- Additional error checking (_WD_GetElementFromPoint)
+- _WD_ExecuteScript: Add support for return of additional subnodes
+- Update various functions to use $_WD_JSON_* constants
+- _WD_GetBrowserVersion: Returns "0" on failure instead of "" `Script breaking change`
+- _WD_GetWebDriverVersion: Returns "0" on failure instead of "None" `Script breaking change`
+- Improved version comparison (_WD_UpdateDriver)
+- Improved zip extraction (_WD_UpdateDriver)
+- _WD_Screenshot: Improved error handling
 
-	v0.3.0.9
-	- Changed (_WD_GetTable): Filter html elements by default when using _HtmlTableGetWriteToArray
-	- Fix (_WD_DownloadFile): Handle error from InetRead
-	- Changed (_WD_DownloadFile): Add $iOptions parameter
-	- Chore: Updated wd_demo.au3
-		- Update binary location of Edge browser
-		- Update DemoDownload example
-		- Misc updates
+### Fixed
 
-	v0.3.0.8
-	- Changed (_WD_WaitElement): Added optional parameter to check elements enabled status
-	- Changed (_WD_GetTable): Optionally support faster _HtmlTableGetWriteToArray
-	- Changed (_WD_ElementAction): Allow retrieving element value with the 'value' command
-	- Chore: Modified #include usage
+- $bForce / $KEYWORD_NULL implementation (_WD_UpdateDriver)
+- Regex used with geckodriver (_WD_UpdateDriver)
+- _WD_GetShadowRoot, _WD_SelectFiles, _WD_SetTimeouts: Correctly initialize return value
 
-	v0.3.0.7
-	- Fixed (__WD_CloseDriver): Properly close webdriver console
-	- Changed (_WD_Option): Added support for "console" option
-	- Changed: Allow logging to file instead of default console
+## [0.5.0.3] - 2021-12-27
 
-	v0.3.0.6
-	- Fixed (__WD_Get, __WD_Post, __WD_Delete): Correctly pass detected errors to calling routine
-	- Changed (__WD_Get): Eliminated optional $iMode parameter
+### Changed
 
-	v0.3.0.5
-	- Added: _WD_GetTable (danylarson / water)
-	- Fixed (_WD_FindElement): Enforce relative xpath when utilizing a starting element
-	- Changed: Use InetRead instead of __WD_Get (_WD_IsLatestRelease & _WD_UpdateDriver)
-	- Changed: Pass Content-Type header in HTTP request
+- _WD_ExecuteScript: Optionally return value node instead of entire JSON response (mLipok)
+- _WD_ElementActionEx: Added support for "check" and "uncheck" commands (TheDcoder)
+- _WD_GetElementFromPoint: Added support for frames
 
-	v0.3.0.4
-	- Added: _WD_ExecuteCdpCommand (TheDcoder)
-	- Changed (_WD_UpdateDriver): Add support for MSEdge (Chromium)
-	- Changed (_WD_Shutdown): Allow shutdown of specific module by name or PID
-	- Changed (_WD_Startup): Notify if WinHTTP UDF needs updated
-	- Changed: Improved error handling / HTTP timeout detection
+### Fixed
 
-	v0.3.0.3
-	- Added: _WD_SetTimeouts
-	- Added: _WD_GetElementById
-	- Added: _WD_GetElementByName
-	- Added: _WD_SetElementValue
-	- Added: _WD_ElementActionEx
+- _WD_ElementAction: Return raw response for 'shadow' command
+- _WD_GetShadowRoot: Use shadow root identifier
 
-	v0.3.0.2
-	- Fixed: WinHTTP timeout coding
-	- Changed (_WD_Option): Add support for DriverDetect option
-	- Changed (_WD_Startup): Respect DriverDetect setting
+## [0.5.0.2] - 2021-12-16
 
-	v0.3.0.1
-	- Changed (_WD_Window): Add support for New option
-	- Changed (_WD_Window): Add support for Print option
-	- Changed (_WD_Window): Window option can now be used to switch tabs (ala existing 'switch' option)
-	- Added: Unknown Command error detection
+### Added
 
-	v0.2.0.9
-	- Changed: _WD_Status now returns Dictionary object instead of raw JSON string
-	- Changed: Add support for DebugTrim option to _WD_Option
-	- Changed: Remove check for $HTTP_STATUS_SERVER_ERROR (chromedriver relic)
-	- Changed: Improved output from _WD_IsLatestRelease
-	- Fixed: Default arguments for _WD_ExecuteScript should be empty string
-	- Fixed: Removed unneeded string conversion
-	- Added: Generic error detection routine
+- CHM help file (water)
+- Added DemoSleep routine (wd_demo.au3) (mLipok)
 
-	v.0.2.0.8
-	- Fixed: Error handling in _WD_IsLatestRelease
-	- Changed: Add support for DriverClose option to _WD_Option
-	- Changed: _WD_Startup no longer closes existing driver consoles if DriverClose option (_WD_Option) is False
-	- Changed: Add support for HTTPTimeouts option to _WD_Option
-	- Changed: Set timeouts for WinHTTP requests if HTTPTimeouts option (_WD_Option) is True
+### Changed
 
-	v.0.2.0.7
-	- Changed: Remove check for invalid status codes from _WD_Alert
-	- Changed: Hide debug output in _WD_IsLatestRelease
-	- Changed: Expanded error handling in _WD_ElementAction
-	- Fixed: Default variable initialization in _WD_ElementOptionSelect
-	- Added: _WD_ElementSelectAction
-	- Added: Check for UDF update in _WD_Startup
+- _WD_Capabilities: Added support for "binary" option (mLipok)
+- _WD_Startup: Detect webdriver console exiting with error when launched
 
-	v0.2.0.6
-	- Changed: _WD_ElementAction handling of return status codes
-	- Changed: File separator is now @LF in _WD_SelectFiles
-	- Changed: wd_demo
-	- Added: DemoUpload
-	- Chore: Update description of parameters in _WD_ConsoleVisible
-	- Fixed: Proper string escaping in _WD_SelectFiles
+### Fixed
 
-	v0.2.0.5
-	- Fixed: __WD_CloseDriver regression
-	- Fixed: __WD_Get, __WD_Put & __WD_Delete pass additional URL components
+- Updated function headers (water)
+- Changed GUI background color for better visibility in Windows 11 (wd_demo.au3) (mLipok)
+- Disable "Run Demo" button during demo execution (wd_demo.au3)
 
-	v0.2.0.4
-	- Added: _WD_DownloadFile
-	- Added: Global variable to hold session details
-	- Changed: wd_demo
-		- Added: GUI front-end
-		- Added: DemoDownload
-		- Changed: DemoWindows, DemoTimeouts, DemoElements
-	- Fixed: __WD_CloseDriver now closes child console processes
+## [0.5.0.1] - 2021-12-03
 
-	v0.2.0.3
-	- Fixed: Missing include file
-	- Fixed: _WD_Execute timeout detection / handling
+### Added
 
-	v0.2.0.2
-	- Added: _WD_IsLatestRelease
-	- Added: _WD_UpdateDriver
-	- Changed: __WD_Get and __WD_Put updated to detect invalid URL
-	- Changed: __WD_Get and __WD_Put updated to handle both HTTP and HTTPS requests
-	- Changed: __WD_CloseDriver - Optional parameter to indicate driver to close
-	- Fixed: __WD_Put and __WD_Delete use correct port
-	- Fixed: _WD_Navigate timeout detection / handling
+- _WD_Capabilities functions (mLipok)
 
-	v0.2.0.1
-	- Added: _WD_GetShadowRoot
-	- Added: _WD_SelectFiles
-	- Fixed: Additional error checking in _WD_WaitElement
-	- Fixed: Standardize coding of frame related functions
-	- Changed: Added backslash to list of characters to escape
-	- Changed: Modified _WD_jQuerify with additional parameters for timeout / alternate jQuery source
+### Changed
 
-	v0.1.0.21
-	- Fixed: 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window
-	- Fixed: Prevent runtime error dialog from appearing when function call succeeded
+- Changed (_WD_UpdateDriver): Added ability to check for newer webdriver without performing update
+- Updated wd_demo.au3 (mLipok)
+- Au3Check compatibility (wd_demo.au3)
+- Script no longer exits after running selected demos (wd_demo.au3)
+- Demonstrate usage of new _WD_Capabilities functions (wd_demo.au3)
+- __WD_Sleep: Set @error to $_WD_ERROR_UserAbort in case of error (mLipok)
 
-	V0.1.0.20
-	- Fixed: Escape string passed to _WD_ElementAction when setting element's value
-	- Fixed: Return value from _WD_Window should be "" on error
-	- Fixed: Current tab handling in _WD_Attach
+## [0.4.1.2] - 2021-10-25
 
-	V0.1.0.19
-	- Added: _WD_ConsoleVisible
-	- Added: __WD_EscapeString
-	- Changed: Escape double quotes in string passed to _WD_FindElement, _WD_ExecuteScript
-	- Changed: _WD_Window with 'rect' command now returns Dictionary object instead of raw JSON string
+### Added
 
-	V0.1.0.18
-	- Changed: Add optional parameters to _WD_NewTab for URL and Features
-	- Added: _WD_jQuerify
-	- Added: _WD_ElementOptionSelect
+- _WD_CheckContext
 
-	V0.1.0.17
-	- Changed: Add 'Screenshot' option to _WD_ElementAction
-	- Changed: Extract JSON value when taking screenshot in _WD_Window
-	- Changed: Rework coding of _WD_ElementAction
-	- Fixed: Error handling in __WD_Get
-	- Fixed: _WD_NewTab failed in some situations
-	- Fixed: _WD_Window error handling
-	- Added: _WD_Screenshot
+### Changed
 
-	V0.1.0.16
-	- Changed: Add async support to _WD_ExecuteScript
-	- Changed: Add debug info to _WD_GetMouseElement
-	- Fixed: Set element value in _WD_ElementAction
-	- Fixed: Prevent premature exit in _WD_WaitElement
-	- Fixed: ChromeDriver now uses goog:chromeOptions
+- _WD_ExecuteCDPCommand: Added http status check
+- __WD_DetectError: Detect unknown end point
+- Rename functions so that they begin with _WD_CDP (wd_cdp.au3)
+- Tidy code (wd_cdp.au3)
 
-	V0.1.0.15
-	- Fixed: __WD_Post now suppports Unicode text
-	- Changed: Add support for Unicode text to _WD_ElementAction's "value" option
-	- Changed: Add support for BinaryFormat option to _WD_Option
-	- Added: _WD_LoadWait
+### Fixed
 
-	V0.1.0.14
-	- Fixed: Improve error handling in _WD_NewTab
-	- Fixed: Screenshot option in _WD_Window
-	- Fixed: Close handles in __WD_Get, __WD_Post, __WD_Delete
+- _WD_NewTab: Return error on _WD_Window failure
+- _WD_IsLatestRelease
+- Update regex (_WD_IsLatestRelease)
+- Return $_WD_ERROR_Exception if regex fails (_WD_IsLatestRelease)
 
-	V0.1.0.13
-	- Fixed: Remove unsupported locator constants
-	- Fixed: Return value of _WD_WaitElement
-	- Changed: Add support for 'displayed' option in _WD_ElementAction (BigDaddyO)
-	- Changed: Add $lVisible parameter to _WD_WaitElement
-	- Changed: $_WD_DEBUG now defaults to $_WD_DEBUG_Info
 
-	V0.1.0.12
-	- Changed: Modified _WD_NewTab with timeout parameter
-	- Fixed: Correctly set @error in _WD_ExecuteScript
-	- Added: _WD_HighlightElement (Danyfirex)
-	- Added: _WD_HighlightElements (Danyfirex)
+## [0.4.1.1] - 2021-08-31
 
-	V0.1.0.11
-	- Changed: Modified _WD_FindElement to use new global constant
-	- Fixed: _WD_GetMouseElement JSON processing
-	- Fixed: _WD_GetElementFromPoint JSON processing
-	- Added: _WD_GetFrameCount (Decibel)
-	- Added: _WD_IsWindowTop   (Decibel)
-	- Added: _WD_FrameEnter    (Decibel)
-	- Added: _WD_FrameLeave    (Decibel)
+### Added
 
-	V0.1.0.10
-	- Changed: Add support for non-standard error codes in _WD_Alert
-	- Changed: Detect non-present alert in _WD_Alert
-	- Changed: __WD_Error coding
-	- Fixed: Correctly set function error codes
-	- Added: _WD_LastHTTPResult
+- __WD_Sleep
+- Remark to _WD_GetSession
 
-	V0.1.0.9
-	- Changed: Force command parameter to lowercase in _WD_Action
-	- Changed: Enhanced error checking in _WD_FindElement
-	- Added: _WD_GetMouseElement
-	- Added: _WD_GetElementFromPoint
+### Changed
 
-	V0.1.0.8
-	- Changed: Improve error handling in _WD_Attach
-	- Fixed: Missing "window" in URL for _WD_Window
-	- Fixed: Header entry for _WD_Option
-	- Added: Reference to Edge driver
-	- Fixed: _WD_Window implementation of Maximize, Minimize, Fullscreen, & Screenshot
-	- Removed: Normal option from _WD_Window
-	- Added: Rect option to _WD_Window
+- _WD_UpdateDriver: Improve error handling (seadoggie01)
+- _WD_Option: Added support for "Sleep" option
+- Use __WD_Sleep instead of Sleep in "helper" functions
+- Call correct Base64 decode function (wd_demo.au3)
 
-	V0.1.0.7
-	- Changed: Add $sOption parameter to _WD_Action
-	- Changed: Implemented "Actions" command in _WD_Action
-	- Changed: Improved error handling in _WD_FindElement
-	- Added: _WD_WaitElement
+### Fixed
 
-	V0.1.0.6
-	- Fixed: Missing variable declarations
-	- Changed: _WD_Attach error handling
+- _WD_NewTab: Properly detect $sCurrentTabHandle retrieval
 
-	V0.1.0.5
-	- Changed: Switched to using _WinHttp functions
-	- Added: _WD_LinkClickByText
+### Removed
 
-	V0.1.0.4
-	- Changed: Renamed core UDF functions
-	- Changed: _WD_FindElement now returns multiple elements as an array instead of raw JSON
+- Remove "binary" portion of MS Edge Capabilities string (wd_demo.au3)
 
-	V0.1.0.3
-	- Fixed: Error constants
-	- Changed: Renamed UDF files
-	- Changed: Expanded _WDAlert functionality
-	- Changed: Check for timeout in __WD_Post
-	- Changed: Support parameters in _WDExecuteScript
-	- Added: _WD_Attach function
+## [0.4.1.0] - 2021-07-28
 
-	V0.1.0.2
-	- Fixed: _WDWindow
-	- Changed: Error constants (mLipok)
-	- Added: Links to W3C documentation
-	- Added: _WD_NewTab function
+### Added
 
-	V0.1.0.1
-	- Initial release
+- Added: _WD_GetCDPSettings
 
+### Changed
+
+- Moved CDP-related functions to separate file (wd_cdp.au3)
+- _WD_ExecuteCDPCommand: Now supports additional browsers via WebSockets
+- _WD_Option: Added support for "DefaultTimeout" option (mLipok)
+
+## [0.4.0.5] - 2021-07-09
+
+### Changed
+
+- _WD_WaitElement: Added support for $_WD_OPTION_NoMatch (mLipok)
+- _WD_WaitElement: Always return Element ID
+- Expose _WD_GetBrowserVersion and _WD_GetWebDriverVersion (mLipok)
+- Renamed _Base64Decode to __WD_Base64Decode
+
+### Fixed
+
+- InetRead() @error handling (mLipok)
+
+## [0.4.0.4] - 2021-05-20
+
+### Added
+
+- _WD_IsFullScreen
+
+### Changed
+
+- _WD_SetElementValue: Advanced option now works with more element types
+
+### Fixed
+
+- _WD_ElementSelectAction: Use relative xpath when calling _WD_FindElement
+
+## [0.4.0.3] - 2021-04-28
+
+### Changed
+
+- _WD_HighlightElement: Option to remove highlight
+
+### Fixed
+
+- _WD_SetElementValue: Corrected leftover $iMethod reference
+- _WD_FrameEnter Properly handle Null index (mLipok)
+- _WD_SelectFiles Properly set value of $sFuncName (mLipok)
+- _WD_ElementActionEx Properly terminate JSON string
+
+### Removed
+
+- _WD_IsLatestRelease: Remove unneeded code for saving debug level (seadoggie01)
+- _WD_GetShadowRoot: Remove unused variable (seadoggie01)
+
+## [0.4.0.2] - 2021-04-02
+
+### Added
+
+- Added: _WD_GetSession
+- Added: modifierclick (_WD_ElementActionEx)
+
+### Changed
+
+- _WD_FrameEnter: Allow Null as valid index value
+- _WD_ElementActionEx: Added support for childCount action
+- _WD_WaitElement: Switch to single parameter for options `Script breaking change`
+- _WD_SetElementValue: Added "advanced" option
+
+### Fixed
+
+- doubleclick and clickandhold now honor button parameter (_WD_ElementActionEx)
+
+## [0.4.0.1] - 2021-01-17
+
+### Added
+
+- _WD_PrintToPDF
+
+### Changed
+
+- _WD_ElementActionEx: Added 'hide' and 'show' options
+- _WD_ElementAction: Added support for Shadow, CompRole & CompLabel actions
+- _WD_GetShadowRoot: Use _WD_ElementAction instead of _WD_ExecuteScript
+- _WD_NewTab: Use native Webdriver commands when Javascript isn't required
+- _WD_FindElement: Support shadow roots
+- _WD_Window: Support 'full' option for screenshots
+
+### Fixed
+
+- _WD_Window: Properly handle 'print' result
+
+## [0.3.1.1] - 2021-01-09
+
+### Changed
+
+- Update DemoFrames example (wd_demo.au3)
+
+### Fixed
+
+- _WD_ElementOptionSelect: Correctly capture and re-throw errors (seadoggie01)
+- __WD_CloseDriver: Call ProcessWaitClose to ensure each process closes
+
+## [0.3.1.0] - 2020-10-28
+
+### Added
+
+- _WD_WaitElement: Added optional parameter to return element instead of 0/1
+
+### Changed
+
+- Cleanup (_WD_DownloadFile)
+- Revise error list in header (_WD_DownloadFile)
+- Remove leftover $_WD_HTTPRESULT coding (_WD_DownloadFile)
+- Return $_WD_ERROR_NotFound instead of $_WD_ERROR_InvalidValue (_WD_DownloadFile)
+- Update function headers (Danp2 and seadoggie01)
+
+### Fixed
+
+- _WD_Screenshot: Edit return value for Base64 screenshots (seadoggie01)
+- _WD_WaitElement: Clear variable holding element ID if visibility or enabled check fails
+
+## [0.3.0.9] - 2020-09-13
+
+### Changed
+
+- _WD_GetTable: Filter html elements by default when using _HtmlTableGetWriteToArray
+- _WD_DownloadFile: Add $iOptions parameter
+- Update binary location of Edge browser (wd_demo.au3)
+- Update DemoDownload example (wd_demo.au3)
+- Misc updates (wd_demo.au3)
+
+### Fixed
+
+- _WD_DownloadFile: Handle error from InetRead
+
+## [0.3.0.8] - 2020-08-28
+
+### Changed
+
+- _WD_WaitElement: Added optional parameter to check elements enabled status
+- _WD_GetTable: Optionally support faster _HtmlTableGetWriteToArray
+- _WD_ElementAction: Allow retrieving element value with the 'value' command
+- Modified #include usage
+
+## [0.3.0.7] - 2020-08-21
+
+### Changed
+
+- _WD_Option: Added support for "console" option
+- Allow logging to file instead of default console
+
+### Fixed
+
+- __WD_CloseDriver: Properly close webdriver console
+
+## [0.3.0.6] - 2020-08-04
+
+### Changed
+
+- __WD_Get: Eliminated optional $iMode parameter
+
+### Fixed
+
+- __WD_Get, __WD_Post, __WD_Delete: Correctly pass detected errors to calling routine
+
+## [0.3.0.5] - 2020-07-30
+
+### Added
+
+- _WD_GetTable (danylarson / water)
+
+### Changed
+
+- Use InetRead instead of __WD_Get (_WD_IsLatestRelease & _WD_UpdateDriver)
+- Pass Content-Type header in HTTP request
+
+### Fixed
+
+- _WD_FindElement: Enforce relative xpath when utilizing a starting element
+
+## [0.3.0.4] - 2020-07-07
+
+### Added
+
+- _WD_ExecuteCdpCommand (TheDcoder)
+
+### Changed
+
+- _WD_UpdateDriver: Add support for MSEdge (Chromium)
+- _WD_Shutdown: Allow shutdown of specific module by name or PID
+- _WD_Startup: Notify if WinHTTP UDF needs updated
+- Improved error handling / HTTP timeout detection
+
+## [0.3.0.3] - 2020-06-16
+
+### Added
+
+- _WD_SetTimeouts
+- _WD_GetElementById
+- _WD_GetElementByName
+- _WD_SetElementValue
+- _WD_ElementActionEx
+
+## [0.3.0.2] - 2020-06-13
+
+### Changed
+
+- _WD_Option: Add support for DriverDetect option
+- _WD_Startup: Respect DriverDetect setting
+
+### Fixed
+
+- WinHTTP timeout coding
+
+## [0.3.0.1] - 2020-05-25
+
+### Added
+
+- Unknown Command error detection
+
+### Changed
+
+- _WD_Window: Add support for New option
+- _WD_Window: Add support for Print option
+- _WD_Window: Window option can now be used to switch tabs (ala existing 'switch' option)
+
+## [0.2.0.9] - 2020-05-12
+
+### Added
+
+- Generic error detection routine
+
+### Changed
+
+- _WD_Status now returns Dictionary object instead of raw JSON string
+- Add support for DebugTrim option to _WD_Option
+- Remove check for $HTTP_STATUS_SERVER_ERROR (chromedriver relic)
+- Improved output from _WD_IsLatestRelease
+
+### Fixed
+
+- Default arguments for _WD_ExecuteScript should be empty string
+- Removed unneeded string conversion
+
+## [0.2.0.8] - 2020-05-01
+
+### Changed
+
+- Add support for DriverClose option to _WD_Option
+- _WD_Startup no longer closes existing driver consoles if DriverClose option (_WD_Option) is False
+- Add support for HTTPTimeouts option to _WD_Option
+- Set timeouts for WinHTTP requests if HTTPTimeouts option (_WD_Option) is True
+
+### Fixed
+
+- Error handling in _WD_IsLatestRelease
+
+## [0.2.0.7] - 2020-04-19
+
+### Added
+
+- _WD_ElementSelectAction
+- Check for UDF update in _WD_Startup
+
+### Changed
+
+- Remove check for invalid status codes from _WD_Alert
+- Hide debug output in _WD_IsLatestRelease
+- Expanded error handling in _WD_ElementAction
+
+### Fixed
+
+- Default variable initialization in _WD_ElementOptionSelect
+
+## [0.2.0.6] - 2020-02-19
+
+### Added
+
+- DemoUpload
+
+### Changed
+
+- _WD_ElementAction handling of return status codes
+- File separator is now @LF in _WD_SelectFiles
+- wd_demo
+- Update description of parameters in _WD_ConsoleVisible
+
+### Fixed
+
+- Proper string escaping in _WD_SelectFiles
+
+## [0.2.0.5] - 2020-01-18
+
+### Fixed
+
+- __WD_CloseDriver regression
+- __WD_Get, __WD_Put & __WD_Delete pass additional URL components
+
+## [0.2.0.4] - 2020-01-10
+
+### Added
+
+- _WD_DownloadFile
+- Global variable to hold session details
+- GUI front-end (wd_demo)
+- DemoDownload (wd_demo)
+
+### Changed
+
+- DemoWindows, DemoTimeouts, DemoElements (wd_demo)
+
+### Fixed
+
+- __WD_CloseDriver now closes child console processes
+
+## [0.2.0.3] - 2019-12-24
+
+### Fixed
+
+- Missing include file
+- _WD_Execute timeout detection / handling
+
+## [0.2.0.2] - 2019-12-24
+
+### Added
+
+- _WD_IsLatestRelease
+- _WD_UpdateDriver
+
+### Changed
+
+- __WD_Get and __WD_Put updated to detect invalid URL
+- __WD_Get and __WD_Put updated to handle both HTTP and HTTPS requests
+- __WD_CloseDriver - Optional parameter to indicate driver to close
+
+### Fixed
+
+- __WD_Put and __WD_Delete use correct port
+- _WD_Navigate timeout detection / handling
+
+## [0.2.0.1] - 2019-12-13
+
+### Added
+
+- _WD_GetShadowRoot
+- _WD_SelectFiles
+
+### Changed
+
+- Added backslash to list of characters to escape
+- Modified _WD_jQuerify with additional parameters for timeout / alternate jQuery source
+
+### Fixed
+
+- Additional error checking in _WD_WaitElement
+- Standardize coding of frame related functions
+
+## [0.1.0.21] - 2019-09-10
+
+### Fixed
+
+- 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window
+- Prevent runtime error dialog from appearing when function call succeeded
+
+## [0.1.0.20] - 2019-07-14
+
+### Fixed
+
+- Escape string passed to _WD_ElementAction when setting element's value
+- Return value from _WD_Window should be "" on error
+- Current tab handling in _WD_Attach
+
+## [0.1.0.19] - 2019-05-13
+
+### Added
+
+- _WD_ConsoleVisible
+- __WD_EscapeString
+
+### Changed
+
+- Escape double quotes in string passed to _WD_FindElement, _WD_ExecuteScript
+- _WD_Window with 'rect' command now returns Dictionary object instead of raw JSON string
+
+## [0.1.0.18.1] - 2019-04-30
+
+### Changed
+
+- Correct version number
+
+## [0.1.0.18] - 2019-04-30
+
+### Added
+
+- _WD_jQuerify
+- _WD_ElementOptionSelect
+
+### Changed
+
+- Add optional parameters to _WD_NewTab for URL and Features
+
+## [0.1.0.17] - 2019-01-15
+
+### Added
+
+- _WD_Screenshot
+
+### Changed
+
+- Add 'Screenshot' option to _WD_ElementAction
+- Extract JSON value when taking screenshot in _WD_Window
+- Rework coding of _WD_ElementAction
+
+### Fixed
+
+- Error handling in __WD_Get
+- _WD_NewTab failed in some situations
+- _WD_Window error handling
+
+## [0.1.0.16] - 2018-11-21
+
+### Changed
+
+- Add async support to _WD_ExecuteScript
+- Add debug info to _WD_GetMouseElement
+
+### Fixed
+
+- Set element value in _WD_ElementAction
+- Prevent premature exit in _WD_WaitElement
+- ChromeDriver now uses goog:chromeOptions
+
+## [0.1.0.15] - 2018-09-15
+
+### Added
+
+- _WD_LoadWait
+
+### Changed
+
+- Add support for Unicode text to _WD_ElementAction's "value" option
+- Add support for BinaryFormat option to _WD_Option
+
+### Fixed
+
+- __WD_Post now suppports Unicode text
+
+## [0.1.0.14] - 2018-09-13
+
+- Improve error handling in _WD_NewTab
+- Screenshot option in _WD_Window
+- Close handles in __WD_Get, __WD_Post, __WD_Delete
+
+## [0.1.0.13] - 2018-08-06
+
+### Changed
+
+- Add support for 'displayed' option in _WD_ElementAction (BigDaddyO)
+- Add $lVisible parameter to _WD_WaitElement
+- $_WD_DEBUG now defaults to $_WD_DEBUG_Info
+
+### Fixed
+
+- Remove unsupported locator constants
+- Return value of _WD_WaitElement
+
+## [0.1.0.12] - 2018-07-12
+
+### Added
+
+- _WD_HighlightElement (Danyfirex)
+- _WD_HighlightElements (Danyfirex)
+
+### Changed
+
+- Modified _WD_NewTab with timeout parameter
+
+### Fixed
+
+- Correctly set @error in _WD_ExecuteScript
+
+## [0.1.0.11] - 2018-06-28
+
+### Added
+
+- _WD_GetFrameCount (Decibel)
+- _WD_IsWindowTop   (Decibel)
+- _WD_FrameEnter    (Decibel)
+- _WD_FrameLeave    (Decibel)
+
+### Changed
+
+- Modified _WD_FindElement to use new global constant
+
+### Fixed
+
+- _WD_GetMouseElement JSON processing
+- _WD_GetElementFromPoint JSON processing
+
+## [0.1.0.10] - 2018-05-13
+
+### Added
+
+- _WD_LastHTTPResult
+
+### Changed
+
+- Add support for non-standard error codes in _WD_Alert
+- Detect non-present alert in _WD_Alert
+- __WD_Error coding
+
+### Fixed
+
+- Correctly set function error codes
+
+## [0.1.0.9] - 2018-02-20
+
+### Added
+
+- _WD_GetMouseElement
+- _WD_GetElementFromPoint
+
+### Changed
+
+- Force command parameter to lowercase in _WD_Action
+- Enhanced error checking in _WD_FindElement
+
+## [0.1.0.8] - 2018-02-11
+
+### Added
+
+- Reference to Edge driver
+- Rect option to _WD_Window
+
+### Changed
+
+- Improve error handling in _WD_Attach
+
+### Fixed
+
+- Missing "window" in URL for _WD_Window
+- Header entry for _WD_Option
+- _WD_Window implementation of Maximize, Minimize, Fullscreen, & Screenshot
+
+### Removed
+
+- Normal option from _WD_Window
+
+## [0.1.0.7] - 2018-02-04
+
+### Added
+
+- _WD_WaitElement
+
+### Changed
+
+- Add $sOption parameter to _WD_Action
+- Implemented "Actions" command in _WD_Action
+- Improved error handling in _WD_FindElement
+
+## [0.1.0.6] - 2018-02-01
+
+### Changed
+
+- _WD_Attach error handling
+
+### Fixed
+
+- Missing variable declarations
+
+## [0.1.0.5] - 2018-01-31
+
+### Added
+
+- _WD_LinkClickByText
+
+### Changed
+
+- Switched to using _WinHttp functions
+
+## [0.1.0.4] - 2018-01-27
+
+### Changed
+
+- Renamed core UDF functions
+- _WD_FindElement now returns multiple elements as an array instead of raw JSON
+
+## [0.1.0.3] - 2018-01-25
+
+### Added
+
+- _WD_Attach function
+
+### Changed
+
+- Renamed UDF files
+- Expanded _WDAlert functionality
+- Check for timeout in __WD_Post
+- Support parameters in _WDExecuteScript
+
+### Fixed
+
+- Error constants
+
+## [0.1.0.2] - 2018-01-22
+
+### Added
+
+- Links to W3C documentation
+- _WD_NewTab function
+
+### Changed
+
+- Error constants (mLipok)
+
+### Fixed
+
+- _WDWindow
+
+## [0.1.0.1] - 2018-01-18
+
+### Added
+
+- Initial release
+
+[0.5.1.1]:    https://github.com/Danp2/WebDriver/compare/0.5.1.0...0.5.1.1
+[0.5.1.0]:    https://github.com/Danp2/WebDriver/compare/0.5.0.3...0.5.1.0
+[0.5.0.3]:    https://github.com/Danp2/WebDriver/compare/0.5.0.2...0.5.0.3
+[0.5.0.2]:    https://github.com/Danp2/WebDriver/compare/0.5.0.1...0.5.0.2
+[0.5.0.1]:    https://github.com/Danp2/WebDriver/compare/0.4.1.2...0.5.0.1
+[0.4.1.2]:    https://github.com/Danp2/WebDriver/compare/0.4.1.1...0.4.1.2
+[0.4.1.1]:    https://github.com/Danp2/WebDriver/compare/0.4.1.0...0.4.1.1
+[0.4.1.0]:    https://github.com/Danp2/WebDriver/compare/0.4.0.5...0.4.1.0
+[0.4.0.5]:    https://github.com/Danp2/WebDriver/compare/0.4.0.4...0.4.0.5
+[0.4.0.4]:    https://github.com/Danp2/WebDriver/compare/0.4.0.3...0.4.0.4
+[0.4.0.3]:    https://github.com/Danp2/WebDriver/compare/0.4.0.2...0.4.0.3
+[0.4.0.2]:    https://github.com/Danp2/WebDriver/compare/0.4.0.1...0.4.0.2
+[0.4.0.1]:    https://github.com/Danp2/WebDriver/compare/0.3.1.1...0.4.0.1
+[0.3.1.1]:    https://github.com/Danp2/WebDriver/compare/0.3.1.0...0.3.1.1
+[0.3.1.0]:    https://github.com/Danp2/WebDriver/compare/0.3.0.9...0.3.1.0
+[0.3.0.9]:    https://github.com/Danp2/WebDriver/compare/0.3.0.8...0.3.0.9
+[0.3.0.8]:    https://github.com/Danp2/WebDriver/compare/0.3.0.7...0.3.0.8
+[0.3.0.7]:    https://github.com/Danp2/WebDriver/compare/0.3.0.6...0.3.0.7
+[0.3.0.6]:    https://github.com/Danp2/WebDriver/compare/0.3.0.5...0.3.0.6
+[0.3.0.5]:    https://github.com/Danp2/WebDriver/compare/0.3.0.4...0.3.0.5
+[0.3.0.4]:    https://github.com/Danp2/WebDriver/compare/0.3.0.3...0.3.0.4
+[0.3.0.3]:    https://github.com/Danp2/WebDriver/compare/0.3.0.2...0.3.0.3
+[0.3.0.2]:    https://github.com/Danp2/WebDriver/compare/0.3.0.1...0.3.0.2
+[0.3.0.1]:    https://github.com/Danp2/WebDriver/compare/0.2.0.9...0.3.0.1
+[0.2.0.9]:    https://github.com/Danp2/WebDriver/compare/0.2.0.8...0.2.0.9
+[0.2.0.8]:    https://github.com/Danp2/WebDriver/compare/0.2.0.7...0.2.0.8
+[0.2.0.7]:    https://github.com/Danp2/WebDriver/compare/0.2.0.6...0.2.0.7
+[0.2.0.6]:    https://github.com/Danp2/WebDriver/compare/0.2.0.5...0.2.0.6
+[0.2.0.5]:    https://github.com/Danp2/WebDriver/compare/0.2.0.4...0.2.0.5
+[0.2.0.4]:    https://github.com/Danp2/WebDriver/compare/0.2.0.3...0.2.0.4
+[0.2.0.3]:    https://github.com/Danp2/WebDriver/compare/0.2.0.2...0.2.0.3
+[0.2.0.2]:    https://github.com/Danp2/WebDriver/compare/0.2.0.1...0.2.0.2
+[0.2.0.1]:    https://github.com/Danp2/WebDriver/compare/0.1.0.21...0.2.0.1
+[0.1.0.21]:   https://github.com/Danp2/WebDriver/compare/0.1.0.20...0.1.0.21
+[0.1.0.20]:   https://github.com/Danp2/WebDriver/compare/0.1.0.19...0.1.0.20
+[0.1.0.19]:   https://github.com/Danp2/WebDriver/compare/0.1.0.18...0.1.0.19
+[0.1.0.18.1]: https://github.com/Danp2/WebDriver/compare/0.1.0.18...0.1.0.18.1
+[0.1.0.18]:   https://github.com/Danp2/WebDriver/compare/0.1.0.17...0.1.0.18
+[0.1.0.17]:   https://github.com/Danp2/WebDriver/compare/0.1.0.16...0.1.0.17
+[0.1.0.16]:   https://github.com/Danp2/WebDriver/compare/0.1.0.15...0.1.0.16
+[0.1.0.15]:   https://github.com/Danp2/WebDriver/compare/0.1.0.14...0.1.0.15
+[0.1.0.14]:   https://github.com/Danp2/WebDriver/compare/0.1.0.13...0.1.0.14
+[0.1.0.13]:   https://github.com/Danp2/WebDriver/compare/0.1.0.12...0.1.0.13
+[0.1.0.12]:   https://github.com/Danp2/WebDriver/compare/0.1.0.11...0.1.0.12
+[0.1.0.11]:   https://github.com/Danp2/WebDriver/compare/0.1.0.10...0.1.0.11
+[0.1.0.10]:   https://github.com/Danp2/WebDriver/compare/0.1.0.9...0.1.0.10
+[0.1.0.9]:    https://github.com/Danp2/WebDriver/compare/0.1.0.8...0.1.0.9
+[0.1.0.8]:    https://github.com/Danp2/WebDriver/compare/0.1.0.7...0.1.0.8
+[0.1.0.7]:    https://github.com/Danp2/WebDriver/compare/0.1.0.6...0.1.0.7
+[0.1.0.6]:    https://github.com/Danp2/WebDriver/compare/0.1.0.5...0.1.0.6
+[0.1.0.5]:    https://github.com/Danp2/WebDriver/compare/0.1.0.4...0.1.0.5
+[0.1.0.4]:    https://github.com/Danp2/WebDriver/compare/0.1.0.3...0.1.0.4
+[0.1.0.3]:    https://github.com/Danp2/WebDriver/compare/0.1.0.2...0.1.0.3
+[0.1.0.2]:    https://github.com/Danp2/WebDriver/compare/0.1.0.1...0.1.0.2
+[0.1.0.1]:    https://github.com/Danp2/WebDriver/releases/tag/0.1.0.1
+
+---
+
+### Legend - Types of changes
+- `Added` for new features.
+- `Changed` for changes in existing functionality.
+- `Deprecated` for soon-to-be removed features.
+- `Removed` for now removed features.
+- `Fixed` for any bug fixes.
+- `Security` in case of vulnerabilities.
