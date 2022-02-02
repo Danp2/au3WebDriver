@@ -699,12 +699,11 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
 	If IsString($vElements) Then
-		ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $vElements = ' & $vElements & @CRLF & '>Error code: ' & @error & @CRLF) ;### Debug Console
 		$sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
 		$sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
 		$iErr = @error
 
-	ElseIf IsArray($vElements) Then
+	ElseIf IsArray($vElements) And UBound($vElements) > 0 Then
 		For $i = 0 To UBound($vElements) - 1
 			$vElements[$i] = __WD_JsonElement($vElements[$i])
 		Next
