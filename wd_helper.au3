@@ -686,8 +686,8 @@ EndFunc   ;==>_WD_HighlightElement
 ;                  1 - Highlight border dotted red
 ;                  2 - Highlight yellow rounded box
 ;                  3 - Highlight yellow rounded box + border  dotted red
-; Return values .: Success - True. @extended is set to the number of highlighted elements
-;                  Failure - False and sets @error to $_WD_ERROR_GeneralError
+; Return values .: Success - True
+;                  Failure - False and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Danyfirex
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -696,14 +696,34 @@ EndFunc   ;==>_WD_HighlightElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElements($sSession, $aElements, $iMethod = Default)
+	Local Const $sFuncName = "_WD_HighlightElements"
+	Local Const $aMethod[] = _
+			[ _
+			"border: 0px", _
+			"border: 2px dotted red", _
+			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
+			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
+			]
+
 	Local $iHighlightedElements = 0
 
 	If $iMethod = Default Then $iMethod = 1
+	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
 	For $i = 0 To UBound($aElements) - 1
-		$iHighlightedElements += (_WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
+		$aElements[$i] = __WD_JsonElement($aElements[$i])
 	Next
-	Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError($_WD_ERROR_GeneralError, 0, False))
+
+	Local $sElements = "[" & _ArrayToString($aElements, ",") & "]"
+	Local $sScript = "for (var i = 0, max = arguments[0].length; i < max; i++) { arguments[0][i].style = '" & $aMethod[$iMethod] & "'; }; return true;"
+	Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sElements, Default, $_WD_JSON_Value)
+	Local $iErr = @error
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
+	EndIf
+
+	Return SetError($iErr, $_WD_HTTPRESULT, ($iErr= $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
