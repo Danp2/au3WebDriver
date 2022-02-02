@@ -449,8 +449,8 @@ Func DemoActions()
 			'					"type":"pointerMove",' & _
 			'					"origin":{"ELEMENT":"' & $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}' & _
 			'				},' & _
-			_WD_JsonAction("mouse", 2, "pointerDown") & ','  & _
-			_WD_JsonAction("mouse", 2, "pointerUp") & _
+			_WD_JsonActionPointer("pointerDown", 2) & ','  & _
+			_WD_JsonActionPointer("pointerUp", 2) & _
 			'			]' & _
 			'		}' & _
 			'	]' & _
