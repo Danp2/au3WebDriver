@@ -645,13 +645,14 @@ EndFunc   ;==>_WD_FrameLeave
 ; Return values .: Success - True.
 ;                  Failure - False and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Danyfirex
-; Modified ......: mLipok
+; Modified ......: mLipok, Danp2
 ; Remarks .......:
 ; Related .......: _WD_HighlightElements
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
+	Local Const $sFuncName = "_WD_HighlightElement"
 	Local Const $aMethod[] = _
 			[ _
 			"border: 0px", _
@@ -666,7 +667,12 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 	Local $sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
 	Local $sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 	Local $iErr = @error
-	Return ($sResult = "true" ? SetError(0, 0, True) : SetError($iErr, 0, False))
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
+	EndIf
+
+	Return SetError($iErr, $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
