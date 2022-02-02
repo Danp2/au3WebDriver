@@ -652,27 +652,16 @@ EndFunc   ;==>_WD_FrameLeave
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
-	Local Const $sFuncName = "_WD_HighlightElement"
-	Local Const $aMethod[] = _
-			[ _
-			"border: 0px", _
-			"border: 2px dotted red", _
-			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
-			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
-			]
+ 	Local Const $sFuncName = "_WD_HighlightElement"
 
-	If $iMethod = Default Then $iMethod = 1
-	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
-
-	Local $sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-	Local $sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $bResult & @CRLF)
 	EndIf
 
-	Return SetError($iErr, $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
+	Return SetError($iErr, $_WD_HTTPRESULT, $bResult)
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -687,43 +676,52 @@ EndFunc   ;==>_WD_HighlightElement
 ;                  2 - Highlight yellow rounded box
 ;                  3 - Highlight yellow rounded box + border  dotted red
 ; Return values .: Success - True
-;                  Failure - False and sets @error returned from _WD_ExecuteScript()
+;                  Failure - False and sets @error to _WD_ERROR_InvalidArgue or the error code from _WD_ExecuteScript()
 ; Author ........: Danyfirex
-; Modified ......: mLipok
+; Modified ......: mLipok, Danp2
 ; Remarks .......:
 ; Related .......: _WD_HighlightElement
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_HighlightElements($sSession, $aElements, $iMethod = Default)
+Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 	Local Const $sFuncName = "_WD_HighlightElements"
 	Local Const $aMethod[] = _
 			[ _
-			"border: 0px", _
-			"border: 2px dotted red", _
+			"border: 0px;", _
+			"border: 2px dotted red;", _
 			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
 			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
 			]
-
-	Local $iHighlightedElements = 0
+	Local $sScript, $sResult, $iErr, $sElements
 
 	If $iMethod = Default Then $iMethod = 1
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
-	For $i = 0 To UBound($aElements) - 1
-		$aElements[$i] = __WD_JsonElement($aElements[$i])
-	Next
+	If IsString($vElements) Then
+		ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $vElements = ' & $vElements & @CRLF & '>Error code: ' & @error & @CRLF) ;### Debug Console
+		$sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
+		$sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
+		$iErr = @error
 
-	Local $sElements = "[" & _ArrayToString($aElements, ",") & "]"
-	Local $sScript = "for (var i = 0, max = arguments[0].length; i < max; i++) { arguments[0][i].style = '" & $aMethod[$iMethod] & "'; }; return true;"
-	Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sElements, Default, $_WD_JSON_Value)
-	Local $iErr = @error
+	ElseIf IsArray($vElements) Then
+		For $i = 0 To UBound($vElements) - 1
+			$vElements[$i] = __WD_JsonElement($vElements[$i])
+		Next
+
+		$sElements = "[" & _ArrayToString($vElements, ",") & "]"
+		$sScript = "for (var i = 0, max = arguments[0].length; i < max; i++) { arguments[0][i].style = '" & $aMethod[$iMethod] & "'; }; return true;"
+		$sResult = _WD_ExecuteScript($sSession, $sScript, $sElements, Default, $_WD_JSON_Value)
+		$iErr = @error
+	Else
+		$iErr = $_WD_ERROR_InvalidArgue
+	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
 	EndIf
 
-	Return SetError($iErr, $_WD_HTTPRESULT, ($iErr= $_WD_ERROR_Success))
+	Return SetError($iErr, $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
