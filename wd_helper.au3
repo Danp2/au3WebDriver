@@ -632,7 +632,7 @@ Func _WD_FrameLeave($sSession)
 EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
-; Name ..........: _WD_HighlightElement
+; Name ..........: [Deprecated] _WD_HighlightElement
 ; Description ...: Highlights the specified element.
 ; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
@@ -646,7 +646,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  Failure - False and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
-; Remarks .......:
+; Remarks .......: This function will be removed in a future release. Update your code to use _WD_HighlightElements instead.
 ; Related .......: _WD_HighlightElements
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
@@ -669,7 +669,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Description ...: Highlights the specified elements.
 ; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = Default])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
-;                  $aElements - an array of Elements ID from _WD_FindElement
+;                  $vElements - Element ID from _WD_FindElement (single element as string; multiple elements as array)
 ;                  $iMethod   - [optional] an integer value to set the style (default = 1)
 ;                  0 - Remove highlight
 ;                  1 - Highlight border dotted red
@@ -680,7 +680,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
 ; Remarks .......:
-; Related .......: _WD_HighlightElement
+; Related .......: _WD_HighlightElement [Deprecated]
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
