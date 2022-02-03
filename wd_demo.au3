@@ -173,17 +173,19 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	; Execute browser setup routine for user's browser selection
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
 
+	ConsoleWrite("> _WD_Startup" & @CRLF)
 	_WD_Startup()
 	Local $iError = @error
 
 	If $iError = $_WD_ERROR_Success Then
+		ConsoleWrite("> _WD_CreateSession" & @CRLF)
 		$sSession = _WD_CreateSession($sCapabilities)
 		$iError = @error
 
 		If $iError = $_WD_ERROR_Success Then
 			For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 				If $aDemoSuite[$iIndex][1] Then
-					ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+					ConsoleWrite("+ Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
 					If $aDemoSuite[$iIndex][2] Then
 						Call($aDemoSuite[$iIndex][0], $sBrowser)
 					Else
@@ -200,10 +202,9 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 				EndIf
 			Next
 
-			_WD_DeleteSession($sSession)
-
 		EndIf
 
+		_WD_DeleteSession($sSession)
 		_WD_Shutdown()
 
 	EndIf
