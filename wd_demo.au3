@@ -174,7 +174,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
 
 	ConsoleWrite("> _WD_Startup" & @CRLF)
-	_WD_Startup()
+	Local $iWebDriver_PID = _WD_Startup()
 	Local $iError = @error
 
 	If $iError = $_WD_ERROR_Success Then
@@ -204,10 +204,10 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 
 		EndIf
 
-		_WD_DeleteSession($sSession)
-		_WD_Shutdown()
-
 	EndIf
+
+	If $sSession Then _WD_DeleteSession($sSession)
+	If $iWebDriver_PID Then _WD_Shutdown()
 
 	If $iError = $_WD_ERROR_UserAbort Then
 		MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
