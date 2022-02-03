@@ -988,7 +988,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDINDEX  - Retrieve 0-based index of selected option
 ;                  |SELECTEDTEXT   - Retrieve text/label of selected option
 ;                  |VALUE          - Retrieve value of currently selected option
-;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to choosen $sCommand
+;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to chosen $sCommand
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
