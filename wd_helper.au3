@@ -984,7 +984,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
-;                  |OPTIONS - Retrieve array containing value / label attributes from the <select> element's Options
+;                  |OPTIONS - Retrieve 2D array containing value / label attributes and index from the <select> element's Options
 ;                  |SELECTEDINDEX  - Retrieve 0-based index of selected option
 ;                  |SELECTEDTEXT   - Retrieve text/label of selected option
 ;                  |VALUE          - Retrieve value of currently selected option
@@ -1013,13 +1013,13 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameter 
 		If $sNodeName = 'select' Then ; check if designated element is <select> element
 			Switch $sCommand
 				Case 'options'
-					$sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
+					$sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '\n'} return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
 						Local $sText = StringStripWS($vResult, $STR_STRIPTRAILING)
-						Local $aOut[0][2]
+						Local $aOut[0][3]
 						_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
 						$vResult = $aOut
 					EndIf
