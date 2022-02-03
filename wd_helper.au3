@@ -632,8 +632,8 @@ Func _WD_FrameLeave($sSession)
 EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
-; Name ..........: [Deprecated] _WD_HighlightElement
-; Description ...: Highlights the specified element.
+; Name ..........: _WD_HighlightElement
+; Description ...: Highlights the specified element. <B>[Deprecated]</B>
 ; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
@@ -667,7 +667,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_HighlightElements
 ; Description ...: Highlights the specified elements.
-; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = Default])
+; Syntax ........: _WD_HighlightElements($sSession, $vElements[, $iMethod = Default])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
 ;                  $vElements - Element ID from _WD_FindElement (single element as string; multiple elements as array)
 ;                  $iMethod   - [optional] an integer value to set the style (default = 1)
@@ -680,7 +680,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
 ; Remarks .......:
-; Related .......: _WD_HighlightElement [Deprecated]
+; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
