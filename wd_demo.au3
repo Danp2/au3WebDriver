@@ -457,7 +457,7 @@ Func DemoActions()
 			'}' & _
 			'', @TAB, '')
 
-	ConsoleWrite("$sAction = " & $sAction & @CRLF)
+	ConsoleWrite("+ $sAction = " & $sAction & @CRLF)
 
 	; perform Action
 	_WD_Action($sSession, "actions", $sAction)
