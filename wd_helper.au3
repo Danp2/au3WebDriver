@@ -661,7 +661,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 		__WD_ConsoleWrite($sFuncName & ': ' & $bResult & @CRLF)
 	EndIf
 
-	Return SetError($iErr, $_WD_HTTPRESULT, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $bResult)
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -720,7 +720,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
 	EndIf
 
-	Return SetError($iErr, $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
