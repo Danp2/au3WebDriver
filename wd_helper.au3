@@ -979,15 +979,15 @@ EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
-; Description ...: Perform action on desginated Select element.
+; Description ...: Perform action on desginated <select> element.
 ; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $vParameter = Null])
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
-;                  $sSelectElement - Element ID of Select element from _WD_FindElement
+;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
-;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's Options
-;                  |SELECTEDINDEX  - Retrieve 0-based index of selected option, from Options collection of designated Select element. Special value -1 is used to deselect options
-;                  |SELECTEDTEXT   - Retrieve text/label of selected option, from Options collection of designated Select element
-;                  |VALUE   - Retrieve value of currently selected option from designated Select element
+;                  |OPTIONS - Retrieve array containing value / label attributes from the <select> element's Options
+;                  |SELECTEDINDEX  - Retrieve 0-based index of selected option
+;                  |SELECTEDTEXT   - Retrieve text/label of selected option
+;                  |VALUE          - Retrieve value of currently selected option
 ;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to chosen $sCommand
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -998,7 +998,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: If no option is selected, SELECTEDINDEX will return -1
 ; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
@@ -1010,7 +1010,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameter 
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		If $sNodeName = 'select' Then
+		If $sNodeName = 'select' Then ; check if designated element is <select> element
 			Switch $sCommand
 				Case 'options'
 					$sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
