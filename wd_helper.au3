@@ -984,8 +984,9 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of Select element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
-;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's options
-;                  |VALUE   - Retrieve current value
+;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's Options
+;                  |SELECTEDINDEX - Retrieve 1-based index of selected option, from Options collection of designated Select element
+;                  |VALUE   - Retrieve value of currently selected option from designated Select element
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1002,7 +1003,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local $sNodeName, $vResult
+	Local $sNodeName, $vResult, $sScript
 
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
@@ -1010,22 +1011,28 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	If $iErr = $_WD_ERROR_Success Then
 		If $sNodeName = 'select' Then
 			Switch $sCommand
-				Case 'value'
-					; Retrieve current value of designated Select element
-					$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
-
 				Case 'options'
-					; Retrieve array containing value / label attributes from the Select element's options
-					Local $sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
+					$sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
+
 					If $iErr = $_WD_ERROR_Success Then
 						Local $sText = StringStripWS($vResult, $STR_STRIPTRAILING)
 						Local $aOut[0][2]
 						_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
 						$vResult = $aOut
 					EndIf
+
+				Case 'selectedIndex'
+					$sScript = "arguments[0].selectedIndex"
+					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
+
+				Case 'value'
+					$sScript = "return arguments[0].value"
+					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
+
 				Case Else
 					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
 
