@@ -171,43 +171,55 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	#EndRegion - Headless
 
 	; Execute browser setup routine for user's browser selection
-	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
+	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
 
 	_WD_Startup()
-	If @error <> $_WD_ERROR_Success Then Return
+	Local $iError = @error
 
-	$sSession = _WD_CreateSession($sDesiredCapabilities)
+	If $iError = $_WD_ERROR_Success Then
+		$sSession = _WD_CreateSession($sCapabilities)
+		$iError = @error
 
-	Local $iError
-	If @error = $_WD_ERROR_Success Then
-		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
-			If $aDemoSuite[$iIndex][1] Then
-				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				If $aDemoSuite[$iIndex][2] Then
-					Call($aDemoSuite[$iIndex][0], $sBrowser)
+		If $iError = $_WD_ERROR_Success Then
+			For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
+				If $aDemoSuite[$iIndex][1] Then
+					ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+					If $aDemoSuite[$iIndex][2] Then
+						Call($aDemoSuite[$iIndex][0], $sBrowser)
+					Else
+						Call($aDemoSuite[$iIndex][0])
+					EndIf
+					$iError = @error
+					If $iError = $_WD_ERROR_UserAbort Then
+						ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
+						ExitLoop
+					EndIf
+					ConsoleWrite("+ Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
 				Else
-					Call($aDemoSuite[$iIndex][0])
+					ConsoleWrite("> Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
 				EndIf
-				$iError = @error
-				If $iError = $_WD_ERROR_UserAbort Then
-					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
-					ExitLoop
-				EndIf
-				ConsoleWrite("+Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
-			Else
-				ConsoleWrite("Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
-			EndIf
-		Next
+			Next
+
+			_WD_DeleteSession($sSession)
+
+		EndIf
+
+		_WD_Shutdown()
+
 	EndIf
 
 	If $iError = $_WD_ERROR_UserAbort Then
 		MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
-	Else
+	ElseIf $iError = $_WD_ERROR_Success Then
 		MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
+	Else
+		ConsoleWrite("! $iError = " & $iError & @CRLF)
+		ConsoleWrite("! $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
+		ConsoleWrite("! $_WD_SESSION_DETAILS = " & $_WD_SESSION_DETAILS & @CRLF)
+		MsgBox($MB_ICONINFORMATION, 'Demo error!', 'Check logs')
 	EndIf
 
-	_WD_DeleteSession($sSession)
-	_WD_Shutdown()
+	Return SetError($iError, $_WD_HTTPRESULT, '')
 EndFunc   ;==>RunDemo
 
 Func DemoTimeouts()
