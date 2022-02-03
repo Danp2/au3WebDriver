@@ -985,7 +985,8 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sSelectElement - Element ID of Select element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's Options
-;                  |SELECTEDINDEX - Retrieve -1 based index of selected option, from Options collection of designated Select element
+;                  |SELECTEDINDEX  - Retrieve -1 based index of selected option, from Options collection of designated Select element
+;                  |SELECTEDTEXT   - Retrieve text/label of selected option, from Options collection of designated Select element
 ;                  |VALUE   - Retrieve value of currently selected option from designated Select element
 ;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to chosen $sCommand
 ; Return values .: Success - Requested data returned by web driver.
@@ -1028,13 +1029,18 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameter 
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
+				Case 'selectedText'
+					$sScript = "if (arguments[0].selectedIndex > -1) {return arguments[0].options[arguments[0].selectedIndex].text;} else {return '';}"
+					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
+
 				Case 'value'
 					$sScript = "return arguments[0].value"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Options|selectedIndex|Value) $sCommand=>" & $sCommand), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Options|selectedIndex|selectedText|Value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
