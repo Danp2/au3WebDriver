@@ -1024,7 +1024,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 					EndIf
 
 				Case 'selectedIndex'
-					$sScript = "arguments[0].selectedIndex"
+					$sScript = "return arguments[0].selectedIndex"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
