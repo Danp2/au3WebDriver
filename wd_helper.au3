@@ -985,7 +985,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sSelectElement - Element ID of Select element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's Options
-;                  |SELECTEDINDEX  - Retrieve -1 based index of selected option, from Options collection of designated Select element
+;                  |SELECTEDINDEX  - Retrieve 0-based index of selected option, from Options collection of designated Select element. Special value -1 is used to deselect options
 ;                  |SELECTEDTEXT   - Retrieve text/label of selected option, from Options collection of designated Select element
 ;                  |VALUE   - Retrieve value of currently selected option from designated Select element
 ;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to chosen $sCommand
