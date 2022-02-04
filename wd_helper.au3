@@ -1064,7 +1064,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 
 					If $iErr = $_WD_ERROR_Success Then
 						Local $aSelectedOptions[0][4]
-						_ArrayAdd($$aSelectedOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
+						_ArrayAdd($aSelectedOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
 						$vResult = $aSelectedOptions
 					EndIf
 
