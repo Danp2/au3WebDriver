@@ -1074,7 +1074,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 					$iErr = @error
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Options|selectedIndex|selectedText|Value) $sCommand=>" & $sCommand), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
