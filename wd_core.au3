@@ -9,7 +9,7 @@
 	*
 	* MIT License
 	*
-	* Copyright (c) 2021 Dan Pollak
+	* Copyright (c) 2022 Dan Pollak (@Danp2)
 	*
 	* Permission is hereby granted, free of charge, to any person obtaining a copy
 	* of this software and associated documentation files (the "Software"), to deal
@@ -56,15 +56,15 @@
 
 #Region Many thanks to:
 #cs
-	- Jonathan Bennett and the AutoIt Team
-	- Thorsten Willert, author of FF.au3, which I've used as a model
-	- Michal Lipok for all his feedback / suggestions
+	- Jonathan Bennett (@Jon) and the AutoIt Team
+	- Thorsten Willert (@Stilgar), author of FF.au3, which I've used as a model
+	- Michał Lipok (@mLipok) for all his feedback / suggestions
 	- @water for his work on the help file
 #ce
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.5.0.3"
+Global Const $__WDVERSION = "0.5.1.1"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -75,6 +75,11 @@ Global Const $_WD_LOCATOR_ByXPath = "xpath"
 Global Const $_WD_LOCATOR_ByLinkText = "link text"
 Global Const $_WD_LOCATOR_ByPartialLinkText = "partial link text"
 Global Const $_WD_LOCATOR_ByTagName = "tag name"
+
+Global Const $_WD_JSON_Value = "[value]"
+Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
+Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
+Global Const $_WD_JSON_Error = "[value][error]"
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
@@ -126,6 +131,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 Global Const $WD_ErrorInvalidSession = "invalid session id"
 Global Const $WD_ErrorUnknownCommand = "unknown command"
 Global Const $WD_ErrorTimeout = "timeout"
+Global Const $WD_NoSuchAlert = "no such alert"
 
 Global Const $WD_Element_NotFound = "no such element"
 Global Const $WD_Element_Stale = "stale element reference"
@@ -167,7 +173,7 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; Parameters ....: $sCapabilities - [optional] Requested features in JSON format. Default is "{}"
 ; Return values .: Success - Session ID to be used in future requests to web driver session.
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_DeleteSession
@@ -212,8 +218,8 @@ EndFunc   ;==>_WD_CreateSession
 ; Syntax ........: _WD_DeleteSession($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - 1
-;                  Failure - 0, sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_CreateSession
@@ -241,10 +247,10 @@ EndFunc   ;==>_WD_DeleteSession
 ; Name ..........: _WD_Status
 ; Description ...: Get current web driver state.
 ; Syntax ........: _WD_Status()
-; Parameters ....:
+; Parameters ....: None
 ; Return values .: Success - Dictionary object with "message" and "ready" properties.
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -258,7 +264,7 @@ Func _WD_Status()
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$oResult = Json_Get($oJSON, "[value]")
+		$oResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -279,7 +285,7 @@ EndFunc   ;==>_WD_Status
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Dictionary object with "sessionId" and "capabilities" items.
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
 ;                  until they determine how this should function. See w3c/webdriver@35df53a for details. Meanwhile, I temporarily
@@ -299,7 +305,7 @@ Func _WD_GetSession($sSession)
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, "[value]")
+		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -309,7 +315,7 @@ Func _WD_GetSession($sSession)
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
 	EndIf
-	#ce
+	#ce See remarks in header
 
 	$sResult = $_WD_SESSION_DETAILS
 
@@ -322,9 +328,9 @@ EndFunc   ;==>_WD_GetSession
 ; Syntax ........: _WD_Timeouts($sSession[, $sTimeouts = Default])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
 ;                  $sTimeouts - [optional] Requested timouts in JSON format. Default is ""
-; Return values .: Success - Raw return value from web driver in JSON format.
+; Return values .: Success - Return value from web driver in JSON format.
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Separate timeouts can be set for "script", "pageLoad", and "implicit"
 ; Related .......:
@@ -370,7 +376,7 @@ EndFunc   ;==>_WD_Timeouts
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_NotFound
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Destination URL could be any internet location or local file full path
 ; Related .......:
@@ -419,7 +425,7 @@ EndFunc   ;==>_WD_Navigate
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -447,7 +453,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 
 			If $iErr = $_WD_ERROR_Success Then
 				$oJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($oJSON, "[value]")
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndIf
 
 		Case 'actions'
@@ -500,7 +506,7 @@ EndFunc   ;==>_WD_Action
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -589,7 +595,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 
 				Case Else
 					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, "[value]")
+					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndSwitch
 		Else
 			$iErr = $_WD_ERROR_Exception
@@ -623,7 +629,7 @@ EndFunc   ;==>_WD_Window
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidExpression
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: 01/10/2021
 ; Remarks .......: An array of matching elements is returned when $bMultiple is True
 ; Related .......:
@@ -663,7 +669,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 			If $bMultiple Then
 
 				$oJSON = Json_Decode($sResponse)
-				$oValues = Json_Get($oJSON, '[value]')
+				$oValues = Json_Get($oJSON, $_WD_JSON_Value)
 
 				If UBound($oValues) > 0 Then
 					$sKey = "[" & $_WD_ELEMENT_ID & "]"
@@ -680,7 +686,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 			Else
 				$oJSON = Json_Decode($sResponse)
 
-				$sResult = Json_Get($oJSON, "[value][" & $_WD_ELEMENT_ID & "]")
+				$sResult = Json_Get($oJSON, $_WD_JSON_Element)
 			EndIf
 
 		Else
@@ -731,7 +737,7 @@ EndFunc   ;==>_WD_FindElement
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -750,7 +756,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
-		Case 'name', 'rect', 'text', 'selected', 'enabled', 'displayed', 'screenshot', 'shadow', 'comprole', 'complabel'
+		Case 'complabel', 'comprole', 'displayed', 'enabled', 'name', 'rect', 'selected', 'shadow', 'screenshot', 'text'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand)
 			$iErr = @error
 
@@ -758,7 +764,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sCommand)
 			$iErr = @error
 
-		Case 'attribute', 'property', 'css'
+		Case 'attribute', 'css', 'property'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand & "/" & $sOption)
 			$iErr = @error
 
@@ -776,7 +782,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Name|Rect|Text|Selected|Enabled|Displayed|Active|Attribute|Property|CSS|Clear|Click|Value|Screenshot|Shadow|CompRole|CompLabel) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Active|Attribute|CompRole|CompLabel|Clear|Click|CSS|Displayed|Enabled|Name|Property|Rect|Selected|Shadow|Screenshot|Text|Value) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -792,12 +798,12 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 							$sResult = $sResponse
 						Else
 							$oJSON = Json_Decode($sResponse)
-							$sResult = Json_Get($oJSON, "[value]")
+							$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 						EndIf
 
 					Case Else
 						$oJSON = Json_Decode($sResponse)
-						$sResult = Json_Get($oJSON, "[value]")
+						$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 				EndSwitch
 
 			Case Else
@@ -819,54 +825,57 @@ EndFunc   ;==>_WD_ElementAction
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
 ; Description ...: Execute Javascipt commands.
-; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $sJSONNode = Default]]])
+; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $vSubNode = Default]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $sJSONNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is ""
-; Return values .: Success - Raw response from web driver or value requested by given $sJSONNode
-;                  Failure - "" (empty string) and sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_Timeout
-;                  - $_WD_ERROR_SocketError
-;                  - $_WD_ERROR_InvalidValue
-; Author ........: Dan Pollak
+;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
+; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
+;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
+;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
+;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $sJSONNode = Default)
+Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
-	If $sJSONNode = Default Then $sJSONNode = ''
+	If $vSubNode = Default Then $vSubNode = ""
+	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; True = the JSON value node is returned , False = entire JSON response is returned
 
-	$sScript = __WD_EscapeString($sScript)
+	If IsString($vSubNode) Then
+		$sScript = __WD_EscapeString($sScript)
 
-	$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
-	$sCmd = ($bAsync) ? 'async' : 'sync'
+		$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
+		$sCmd = ($bAsync) ? 'async' : 'sync'
 
-	$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
+		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
+		Local $iErr = @error
 
-	Local $iErr = @error
-
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
-	EndIf
-
-	If $iErr = $_WD_ERROR_Success Then
-		If IsString($sJSONNode) And StringLen($sJSONNode) then
-			Local $oJSON = Json_Decode($sResponse)
-			$sResponse = Json_Get($oJSON, $sJSONNode)
-			If @error Then
-				$iErr = $_WD_ERROR_RetValue
-			Endif
+		If $_WD_DEBUG = $_WD_DEBUG_Info Then
+			__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
 		EndIf
+
+		If $iErr = $_WD_ERROR_Success Then
+			If StringLen($vSubNode) Then
+				Local $oJSON = Json_Decode($sResponse)
+				$sResponse = Json_Get($oJSON, $vSubNode)
+				If @error Then
+					$iErr = $_WD_ERROR_RetValue
+				EndIf
+			EndIf
+		EndIf
+	Else
+		$iErr = $_WD_ERROR_InvalidArgue
+		$sResponse = ""
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResponse)
@@ -887,9 +896,9 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  $sOption  - [optional] a string value. Default is ""
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoAlert
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -909,39 +918,24 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-				$iErr = $_WD_ERROR_NoAlert
-			EndIf
-
 		Case 'gettext'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
-				If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-					$sResult = ""
-					$iErr = $_WD_ERROR_NoAlert
-				Else
-					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, "[value]")
-				EndIf
+				$oJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 			EndIf
 
 		Case 'sendtext'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success And $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then
-				$iErr = $_WD_ERROR_NoAlert
-			EndIf
-
 		Case 'status'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				$sResult = ($_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND) ? False : True
-			EndIf
+			$sResult = ($iErr = $_WD_ERROR_NoAlert) ? False : True
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
@@ -951,11 +945,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, "")
-	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Alert
 
 ; #FUNCTION# ====================================================================================================================
@@ -966,7 +956,7 @@ EndFunc   ;==>_WD_Alert
 ; Return values .: Success - Source code from page.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -982,7 +972,7 @@ Func _WD_GetSource($sSession)
 
 	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, "[value]")
+		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -1012,7 +1002,7 @@ EndFunc   ;==>_WD_GetSource
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Please have a look at WD_Demo.au3 > DemoCookies function for how to add a new cookie
 ; Related .......:
@@ -1086,7 +1076,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  $vValue  - [optional] if no value is given, the current value is returned (default = "")
 ; Return values .: Success - 1 or current value.
 ;                  Failure - 0 or "" (empty string) and sets @error to $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
@@ -1188,7 +1178,7 @@ EndFunc   ;==>_WD_Option
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidValue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Shutdown
@@ -1264,7 +1254,7 @@ EndFunc   ;==>_WD_Startup
 ; Syntax ........: _WD_Shutdown([$vDriver = Default])
 ; Parameters ....: $vDriver - [optional] The name or PID of Web driver console to shutdown
 ; Return values .: None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Startup
@@ -1281,11 +1271,11 @@ EndFunc   ;==>_WD_Shutdown
 ; Syntax ........: __WD_Get($sURL)
 ; Parameters ....: $sURL - Location to access via WinHTTP
 ; Return values..: Success - Response from web driver.
-;                  Failure - Response from web driver, sets @error to one of the following values:
+;                  Failure - Response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_InvalidDataType
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1362,13 +1352,13 @@ EndFunc   ;==>__WD_Get
 ; Syntax ........: __WD_Post($sURL, $sData)
 ; Parameters ....: $sURL  - Location to access via WinHTTP
 ;                  $sData - String representing data to be sent
-; Return values..: Success - Response from web driver.
-;                  Failure - Response from web driver, sets @error to one of the following values:
+; Return values..: Success - Response from web driver in JSON format
+;                  Failure - Response from web driver in JSON format and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_SocketError
 ;                  - $_WD_ERROR_InvalidValue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1445,10 +1435,10 @@ EndFunc   ;==>__WD_Post
 ; Syntax ........: __WD_Delete($sURL)
 ; Parameters ....: $sURL - Location to access via WinHTTP
 ; Return values..: Success - Response from web driver.
-;                  Failure - Response from web driver, sets @error to one of the following values:
+;                  Failure - Response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidValue
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1571,7 +1561,7 @@ EndFunc   ;==>__WD_Error
 ; Syntax ........: __WD_CloseDriver([$sDriver = Default])
 ; Parameters ....: $vDriver - [optional] The name or PID of Web driver console to shutdown. Default is $_WD_DRIVER
 ; Return values .: None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1618,7 +1608,7 @@ EndFunc   ;==>__WD_CloseDriver
 ; Syntax ........: __WD_EscapeString($sData)
 ; Parameters ....: $sData - the string to be escaped
 ; Return values..: Escaped string.
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1631,6 +1621,19 @@ Func __WD_EscapeString($sData)
 	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
 EndFunc   ;==>__WD_EscapeString
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_TranslateQuotes
+; Description ...: Translate double quotes into single quotes
+; Syntax ........: __WD_TranslateQuotes($sData)
+; Parameters ....: $sData - The string to be translated
+; Return values .: Translated string
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func __WD_TranslateQuotes($sData)
 	Local $sResult = StringReplace($sData, '"', "'")
 	Return SetError($_WD_ERROR_Success, 0, $sResult)
@@ -1643,7 +1646,7 @@ EndFunc   ;==>__WD_TranslateQuotes
 ; Parameters ....: $iErr    - [in/out] Error code
 ;                  $vResult - Result from webdriver
 ; Return values .: None
-; Author ........: Dan Pollak
+; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
@@ -1664,7 +1667,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		EndIf
 
 		Local $oJSON = Json_Decode($vResult)
-		$vResult = Json_Get($oJSON, "[value]")
+		$vResult = Json_Get($oJSON, $_WD_JSON_Value)
 
 		If @error Or $vResult == Null Then Return
 	EndIf
@@ -1694,6 +1697,9 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 			Case $WD_Element_Intercept, $WD_Element_NotInteract
 				$iErr = $_WD_ERROR_ElementIssue
 
+			Case $WD_NoSuchAlert
+				$iErr = $_WD_ERROR_NoAlert
+
 			Case Else
 				$iErr = $_WD_ERROR_Exception
 
@@ -1719,8 +1725,8 @@ EndFunc   ;==>__WD_ConsoleWrite
 ; Syntax ........: __WD_Sleep($iPause)
 ; Parameters ....: $iPause - Amount of time to pause (in milliseconds)
 ; Return values .: Success - None
-;                  Failure - None, sets @error $_WD_ERROR_UserAbort
-; Author ........: Dan Pollak
+;                  Failure - None and sets @error $_WD_ERROR_UserAbort
+; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Calls standard Sleep() by default. This can be overridden with _WD_Option so that a user supplied function
 ;                  gets called instead. User's function can throw error which will lead to $_WD_ERROR_UserAbort

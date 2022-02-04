@@ -1,5 +1,41 @@
+	v0.5.1.1
+	- Added: _WD_JsonActionKey, _WD_JsonActionPause, and _WD_JsonActionPointer functions
+	- Changed (_WD_ElementActionEx): Added support for 'click' action
+	- Changed (_WD_UpdateDriver): Attempts to identify current architecture if $bFlag64 is Default.
+	- Changed (__WD_DetectError): Detect "no such alert"
+	- Changed (_WD_ElementSelectAction): Performance of "Options" significantly improved by reducing Webdriver calls
+	- Fixed (_WD_Alert): Improve alert detection
+	- Fixed (_WD_UpdateDriver): $bForce / $KEYWORD_NULL implementation (again)
+	- Chore: Updated wd_demo.au3
+		- Improved console output in DemoScript
+		- Display screenshots in DemoWindows
+		- Improved console output & in DemoAlerts
+		- Corrected 'sendtext' coding in DemoAlerts
+		- Added "update" option
+		- Added "headless" option
+		- Added DemoPrint routine
+
+	v0.5.1.0
+	- Changed: _WD_GetElementFromPoint
+		- Sets @Extended to shown context changed
+		- Additional error checking
+	- Changed (_WD_ExecuteScript): Add support for return of additional subnodes
+	- Added: $_WD_JSON_* constants
+	- Chore: Update various functions to use $_WD_JSON_* constants
+	- Changed (_WD_GetBrowserVersion): Returns "0" on failure instead of "" 			*** Script breaking change ***
+	- Changed (_WD_GetWebDriverVersion): Returns "0" on failure instead of "None" 		*** Script breaking change ***
+	- Changed: _WD_UpdateDriver
+		- Added checks for valid installation directory
+		- Added check for existing 32/64 bit driver
+		- Fixed $bForce / $KEYWORD_NULL implementation
+		- Improved version comparison
+		- Improved zip extraction
+		- Fixed regex used with geckodriver
+	- Changed (_WD_Screenshot): Improved error handling
+	- Fixed (_WD_GetShadowRoot, _WD_SelectFiles, _WD_SetTimeouts): Correctly initialize return value
+
 	v0.5.0.3
-	- Changed (_WD_ExecuteScript): Optionally return value node instead of raw JSON (mLipok)
+	- Changed (_WD_ExecuteScript): Optionally return value node instead of entire JSON response (mLipok)
 	- Changed (_WD_ElementActionEx): Added support for "check" and "uncheck" commands (TheDcoder)
 	- Changed (_WD_GetElementFromPoint): Added support for frames
 	- Fixed (_WD_ElementAction): Return raw response for 'shadow' command

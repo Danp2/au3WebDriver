@@ -16,23 +16,27 @@ Global Const $aBrowsers[][2] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
-		["Edge", SetupEdge] _
+		["MSEdge", SetupEdge] _
 		]
 
-Global $aDemoSuite[][2] = _
+; Column 0 - Function Name
+; Column 1 - Selected at start
+; Column 2 - Pass browser name as parameter to callad function
+Global $aDemoSuite[][3] = _
 		[ _
-		["DemoTimeouts", False], _
-		["DemoNavigation", True], _
-		["DemoElements", False], _
-		["DemoScript", False], _
-		["DemoCookies", False], _
-		["DemoAlerts", False], _
-		["DemoFrames", False], _
-		["DemoActions", False], _
-		["DemoDownload", False], _
-		["DemoWindows", False], _
-		["DemoUpload", False], _
-		["DemoSleep", False] _
+		["DemoTimeouts", False, False], _
+		["DemoNavigation", True, False], _
+		["DemoElements", False, False], _
+		["DemoScript", False, False], _
+		["DemoCookies", False, False], _
+		["DemoAlerts", False, False], _
+		["DemoFrames", False, False], _
+		["DemoActions", False, False], _
+		["DemoDownload", False, False], _
+		["DemoWindows", False, False], _
+		["DemoUpload", False, False], _
+		["DemoPrint", False, True], _
+		["DemoSleep", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -51,33 +55,65 @@ Exit
 
 Func _WD_Demo()
 	Local $nMsg
-	Local $iSpacing = 50
+	Local $iSpacing = 25
+	Local $iPos
 	Local $iCount = UBound($aDemoSuite)
 	Local $aCheckboxes[$iCount]
 
-	Local $hGUI = GUICreate("Webdriver Demo", 200, 150 + (20 * $iCount), 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
+	Local $hGUI = GUICreate("Webdriver Demo", 200, 100, 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
 	GUISetBkColor($CLR_SILVER)
-	GUICtrlCreateLabel("Browser", 15, 12)
-	Local $idBrowsers = GUICtrlCreateCombo("", 75, 10, 100, 20, $CBS_DROPDOWNLIST)
+
+	#Region - browsers
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Browser", 15, $iPos + 2)
+	Local $idBrowsers = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	Local $sData = _ArrayToString($aBrowsers, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idBrowsers, $sData)
 	GUICtrlSetData($idBrowsers, $aBrowsers[0][0])
+	#EndRegion - browsers
 
-	GUICtrlCreateLabel("Demos", 15, 52)
-	For $i = 0 To $iCount - 1
-		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 70, $iSpacing + (20 * $i), 100, 17, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
-		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
-	Next
-
-	Local $iPos = $iSpacing + 20 * ($iCount + 1)
+	#Region - debug
+	$iPos += $iSpacing
 	GUICtrlCreateLabel("Debug", 15, $iPos + 2)
 	Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idDebugging, $sData)
 	GUICtrlSetData($idDebugging, "Full")
-	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos + 40, 85, 25)
-	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos + 40, 85, 25)
+	#EndRegion - debug
+
+	#Region - update
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Update", 15, $iPos + 2)
+	Local $idUpdate = GUICtrlCreateCombo("Report only", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idUpdate, "Current|32bit|32bit+Force|64Bit|64Bit+Force", "Report only")
+	#EndRegion - update
+
+	#Region - Headless
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Headless", 15, $iPos + 2)
+	Local $idHeadless = GUICtrlCreateCombo("No", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idHeadless, "Yes", "No")
+	#EndRegion - Headless
+
+	#Region - demos
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("Demos", 15, $iPos + $iSpacing + 2)
+	For $i = 0 To $iCount - 1
+		$iPos += $iSpacing
+		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 75, $iPos, 100, 20, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
+		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
+	Next
+	#EndRegion - demos
+
+	#Region - run / abort
+	$iPos += $iSpacing * 2
+	Local $idButton_Run = GUICtrlCreateButton("Run Demo!", 10, $iPos, 85, 25)
+	$__g_idButton_Abort = GUICtrlCreateButton("Abort", 100, $iPos, 85, 25)
 	GUICtrlSetState($__g_idButton_Abort, $GUI_DISABLE)
+	#EndRegion - run / abort
+
+	; Resize window
+	WinMove($hGUI, "", 100, 200, 200, $iPos + 3 * $iSpacing)
 
 	GUISetState(@SW_SHOW)
 	While 1
@@ -94,7 +130,7 @@ Func _WD_Demo()
 
 			Case $idButton_Run
 				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
-				RunDemo($idDebugging, $idBrowsers)
+				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
 
 			Case Else
@@ -110,24 +146,48 @@ Func _WD_Demo()
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers)
+Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	; Set debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
+	#Region - WebeDriver update
+	Local $sUpdate
+	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
+
+	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
+	If StringInStr($sUpdate, 'Current') Then $bFlag64 = Default
+	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
+	If $sUpdate = 'Report only' Then $bForce = Null
+
+	Local $sBrowser = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
+	Local $bUpdateResult = _WD_UpdateDriver($sBrowser, @ScriptDir, $bFlag64, $bForce)
+	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
+	#EndRegion - WebeDriver update
+
+	#Region - Headless
+	Local $sHeadless
+	_GUICtrlComboBox_GetLBText($idHeadless, _GUICtrlComboBox_GetCurSel($idHeadless), $sHeadless)
+	Local $bHeadless = ($sHeadless = 'Yes')
+	#EndRegion - Headless
+
 	; Execute browser setup routine for user's browser selection
-	Local $sDesiredCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1])
+	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
 
 	_WD_Startup()
 	If @error <> $_WD_ERROR_Success Then Return
 
-	$sSession = _WD_CreateSession($sDesiredCapabilities)
+	$sSession = _WD_CreateSession($sCapabilities)
 
 	Local $iError
 	If @error = $_WD_ERROR_Success Then
 		For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 			If $aDemoSuite[$iIndex][1] Then
 				ConsoleWrite("+Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				Call($aDemoSuite[$iIndex][0])
+				If $aDemoSuite[$iIndex][2] Then
+					Call($aDemoSuite[$iIndex][0], $sBrowser)
+				Else
+					Call($aDemoSuite[$iIndex][0])
+				EndIf
 				$iError = @error
 				If $iError = $_WD_ERROR_UserAbort Then
 					ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -270,12 +330,16 @@ Func DemoElements()
 EndFunc   ;==>DemoElements
 
 Func DemoScript()
-	_WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}')
-	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
-	_WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}')
-	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
-	_WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});")
-	ConsoleWrite(@error & @CRLF & $_WD_HTTPRESULT & @CRLF)
+	Local $sValue
+
+	$sValue = _WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}', Default, $_WD_JSON_Value)
+	ConsoleWrite("- " & @ScriptLineNumber & ' ' & @error & ' $sValue = ' & $sValue & @CRLF & $_WD_HTTPRESULT & @CRLF)
+
+	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}', Default, $_WD_JSON_Value)
+	ConsoleWrite("- " & @ScriptLineNumber & ' ' & @error & ' $sValue = ' & $sValue & @CRLF & $_WD_HTTPRESULT & @CRLF)
+
+	$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
+	ConsoleWrite("- " & @ScriptLineNumber & ' ' & @error & ' $sValue = ' & $sValue & @CRLF & $_WD_HTTPRESULT & @CRLF)
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()
@@ -290,51 +354,106 @@ Func DemoCookies()
 EndFunc   ;==>DemoCookies
 
 Func DemoAlerts()
-	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
+	Local $sStatus, $sText
+
+	; check status before displaying Alert
+	$sStatus = _WD_Alert($sSession, 'status')
+	ConsoleWrite("- " & 'Alert Detected => ' & $sStatus & @CRLF)
+
+	; show Alert for testing
 	_WD_ExecuteScript($sSession, "alert('testing 123')")
-	ConsoleWrite('Alert Detected => ' & _WD_Alert($sSession, 'status') & @CRLF)
-	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
-	_WD_Alert($sSession, 'sendtext', 'new text')
-	ConsoleWrite('Text Detected => ' & _WD_Alert($sSession, 'gettext') & @CRLF)
+
+	; get/check Alert status and text
+	$sStatus = _WD_Alert($sSession, 'status')
+	$sText = _WD_Alert($sSession, 'gettext')
+	ConsoleWrite("- " & 'Alert Detected => ' & $sStatus & @CRLF)
+	ConsoleWrite("- " & 'Text Detected => ' & $sText & @CRLF)
+
 	Sleep(5000)
+	; close Alert
 	_WD_Alert($sSession, 'Dismiss')
+
+	; show Prompt for testing
+	_WD_ExecuteScript($sSession, "prompt('User Prompt', 'Default value')")
+
+	Sleep(2000)
+
+	; Set value of text field
+	_WD_Alert($sSession, 'sendtext', 'new text')
+
+	Sleep(5000)
+	; close Alert
+	_WD_Alert($sSession, 'Accept')
 
 EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
-	Local $sElement
+	Local $sElement, $bIsWindowTop
 
 	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe")
-	ConsoleWrite("Frames=" & _WD_GetFrameCount($sSession) & @CRLF)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+
+	Local $iFrameCount = _WD_GetFrameCount($sSession)
+	ConsoleWrite("- Frames=" & $iFrameCount & @CRLF)
+
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; just after navigate current context should be on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
+	; changing context to first frame
 	_WD_FrameEnter($sSession, $sElement)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after changing context to first frame the current context is not on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
+	; changing context to first sub frame
 	_WD_FrameEnter($sSession, $sElement)
+
 	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
 	_WD_ElementAction($sSession, $sButton, 'click')
 	_WD_LoadWait($sSession, 2000)
+
 	_WD_FrameLeave($sSession)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after leaving sub frame, the current context is back to first frame but still is not on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 	_WD_FrameLeave($sSession)
-	ConsoleWrite("TopWindow=" & _WD_IsWindowTop($sSession) & @CRLF)
+	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	; after leaving first frame, the current context should back on top level Window
+	ConsoleWrite("- " & @ScriptLineNumber & " TopWindow = " & $bIsWindowTop & @CRLF)
+
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
-	Local $sElement, $aElements, $sValue, $sAction
-	#forceref $aElements, $sValue
+	Local $sElement, $sAction
 
 	_WD_Navigate($sSession, "http://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
-
 	ConsoleWrite("$sElement = " & $sElement & @CRLF)
 
-	$sAction = '{"actions":[{"id":"default mouse","type":"pointer","parameters":{"pointerType":"mouse"},"actions":[{"duration":100,"x":0,"y":0,"type":"pointerMove","origin":{"ELEMENT":"'
-	$sAction &= $sElement & '","' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}},{"button":2,"type":"pointerDown"},{"button":2,"type":"pointerUp"}]}]}'
+	$sAction = StringReplace( _
+			'{' & _
+			'	"actions":[' & _
+			'		{' & _
+			'			"id":"default mouse",' & _
+			'			"type":"pointer",' & _
+			'			"parameters":{"pointerType":"mouse"},' & _
+			'			"actions":[' & _
+			_WD_JsonActionPointer("pointerMove", Default, $sElement, 0, 0, 100) & ','  & _
+			_WD_JsonActionPointer("pointerDown", $_WD_BUTTON_Right) & ','  & _
+			_WD_JsonActionPointer("pointerUp", $_WD_BUTTON_Right) & _
+			'			]' & _
+			'		}' & _
+			'	]' & _
+			'}' & _
+			'', @TAB, '')
 
-	ConsoleWrite("$sAction = " & $sAction & @CRLF)
+	ConsoleWrite("+ $sAction = " & $sAction & @CRLF)
 
+	; perform Action
 	_WD_Action($sSession, "actions", $sAction)
 	Sleep(2000)
 	Send("Q")
@@ -395,6 +514,9 @@ Func DemoWindows()
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
 
+	; show the result in default viewer
+	ShellExecute("Screen1.png")
+
 	; Take another one
 	_WD_Window($sSession, "switch", $sHnd2)
 	$sResponse = _WD_Window($sSession, 'screenshot')
@@ -403,17 +525,69 @@ Func DemoWindows()
 	$hFileOpen = FileOpen("Screen2.png", $FO_BINARY + $FO_OVERWRITE)
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
+
+	; show the result in default viewer
+	ShellExecute("Screen2.png")
+
 EndFunc   ;==>DemoWindows
 
 Func DemoUpload()
-	; Uses files created in DemoWindows
+	; REMARK This example uses PNG files created in DemoWindows
+
+	; navigate to "file storing" website
 	_WD_Navigate($sSession, "https://www.htmlquick.com/reference/tags/input-file.html")
+
+	; select single file
 	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//section[@id='examples']//input[@name='uploadedfile']", @ScriptDir & "\Screen1.png")
+
+	; select two files at once
 	_WD_SelectFiles($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[@name='uploadedfiles[]']", @ScriptDir & "\Screen1.png" & @LF & @ScriptDir & "\Screen2.png")
 
+	; accept/start uploading
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//p[contains(text(),'Upload files:')]//input[2]")
 	_WD_ElementAction($sSession, $sElement, 'click')
 EndFunc   ;==>DemoUpload
+
+Func DemoPrint($sBrowser)
+	; navigate to website
+	_WD_Navigate($sSession, "https://www.w3.org/TR/webdriver/#print-page")
+
+	; Wait for page will be fully load - max 10 seconds
+	_WD_LoadWait($sSession, Default, 10 * 1000)
+
+	; create Print Options
+	Local $sOptions = StringReplace( _
+			'{' & _
+			'	"page": {' & _
+			'			"width": 29.70' & _
+			'			,"height": 42.00' & _
+			'		}' & _
+			'	,"margin": {' & _
+			'			"top": 2' & _
+			'			,"bottom": 2' & _
+			'			,"left": 2' & _
+			'			,"right": 2' & _
+			'		}' & _
+			'	,"scale": 0.5' & _
+			'	,"orientation": "landscape"' & _
+			'	,"shrinkToFit": true' & _
+			'	,"background": true' & _
+			'	,"pageRanges": ["1", "10-20"]' & _
+			'}', @TAB, '')
+
+	; print WebSite content to PDF as Binary
+	Local $dBinaryData = _WD_PrintToPdf($sSession, $sOptions)
+	If @error Then Return SetError(@error, @extended, $dBinaryData)
+
+	; save PDF to file
+	Local $sPDFFileFullPath = @ScriptDir & "\" & $sBrowser & " - DemoPrint.pdf"
+	Local $hFile = FileOpen($sPDFFileFullPath, $FO_OVERWRITE + $FO_BINARY)
+	FileWrite($hFile, $dBinaryData)
+	FileClose($hFile)
+
+	; open PDF in default viewer configured in Windows
+	ShellExecute($sPDFFileFullPath)
+EndFunc   ;==>DemoPrint
 
 Func DemoSleep()
 	; enable Abort button
@@ -457,46 +631,49 @@ Func _USER_WD_Sleep($iDelay)
 	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
 EndFunc   ;==>_USER_WD_Sleep
 
-Func SetupGecko()
+Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
 
-;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
-	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
-	Return $sDesiredCapabilities
+	Local $sCapabilities = _WD_CapabilitiesGet()
+	Return $sCapabilities
 EndFunc   ;==>SetupGecko
 
-Func SetupChrome()
+Func SetupChrome($bHeadless)
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
-;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'chrome')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
-	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
-	Return $sDesiredCapabilities
+	Local $sCapabilities = _WD_CapabilitiesGet()
+	Return $sCapabilities
 EndFunc   ;==>SetupChrome
 
-Func SetupEdge()
+Func SetupEdge($bHeadless)
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
-;~ 	Local $sDesiredCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
-	Local $sDesiredCapabilities = _WD_CapabilitiesGet()
-	Return $sDesiredCapabilities
+	Local $sCapabilities = _WD_CapabilitiesGet()
+	Return $sCapabilities
 EndFunc   ;==>SetupEdge
