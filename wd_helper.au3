@@ -633,7 +633,7 @@ EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
 ; Name ..........: _WD_HighlightElement
-; Description ...: Highlights the specified element.
+; Description ...: Highlights the specified element. <B>[Deprecated]</B>
 ; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
@@ -646,64 +646,81 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  Failure - False and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
-; Remarks .......:
+; Remarks .......: This function will be removed in a future release. Update your code to use _WD_HighlightElements instead.
 ; Related .......: _WD_HighlightElements
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
-	Local Const $sFuncName = "_WD_HighlightElement"
-	Local Const $aMethod[] = _
-			[ _
-			"border: 0px", _
-			"border: 2px dotted red", _
-			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
-			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
-			]
+ 	Local Const $sFuncName = "_WD_HighlightElement"
 
-	If $iMethod = Default Then $iMethod = 1
-	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
-
-	Local $sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-	Local $sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $bResult & @CRLF)
 	EndIf
 
-	Return SetError($iErr, $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $bResult)
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_HighlightElements
 ; Description ...: Highlights the specified elements.
-; Syntax ........: _WD_HighlightElements($sSession, $aElements[, $iMethod = Default])
+; Syntax ........: _WD_HighlightElements($sSession, $vElements[, $iMethod = Default])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
-;                  $aElements - an array of Elements ID from _WD_FindElement
+;                  $vElements - Element ID from _WD_FindElement (single element as string; multiple elements as array)
 ;                  $iMethod   - [optional] an integer value to set the style (default = 1)
 ;                  0 - Remove highlight
 ;                  1 - Highlight border dotted red
 ;                  2 - Highlight yellow rounded box
 ;                  3 - Highlight yellow rounded box + border  dotted red
-; Return values .: Success - True. @extended is set to the number of highlighted elements
-;                  Failure - False and sets @error to $_WD_ERROR_GeneralError
+; Return values .: Success - True
+;                  Failure - False and sets @error to _WD_ERROR_InvalidArgue or the error code from _WD_ExecuteScript()
 ; Author ........: Danyfirex
-; Modified ......: mLipok
+; Modified ......: mLipok, Danp2
 ; Remarks .......:
-; Related .......: _WD_HighlightElement
+; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_HighlightElements($sSession, $aElements, $iMethod = Default)
-	Local $iHighlightedElements = 0
+Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
+	Local Const $sFuncName = "_WD_HighlightElements"
+	Local Const $aMethod[] = _
+			[ _
+			"border: 0px;", _
+			"border: 2px dotted red;", _
+			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
+			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
+			]
+	Local $sScript, $sResult, $iErr, $sElements
 
 	If $iMethod = Default Then $iMethod = 1
+	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
 
-	For $i = 0 To UBound($aElements) - 1
-		$iHighlightedElements += (_WD_HighlightElement($sSession, $aElements[$i], $iMethod) = True ? 1 : 0)
-	Next
-	Return ($iHighlightedElements > 0 ? SetError(0, $iHighlightedElements, True) : SetError($_WD_ERROR_GeneralError, 0, False))
+	If IsString($vElements) Then
+		$sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
+		$sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
+		$iErr = @error
+
+	ElseIf IsArray($vElements) And UBound($vElements) > 0 Then
+		For $i = 0 To UBound($vElements) - 1
+			$vElements[$i] = __WD_JsonElement($vElements[$i])
+		Next
+
+		$sElements = "[" & _ArrayToString($vElements, ",") & "]"
+		$sScript = "for (var i = 0, max = arguments[0].length; i < max; i++) { arguments[0][i].style = '" & $aMethod[$iMethod] & "'; }; return true;"
+		$sResult = _WD_ExecuteScript($sSession, $sScript, $sElements, Default, $_WD_JSON_Value)
+		$iErr = @error
+	Else
+		$iErr = $_WD_ERROR_InvalidArgue
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
