@@ -386,12 +386,7 @@ EndFunc   ;==>_WD_Timeouts
 Func _WD_Navigate($sSession, $sURL)
 	Local Const $sFuncName = "_WD_Navigate"
 
-	If StringInStr($sURL, '\') Then
-		If Not FileExists($sURL) Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotFound, "File not exist: " & $sURL), 0, 0)
-		EndIf
-		$sURL = "file:///" & StringReplace($sURL, "\", "/")
-	EndIf
+	If StringInStr($sURL, '\') Then	$sURL = "file:///" & StringReplace($sURL, "\", "/")
 
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 	Local $iErr = @error
