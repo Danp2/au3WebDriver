@@ -980,7 +980,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
 ; Description ...: Perform action on desginated <select> element.
-; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $vParameter = Null])
+; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
@@ -988,8 +988,6 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected option
 ;                  |SELECTEDTEXT   - Retrieves 1D array with the labels of the selected options
 ;                  |VALUE          - Retrieves value of currently selected option
-;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to chosen $sCommand :
-;                  |for SELECTEDINDEX, $vParameter is used to set 'selectedIndex'
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1004,7 +1002,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameter = Null)
+Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
 	Local $sNodeName, $vResult, $sScript
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
@@ -1026,7 +1024,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameter 
 					EndIf
 
 				Case 'selectedIndex'
-					$sScript = "return arguments[0].selectedIndex" & ((IsInt($vParameter)) ? (" = " & $vParameter) : (''))
+					$sScript = "return arguments[0].selectedIndex"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
