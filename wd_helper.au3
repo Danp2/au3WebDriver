@@ -984,11 +984,12 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
-;                  |OPTIONS - Retrieve 2D array containing value / label attributes and index from the <select> element's Options
-;                  |SELECTEDINDEX  - Retrieve 0-based index of selected option
-;                  |SELECTEDTEXT   - Retrieve text/label of selected option
-;                  |VALUE          - Retrieve value of currently selected option
-;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to chosen $sCommand
+;                  |OPTIONS        - Retrieves 2D array containing 3 columns (value, label and index from the <select> element options)
+;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected option
+;                  |SELECTEDTEXT   - Retrieves 1D array with the labels of the selected options
+;                  |VALUE          - Retrieves value of currently selected option
+;                  $vParameter     - [optional] a variant value. Default is Null. This value is related to chosen $sCommand :
+;                  |for SELECTEDINDEX, $vParameter is used to set 'selectedIndex'
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1019,9 +1020,9 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameter 
 
 					If $iErr = $_WD_ERROR_Success Then
 						Local $sText = StringStripWS($vResult, $STR_STRIPTRAILING)
-						Local $aOut[0][3]
-						_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
-						$vResult = $aOut
+						Local $aAllOptions[0][3]
+						_ArrayAdd($aAllOptions, $sText, 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
+						$vResult = $aAllOptions
 					EndIf
 
 				Case 'selectedIndex'
@@ -1030,9 +1031,15 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameter 
 					$iErr = @error
 
 				Case 'selectedText'
-					$sScript = "if (arguments[0].selectedIndex > -1) {return arguments[0].options[arguments[0].selectedIndex].text;} else {return '';}"
+					$sScript = "var result =''; var options = arguments[0].selectedOptions; for (let i = 0; i < options.length; i++) {result += options[i].label + '\n'} return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
+
+					If $iErr = $_WD_ERROR_Success Then
+						Local $aSelectedOptions[0]
+						_ArrayAdd($aSelectedOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, @LF, "", $ARRAYFILL_FORCE_DEFAULT)
+						$vResult = $aSelectedOptions
+					EndIf
 
 				Case 'value'
 					$sScript = "return arguments[0].value"
