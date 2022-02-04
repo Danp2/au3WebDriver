@@ -987,7 +987,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |DESELECTALL    - Clear all selections
 ;                  |MULTISELECT    - Work in progress
 ;                  |OPTIONS        - Retrieves all <option> elements as 2D array containing 3 columns (value, label and index from options)
-;                  |SELECTALL      - Work in progress
+;                  |SELECTALL      - Select all <option> elements
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
 ;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array containing 3 columns (value, label and index from options)
@@ -1037,7 +1037,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 					EndIf
 
 				Case 'selectAll'
-					$sScript = "Work in progress"
+					$sScript = "var options = arguments[0].options; for ( i=0; i<options.length; i++) {options[i].selected = 'true';}; return true"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
