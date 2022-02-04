@@ -293,7 +293,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Syntax ........: _WD_WaitElement($sSession, $sStrategy, $sSelector[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
 ;                  $sStrategy - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector - Value to find
+;                  $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
 ;                  $iDelay    - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout  - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $iOptions  - [optional] Binary flags to perform additional actions:
@@ -966,7 +966,7 @@ EndFunc   ;==>_WD_jQuerify
 ; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector     - Value to find
+;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).  Should point to <option> in element of type '<select>'
 ;                  $sStartElement - [optional] Element ID of element to use as starting point
 ; Return values .: Success - None.
 ;                  Failure - None and sets @error to one of the following values:
@@ -1106,7 +1106,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector     - Value to find
+;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
 ;                  $sStartElement - [optional] a string value. Default is ""
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -1151,7 +1151,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ; Syntax ........: _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
 ;                  $sStrategy - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
-;                  $sSelector - Value to find. Should point to element of type '< input type="file" >'
+;                  $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s). Should point to element of type '< input type="file" >'.
 ;                  $sFilename - Full path of file(s) to upload (use newline character [@LF] to separate files)
 ; Return values .: Success - Number of selected files.
 ;                  Failure - "0" and sets @error to one of the following values:
