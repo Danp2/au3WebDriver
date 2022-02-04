@@ -175,37 +175,39 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 
 	ConsoleWrite("> _WD_Startup" & @CRLF)
 	Local $iWebDriver_PID = _WD_Startup()
-	Local $iError = @error
+	If @error And _RunDemo_errorHandling(@error, @extended, $iWebDriver_PID, $sSession) Then Return
 
-	If $iError = $_WD_ERROR_Success Then
-		ConsoleWrite("> _WD_CreateSession" & @CRLF)
-		$sSession = _WD_CreateSession($sCapabilities)
-		$iError = @error
+	ConsoleWrite("> _WD_CreateSession" & @CRLF)
+	$sSession = _WD_CreateSession($sCapabilities)
+	If @error And _RunDemo_errorHandling(@error, @extended, $iWebDriver_PID, $sSession) Then Return
 
-		If $iError = $_WD_ERROR_Success Then
-			For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
-				If $aDemoSuite[$iIndex][1] Then
-					ConsoleWrite("+ Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
-					If $aDemoSuite[$iIndex][2] Then
-						Call($aDemoSuite[$iIndex][0], $sBrowser)
-					Else
-						Call($aDemoSuite[$iIndex][0])
-					EndIf
-					$iError = @error
-					If $iError = $_WD_ERROR_UserAbort Then
-						ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
-						ExitLoop
-					EndIf
-					ConsoleWrite("+ Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				Else
-					ConsoleWrite("> Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				EndIf
-			Next
-
+	Local $iError
+	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
+		If $aDemoSuite[$iIndex][1] Then
+			ConsoleWrite("+ Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			If $aDemoSuite[$iIndex][2] Then
+				Call($aDemoSuite[$iIndex][0], $sBrowser)
+			Else
+				Call($aDemoSuite[$iIndex][0])
+			EndIf
+			$iError = @error
+			If $iError = $_WD_ERROR_UserAbort Then
+				ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
+				ExitLoop
+			ElseIf $iError Then
+				ConsoleWrite("! Error: " & $aDemoSuite[$iIndex][0] & @CRLF)
+				ExitLoop
+			EndIf
+			ConsoleWrite("+ Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
+		Else
+			ConsoleWrite("> Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
 		EndIf
+	Next
 
-	EndIf
+	_RunDemo_errorHandling($iError, 0, $iWebDriver_PID, $sSession, True)
+EndFunc   ;==>RunDemo
 
+Func _RunDemo_errorHandling($iError, $iExtended, $iWebDriver_PID, $sSession, $bForceDispose = False)
 	If $iError = $_WD_ERROR_UserAbort Then
 		MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
 	ElseIf $iError = $_WD_ERROR_Success Then
@@ -217,11 +219,15 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 		MsgBox($MB_ICONINFORMATION, 'Demo error!', 'Check logs')
 	EndIf
 
+	If $iError Or $bForceDispose Then _RunDemo_Dispose($iWebDriver_PID, $sSession)
+
+	Return SetError($iError, $iExtended, $iError)
+EndFunc   ;==>_RunDemo_errorHandling
+
+Func _RunDemo_Dispose($iWebDriver_PID, $sSession)
 	If $sSession Then _WD_DeleteSession($sSession)
 	If $iWebDriver_PID Then _WD_Shutdown()
-
-	Return SetError($iError, $_WD_HTTPRESULT, '')
-EndFunc   ;==>RunDemo
+EndFunc   ;==>_RunDemo_Dispose
 
 Func DemoTimeouts()
 	; Retrieve current settings and save
