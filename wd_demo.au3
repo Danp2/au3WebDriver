@@ -206,9 +206,6 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 
 	EndIf
 
-	If $sSession Then _WD_DeleteSession($sSession)
-	If $iWebDriver_PID Then _WD_Shutdown()
-
 	If $iError = $_WD_ERROR_UserAbort Then
 		MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
 	ElseIf $iError = $_WD_ERROR_Success Then
@@ -219,6 +216,9 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 		ConsoleWrite("! $_WD_SESSION_DETAILS = " & $_WD_SESSION_DETAILS & @CRLF)
 		MsgBox($MB_ICONINFORMATION, 'Demo error!', 'Check logs')
 	EndIf
+
+	If $sSession Then _WD_DeleteSession($sSession)
+	If $iWebDriver_PID Then _WD_Shutdown()
 
 	Return SetError($iError, $_WD_HTTPRESULT, '')
 EndFunc   ;==>RunDemo
