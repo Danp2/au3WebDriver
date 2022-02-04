@@ -181,7 +181,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	$sSession = _WD_CreateSession($sCapabilities)
 	If @error And _RunDemo_errorHandling(@error, @extended, $iWebDriver_PID, $sSession) Then Return
 
-	Local $iError
+	Local $iError = $_WD_ERROR_Success
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 		If $aDemoSuite[$iIndex][1] Then
 			ConsoleWrite("+ Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
