@@ -980,19 +980,14 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
 ; Description ...: Perform action on desginated <select> element.
-; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $vParameters = Null])
+; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
-;                  |DESELECTALL    - Clear all selections
-;                  |MULTISELECT    - Select <option> elements given in 1D array of labels
-;                  |OPTIONS        - Retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
-;                  |SELECTALL      - Select all <option> elements
-;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
-;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
-;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array containing 4 columns (value, label, index and selected status)
-;                  |VALUE          - Retrieves value of the first selected <option> element
-;                  $vParameters    - [optional] a variant value. Default is Null.
+;                  |OPTIONS        - Retrieves 2D array containing 3 columns (value, label and index from the <select> element options)
+;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected option
+;                  |SELECTEDTEXT   - Retrieves 1D array with the labels of the selected options
+;                  |VALUE          - Retrieves value of currently selected option
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1007,7 +1002,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters = Null)
+Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
 	Local $sNodeName, $vResult, $sScript
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
@@ -1016,65 +1011,31 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 	If $iErr = $_WD_ERROR_Success Then
 		If $sNodeName = 'select' Then ; check if designated element is <select> element
 			Switch $sCommand
-				Case 'deselectAll'
-					$sScript = "return arguments[0].selectedIndex = -1"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
-
-				Case 'multiSelect' ; https://stackoverflow.com/a/1296068/5314940
-					$sScript = _
-							"var LabelsToSelect = ['" & _ArrayToString($vParameters, "', '") & "'];" & _
-							"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
-							"{" & _
-							"  o = arguments[0].options[i];" & _
-							"  if ( LabelsToSelect.indexOf( o.label ) != -1 )" & _
-							"  {" & _
-							"    o.selected = true;" & _
-							"  }" & _
-							"}; return true;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
-
 				Case 'options'
-					$sScript = "var result ='' ; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'} return result;"
+					$sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '\n'} return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
-						Local $aAllOptions[0][4]
-						_ArrayAdd($aAllOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
+						Local $sText = StringStripWS($vResult, $STR_STRIPTRAILING)
+						Local $aAllOptions[0][3]
+						_ArrayAdd($aAllOptions, $sText, 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
 						$vResult = $aAllOptions
 					EndIf
-
-				Case 'selectAll'
-					$sScript = "var options = arguments[0].options; for ( i=0; i<options.length; i++) {options[i].selected = 'true';}; return true;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
 
 				Case 'selectedIndex'
 					$sScript = "return arguments[0].selectedIndex"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
-				Case 'selectedLabels'
+				Case 'selectedText'
 					$sScript = "var result =''; var options = arguments[0].selectedOptions; for (let i = 0; i < options.length; i++) {result += options[i].label + '\n'} return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
-						Local $aSelectedLabels[0]
-						_ArrayAdd($aSelectedLabels, StringStripWS($vResult, $STR_STRIPTRAILING), 0, @LF, "", $ARRAYFILL_FORCE_DEFAULT)
-						$vResult = $aSelectedLabels
-					EndIf
-
-				Case 'selectedOptions'
-					$sScript = "var result =''; var options = arguments[0].selectedOptions; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'} return result;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
-
-					If $iErr = $_WD_ERROR_Success Then
-						Local $aSelectedOptions[0][4]
-						_ArrayAdd($aSelectedOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
+						Local $aSelectedOptions[0]
+						_ArrayAdd($aSelectedOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, @LF, "", $ARRAYFILL_FORCE_DEFAULT)
 						$vResult = $aSelectedOptions
 					EndIf
 
@@ -1084,7 +1045,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$iErr = @error
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|value) $sCommand=>" & $sCommand), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Options|selectedIndex|selectedText|Value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
