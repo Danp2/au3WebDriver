@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- $_WD_JSON_* constants
+- $_WD_JSON\_* constants
 - Checks for valid installation directory (_WD_UpdateDriver)
 - Check for existing 32/64 bit driver (_WD_UpdateDriver)
 
@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sets @Extended to shown context changed (_WD_GetElementFromPoint)
 - Additional error checking (_WD_GetElementFromPoint)
 - _WD_ExecuteScript: Add support for return of additional subnodes
-- Update various functions to use $_WD_JSON_* constants
+- Update various functions to use $_WD_JSON\_* constants
 - _WD_GetBrowserVersion: Returns "0" on failure instead of "" `Script breaking change`
 - _WD_GetWebDriverVersion: Returns "0" on failure instead of "None" `Script breaking change`
 - Improved version comparison (_WD_UpdateDriver)
