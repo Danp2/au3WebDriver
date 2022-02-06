@@ -216,13 +216,14 @@ In case you use Firefox, the result should look similar to this:
 1577745817464   webdriver::server       DEBUG   <- 200 OK {"value":{"sessionId":"925641bf-6c5d-4fe2-a985-02de9b1c7c74","capabilities":"acceptInsecureCerts":true,"browserName":"firefox", ...
 ```
 
-</details><br>
+</details>
 
 More useful information following soon.
 
 ## Configuration
 
-Useful information about possible configurations following soon. In the meanwhile you could check the [FAQ](#faq) and the [AutoIt WebDriver discussion threads](#autoit-webdriver-discussion-threads).
+Useful information about possible configurations following soon.<br>
+In the meanwhile you could check the [FAQ](#faq) and the [AutoIt WebDriver discussion threads](#autoit-webdriver-discussion-threads).
 
 ## FAQ
 
@@ -552,7 +553,7 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/WebDri
 - Badges by [Shields](https://shields.io)
 - Thanks to the authors of the Third-Party UDFs
   - *Json UDF* by @Ward and @Jos
-  - *WinHTTP UDF* by @trancexx/[@dragana-r](https://github.com/@dragana-r)
+  - *WinHTTP UDF* by @trancexx/[@dragana-r](https://github.com/dragana-r)
   - *HtmlTable2Array UDF* by @Chimp
   - *WinHttp_WebSocket UDF* by @Danp2
 - Thanks to the maintainers
