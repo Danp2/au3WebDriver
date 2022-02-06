@@ -188,9 +188,9 @@ To automate your browser, follow the following steps.
 
 1. Download at least the mandatory [Third-Party UDFs](#preconditions).
 2. Move the UDFs to your project folder or to a directory where AutoIt can find them.
-    - All *wd_*.au3* files and the Third-Party UDFs *\*.au3* should be placed in the same directory.
+    - All *wd_\*.au3* files and the Third-Party UDFs *\*.au3* should be placed in the same directory.
     - Otherwise you have to adjust the `#include` statements in the files.
-3. Move your desired browser of choice to directory of the *wd_*.au3* files.
+3. Move your desired browser of choice to directory of the *wd_\*.au3* files.
     - chromedriver.exe (Chrome)
     - geckodriver.exe (Firefox)
     - msedgedriver.exe (Edge, chromium based) or MicrosoftWebDriver.exe (Edge, legacy EdgeHTML)
@@ -205,7 +205,7 @@ Run [wd_demo.au3](https://github.com/Danp2/WebDriver/blob/master/wd_demo.au3) an
 
 In case you use Firefox, the result should look similar to this:
 
-```
+``` log
 1577745813519   geckodriver     DEBUG   Listening on 127.0.0.1:4444
 1577745813744   webdriver::server       DEBUG   -> POST /session {"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}
 1577745813746   geckodriver::capabilities       DEBUG   Trying to read firefox version from ini files
@@ -216,11 +216,13 @@ In case you use Firefox, the result should look similar to this:
 1577745817464   webdriver::server       DEBUG   <- 200 OK {"value":{"sessionId":"925641bf-6c5d-4fe2-a985-02de9b1c7c74","capabilities":"acceptInsecureCerts":true,"browserName":"firefox", ...
 ```
 
-</details>
+</details><br>
+
+More useful information following soon.
 
 ## Configuration
 
-To be defined [...]
+Useful information about possible configurations following soon. In the meanwhile you could check the [FAQ](#faq) and the [AutoIt WebDriver discussion threads](#autoit-webdriver-discussion-threads).
 
 ## FAQ
 
@@ -550,13 +552,13 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/WebDri
 - Badges by [Shields](https://shields.io)
 - Thanks to the authors of the Third-Party UDFs
   - *Json UDF* by @Ward and @Jos
-  - *WinHTTP UDF* by @trancexx/@dragana-r
+  - *WinHTTP UDF* by @trancexx/[@dragana-r](https://github.com/@dragana-r)
   - *HtmlTable2Array UDF* by @Chimp
   - *WinHttp_WebSocket UDF* by @Danp2
 - Thanks to the maintainers
-  - Thanks to @Danp2 for the project idea and creation
-  - Thanks to @mLipok for his wd_capabilities.au3
-  - Big thanks to all the hard-working [contributors](https://github.com/Danp2/WebDriver/graphs/contributors)
+  - Thanks to [@Danp2](https://github.com/Danp2) for the project idea, creation and maintenance
+  - Thanks to [@mLipok](https://github.com/mLipok) for his *wd_capabilities.au3*
+  - **Big thanks** to all the hard-working [contributors](https://github.com/Danp2/WebDriver/graphs/contributors)
 
 ##
 
