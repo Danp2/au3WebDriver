@@ -261,7 +261,6 @@ Func _WD_Status()
 	Local Const $sFuncName = "_WD_Status"
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
 	Local $iErr = @error, $oResult = Null
-	#TODO $oResult rename
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
