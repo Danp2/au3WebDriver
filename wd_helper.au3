@@ -986,7 +986,6 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |OPTIONS        - Retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
-;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
 ;                  |VALUE          - Retrieves value of the first selected <option> element
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -1027,24 +1026,13 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
-				Case 'selectedLabels'
-					$sScript = "var result =''; var options = arguments[0].selectedOptions; for (let i = 0; i < options.length; i++) {result += options[i].label + '\n'} return result;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
-
-					If $iErr = $_WD_ERROR_Success Then
-						Local $aSelectedLabels[0]
-						_ArrayAdd($aSelectedLabels, StringStripWS($vResult, $STR_STRIPTRAILING), 0, @LF, "", $ARRAYFILL_FORCE_DEFAULT)
-						$vResult = $aSelectedLabels
-					EndIf
-
 				Case 'value'
 					$sScript = "return arguments[0].value"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(options|selectedIndex|selectedLabels|value) $sCommand=>" & $sCommand), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(options|selectedIndex|value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
