@@ -10,13 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
 - REVISIONS.md renamed to CHANGELOG.md and format updated
 - _WD_HighlightElements: Refactored for speed; now supports single or multiple elements
 
-### Fixed
-
 ### Deprecated
+
 - _WD_HighlightElement: Flagged as Deprecated and will be removed in a future release
+
+### Fixed
 
 ## [0.5.1.1] - 2022-01-31
 
@@ -786,6 +788,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
+[Unreleased]: https://github.com/Danp2/WebDriver/compare/0.5.1.1...HEAD
 [0.5.1.1]:    https://github.com/Danp2/WebDriver/compare/0.5.1.0...0.5.1.1
 [0.5.1.0]:    https://github.com/Danp2/WebDriver/compare/0.5.0.3...0.5.1.0
 [0.5.0.3]:    https://github.com/Danp2/WebDriver/compare/0.5.0.2...0.5.0.3
