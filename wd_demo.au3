@@ -181,7 +181,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	$sSession = _WD_CreateSession($sCapabilities)
 	If _RunDemo_ErrorHander((@error <> $_WD_ERROR_Success), @error, @extended, $iWebDriver_PID, $sSession) Then Return
 
-	Local $iError = $_WD_ERROR_Success
+	Local $iError = -1
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 		If $aDemoSuite[$iIndex][1] Then
 			ConsoleWrite("+ Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -204,7 +204,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 		EndIf
 	Next
 
-	_RunDemo_ErrorHander(True, @error, @extended, $iWebDriver_PID, $sSession)
+	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession)
 EndFunc   ;==>RunDemo
 
 Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, $sSession)
@@ -215,6 +215,8 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 			MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
 		Case $iError = $_WD_ERROR_UserAbort
 			MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
+		Case $iError = -1
+			MsgBox($MB_ICONINFORMATION, 'Demo stopped!', 'Please select any Demo to run')
 		Case Else
 			ConsoleWrite("! $iError = " & $iError & @CRLF)
 			ConsoleWrite("! $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
