@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - _WD_JsonActionKey, _WD_JsonActionPause, and _WD_JsonActionPointer functions
+- _WD_ElementActionEx: Support for 'click' action
 - wd_demo.au3
 	- "update" option
 	- "headless" option
@@ -32,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- _WD_ElementActionEx: Added support for 'click' action
 - _WD_UpdateDriver: Attempts to identify current architecture if $bFlag64 is Default.
 - __WD_DetectError: Detect "no such alert"
 - _WD_ElementSelectAction: Performance of "Options" significantly improved by reducing Webdriver calls
@@ -75,10 +75,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0.3] - 2021-12-27
 
+### Added
+
+- _WD_ElementActionEx: Support for "check" and "uncheck" commands (TheDcoder)
+
 ### Changed
 
 - _WD_ExecuteScript: Optionally return value node instead of entire JSON response (mLipok)
-- _WD_ElementActionEx: Added support for "check" and "uncheck" commands (TheDcoder)
 - _WD_GetElementFromPoint: Added support for frames
 
 ### Fixed
@@ -90,12 +93,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- _WD_Capabilities: Support for "binary" option (mLipok)
 - CHM help file (water)
-- wd_demo.au3: Added DemoSleep routine (mLipok)
+- wd_demo.au3: DemoSleep routine (mLipok)
 
 ### Changed
 
-- _WD_Capabilities: Added support for "binary" option (mLipok)
 - _WD_Startup: Detect webdriver console exiting with error when launched
 
 ### Fixed
@@ -110,10 +113,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - _WD_Capabilities functions (mLipok)
+- _WD_UpdateDriver: Ability to check for newer webdriver without performing update
 
 ### Changed
 
-- _WD_UpdateDriver: Added ability to check for newer webdriver without performing update
 - __WD_Sleep: Set @error to $_WD_ERROR_UserAbort in case of error (mLipok)
 - Updated wd_demo.au3 (mLipok)
 	- Au3Check compatibility
@@ -145,7 +148,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - __WD_Sleep
-- _WD_Option: Added support for "Sleep" option
+- _WD_Option: Support for "Sleep" option
 
 ### Changed
 
@@ -164,13 +167,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added: _WD_GetCDPSettings
+- _WD_GetCDPSettings
+- _WD_Option: Support for "DefaultTimeout" option (mLipok)
 
 ### Changed
 
 - Moved CDP-related functions to separate file (wd_cdp.au3)
 - _WD_ExecuteCDPCommand: Now supports additional browsers via WebSockets
-- _WD_Option: Added support for "DefaultTimeout" option (mLipok)
 
 ## [0.4.0.5] - 2021-07-09
 
@@ -223,13 +226,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _WD_GetSession
 - _WD_ElementActionEx: modifierclick option
+- _WD_ElementActionEx: childCount action
+- _WD_SetElementValue: Added "advanced" option
 
 ### Changed
 
 - _WD_FrameEnter: Allow Null as valid index value
-- _WD_ElementActionEx: Added support for childCount action
 - _WD_WaitElement: Switch to single parameter for options `Script breaking change`
-- _WD_SetElementValue: Added "advanced" option
 
 ### Fixed
 
@@ -240,11 +243,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - _WD_PrintToPDF
+- _WD_ElementActionEx: 'hide' and 'show' options
+- _WD_ElementAction: Shadow, CompRole & CompLabel actions
 
 ### Changed
 
-- _WD_ElementActionEx: Added 'hide' and 'show' options
-- _WD_ElementAction: Added support for Shadow, CompRole & CompLabel actions
 - _WD_GetShadowRoot: Use _WD_ElementAction instead of _WD_ExecuteScript
 - _WD_NewTab: Use native Webdriver commands when Javascript isn't required
 - _WD_FindElement: Support shadow roots
@@ -269,7 +272,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- _WD_WaitElement: Added optional parameter to return element instead of 0/1
+- _WD_WaitElement: Optional parameter to return element instead of 0/1
 
 ### Changed
 
@@ -301,18 +304,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0.8] - 2020-08-28
 
+### Added
+
+- _WD_WaitElement: Optional parameter to check elements enabled status
+- _WD_GetTable: Optionally support faster _HtmlTableGetWriteToArray
+
 ### Changed
 
-- _WD_WaitElement: Added optional parameter to check elements enabled status
-- _WD_GetTable: Optionally support faster _HtmlTableGetWriteToArray
 - _WD_ElementAction: Allow retrieving element value with the 'value' command
 - Modified #include usage
 
 ## [0.3.0.7] - 2020-08-21
 
+### Added
+
+- _WD_Option: "console" option
+
 ### Changed
 
-- _WD_Option: Added support for "console" option
 - Allow logging to file instead of default console
 
 ### Fixed
@@ -608,7 +617,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Add support for Unicode text to _WD_ElementAction's "value" option
+- _WD_ElementAction: Add support for Unicode text to "value" option
 
 ### Fixed
 
@@ -644,7 +653,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _WD_HighlightElement (Danyfirex)
 - _WD_HighlightElements (Danyfirex)
-- _WD_NewTab: Timeout parameter added
+- _WD_NewTab: Timeout parameter
 
 ### Fixed
 
