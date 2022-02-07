@@ -25,9 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - _WD_JsonActionKey, _WD_JsonActionPause, and _WD_JsonActionPointer functions
-- wd_demo.au3: "update" option
-- wd_demo.au3: "headless" option
-- wd_demo.au3: DemoPrint routine
+- wd_demo.au3
+	- "update" option
+	- "headless" option
+	- DemoPrint routine
 
 ### Changed
 
@@ -35,10 +36,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - _WD_UpdateDriver: Attempts to identify current architecture if $bFlag64 is Default.
 - __WD_DetectError: Detect "no such alert"
 - _WD_ElementSelectAction: Performance of "Options" significantly improved by reducing Webdriver calls
-- Improved console output in DemoScript (wd_demo.au3)
-- Display screenshots in DemoWindows (wd_demo.au3)
-- Improved console output & in DemoAlerts (wd_demo.au3)
-- Corrected 'sendtext' coding in DemoAlerts (wd_demo.au3)
+- wd_demo.au3
+	- Improved console output in DemoScript
+	- Display screenshots in DemoWindows
+	- Improved console output & in DemoAlerts
+	- Corrected 'sendtext' coding in DemoAlerts
 
 ### Fixed
 
@@ -50,25 +52,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - $_WD_JSON\_* constants
-- Checks for valid installation directory (_WD_UpdateDriver)
-- Check for existing 32/64 bit driver (_WD_UpdateDriver)
+- _WD_UpdateDriver: Checks for valid installation directory
+- _WD_UpdateDriver: Check for existing 32/64 bit driver
 
 ### Changed
 
-- Sets @Extended to shown context changed (_WD_GetElementFromPoint)
-- Additional error checking (_WD_GetElementFromPoint)
+- _WD_GetElementFromPoint: Sets @Extended to shown context changed
+- _WD_GetElementFromPoint: Additional error checking
 - _WD_ExecuteScript: Add support for return of additional subnodes
 - Update various functions to use $_WD_JSON\_* constants
 - _WD_GetBrowserVersion: Returns "0" on failure instead of "" `Script breaking change`
 - _WD_GetWebDriverVersion: Returns "0" on failure instead of "None" `Script breaking change`
-- Improved version comparison (_WD_UpdateDriver)
-- Improved zip extraction (_WD_UpdateDriver)
+- _WD_UpdateDriver: Improved version comparison
+- _WD_UpdateDriver: Improved zip extraction
 - _WD_Screenshot: Improved error handling
 
 ### Fixed
 
-- $bForce / $KEYWORD_NULL implementation (_WD_UpdateDriver)
-- Regex used with geckodriver (_WD_UpdateDriver)
+- _WD_UpdateDriver: $bForce / $KEYWORD_NULL implementation
+- _WD_UpdateDriver: Regex used with geckodriver
 - _WD_GetShadowRoot, _WD_SelectFiles, _WD_SetTimeouts: Correctly initialize return value
 
 ## [0.5.0.3] - 2021-12-27
@@ -89,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - CHM help file (water)
-- Added DemoSleep routine (wd_demo.au3) (mLipok)
+- wd_demo.au3: Added DemoSleep routine (mLipok)
 
 ### Changed
 
@@ -99,8 +101,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Updated function headers (water)
-- Changed GUI background color for better visibility in Windows 11 (wd_demo.au3) (mLipok)
-- Disable "Run Demo" button during demo execution (wd_demo.au3)
+- wd_demo.au3
+	- Changed GUI background color for better visibility in Windows 11
+	- Disable "Run Demo" button during demo execution
 
 ## [0.5.0.1] - 2021-12-03
 
@@ -111,11 +114,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - _WD_UpdateDriver: Added ability to check for newer webdriver without performing update
-- Updated wd_demo.au3 (mLipok)
-- Au3Check compatibility (wd_demo.au3)
-- Script no longer exits after running selected demos (wd_demo.au3)
-- Demonstrate usage of new _WD_Capabilities functions (wd_demo.au3)
 - __WD_Sleep: Set @error to $_WD_ERROR_UserAbort in case of error (mLipok)
+- Updated wd_demo.au3 (mLipok)
+	- Au3Check compatibility
+	- Script no longer exits after running selected demos
+	- Demonstrate usage of new _WD_Capabilities functions
 
 ## [0.4.1.2] - 2021-10-25
 
@@ -127,15 +130,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _WD_ExecuteCDPCommand: Added http status check
 - __WD_DetectError: Detect unknown end point
-- Rename functions so that they begin with _WD_CDP (wd_cdp.au3)
-- Tidy code (wd_cdp.au3)
+- wd_cdp.au3: Rename functions so that they begin with _WD_CDP
 
 ### Fixed
 
 - _WD_NewTab: Return error on _WD_Window failure
 - _WD_IsLatestRelease
-- Update regex (_WD_IsLatestRelease)
-- Return $_WD_ERROR_Exception if regex fails (_WD_IsLatestRelease)
+	- Update regex
+	- Return $_WD_ERROR_Exception if regex fails
 
 
 ## [0.4.1.1] - 2021-08-31
@@ -143,22 +145,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - __WD_Sleep
-- Remark to _WD_GetSession
+- _WD_Option: Added support for "Sleep" option
 
 ### Changed
 
 - _WD_UpdateDriver: Improve error handling (seadoggie01)
-- _WD_Option: Added support for "Sleep" option
+- _WD_GetSession: Remark to
 - Use __WD_Sleep instead of Sleep in "helper" functions
-- Call correct Base64 decode function (wd_demo.au3)
+- wd_demo.au3: Call correct Base64 decode function
+- wd_demo.au3: Remove "binary" portion of MS Edge Capabilities string
 
 ### Fixed
 
 - _WD_NewTab: Properly detect $sCurrentTabHandle retrieval
 
-### Removed
-
-- Remove "binary" portion of MS Edge Capabilities string (wd_demo.au3)
 
 ## [0.4.1.0] - 2021-07-28
 
@@ -221,8 +221,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added: _WD_GetSession
-- Added: modifierclick (_WD_ElementActionEx)
+- _WD_GetSession
+- _WD_ElementActionEx: modifierclick option
 
 ### Changed
 
@@ -233,7 +233,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- doubleclick and clickandhold now honor button parameter (_WD_ElementActionEx)
+- _WD_ElementActionEx: doubleclick and clickandhold now honor button parameter
 
 ## [0.4.0.1] - 2021-01-17
 
@@ -258,7 +258,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update DemoFrames example (wd_demo.au3)
+- wd_demo.au3: Update DemoFrames example
 
 ### Fixed
 
@@ -273,10 +273,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Cleanup (_WD_DownloadFile)
-- Revise error list in header (_WD_DownloadFile)
-- Remove leftover $_WD_HTTPRESULT coding (_WD_DownloadFile)
-- Return $_WD_ERROR_NotFound instead of $_WD_ERROR_InvalidValue (_WD_DownloadFile)
+- _WD_DownloadFile Cleanup
+	- Revise error list in header
+	- Remove leftover $_WD_HTTPRESULT coding
+	- Return $_WD_ERROR_NotFound instead of $_WD_ERROR_InvalidValue
 - Update function headers (Danp2 and seadoggie01)
 
 ### Fixed
@@ -290,9 +290,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _WD_GetTable: Filter html elements by default when using _HtmlTableGetWriteToArray
 - _WD_DownloadFile: Add $iOptions parameter
-- Update binary location of Edge browser (wd_demo.au3)
-- Update DemoDownload example (wd_demo.au3)
-- Misc updates (wd_demo.au3)
+- wd_demo.au3
+	- Update binary location of Edge browser
+	- Update DemoDownload example
+	- Misc updates
 
 ### Fixed
 
@@ -441,13 +442,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- DemoUpload
+- wd_demo.au3: DemoUpload
 
 ### Changed
 
 - _WD_ElementAction handling of return status codes
 - File separator is now @LF in _WD_SelectFiles
-- wd_demo
 - Update description of parameters in _WD_ConsoleVisible
 
 ### Fixed
@@ -467,12 +467,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _WD_DownloadFile
 - Global variable to hold session details
-- GUI front-end (wd_demo)
-- DemoDownload (wd_demo)
+- wd_demo.au3
+	- GUI front-end 
+	- DemoDownload
 
 ### Changed
 
-- DemoWindows, DemoTimeouts, DemoElements (wd_demo)
+- wd_demo.au3: DemoWindows, DemoTimeouts, DemoElements
 
 ### Fixed
 
