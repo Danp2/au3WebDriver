@@ -5,6 +5,19 @@ All notable changes to "WebDriver" will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+### Changed
+- REVISIONS.md renamed to CHANGELOG.md and format updated
+- _WD_HighlightElements: Refactored for speed; now supports single or multiple elements
+
+### Fixed
+
+### Deprecated
+- _WD_HighlightElement: Flagged as Deprecated and will be removed in a future release
+
 ## [0.5.1.1] - 2022-01-31
 
 ### Added
@@ -95,7 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Changed (_WD_UpdateDriver): Added ability to check for newer webdriver without performing update
+- _WD_UpdateDriver: Added ability to check for newer webdriver without performing update
 - Updated wd_demo.au3 (mLipok)
 - Au3Check compatibility (wd_demo.au3)
 - Script no longer exits after running selected demos (wd_demo.au3)
