@@ -213,9 +213,9 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 	Switch $iError
 		Case $_WD_ERROR_Success
 			MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
-		Case $iError = $_WD_ERROR_UserAbort
+		Case $_WD_ERROR_UserAbort
 			MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
-		Case $iError = -1
+		Case -1
 			MsgBox($MB_ICONINFORMATION, 'Demo stopped!', 'Please select any Demo to run')
 		Case Else
 			ConsoleWrite("! $iError = " & $iError & @CRLF)
