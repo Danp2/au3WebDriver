@@ -191,37 +191,34 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 				Call($aDemoSuite[$iIndex][0])
 			EndIf
 			$iError = @error
-			If $iError = $_WD_ERROR_UserAbort Then
-				ConsoleWrite("- Aborted: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				ExitLoop
-			ElseIf $iError Then
-				ConsoleWrite("! Error: " & $aDemoSuite[$iIndex][0] & @CRLF)
-				ExitLoop
-			EndIf
+			If $iError <> $_WD_ERROR_Success Then ExitLoop
 			ConsoleWrite("+ Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
 		Else
 			ConsoleWrite("> Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
 		EndIf
 	Next
 
-	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession)
+	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $iIndex)
 EndFunc   ;==>RunDemo
 
-Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, $sSession)
+Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, $sSession, $iDemoIndex = Default)
 	If Not $bForceDispose Then Return SetError($iError, $iExtended, $bForceDispose)
+	Local $sDemoName = "Demo"
+	If IsInt($iDemoIndex) And $iDemoIndex > -1 And $iDemoIndex < UBound($aDemoSuite, $UBOUND_ROWS) Then $sDemoName = $aDemoSuite[$iDemoIndex][0]
 
 	Switch $iError
 		Case $_WD_ERROR_Success
 			MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
 		Case $_WD_ERROR_UserAbort
-			MsgBox($MB_ICONINFORMATION, 'Demo aborted!', 'Click "Ok" button to shutdown the browser and console')
+			ConsoleWrite("- Aborted: " & $sDemoName & @CRLF)
+			MsgBox($MB_ICONINFORMATION, $sDemoName & ' aborted!', 'Click "Ok" button to shutdown the browser and console')
 		Case -1
 			MsgBox($MB_ICONINFORMATION, 'Demo stopped!', 'Please select any Demo to run')
 		Case Else
-			ConsoleWrite("! $iError = " & $iError & @CRLF)
+			ConsoleWrite("! Error = " & $iError & " occured on: " & $sDemoName & @CRLF)
 			ConsoleWrite("! $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
 			ConsoleWrite("! $_WD_SESSION_DETAILS = " & $_WD_SESSION_DETAILS & @CRLF)
-			MsgBox($MB_ICONERROR, 'Demo error!', 'Check logs')
+			MsgBox($MB_ICONERROR, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
 
 	If $sSession Then _WD_DeleteSession($sSession)
