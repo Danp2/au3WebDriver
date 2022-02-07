@@ -208,9 +208,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - _WD_SetElementValue: Corrected leftover $iMethod reference
-- _WD_FrameEnter Properly handle Null index (mLipok)
-- _WD_SelectFiles Properly set value of $sFuncName (mLipok)
-- _WD_ElementActionEx Properly terminate JSON string
+- _WD_FrameEnter: Properly handle Null index (mLipok)
+- _WD_SelectFiles: Properly set value of $sFuncName (mLipok)
+- _WD_ElementActionEx: Properly terminate JSON string
 
 ### Removed
 
@@ -430,13 +430,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Remove check for invalid status codes from _WD_Alert
-- Hide debug output in _WD_IsLatestRelease
-- Expanded error handling in _WD_ElementAction
+- _WD_Alert: Remove check for invalid status codes
+- _WD_IsLatestRelease: Hide debug output
+- _WD_ElementAction: Expanded error handling
 
 ### Fixed
 
-- Default variable initialization in _WD_ElementOptionSelect
+- _WD_ElementOptionSelect: Default variable initialization
 
 ## [0.2.0.6] - 2020-02-19
 
@@ -446,13 +446,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- _WD_ElementAction handling of return status codes
-- File separator is now @LF in _WD_SelectFiles
-- Update description of parameters in _WD_ConsoleVisible
+- _WD_ElementAction: Handling of return status codes
+- _WD_SelectFiles: File separator is now @LF
+- _WD_ConsoleVisible: Update description of parameters
 
 ### Fixed
 
-- Proper string escaping in _WD_SelectFiles
+- _WD_SelectFiles: Proper string escaping
 
 ## [0.2.0.5] - 2020-01-18
 
@@ -514,27 +514,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Added backslash to list of characters to escape
-- Modified _WD_jQuerify with additional parameters for timeout / alternate jQuery source
+- _WD_jQuerify: Additional parameters for timeout / alternate jQuery source
 
 ### Fixed
 
-- Additional error checking in _WD_WaitElement
+- _WD_WaitElement: Additional error checking
 - Standardize coding of frame related functions
 
 ## [0.1.0.21] - 2019-09-10
 
 ### Fixed
 
-- 'maximize', 'minimize', 'fullscreen' options now work correctly in _WD_Window
+- _WD_Window: 'maximize', 'minimize', 'fullscreen' options now work correctly
 - Prevent runtime error dialog from appearing when function call succeeded
 
 ## [0.1.0.20] - 2019-07-14
 
 ### Fixed
 
-- Escape string passed to _WD_ElementAction when setting element's value
-- Return value from _WD_Window should be "" on error
-- Current tab handling in _WD_Attach
+- _WD_ElementAction: Escape string when setting element's value
+- _WD_Window: Return value should be "" on error
+- _WD_Attach: Current tab handling
 
 ## [0.1.0.19] - 2019-05-13
 
@@ -570,12 +570,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - _WD_Screenshot
+- _WD_ElementAction: Add 'Screenshot' option
 
 ### Changed
 
-- Add 'Screenshot' option to _WD_ElementAction
-- Extract JSON value when taking screenshot in _WD_Window
-- Rework coding of _WD_ElementAction
+- _WD_Window: Extract JSON value when taking screenshot
+- _WD_ElementAction: Rework coding
 
 ### Fixed
 
@@ -585,15 +585,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0.16] - 2018-11-21
 
+### Added
+
+- _WD_ExecuteScript: Add async support
+
 ### Changed
 
-- Add async support to _WD_ExecuteScript
-- Add debug info to _WD_GetMouseElement
+- _WD_GetMouseElement: Add debug info
 
 ### Fixed
 
-- Set element value in _WD_ElementAction
-- Prevent premature exit in _WD_WaitElement
+- _WD_ElementAction: Set element value
+- _WD_WaitElement: Prevent premature exit
 - ChromeDriver now uses goog:chromeOptions
 
 ## [0.1.0.15] - 2018-09-15
@@ -601,11 +604,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - _WD_LoadWait
+- _WD_Option: Add support for BinaryFormat option
 
 ### Changed
 
 - Add support for Unicode text to _WD_ElementAction's "value" option
-- Add support for BinaryFormat option to _WD_Option
 
 ### Fixed
 
@@ -613,22 +616,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0.14] - 2018-09-13
 
-- Improve error handling in _WD_NewTab
-- Screenshot option in _WD_Window
+### Fixed
+
+- _WD_NewTab: Improve error handling
+- _WD_Window: Screenshot option
 - Close handles in __WD_Get, __WD_Post, __WD_Delete
 
 ## [0.1.0.13] - 2018-08-06
 
+### Added
+
+- _WD_ElementAction: Add support for 'displayed' option (BigDaddyO)
+
 ### Changed
 
-- Add support for 'displayed' option in _WD_ElementAction (BigDaddyO)
-- Add $lVisible parameter to _WD_WaitElement
+- _WD_WaitElement: Add $lVisible parameter
 - $_WD_DEBUG now defaults to $_WD_DEBUG_Info
 
 ### Fixed
 
 - Remove unsupported locator constants
-- Return value of _WD_WaitElement
+- _WD_WaitElement: Correct return value
 
 ## [0.1.0.12] - 2018-07-12
 
@@ -636,14 +644,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - _WD_HighlightElement (Danyfirex)
 - _WD_HighlightElements (Danyfirex)
-
-### Changed
-
-- Modified _WD_NewTab with timeout parameter
+- _WD_NewTab: Timeout parameter added
 
 ### Fixed
 
-- Correctly set @error in _WD_ExecuteScript
+- _WD_ExecuteScript: Correctly set @error
 
 ## [0.1.0.11] - 2018-06-28
 
@@ -656,12 +661,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Modified _WD_FindElement to use new global constant
+- _WD_FindElement: Use new global constant
 
 ### Fixed
 
-- _WD_GetMouseElement JSON processing
-- _WD_GetElementFromPoint JSON processing
+- _WD_GetMouseElement: JSON processing
+- _WD_GetElementFromPoint: JSON processing
 
 ## [0.1.0.10] - 2018-05-13
 
@@ -671,8 +676,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Add support for non-standard error codes in _WD_Alert
-- Detect non-present alert in _WD_Alert
+- _WD_Alert: Add support for non-standard error codes
+- _WD_Alert: Detect non-present alert
 - __WD_Error coding
 
 ### Fixed
@@ -688,8 +693,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Force command parameter to lowercase in _WD_Action
-- Enhanced error checking in _WD_FindElement
+- _WD_Action: Force command parameter to lowercase
+- _WD_FindElement: Enhanced error checking
 
 ## [0.1.0.8] - 2018-02-11
 
@@ -700,13 +705,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improve error handling in _WD_Attach
+- _WD_Attach: Improve error handling
 
 ### Fixed
 
-- Missing "window" in URL for _WD_Window
-- Header entry for _WD_Option
-- _WD_Window implementation of Maximize, Minimize, Fullscreen, & Screenshot
+- _WD_Window: Missing "window" in URL
+- _WD_Option: Header entry
+- _WD_Window: Implementation of Maximize, Minimize, Fullscreen, & Screenshot
 
 ### Removed
 
@@ -717,18 +722,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - _WD_WaitElement
+- _WD_Action: Implemented "Actions" command
 
 ### Changed
 
-- Add $sOption parameter to _WD_Action
-- Implemented "Actions" command in _WD_Action
-- Improved error handling in _WD_FindElement
+- _WD_Action: Add $sOption parameter
+- _WD_FindElement: Improved error handling
 
 ## [0.1.0.6] - 2018-02-01
 
 ### Changed
 
-- _WD_Attach error handling
+- _WD_Attach: Error handling
 
 ### Fixed
 
@@ -749,7 +754,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Renamed core UDF functions
-- _WD_FindElement now returns multiple elements as an array instead of raw JSON
+- _WD_FindElement: Returns multiple elements as an array instead of raw JSON
 
 ## [0.1.0.3] - 2018-01-25
 
@@ -759,10 +764,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Renamed UDF files
-- Expanded _WDAlert functionality
+- _WDAlert: Expanded functionality
+- _WDExecuteScript: Support parameters
 - Check for timeout in __WD_Post
-- Support parameters in _WDExecuteScript
+- Renamed UDF files
 
 ### Fixed
 
