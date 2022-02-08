@@ -140,7 +140,11 @@ Func _WD_Demo()
 					EndIf
 				Next
 				_ArraySearch($aDemoSuite, True, Default, Default, Default, Default, Default, 1)
-				GUICtrlSetState($idButton_Run, @error ? $GUI_DISABLE : $GUI_ENABLE)
+				If @error Then
+					If BitAND(GUICtrlGetState($idButton_Run), $GUI_ENABLE) Then GUICtrlSetState($idButton_Run, $GUI_DISABLE)
+				Else
+					If BitAND(GUICtrlGetState($idButton_Run), $GUI_DISABLE) Then GUICtrlSetState($idButton_Run, $GUI_ENABLE)
+				EndIf
 		EndSwitch
 	WEnd
 
