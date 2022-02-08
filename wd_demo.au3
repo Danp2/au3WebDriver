@@ -205,7 +205,7 @@ EndFunc   ;==>RunDemo
 Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, $sSession, $iDemoIndex = Default)
 	If Not $bForceDispose Then Return SetError($iError, $iExtended, $bForceDispose)
 	Local $sDemoName = "Demo"
-	If IsInt($iDemoIndex) And $iDemoIndex > -1 And $iDemoIndex < UBound($aDemoSuite, $UBOUND_ROWS) Then $sDemoName = $aDemoSuite[$iDemoIndex][0]
+	If IsInt($iDemoIndex) And $iDemoIndex < UBound($aDemoSuite, $UBOUND_ROWS) Then $sDemoName = $aDemoSuite[$iDemoIndex][0]
 
 	Switch $iError
 		Case $_WD_ERROR_Success
