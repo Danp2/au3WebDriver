@@ -945,7 +945,7 @@ EndFunc   ;==>_WD_Alert
 ; Description ...: Get page source.
 ; Syntax ........: _WD_GetSource($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - Source code from page.
+; Return values .: Success - Source HTML code from page as string serialization of the DOM of the current browsing context active document.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ; Author ........: Danp2
