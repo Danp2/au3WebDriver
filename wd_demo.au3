@@ -137,9 +137,10 @@ Func _WD_Demo()
 				For $i = 0 To $iCount - 1
 					If $aCheckboxes[$i] = $nMsg Then
 						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
+						_ArraySearch($aDemoSuite, True, Default, Default, Default, Default, Default, 1)
+						GUICtrlSetState($idButton_Run, @error ? $GUI_DISABLE : $GUI_ENABLE)
 					EndIf
 				Next
-
 		EndSwitch
 	WEnd
 
@@ -181,7 +182,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	$sSession = _WD_CreateSession($sCapabilities)
 	If _RunDemo_ErrorHander((@error <> $_WD_ERROR_Success), @error, @extended, $iWebDriver_PID, $sSession) Then Return
 
-	Local $iError = -1
+	Local $iError
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 		If $aDemoSuite[$iIndex][1] Then
 			ConsoleWrite("+ Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
@@ -212,8 +213,6 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		Case $_WD_ERROR_UserAbort
 			ConsoleWrite("- Aborted: " & $sDemoName & @CRLF)
 			MsgBox($MB_ICONINFORMATION, $sDemoName & ' aborted!', 'Click "Ok" button to shutdown the browser and console')
-		Case -1
-			MsgBox($MB_ICONINFORMATION, 'Demo stopped!', 'Please select any Demo to run')
 		Case Else
 			ConsoleWrite("! Error = " & $iError & " occured on: " & $sDemoName & @CRLF)
 			ConsoleWrite("! $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
