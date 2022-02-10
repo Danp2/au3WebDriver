@@ -366,7 +366,7 @@ Useful information about possible configurations following soon.<br>
   <br></p></details>
 
   <details>
-  <summary><code>8. How to run the browser in headless mode</code></summary><p>
+  <summary><code>8. How to run the browser in headless mode (hidden mode)</code></summary><p>
 
   **Q:** How do I run the browser in "headless" mode?<br>
   **A:** This is controlled by the Capabilities string that is passed to _WD_CreateSession. Example:
@@ -380,8 +380,8 @@ Useful information about possible configurations following soon.<br>
   <details>
   <summary><code>9. How to configure the UDF to call a user-defined Sleep function</code></summary><p>
 
-  **Q:** How to configure the UDF to call a user-defined Sleep function, and interact with _WD_WaitElement() and _WD_LoadWait() to make the script more responsive? <br>
-  **A:** Try to use _WD_Option("Sleep"), example:
+  **Q:** How to configure the UDF to call a user-defined Sleep function, and interact with _WD_WaitElement() and _WD_LoadWait() to make the script more responsive?<br>
+  **A:** Try to use _WD_Option("Sleep"). Example:
 
   ``` autoit
   #include <ButtonConstants.au3>
@@ -498,24 +498,38 @@ Useful information about possible configurations following soon.<br>
   <br></p></details>
 
   <details>
-  <summary><code>11. What is a Selector?</code></summary><p>
+  <summary><code>11. What are "Locator strategy" and " Selector"?</code></summary><p>
 
-  **Q:** What are selectors?<br>
-  **A:** ...
+  **Q:** What is a "Locator strategy"?<br>
+  **A:** Location strategies are used as a way to find element in HTML DOM. They instruct the remote end which method to use to find an element using the provided locator. Location strategies are used in _WD_FindElement() from wd_core.au3 UDF and all functions form wd_helper.au3 which relates on them.
 
-  **Q:** What kind of selector could be used with WebDriver UDF?<br>
-  **A:** ...
+  **Q:** What is a Selector?<br>
+  **A:** Selector is a string that describes how the chosen "Locator strategy" should find the element.
+
+  **Q:** What kind of "Locator strategy" could be used with WebDriver UDF?<br>
+  **A:** This UDF supports all locators defined in the Webdriver specifications. Below is a listing of predefined constants:
+
+| Locator strategy               | Description how to use "Selector"                                                                                                                                                                                                                     |
+| :---                           | :---                                                                                                                                                                                                                                                  |
+| $_WD_LOCATOR_ByCSSSelector     | CSSSelector string (definded by [W3C](https://www.w3.org/TR/CSS21/selector.html)). In CSS, pattern matching rules determine which style rules apply to elements in the HTML DOM document tree.                                                        |
+| $_WD_LOCATOR_ByXPath           | XPath string (definded by [W3C](https://www.w3.org/TR/1999/REC-xpath-19991116)) is a language for addressing parts of an XML document, designed to be used by both XSLT and XPointer, and is used to find element through the HTML DOM document tree. |
+| $_WD_LOCATOR_ByLinkText        | String with exact text of \<a> element, which should be used to locate the proper \<a> element                                                                                                                                                        |
+| $_WD_LOCATOR_ByPartialLinkText | String with partial text of \<a> element, which should be used to locate the proper \<a> element                                                                                                                                                      |
+| $_WD_LOCATOR_ByTagName         | String which match the desired element tag name, for example "button" is tag name of this element: \<button name="ClickMe">                                                                                                                           |
 
   **Q:** Where I can find information about "XPath" usage?<br>
-  **A:** ...
+  **A:** https://www.w3.org/TR/1999/REC-xpath-19991116
+  **A:** https://developer.mozilla.org/en-US/docs/Web/XPath
 
   **Q:** Where I can find information about "CSSSelector" usage?<br>
-  **A:** ...
+  **A:** https://www.w3.org/TR/CSS21/selector.html
+  **A:** https://www.w3schools.com/cssref/css_selectors.asp
+  **A:** https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors
 
   **Q:** How I can check XPath and CSSSelector in browser?<br>
-  **A:** ...
+  **A:** Work in progress [...]
 
-  **Q:** How I can improve my work with XPath- and CSS-Selectors?<br>
+  **Q:** How I can improve my work with XPath and CSSSelector?<br>
   **A:** Take a look for additionall tools like [ChroPath](https://autonomiq.io/deviq-chropath.html) or [SelectorsHub](https://selectorshub.com/).
 
   <br></p></details>
