@@ -17,6 +17,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - REVISIONS.md renamed to CHANGELOG.md and format updated
 - _WD_HighlightElements: Refactored for speed; now supports single or multiple elements
+- README.md restruturing.
 
 ### Deprecated
 
