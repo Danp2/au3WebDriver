@@ -129,8 +129,16 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
+				GUICtrlSetState($idBrowsers, $GUI_DISABLE)
+				GUICtrlSetState($idDebugging, $GUI_DISABLE)
+				GUICtrlSetState($idUpdate, $GUI_DISABLE)
+				GUICtrlSetState($idHeadless, $GUI_DISABLE)
 				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
 				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
+				GUICtrlSetState($idBrowsers, $GUI_ENABLE)
+				GUICtrlSetState($idDebugging, $GUI_ENABLE)
+				GUICtrlSetState($idUpdate, $GUI_ENABLE)
+				GUICtrlSetState($idHeadless, $GUI_ENABLE)
 				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
 
 			Case Else
