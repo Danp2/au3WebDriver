@@ -182,30 +182,29 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	$sSession = _WD_CreateSession($sCapabilities)
 	If _RunDemo_ErrorHander((@error <> $_WD_ERROR_Success), @error, @extended, $iWebDriver_PID, $sSession) Then Return
 
-	Local $iError
+	Local $iError, $sDemoName
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
+		$sDemoName = $aDemoSuite[$iIndex][0]
 		If $aDemoSuite[$iIndex][1] Then
-			ConsoleWrite("+ Running: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			ConsoleWrite("+ Running: " & $sDemoName & @CRLF)
 			If $aDemoSuite[$iIndex][2] Then
-				Call($aDemoSuite[$iIndex][0], $sBrowser)
+				Call($sDemoName, $sBrowser)
 			Else
-				Call($aDemoSuite[$iIndex][0])
+				Call($sDemoName)
 			EndIf
 			$iError = @error
 			If $iError <> $_WD_ERROR_Success Then ExitLoop
-			ConsoleWrite("+ Finished: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			ConsoleWrite("+ Finished: " & $sDemoName & @CRLF)
 		Else
-			ConsoleWrite("> Bypass: " & $aDemoSuite[$iIndex][0] & @CRLF)
+			ConsoleWrite("> Bypass: " & $sDemoName & @CRLF)
 		EndIf
 	Next
 
-	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $iIndex)
+	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $sDemoName)
 EndFunc   ;==>RunDemo
 
-Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, $sSession, $iDemoIndex = Default)
+Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, $sSession, $sDemoName = 'Demo')
 	If Not $bForceDispose Then Return SetError($iError, $iExtended, $bForceDispose)
-	Local $sDemoName = "Demo"
-	If IsInt($iDemoIndex) And $iDemoIndex < UBound($aDemoSuite, $UBOUND_ROWS) Then $sDemoName = $aDemoSuite[$iDemoIndex][0]
 
 	Switch $iError
 		Case $_WD_ERROR_Success
