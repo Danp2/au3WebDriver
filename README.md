@@ -5,13 +5,15 @@
     <h2 align="center">Welcome to <code>WebDriver</code> through AutoIt</h2>
 </p>
 
-![license](https://img.shields.io/badge/license-MIT-ff69b4.svg?style=flat-square&logo=spdx)
-![contributors](https://img.shields.io/github/contributors/Danp2/WebDriver.svg?style=flat-square&logo=github)
+[![license](https://img.shields.io/badge/license-MIT-ff69b4.svg?style=flat-square&logo=spdx)](https://github.com/Danp2/WebDriver/blob/master/LICENSE)
+[![contributors](https://img.shields.io/github/contributors/Danp2/WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/WebDriver/graphs/contributors)
 ![repo size](https://img.shields.io/github/repo-size/Danp2/WebDriver.svg?style=flat-square&logo=github)
-![last commit](https://img.shields.io/github/last-commit/Danp2/WebDriver.svg?style=flat-square&logo=github)
-![release](https://img.shields.io/github/release/Danp2/WebDriver.svg?style=flat-square&logo=github)
+[![last commit](https://img.shields.io/github/last-commit/Danp2/WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/WebDriver/commits/master)
+[![release](https://img.shields.io/github/release/Danp2/WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/WebDriver/releases/latest)
 ![os](https://img.shields.io/badge/os-windows-yellow.svg?style=flat-square&logo=windows)
 ![stars](https://img.shields.io/github/stars/danp2/webdriver?color=blueviolet&logo=reverbnation&logoColor=white&style=flat-square)
+
+[![youtube](https://img.shields.io/badge/Solve%20Smart-D94D4A?style=for-the-badge&labelColor=black&logo=youtube&logoColor=D94D4A)](https://youtube.com/channel/UCjPiWdl_h1CoYhZXaEC_AwA)
 
 [Description](#description) | [Documentation](#documentation) | [Features](#features) | [Getting started](#getting-started) | [Configuration](#configuration) | [FAQ](#faq) | [Contributing](#contributing) | [License](#license) | [Acknowledgements](#acknowledgements)
 
@@ -518,12 +520,12 @@ Useful information about possible configurations following soon.<br>
 | $_WD_LOCATOR_ByTagName         | String which match the desired element tag name, for example "button" is tag name of this element: `<button name="ClickMe">`                                                                                                                          |
 
   **Q:** Where I can find information about "XPath" usage?<br>
-  **A:** https://www.w3.org/TR/1999/REC-xpath-19991116
+  **A:** https://www.w3.org/TR/1999/REC-xpath-19991116<br>
   **A:** https://developer.mozilla.org/en-US/docs/Web/XPath
 
   **Q:** Where I can find information about "CSSSelector" usage?<br>
-  **A:** https://www.w3.org/TR/CSS21/selector.html
-  **A:** https://www.w3schools.com/cssref/css_selectors.asp
+  **A:** https://www.w3.org/TR/CSS21/selector.html<br>
+  **A:** https://www.w3schools.com/cssref/css_selectors.asp<br>
   **A:** https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Selectors
 
   **Q:** How I can check XPath and CSSSelector in browser?<br>
