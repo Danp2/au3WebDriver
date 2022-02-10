@@ -515,7 +515,7 @@ Useful information about possible configurations following soon.<br>
 | $_WD_LOCATOR_ByXPath           | XPath string (definded by [W3C](https://www.w3.org/TR/1999/REC-xpath-19991116)) is a language for addressing parts of an XML document, designed to be used by both XSLT and XPointer, and is used to find element through the HTML DOM document tree. |
 | $_WD_LOCATOR_ByLinkText        | String with exact text of `<a>` element, which should be used to locate the proper `<a>` element                                                                                                                                                      |
 | $_WD_LOCATOR_ByPartialLinkText | String with partial text of `<a>` element, which should be used to locate the proper `<a>` element                                                                                                                                                    |
-| $_WD_LOCATOR_ByTagName         | String which match the desired element tag name, for example "button" is tag name of this element: `<button name="ClickMe">`                                                                                                                          |
+| $_WD_LOCATOR_ByTagName         | String that matches the desired element tag name, for example "button" is tag name of this element: `<button name="ClickMe">`                                                                                                                          |
 
   **Q:** Where I can find information about "XPath" usage?<br>
   **A:** https://www.w3.org/TR/1999/REC-xpath-19991116<br>
