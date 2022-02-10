@@ -22,31 +22,19 @@ Supporting multiple browsers via the same code base is now possible with just a 
 
 ## Documentation
 
-### *References*
-
-|                                                                                                                      | Reference                                                                          | Description                                                                                 |
-| :---:                                                                                                                | :---                                                                               | :---                                                                                        |
-| <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/W3C_icon.svg/212px-W3C_icon.svg.png" width="20"> | [W3C WebDriver](https://www.w3.org/TR/webdriver/)                                  | Official W3C WebDriver standard/specification                                               |
-| 📚                                                                                                                   | [WebDriver Wiki](https://www.autoitscript.com/wiki/WebDriver)                      | Further information about this UDF (project), big picture, capabilities and troubleshooting |
-| 📖                                                                                                                   | [Function reference](https://github.com/Danp2/WebDriver/blob/master/Webdriver.chm) | Function CHM help file that comes with this UDF (project)                                   |
-
-### *AutoIt WebDriver discussion threads*
-
-- [WebDriver UDF (W3C compliant version)](https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01312022/)
-- [WebDriver UDF - Help & Support](https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/)
-- [WebDriver UDF - Help & Support (II)](https://www.autoitscript.com/forum/topic/201106-webdriver-udf-help-support-ii/)
-- [WebDriver UDF - Help & Support (III)](https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/)
-- [I'm creating a WebDriver tutorial](https://www.autoitscript.com/forum/topic/201283-im-creating-a-webdriver-tutorial)
-- [WebDriver example scripts collection](https://www.autoitscript.com/forum/topic/201537-webdriver-example-scripts-collection/)
-- [Webdriver, Websockets, and Chrome DevTools Protocol ](https://www.autoitscript.com/forum/topic/201537-webdriver-example-scripts-collection/)
+|                                                                                                                      | Reference                                                     | Description                                                                                            |
+| :---:                                                                                                                | :---                                                          | :---                                                                                                   |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/W3C_icon.svg/212px-W3C_icon.svg.png" width="20"> | [W3C WebDriver](https://www.w3.org/TR/webdriver/)             | Official W3C WebDriver standard/specification.                                                         |
+| 📚                                                                                                                   | [WebDriver Wiki](https://www.autoitscript.com/wiki/WebDriver) | Further information about this UDF (project) like big picture, capabilities, troubleshooting and more. |
+| 📖                                                                                                                   | Webdriver.chm                                                 | Function CHM help file that comes with this UDF (project) download.                                    |
 
 ## Features
 
 ### *Browser support*
 
-| Chrome                                                                                            | Edge                                                                                        | Firefox                                                                                              | Opera                                                                                          |
-| :---                                                                                              | :---                                                                                        | :---                                                                                                 | :---                                                                                           |
-| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_48x48.png) | ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_48x48.png) | ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png) | ![Opera](https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_48x48.png) |
+| Chrome                                                                                            | Edge                                                                                        | Firefox                                                                                              |
+| :---                                                                                              | :---                                                                                        | :---                                                                                                 |
+| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_48x48.png) | ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_48x48.png) | ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png) |
 
 
 ### *Functions*
@@ -168,19 +156,16 @@ Download and add the following mandatory Third-Party UDFs to your project folder
 
 Download and install one of the following WebDriver (depending on the browser type and version you want to automate).
 
-| Browser                                                                                              | Download                                                                      | WebDriver specification status                                                                                        |
-| :---:                                                                                                | :---                                                                          | :---                                                                                                                  |
-| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_16x16.png)    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                         |
-| ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png)          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://docs.microsoft.com/en-us/archive/microsoft-edge/legacy/developer/webdriver/#w3c-webdriver) [^1] [^2] |
-| ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png) | [Firefox](https://github.com/mozilla/geckodriver/releases/latest) [^3]        | [Status](https://developer.mozilla.org/en-US/docs/Web/WebDriver#specifications)                                       |
-| ![Opera](https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_16x16.png)       | [Opera](https://github.com/operasoftware/operachromiumdriver/releases/latest) | [Status](https://w3c.github.io/webdriver/) [^4]                                                                       |
+| Browser                                                                                              | Download                                                                      | WebDriver specification status                                                                                   |
+| :---:                                                                                                | :---                                                                          | :---                                                                                                             |
+| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_16x16.png)    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
+| ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png)          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md) [^1] |
+| ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png) | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Web/WebDriver#specifications)                                  |
 
-Limitation notice: Not all WebDriver functions have been implemented by each browser. Keep that in mind and check the "WebDriver specification status" for your desired browser of choice. Please also be aware about the footnotes.
+Limitation notice. [^2]
 
-[^1]: This status is only relevant for the legacy EdgeHTML browser variant.
-[^2]: "Microsoft Edge" (is chromium based) which means it's a WebDriver implementation derived from ChromeDriver. The status or limitations are at least the same as for ChromeDriver.
-[^3]: You must still have the [Microsoft Visual Studio redistributable runtime](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) installed on your system for the binary to run. This is a known bug in release [v0.26.0](https://github.com/mozilla/geckodriver/releases/tag/v0.26.0) which the authors weren't able fix for this release.
-[^4]: "OperaChromiumDriver" (is chromium based) which means it's a WebDriver implementation derived from ChromeDriver. The status or limitations are at least the same as for ChromeDriver.
+[^1]: "Microsoft Edge" (is chromium based) which means it's a WebDriver implementation derived from ChromeDriver. The status or limitations are at least the same as for ChromeDriver.
+[^2]: Not all WebDriver functions have been implemented by each browser. Keep that in mind and check the "WebDriver specification status" for your desired WebDriver of choice.
 
 #### *Installation*
 
@@ -190,11 +175,10 @@ To automate your browser, follow the following steps.
 2. Move the UDFs to your project folder or to a directory where AutoIt can find them.
     - All *wd_\*.au3* files and the Third-Party UDFs *\*.au3* should be placed in the same directory.
     - Otherwise you have to adjust the `#include` statements in the files.
-3. Move your desired browser of choice to directory of the *wd_\*.au3* files.
+3. Move your desired WebDriver of choice to directory of the *wd_\*.au3* files.
     - chromedriver.exe (Chrome)
     - geckodriver.exe (Firefox)
-    - msedgedriver.exe (Edge, chromium based) or MicrosoftWebDriver.exe (Edge, legacy EdgeHTML)
-    - operadriver.exe
+    - msedgedriver.exe (Edge, chromium based)
 
 #### *Usage*
 
@@ -223,7 +207,6 @@ More useful information following soon.
 ## Configuration
 
 Useful information about possible configurations following soon.<br>
-In the meanwhile you could check the [FAQ](#faq) and the [AutoIt WebDriver discussion threads](#autoit-webdriver-discussion-threads).
 
 ## FAQ
 

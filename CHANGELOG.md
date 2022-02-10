@@ -1,9 +1,13 @@
+#####
+
 # Changelog
 
-All notable changes to "WebDriver" will be documented in this file.
+All notable changes to "Au3WebDriver" will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
 ## [Unreleased]
 
@@ -19,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - _WD_HighlightElement: Flagged as Deprecated and will be removed in a future release
 
 ### Fixed
+
+### Removed
 
 ## [0.5.1.1] - 2022-01-31
 
@@ -477,7 +483,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - _WD_DownloadFile
 - Global variable to hold session details
 - wd_demo.au3
-	- GUI front-end 
+	- GUI front-end
 	- DemoDownload
 
 ### Changed
@@ -863,9 +869,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ### Legend - Types of changes
+
 - `Added` for new features.
 - `Changed` for changes in existing functionality.
 - `Deprecated` for soon-to-be removed features.
-- `Removed` for now removed features.
 - `Fixed` for any bug fixes.
+- `Removed` for now removed features.
 - `Security` in case of vulnerabilities.
+
+##
+
+[To the top](#)
