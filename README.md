@@ -13,8 +13,6 @@
 ![os](https://img.shields.io/badge/os-windows-yellow.svg?style=flat-square&logo=windows)
 ![stars](https://img.shields.io/github/stars/danp2/webdriver?color=blueviolet&logo=reverbnation&logoColor=white&style=flat-square)
 
-[![youtube](https://img.shields.io/badge/Solve%20Smart-D94D4A?style=for-the-badge&labelColor=black&logo=youtube&logoColor=D94D4A)](https://youtube.com/channel/UCjPiWdl_h1CoYhZXaEC_AwA)
-
 [Description](#description) | [Documentation](#documentation) | [Features](#features) | [Getting started](#getting-started) | [Configuration](#configuration) | [FAQ](#faq) | [Contributing](#contributing) | [License](#license) | [Acknowledgements](#acknowledgements)
 
 ## Description
