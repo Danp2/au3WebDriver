@@ -5,14 +5,13 @@ All notable changes to "WebDriver" will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
+## [0.5.2] - 2022-02-11
 
 ### Changed
 
 - REVISIONS.md renamed to CHANGELOG.md and format updated
 - _WD_HighlightElements: Refactored for speed; now supports single or multiple elements
+- _WD_UpdateDriver: Adjusted URL to match revised Github repo name
 
 ### Deprecated
 
@@ -803,7 +802,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/Danp2/WebDriver/compare/0.5.1.1...HEAD
+[Unreleased]: https://github.com/Danp2/WebDriver/compare/0.5.2...HEAD
+[0.5.2]:    https://github.com/Danp2/WebDriver/compare/0.5.1.1...0.5.2
 [0.5.1.1]:    https://github.com/Danp2/WebDriver/compare/0.5.1.0...0.5.1.1
 [0.5.1.0]:    https://github.com/Danp2/WebDriver/compare/0.5.0.3...0.5.1.0
 [0.5.0.3]:    https://github.com/Danp2/WebDriver/compare/0.5.0.2...0.5.0.3
