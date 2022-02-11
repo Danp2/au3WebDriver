@@ -129,17 +129,9 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
-				GUICtrlSetState($idBrowsers, $GUI_DISABLE)
-				GUICtrlSetState($idDebugging, $GUI_DISABLE)
-				GUICtrlSetState($idUpdate, $GUI_DISABLE)
-				GUICtrlSetState($idHeadless, $GUI_DISABLE)
-				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
+				_RunDemo_GUISwitcher($GUI_DISABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
 				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
-				GUICtrlSetState($idBrowsers, $GUI_ENABLE)
-				GUICtrlSetState($idDebugging, $GUI_ENABLE)
-				GUICtrlSetState($idUpdate, $GUI_ENABLE)
-				GUICtrlSetState($idHeadless, $GUI_ENABLE)
-				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
+				_RunDemo_GUISwitcher($GUI_ENABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
 
 			Case Else
 				For $i = 0 To $iCount - 1
@@ -217,6 +209,17 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	_WD_DeleteSession($sSession)
 	_WD_Shutdown()
 EndFunc   ;==>RunDemo
+
+Func _RunDemo_GUISwitcher($iState, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
+	GUICtrlSetState($idBrowsers, $iState)
+	GUICtrlSetState($idDebugging, $iState)
+	GUICtrlSetState($idUpdate, $iState)
+	GUICtrlSetState($idHeadless, $iState)
+	GUICtrlSetState($idButton_Run, $iState)
+	For $i = 0 To UBound($aCheckboxes, $UBOUND_ROWS) - 1 Step 1
+		GUICtrlSetState($aCheckboxes[$i], $iState)
+	Next
+EndFunc   ;==>_RunDemo_GUISwitcher
 
 Func DemoTimeouts()
 	; Retrieve current settings and save
