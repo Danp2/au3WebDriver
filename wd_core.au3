@@ -64,7 +64,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.5.1.1"
+Global Const $__WDVERSION = "0.5.2"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -435,19 +435,6 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
 
 	Switch $sCommand
-		Case 'back', 'forward', 'refresh'
-			$sResponse = __WD_Post($sURL, $_WD_EmptyDict)
-			$iErr = @error
-
-		Case 'url', 'title'
-			$sResponse = __WD_Get($sURL)
-			$iErr = @error
-
-			If $iErr = $_WD_ERROR_Success Then
-				$oJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
-			EndIf
-
 		Case 'actions'
 			If $sOption <> '' Then
 				$sResponse = __WD_Post($sURL, $sOption)
@@ -457,8 +444,21 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 
 			$iErr = @error
 
+		Case 'back', 'forward', 'refresh'
+			$sResponse = __WD_Post($sURL, $_WD_EmptyDict)
+			$iErr = @error
+
+		Case 'title', 'url'
+			$sResponse = __WD_Get($sURL)
+			$iErr = @error
+
+			If $iErr = $_WD_ERROR_Success Then
+				$oJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
+			EndIf
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Back|Forward|Refresh|Url|Title|Actions) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Actions|Back|Forward|Refresh|Title|Url) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -514,25 +514,28 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
-		Case 'window'
-			If $sOption = '' Then
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
-			Else
-				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
-			EndIf
+		Case 'close'
+			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window")
+			$iErr = @error
 
+		Case 'fullscreen', 'maximize', 'minimize'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'handles'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
 			$iErr = @error
 
-		Case 'maximize', 'minimize', 'fullscreen'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $_WD_EmptyDict)
-			$iErr = @error
-
 		Case 'new'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
+			$iErr = @error
+
+		Case 'frame', 'print'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
+			$iErr = @error
+
+		Case 'parent'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame/parent", $sOption)
 			$iErr = @error
 
 		Case 'rect'
@@ -553,24 +556,21 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 
 			$iErr = @error
 
-		Case 'close'
-			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window")
-			$iErr = @error
-
 		Case 'switch'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window", $sOption)
 			$iErr = @error
 
-		Case 'frame', 'print'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
-			$iErr = @error
+		Case 'window'
+			If $sOption = '' Then
+				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+			Else
+				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
+			EndIf
 
-		Case 'parent'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame/parent", $sOption)
 			$iErr = @error
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Window|Handles|Maximize|Minimize|Fullscreen|New|Rect|Screenshot|Close|Switch|Frame|Parent|Print) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Frame|Fullscreen|Handles|Maximize|Minimize|New|Parent|Print|Rect|Screenshot|Switch|Window) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -578,7 +578,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
 
 			Switch $sCommand
-				Case 'maximize', 'minimize', 'fullscreen', 'close', 'switch', 'frame', 'parent'
+				Case 'close', 'frame', 'fullscreen', 'maximize', 'minimize', 'parent', 'switch'
 					$sResult = $sResponse
 
 				Case 'new'
@@ -906,7 +906,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 	$sCommand = StringLower($sCommand)
 
 	Switch $sCommand
-		Case 'dismiss', 'accept'
+		Case 'accept', 'dismiss'
 			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
@@ -930,7 +930,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$sResult = ($iErr = $_WD_ERROR_NoAlert) ? False : True
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Dismiss|Accept|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Accept|Dismiss|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -945,7 +945,7 @@ EndFunc   ;==>_WD_Alert
 ; Description ...: Get page source.
 ; Syntax ........: _WD_GetSource($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-; Return values .: Success - Source code from page.
+; Return values .: Success - HTML source code from page.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ; Author ........: Danp2
@@ -1008,13 +1008,13 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	If $sOption = Default Then $sOption = ''
 
 	Switch $sCommand
-		Case 'getall'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
+		Case 'add'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie", $sOption)
 			$iErr = @error
 
-			If $iErr = $_WD_ERROR_Success Then
-				$sResult = $sResponse
-			EndIf
+		Case 'delete'
+			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
+			$iErr = @error
 
 		Case 'get'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
@@ -1024,16 +1024,16 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 				$sResult = $sResponse
 			EndIf
 
-		Case 'add'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie", $sOption)
+		Case 'getall'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
 			$iErr = @error
 
-		Case 'delete'
-			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
-			$iErr = @error
+			If $iErr = $_WD_ERROR_Success Then
+				$sResult = $sResponse
+			EndIf
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(GetAll|Get|Add|Delete) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
@@ -1081,72 +1081,83 @@ Func _WD_Option($sOption, $vValue = Default)
 	If $vValue = Default Then $vValue = ''
 
 	Switch $sOption
-		Case "driver"
-			If $vValue == "" Then Return $_WD_DRIVER
-			If Not IsString($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
-			EndIf
-			$_WD_DRIVER = $vValue
-		Case "driverparams"
-			If $vValue == "" Then Return $_WD_DRIVER_PARAMS
-			If Not IsString($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
-			EndIf
-			$_WD_DRIVER_PARAMS = $vValue
 		Case "baseurl"
 			If $vValue == "" Then Return $_WD_BASE_URL
 			If Not IsString($vValue) Then
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_BASE_URL = $vValue
-		Case "port"
-			If $vValue == "" Then Return $_WD_PORT
-			If Not IsInt($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
-			EndIf
-			$_WD_PORT = $vValue
+
 		Case "binaryformat"
 			If $vValue == "" Then Return $_WD_BFORMAT
 			If Not IsInt($vValue) Then
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_BFORMAT = $vValue
-		Case "driverclose"
-			If $vValue == "" Then Return $_WD_DRIVER_CLOSE
-			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
-			EndIf
-			$_WD_DRIVER_CLOSE = $vValue
-		Case "driverdetect"
-			If $vValue == "" Then Return $_WD_DRIVER_DETECT
-			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
-			EndIf
-			$_WD_DRIVER_DETECT = $vValue
-		Case "httptimeouts"
-			If $vValue == "" Then Return $_WD_WINHTTP_TIMEOUTS
-			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
-			EndIf
-			$_WD_WINHTTP_TIMEOUTS = $vValue
-		Case "debugtrim"
-			If $vValue == "" Then Return $_WD_RESPONSE_TRIM
-			If Not IsInt($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
-			EndIf
-			$_WD_RESPONSE_TRIM = $vValue
+
 		Case "console"
 			If $vValue == "" Then Return $_WD_CONSOLE
 			If Not (IsString($vValue) Or IsInt($vValue)) Then
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string/int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_CONSOLE = $vValue
+
+		Case "debugtrim"
+			If $vValue == "" Then Return $_WD_RESPONSE_TRIM
+			If Not IsInt($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_RESPONSE_TRIM = $vValue
+
 		Case "DefaultTimeout"
 			If $vValue == "" Then Return $_WD_DefaultTimeout
 			If Not IsInt($vValue) Then
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_DefaultTimeout = $vValue
+
+		Case "driver"
+			If $vValue == "" Then Return $_WD_DRIVER
+			If Not IsString($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_DRIVER = $vValue
+
+		Case "driverclose"
+			If $vValue == "" Then Return $_WD_DRIVER_CLOSE
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_DRIVER_CLOSE = $vValue
+
+		Case "driverdetect"
+			If $vValue == "" Then Return $_WD_DRIVER_DETECT
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_DRIVER_DETECT = $vValue
+
+		Case "driverparams"
+			If $vValue == "" Then Return $_WD_DRIVER_PARAMS
+			If Not IsString($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_DRIVER_PARAMS = $vValue
+
+		Case "httptimeouts"
+			If $vValue == "" Then Return $_WD_WINHTTP_TIMEOUTS
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_WINHTTP_TIMEOUTS = $vValue
+
+		Case "port"
+			If $vValue == "" Then Return $_WD_PORT
+			If Not IsInt($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_PORT = $vValue
+
 		Case "Sleep"
 			If $vValue == "" Then Return $_WD_Sleep
 			If Not IsFunc($vValue) Then
@@ -1155,7 +1166,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			$_WD_Sleep = $vValue
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Driver|DriverParams|BaseURL|Port|BinaryFormat|DriverClose|DriverDetect|HTTPTimeouts|DebugTrim|Console|DefaultTimeout|Sleep) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|HTTPTimeouts|Port|Sleep) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1

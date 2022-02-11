@@ -129,9 +129,9 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
-				GUICtrlSetState($idButton_Run, $GUI_DISABLE)
+				_RunDemo_GUISwitcher($GUI_DISABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
 				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
-				GUICtrlSetState($idButton_Run, $GUI_ENABLE)
+				_RunDemo_GUISwitcher($GUI_ENABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
 
 			Case Else
 				For $i = 0 To $iCount - 1
@@ -225,6 +225,17 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 	Return SetError($iError, $iExtended, $bForceDispose)
 EndFunc   ;==>_RunDemo_ErrorHander
 
+Func _RunDemo_GUISwitcher($iState, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
+	GUICtrlSetState($idBrowsers, $iState)
+	GUICtrlSetState($idDebugging, $iState)
+	GUICtrlSetState($idUpdate, $iState)
+	GUICtrlSetState($idHeadless, $iState)
+	GUICtrlSetState($idButton_Run, $iState)
+	For $i = 0 To UBound($aCheckboxes, $UBOUND_ROWS) - 1 Step 1
+		GUICtrlSetState($aCheckboxes[$i], $iState)
+	Next
+EndFunc   ;==>_RunDemo_GUISwitcher
+
 Func DemoTimeouts()
 	; Retrieve current settings and save
 	Local $sResponse = _WD_Timeouts($sSession)
@@ -248,15 +259,21 @@ EndFunc   ;==>DemoTimeouts
 
 Func DemoNavigation()
 	_WD_Navigate($sSession, "http://google.com")
+	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+
 	_WD_NewTab($sSession, Default, Default, "http://yahoo.com")
+	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+
 	;	_WD_Navigate($sSession, "http://yahoo.com")
 	_WD_NewTab($sSession, True, Default, 'http://bing.com', 'width=200,height=200')
-
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+
 	_WD_Attach($sSession, "google.com", "URL")
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+
 	_WD_Attach($sSession, "yahoo.com", "URL")
 	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+
 EndFunc   ;==>DemoNavigation
 
 Func DemoElements()
