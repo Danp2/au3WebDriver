@@ -2,16 +2,16 @@
 
 <p align="center">
     <img src="images/icon.png" width="176" />
-    <h2 align="center">Welcome to <code>Au3WebDriver</code></h2>
+    <h2 align="center">Welcome to <code>au3WebDriver</code></h2>
 </p>
 
-[![license](https://img.shields.io/badge/license-MIT-ff69b4.svg?style=flat-square&logo=spdx)](https://github.com/Danp2/Au3WebDriver/blob/master/LICENSE)
-[![contributors](https://img.shields.io/github/contributors/Danp2/Au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/Au3WebDriver/graphs/contributors)
-![repo size](https://img.shields.io/github/repo-size/Danp2/Au3WebDriver.svg?style=flat-square&logo=github)
-[![last commit](https://img.shields.io/github/last-commit/Danp2/Au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/Au3WebDriver/commits/master)
-[![release](https://img.shields.io/github/release/Danp2/Au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/Au3WebDriver/releases/latest)
+[![license](https://img.shields.io/badge/license-MIT-ff69b4.svg?style=flat-square&logo=spdx)](https://github.com/Danp2/au3WebDriver/blob/master/LICENSE)
+[![contributors](https://img.shields.io/github/contributors/Danp2/au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/au3WebDriver/graphs/contributors)
+![repo size](https://img.shields.io/github/repo-size/Danp2/au3WebDriver.svg?style=flat-square&logo=github)
+[![last commit](https://img.shields.io/github/last-commit/Danp2/au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/au3WebDriver/commits/master)
+[![release](https://img.shields.io/github/release/Danp2/au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/au3WebDriver/releases/latest)
 ![os](https://img.shields.io/badge/os-windows-yellow.svg?style=flat-square&logo=windows)
-![stars](https://img.shields.io/github/stars/Danp2/Au3WebDriver?color=blueviolet&logo=reverbnation&logoColor=white&style=flat-square)
+![stars](https://img.shields.io/github/stars/Danp2/au3WebDriver?color=blueviolet&logo=reverbnation&logoColor=white&style=flat-square)
 
 [Description](#description) | [Documentation](#documentation) | [Features](#features) | [Getting started](#getting-started) | [Configuration](#configuration) | [FAQ](#faq) | [Contributing](#contributing) | [License](#license) | [Acknowledgements](#acknowledgements)
 
@@ -182,7 +182,7 @@ To automate your browser, follow the following steps.
 
 #### *Usage*
 
-Run [wd_demo.au3](https://github.com/Danp2/Au3WebDriver/blob/master/wd_demo.au3) and select "DemoNavigation" to validate your installation.
+Run [wd_demo.au3](https://github.com/Danp2/au3WebDriver/blob/master/wd_demo.au3) and select "DemoNavigation" to validate your installation.
 
 <details>
 <summary><i>Result example</i></summary>
@@ -538,11 +538,11 @@ Useful information about possible configurations following soon.<br>
 
 ## Contributing
 
-Just look at [CONTRIBUTING](https://github.com/Danp2/Au3WebDriver/blob/master/docs/CONTRIBUTING.md), thank you!
+Just look at [CONTRIBUTING](https://github.com/Danp2/au3WebDriver/blob/master/docs/CONTRIBUTING.md), thank you!
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/Au3WebDriver/blob/master/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3WebDriver/blob/master/LICENSE) for more information.
 
 ## Acknowledgements
 
@@ -557,7 +557,7 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/Au3Web
   - Thanks to [@Danp2](https://github.com/Danp2) for the project idea, creation and maintenance
   - Thanks to [@mLipok](https://github.com/mLipok) for his *wd_capabilities.au3*
   - Thanks to [@Sven-Seyfert](https://github.com/Sven-Seyfert) for the project logo
-  - **Big thanks** to all the hard-working [contributors](https://github.com/Danp2/Au3WebDriver/graphs/contributors)
+  - **Big thanks** to all the hard-working [contributors](https://github.com/Danp2/au3WebDriver/graphs/contributors)
 
 ##
 
