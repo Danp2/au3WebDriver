@@ -2,7 +2,7 @@
 
 <p align="center">
     <img src="images/icon.png" width="176" />
-    <h2 align="center">Welcome to <code>Au3WebDriver</code> through AutoIt</h2>
+    <h2 align="center">Welcome to <code>Au3WebDriver</code></h2>
 </p>
 
 [![license](https://img.shields.io/badge/license-MIT-ff69b4.svg?style=flat-square&logo=spdx)](https://github.com/Danp2/Au3WebDriver/blob/master/LICENSE)
