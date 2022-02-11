@@ -1219,10 +1219,10 @@ EndFunc   ;==>_WD_SelectFiles
 ; ===============================================================================================================================
 Func _WD_IsLatestRelease()
 	Local Const $sFuncName = "_WD_IsLatestRelease"
-	Local Const $sGitURL = "https://github.com/Danp2/WebDriver/releases/latest"
+	Local Const $sGitURL = "https://github.com/Danp2/au3WebDriver/releases/latest"
 	Local $bResult = Null
 	Local $iErr = $_WD_ERROR_Success
-	Local $sRegex = '<a.*href="\/Danp2\/WebDriver\/releases\/tag\/(.*?)"'
+	Local $sRegex = '<a.*href="\/Danp2\/au3WebDriver\/releases\/tag\/(.*?)"'
 
 	Local $sResult = InetRead($sGitURL)
 	If @error Then $iErr = $_WD_ERROR_GeneralError
