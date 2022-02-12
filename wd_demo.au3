@@ -149,16 +149,16 @@ Func _WD_Demo()
 EndFunc   ;==>_WD_Demo
 
 Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
-	; Check selected debuging demo opotion and set desired debug level
+	; Check selected debugging option and set desired debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
-	; Get selected browser name demo option
+	; Get selected browser
 	Local $sBrowserName = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
 
-	; Get selected update demo option and process update route
+	; Check & update WebDriver per user setting
 	_RunDemo_Update($idUpdate, $sBrowserName)
 
-	; Check selected headles demo option and set desired headless mode
+	; Check and set desired headless mode
 	Local $bHeadless = _RunDemo_Headless($idHeadless)
 
 	; Execute browser setup routine for user's browser selection
@@ -193,6 +193,37 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $sDemoName)
 EndFunc   ;==>RunDemo
 
+Func _RunDemo_Update($idUpdate, $sBrowserName)
+	Local $sUpdate
+	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
+
+	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
+	If StringInStr($sUpdate, 'Current') Then $bFlag64 = Default
+
+	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
+	If $sUpdate = 'Report only' Then $bForce = Null
+
+	Local $bUpdateResult = _WD_UpdateDriver($sBrowserName, @ScriptDir, $bFlag64, $bForce)
+	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
+EndFunc   ;==>_RunDemo_Update
+
+Func _RunDemo_Headless($idHeadless)
+	Local $sHeadless
+	_GUICtrlComboBox_GetLBText($idHeadless, _GUICtrlComboBox_GetCurSel($idHeadless), $sHeadless)
+	Return ($sHeadless = 'Yes')
+EndFunc   ;==>_RunDemo_Headless
+
+Func _RunDemo_GUISwitcher($iState, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
+	GUICtrlSetState($idBrowsers, $iState)
+	GUICtrlSetState($idDebugging, $iState)
+	GUICtrlSetState($idUpdate, $iState)
+	GUICtrlSetState($idHeadless, $iState)
+	GUICtrlSetState($idButton_Run, $iState)
+	For $i = 0 To UBound($aCheckboxes, $UBOUND_ROWS) - 1 Step 1
+		GUICtrlSetState($aCheckboxes[$i], $iState)
+	Next
+EndFunc   ;==>_RunDemo_GUISwitcher
+
 Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, $sSession, $sDemoName = 'Demo')
 	If Not $bForceDispose Then Return SetError($iError, $iExtended, $bForceDispose)
 
@@ -214,37 +245,6 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 
 	Return SetError($iError, $iExtended, $bForceDispose)
 EndFunc   ;==>_RunDemo_ErrorHander
-
-Func _RunDemo_GUISwitcher($iState, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
-	GUICtrlSetState($idBrowsers, $iState)
-	GUICtrlSetState($idDebugging, $iState)
-	GUICtrlSetState($idUpdate, $iState)
-	GUICtrlSetState($idHeadless, $iState)
-	GUICtrlSetState($idButton_Run, $iState)
-	For $i = 0 To UBound($aCheckboxes, $UBOUND_ROWS) - 1 Step 1
-		GUICtrlSetState($aCheckboxes[$i], $iState)
-	Next
-EndFunc   ;==>_RunDemo_GUISwitcher
-
-Func _RunDemo_Headless($idHeadless)
-	Local $sHeadless
-	_GUICtrlComboBox_GetLBText($idHeadless, _GUICtrlComboBox_GetCurSel($idHeadless), $sHeadless)
-	Return ($sHeadless = 'Yes')
-EndFunc   ;==>_RunDemo_Headless
-
-Func _RunDemo_Update($idUpdate, $sBrowserName)
-	Local $sUpdate
-	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
-
-	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
-	If StringInStr($sUpdate, 'Current') Then $bFlag64 = Default
-
-	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
-	If $sUpdate = 'Report only' Then $bForce = Null
-
-	Local $bUpdateResult = _WD_UpdateDriver($sBrowserName, @ScriptDir, $bFlag64, $bForce)
-	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
-EndFunc   ;==>_RunDemo_Update
 
 Func DemoTimeouts()
 	; Retrieve current settings and save
