@@ -2182,27 +2182,29 @@ EndFunc   ;==>_WD_JsonActionPause
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonCookie
-; Description ...: Formats "cookie" JSON strings for use in _WD_Cookies
-; Syntax ........: _WD_JsonCookie($sName, $sValue)
+; Syntax ........: _WD_JsonCookie($sName, $sValue[, $sPath = ''[, $sDomain = '']])
 ; Parameters ....: $sName               - a string value. Name of the cookie
 ;                  $sValue              - a string value. Value of the cookie
+;                  $sPath               - [optional] a string value. Default is ''.
+;                  $sDomain             - [optional] a string value. Default is ''.
 ; Return values .: cookie as JSON strings
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
 ; Related .......: _WD_Cookies
-; Link ..........:
+; Link ..........: https://www.w3.org/TR/webdriver/#dfn-table-for-cookie-conversion
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonCookie($sName, $sValue)
+Func _WD_JsonCookie($sName, $sValue, $sPath = '', $sDomain = '')
 	Local Const $sFuncName = "_WD_JsonCookie"
 
 	Local $vData = Json_ObjCreate()
 	Json_Put($vData, '.cookie.name', $sName)
 	Json_Put($vData, '.cookie.value', $sValue)
+	If $sPath Then Json_Put($vData, '.cookie.path', $sPath)
+	If $sDomain Then Json_Put($vData, '.cookie.domain', $sDomain)
 
 	Local $sJSON = Json_Encode($vData)
-;~ 	'{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
