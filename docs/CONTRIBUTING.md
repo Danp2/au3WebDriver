@@ -4,7 +4,7 @@
 
 ### Preparing
 
-- Please try to follow the existing code style as better as you can.
+- Please try to follow the existing code style as best as you can.
 - If you're unsure about anything, don't hesitate to ask.
 
 ### Contribution
