@@ -182,7 +182,7 @@ To automate your browser, follow the following steps.
 
 #### *Usage*
 
-Run [wd_demo.au3](https://github.com/Danp2/au3WebDriver/blob/master/wd_demo.au3) and select "DemoNavigation" to validate your installation.
+Run [wd_demo.au3](https://github.com/Danp2/au3WebDriver/blob/master/wd_demo.au3), choose your "Browser" from the dropdown and press the "Run Demo!" button that will perform the "DemoNavigation" demo to validate your installation.
 
 <details>
 <summary><i>Result example</i></summary>
