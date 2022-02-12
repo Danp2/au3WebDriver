@@ -75,7 +75,8 @@ This UDF will allow you to interact with any browser that supports the [W3C WebD
 | _WD_ElementActionEx     | Perform advanced action on desginated element.                             |
 | _WD_GetTable            | Return all elements of a table.                                            |
 | _WD_IsFullScreen        | Return a boolean indicating if the session is in full screen mode.         |
-| _WD_CheckContext        | Check if browser context is still valid.                                   |                                                                      |
+| _WD_CheckContext        | Check if browser context is still valid.                                   |
+| _WD_JsonCookie          | Formats "cookie" JSON strings for use in _WD_Cookies.                      |
 
 ### CDP functions
 
