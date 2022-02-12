@@ -376,13 +376,25 @@ EndFunc   ;==>DemoScript
 
 Func DemoCookies()
 	_WD_Navigate($sSession, "http://google.com")
-	_WD_Cookies($sSession, 'Get', 'NID')
+	Local $sNID = _WD_Cookies($sSession, 'Get', 'NID')
+	ConsoleWrite("- Cookie NID : " & $sNID & @CRLF)
 
 	Local $sName = "Testname"
 	Local $sValue = "TestValue"
-	Local $sCookie = '{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
+
+	; create JSON string for cookie
+	Local $sCookie = _WD_JsonCookie($sName, $sValue)
+
+	ConsoleWrite("- adding cookie" & @CRLF)
 	_WD_Cookies($sSession, 'add', $sCookie)
-	_WD_Cookies($sSession, 'Get', $sName)
+
+	ConsoleWrite("- checking cookie" & @CRLF)
+	Local $sResult = _WD_Cookies($sSession, 'get', $sName)
+
+	; compare results in console
+	ConsoleWrite("- Cookie added    : " & $sCookie & @CRLF)
+	ConsoleWrite("- Cookie obtained : " & $sResult & @CRLF)
+
 EndFunc   ;==>DemoCookies
 
 Func DemoAlerts()
