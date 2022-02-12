@@ -153,10 +153,10 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
 	; Get selected browser name demo option
-	Local $sBrowser = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
+	Local $sBrowserName = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
 
 	; Get selected update demo option and process update route
-	_RunDemo_Update($idUpdate, $sBrowser)
+	_RunDemo_Update($idUpdate, $sBrowserName)
 
 	; Check selected headles demo option and set desired headless mode
 	Local $bHeadless = _RunDemo_Headless($idHeadless)
@@ -178,7 +178,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 		If $aDemoSuite[$iIndex][1] Then
 			ConsoleWrite("+ Running: " & $sDemoName & @CRLF)
 			If $aDemoSuite[$iIndex][2] Then
-				Call($sDemoName, $sBrowser)
+				Call($sDemoName, $sBrowserName)
 			Else
 				Call($sDemoName)
 			EndIf
