@@ -232,7 +232,7 @@ Func _RunDemo_Headless($idHeadless)
 	Return ($sHeadless = 'Yes')
 EndFunc   ;==>_RunDemo_Headless
 
-Func _RunDemo_Update($idUpdate, $sBrowser)
+Func _RunDemo_Update($idUpdate, $sBrowserName)
 	Local $sUpdate
 	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
 
@@ -242,7 +242,7 @@ Func _RunDemo_Update($idUpdate, $sBrowser)
 	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
 	If $sUpdate = 'Report only' Then $bForce = Null
 
-	Local $bUpdateResult = _WD_UpdateDriver($sBrowser, @ScriptDir, $bFlag64, $bForce)
+	Local $bUpdateResult = _WD_UpdateDriver($sBrowserName, @ScriptDir, $bFlag64, $bForce)
 	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
 EndFunc   ;==>_RunDemo_Update
 
