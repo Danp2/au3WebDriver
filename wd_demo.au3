@@ -20,7 +20,7 @@ Global Const $aBrowsers[][2] = _
 		]
 
 ; Column 0 - Function Name
-; Column 1 - Selected at start
+; Column 1 - Selected at start or selected manually by user
 ; Column 2 - Pass browser name as parameter to called function
 Global $aDemoSuite[][3] = _
 		[ _
@@ -175,19 +175,20 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
 	Local $iError, $sDemoName
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 		$sDemoName = $aDemoSuite[$iIndex][0]
-		If $aDemoSuite[$iIndex][1] Then
-			ConsoleWrite("+ Running: " & $sDemoName & @CRLF)
-			If $aDemoSuite[$iIndex][2] Then
-				Call($sDemoName, $sBrowserName)
-			Else
-				Call($sDemoName)
-			EndIf
-			$iError = @error
-			If $iError <> $_WD_ERROR_Success Then ExitLoop
-			ConsoleWrite("+ Finished: " & $sDemoName & @CRLF)
-		Else
+		If Not $aDemoSuite[$iIndex][1] Then
 			ConsoleWrite("> Bypass: " & $sDemoName & @CRLF)
+			ContinueLoop
 		EndIf
+
+		ConsoleWrite("+ Running: " & $sDemoName & @CRLF)
+		If $aDemoSuite[$iIndex][2] Then
+			Call($sDemoName, $sBrowserName)
+		Else
+			Call($sDemoName)
+		EndIf
+		$iError = @error
+		If $iError <> $_WD_ERROR_Success Then ExitLoop
+		ConsoleWrite("+ Finished: " & $sDemoName & @CRLF)
 	Next
 
 	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $sDemoName)
