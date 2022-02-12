@@ -997,7 +997,7 @@ EndFunc   ;==>_WD_GetSource
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Please have a look at WD_Demo.au3 > DemoCookies function for how to add a new cookie
-; Related .......:
+; Related .......: _WD_JsonCookie
 ; Link ..........: https://www.w3.org/TR/webdriver#cookies
 ; Example .......: No
 ; ===============================================================================================================================
