@@ -21,7 +21,7 @@ Global Const $aBrowsers[][2] = _
 
 ; Column 0 - Function Name
 ; Column 1 - Selected at start
-; Column 2 - Pass browser name as parameter to callad function
+; Column 2 - Pass browser name as parameter to called function
 Global $aDemoSuite[][3] = _
 		[ _
 		["DemoTimeouts", False, False], _
@@ -141,6 +141,7 @@ Func _WD_Demo()
 						GUICtrlSetState($idButton_Run, @error ? $GUI_DISABLE : $GUI_ENABLE)
 					EndIf
 				Next
+
 		EndSwitch
 	WEnd
 
@@ -148,28 +149,17 @@ Func _WD_Demo()
 EndFunc   ;==>_WD_Demo
 
 Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
-	; Set debug level
+	; Check selected debuging demo opotion and set desired debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
-	#Region - WebeDriver update
-	Local $sUpdate
-	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
-
-	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
-	If StringInStr($sUpdate, 'Current') Then $bFlag64 = Default
-	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
-	If $sUpdate = 'Report only' Then $bForce = Null
-
+	; Get selected browser name demo option
 	Local $sBrowser = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
-	Local $bUpdateResult = _WD_UpdateDriver($sBrowser, @ScriptDir, $bFlag64, $bForce)
-	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
-	#EndRegion - WebeDriver update
 
-	#Region - Headless
-	Local $sHeadless
-	_GUICtrlComboBox_GetLBText($idHeadless, _GUICtrlComboBox_GetCurSel($idHeadless), $sHeadless)
-	Local $bHeadless = ($sHeadless = 'Yes')
-	#EndRegion - Headless
+	; Get selected update demo option and process update route
+	_RunDemo_Update($idUpdate, $sBrowser)
+
+	; Check selected headles demo option and set desired headless mode
+	Local $bHeadless = _RunDemo_Headless($idHeadless)
 
 	; Execute browser setup routine for user's browser selection
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
@@ -235,6 +225,26 @@ Func _RunDemo_GUISwitcher($iState, $idBrowsers, $idDebugging, $idUpdate, $idHead
 		GUICtrlSetState($aCheckboxes[$i], $iState)
 	Next
 EndFunc   ;==>_RunDemo_GUISwitcher
+
+Func _RunDemo_Headless($idHeadless)
+	Local $sHeadless
+	_GUICtrlComboBox_GetLBText($idHeadless, _GUICtrlComboBox_GetCurSel($idHeadless), $sHeadless)
+	Return ($sHeadless = 'Yes')
+EndFunc   ;==>_RunDemo_Headless
+
+Func _RunDemo_Update($idUpdate, $sBrowser)
+	Local $sUpdate
+	_GUICtrlComboBox_GetLBText($idUpdate, _GUICtrlComboBox_GetCurSel($idUpdate), $sUpdate)
+
+	Local $bFlag64 = (StringInStr($sUpdate, '64') > 0)
+	If StringInStr($sUpdate, 'Current') Then $bFlag64 = Default
+
+	Local $bForce = (StringInStr($sUpdate, 'Force') > 0)
+	If $sUpdate = 'Report only' Then $bForce = Null
+
+	Local $bUpdateResult = _WD_UpdateDriver($sBrowser, @ScriptDir, $bFlag64, $bForce)
+	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
+EndFunc   ;==>_RunDemo_Update
 
 Func DemoTimeouts()
 	; Retrieve current settings and save
@@ -474,8 +484,8 @@ Func DemoActions()
 			'			"type":"pointer",' & _
 			'			"parameters":{"pointerType":"mouse"},' & _
 			'			"actions":[' & _
-			_WD_JsonActionPointer("pointerMove", Default, $sElement, 0, 0, 100) & ','  & _
-			_WD_JsonActionPointer("pointerDown", $_WD_BUTTON_Right) & ','  & _
+			_WD_JsonActionPointer("pointerMove", Default, $sElement, 0, 0, 100) & ',' & _
+			_WD_JsonActionPointer("pointerDown", $_WD_BUTTON_Right) & ',' & _
 			_WD_JsonActionPointer("pointerUp", $_WD_BUTTON_Right) & _
 			'			]' & _
 			'		}' & _
