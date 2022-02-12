@@ -985,10 +985,11 @@ EndFunc   ;==>_WD_GetSource
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sCommand - One of the following actions:
 ;                  |
-;                  |ADD    - Create a new cookie. $sOption has to be a JSON string
-;                  |DELETE - Delete a single cookie. The name of the cookie to delete is specified in $sOption
-;                  |GET    - Retrieve the value of a single cookie. The name of the cookie to retrieve has to be specified in $sOption
-;                  |GETALL - Retrieve the values of all cookies
+;                  |ADD       - Create a new cookie. $sOption has to be a JSON string
+;                  |DELETE    - Delete a single cookie. The name of the cookie to delete is specified in $sOption
+;                  |DELETEALL - Delete all cookies.
+;                  |GET       - Retrieve the value of a single cookie. The name of the cookie to retrieve has to be specified in $sOption
+;                  |GETALL    - Retrieve the values of all cookies
 ;                  $sOption  - [optional] a string value. Default is ""
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -1016,6 +1017,10 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
 			$iErr = @error
 
+		Case 'deleteall'
+			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
+			$iErr = @error
+
 		Case 'get'
 			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
 			$iErr = @error
@@ -1033,7 +1038,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 			EndIf
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|DeleteAll|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
