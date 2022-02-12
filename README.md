@@ -17,7 +17,7 @@
 
 ## Description
 
-This WebDriver UDF (project) allows to interact with any browser that supports the [W3C WebDriver specifications](https://www.w3.org/TR/webdriver/).<br>
+This au3WebDriver UDF (project) allows to interact with any browser that supports the [W3C WebDriver specifications](https://www.w3.org/TR/webdriver/).<br>
 Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
 
 ## Documentation
