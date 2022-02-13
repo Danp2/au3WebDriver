@@ -995,6 +995,7 @@ EndFunc   ;==>_WD_GetSource
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Please have a look at wd_demo.au3 > DemoCookies function for how to add a new cookie
