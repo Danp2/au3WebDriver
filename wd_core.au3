@@ -1014,7 +1014,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case 'delete'
-			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
+			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie" & ($sOption <> '') ? "/" & $sOption : "")
 			$iErr = @error
 
 		Case 'deleteall'
