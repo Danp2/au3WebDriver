@@ -382,7 +382,7 @@ Func DemoCookies()
 	Local $sValue = "TestValue"
 	Local $sCookie = '{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
 	_WD_Cookies($sSession, 'add', $sCookie)
-	_WD_Cookies($sSession, 'Get', $sName)
+	_WD_Cookies($sSession, 'get', $sName)
 	
 	ConsoleWrite("- WD: Get all cookies:" & @CRLF)
 	$sAllCookies = _WD_Cookies($sSession, 'getall')
