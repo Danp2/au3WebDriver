@@ -2217,9 +2217,9 @@ Func _WD_JsonCookie($sName, $sValue, $sPath = Default, $sDomain = Default, $bSec
 	Json_Put($vData, '.cookie.value', $sValue)
 	If $sPath Then Json_Put($vData, '.cookie.path', $sPath)
 	If $sDomain Then Json_Put($vData, '.cookie.domain', $sDomain)
-	If $bSecure Then Json_Put($vData, '.cookie.secure', $bSecure)
-	If $bHTTPOnly Then Json_Put($vData, '.cookie.httponly', $bHTTPOnly)
-	If $iExpiryTime Then Json_Put($vData, '.cookie.expiry', $iExpiryTime)
+	If IsBool($bSecure) Then Json_Put($vData, '.cookie.secure', $bSecure)
+	If IsBool($bHTTPOnly) Then Json_Put($vData, '.cookie.httponly', $bHTTPOnly)
+	If IsInt($iExpiryTime) And $iExpiryTime > 0 Then Json_Put($vData, '.cookie.expiry', $iExpiryTime)
 	If $sSameSite Then Json_Put($vData, '.cookie.sameSite', $sSameSite)
 
 	Local $sJSON = Json_Encode($vData)
