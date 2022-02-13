@@ -1005,42 +1005,41 @@ EndFunc   ;==>_WD_GetSource
 ; ===============================================================================================================================
 Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Cookies"
-	Local $sResult, $sResponse, $iErr
+	Local $sResult, $sResponse, $iErr = $_WD_ERROR_Success
 	If $sOption = Default Then $sOption = ''
 
-	If $sCommand = 'delete' And IsString($sOption) = 0 Then $iErr = $_WD_ERROR_InvalidArgue
-	If $sCommand = 'deleteall' And (IsString($sOption) = 0 Or StringLen($sOption) <> 0) Then $iErr = $_WD_ERROR_InvalidArgue
+	Switch $sCommand
+		Case 'add'
+			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie", $sOption)
+			$iErr = @error
 
-	If $iErr = $_WD_ERROR_Success Then
-		Switch $sCommand
-			Case 'add'
-				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie", $sOption)
-				$iErr = @error
-
-			Case 'delete', 'deleteall'
+		Case 'delete', 'deleteall'
+			If $sCommand = 'delete' And IsString($sOption) = 0 Then $iErr = $_WD_ERROR_InvalidArgue
+			If $sCommand = 'deleteall' And (IsString($sOption) = 0 Or StringLen($sOption) <> 0) Then $iErr = $_WD_ERROR_InvalidArgue
+			If $iErr = $_WD_ERROR_Success Then
 				$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie" & ($sOption <> '') ? "/" & $sOption : "")
 				$iErr = @error
+			EndIf
 
-			Case 'get'
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
-				$iErr = @error
+		Case 'get'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
+			$iErr = @error
 
-				If $iErr = $_WD_ERROR_Success Then
-					$sResult = $sResponse
-				EndIf
+			If $iErr = $_WD_ERROR_Success Then
+				$sResult = $sResponse
+			EndIf
 
-			Case 'getall'
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
-				$iErr = @error
+		Case 'getall'
+			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
+			$iErr = @error
 
-				If $iErr = $_WD_ERROR_Success Then
-					$sResult = $sResponse
-				EndIf
+			If $iErr = $_WD_ERROR_Success Then
+				$sResult = $sResponse
+			EndIf
 
-			Case Else
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|DeleteAll|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
-		EndSwitch
-	EndIf
+		Case Else
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|DeleteAll|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
+	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
