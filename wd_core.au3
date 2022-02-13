@@ -512,59 +512,59 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
-	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession
+	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/"
 	Switch $sCommand
 		Case 'close'
-			$sResponse = __WD_Delete($sURLSession & "/window")
+			$sResponse = __WD_Delete($sURLSession & "window")
 			$iErr = @error
 
 		Case 'fullscreen', 'maximize', 'minimize'
-			$sResponse = __WD_Post($sURLSession & "/window/" & $sCommand, $_WD_EmptyDict)
+			$sResponse = __WD_Post($sURLSession & "window/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'handles'
-			$sResponse = __WD_Get($sURLSession & "/window/" & $sCommand)
+			$sResponse = __WD_Get($sURLSession & "window/" & $sCommand)
 			$iErr = @error
 
 		Case 'new'
-			$sResponse = __WD_Post($sURLSession & "/window/" & $sCommand, $sOption)
+			$sResponse = __WD_Post($sURLSession & "window/" & $sCommand, $sOption)
 			$iErr = @error
 
 		Case 'frame', 'print'
-			$sResponse = __WD_Post($sURLSession & "/" & $sCommand, $sOption)
+			$sResponse = __WD_Post($sURLSession & $sCommand, $sOption)
 			$iErr = @error
 
 		Case 'parent'
-			$sResponse = __WD_Post($sURLSession & "/frame/parent", $sOption)
+			$sResponse = __WD_Post($sURLSession & "frame/parent", $sOption)
 			$iErr = @error
 
 		Case 'rect'
 			If $sOption = '' Then
-				$sResponse = __WD_Get($sURLSession & "/window/" & $sCommand)
+				$sResponse = __WD_Get($sURLSession & "window/" & $sCommand)
 			Else
-				$sResponse = __WD_Post($sURLSession & "/window/" & $sCommand, $sOption)
+				$sResponse = __WD_Post($sURLSession & "window/" & $sCommand, $sOption)
 			EndIf
 
 			$iErr = @error
 
 		Case 'screenshot'
 			If $sOption = '' Then
-				$sResponse = __WD_Get($sURLSession & "/" & $sCommand)
+				$sResponse = __WD_Get($sURLSession & $sCommand)
 			Else
-				$sResponse = __WD_Get($sURLSession & "/" & $sCommand & '/' & $sOption)
+				$sResponse = __WD_Get($sURLSession & $sCommand & '/' & $sOption)
 			EndIf
 
 			$iErr = @error
 
 		Case 'switch'
-			$sResponse = __WD_Post($sURLSession & "/window", $sOption)
+			$sResponse = __WD_Post($sURLSession & "window", $sOption)
 			$iErr = @error
 
 		Case 'window'
 			If $sOption = '' Then
-				$sResponse = __WD_Get($sURLSession & "/" & $sCommand)
+				$sResponse = __WD_Get($sURLSession & $sCommand)
 			Else
-				$sResponse = __WD_Post($sURLSession & "/" & $sCommand, $sOption)
+				$sResponse = __WD_Post($sURLSession & $sCommand, $sOption)
 			EndIf
 
 			$iErr = @error
