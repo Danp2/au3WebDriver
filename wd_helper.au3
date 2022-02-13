@@ -2182,11 +2182,19 @@ EndFunc   ;==>_WD_JsonActionPause
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonCookie
-; Syntax ........: _WD_JsonCookie($sName, $sValue[, $sPath = ''[, $sDomain = '']])
-; Parameters ....: $sName               - a string value. Name of the cookie
-;                  $sValue              - a string value. Value of the cookie
-;                  $sPath               - [optional] a string value. Default is ''.
-;                  $sDomain             - [optional] a string value. Default is ''.
+; Syntax ........: _WD_JsonCookie($sName, $sValue[, $sPath = Default[, $sDomain = Default[, $bSecure = Default [,
+;                  $bHTTPOnly = Default[, $iExpiryTime = Default[, $sSameSite = Default]]]]]])
+; Parameters ....: $sName               - a string value. The name of the cookie.
+;                  $sValue              - a string value. The cookie value.
+;                  $sPath               - [optional] a string value. Default is '/'. This defines the cookie path.
+;                  $sDomain             - [optional] a string value. Default is '' - will be ommited and current browsing context’s of active document’s will be used. This defines the domain the cookie is visible to.
+;                  $bSecure             - [optional] a boolean value. Default is False. This defines whether the cookie is a secure cookie.
+;                  $bHTTPOnly           - [optional] a boolean value. Default is False. This defines whether the cookie is an HTTP only cookie.
+;                  $iExpiryTime         - [optional] an integer value. Default is 0 - will be ommited. This defines when the cookie expires, specified in seconds since Unix Epoch.
+;                  $sSameSite           - [optional] a string value. Default will be ommited and this mean "None". This defines whether the cookie applies to a SameSite policy. One of the following modes:
+;                  |None
+;                  |Lax
+;                  |Strict
 ; Return values .: cookie as JSON strings
 ; Author ........: mLipok
 ; Modified ......:
@@ -2195,14 +2203,24 @@ EndFunc   ;==>_WD_JsonActionPause
 ; Link ..........: https://www.w3.org/TR/webdriver/#dfn-table-for-cookie-conversion
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonCookie($sName, $sValue, $sPath = '', $sDomain = '')
+Func _WD_JsonCookie($sName, $sValue, $sPath = Default, $sDomain = Default, $bSecure = Default , $bHTTPOnly = Default, $iExpiryTime = Default, $sSameSite =Default)
 	Local Const $sFuncName = "_WD_JsonCookie"
+	If $sPath = Default Then $sPath = '/'
+	If $sDomain = Default Then $sDomain = ''
+	If $bSecure = Default Then $bSecure = False
+	If $bHTTPOnly = Default Then $bHTTPOnly = False
+	If $iExpiryTime = Default Then $iExpiryTime  = 0
+	If $sSameSite = Default Then $sSameSite = ''
 
 	Local $vData = Json_ObjCreate()
 	Json_Put($vData, '.cookie.name', $sName)
 	Json_Put($vData, '.cookie.value', $sValue)
 	If $sPath Then Json_Put($vData, '.cookie.path', $sPath)
 	If $sDomain Then Json_Put($vData, '.cookie.domain', $sDomain)
+	If $bSecure Then Json_Put($vData, '.cookie.secure', $bSecure)
+	If $bHTTPOnly Then Json_Put($vData, '.cookie.httponly', $bHTTPOnly)
+	If $iExpiryTime Then Json_Put($vData, '.cookie.expirity', $iExpiryTime)
+	If $sSameSite Then Json_Put($vData, '.cookie.sameSite', $sSameSite)
 
 	Local $sJSON = Json_Encode($vData)
 
