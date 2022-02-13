@@ -906,13 +906,14 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 
 	$sCommand = StringLower($sCommand)
 
+	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/"
 	Switch $sCommand
 		Case 'accept', 'dismiss'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, $_WD_EmptyDict)
+			$sResponse = __WD_Post($sURLSession & "alert/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'gettext'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
+			$sResponse = __WD_Get($sURLSession & "alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -921,11 +922,11 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			EndIf
 
 		Case 'sendtext'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
+			$sResponse = __WD_Post($sURLSession & "alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
 		Case 'status'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
+			$sResponse = __WD_Get($sURLSession & "alert/text")
 			$iErr = @error
 
 			$sResult = ($iErr = $_WD_ERROR_NoAlert) ? False : True
