@@ -1008,21 +1008,22 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	Local $sResult, $sResponse, $iErr = $_WD_ERROR_Success
 	If $sOption = Default Then $sOption = ''
 
+	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/"
 	Switch $sCommand
 		Case 'add'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie", $sOption)
+			$sResponse = __WD_Post($sURLSession & "cookie", $sOption)
 			$iErr = @error
 
 		Case 'delete', 'deleteall'
 			If $sCommand = 'delete' And IsString($sOption) = 0 Then $iErr = $_WD_ERROR_InvalidArgue
 			If $sCommand = 'deleteall' And (IsString($sOption) = 0 Or StringLen($sOption) <> 0) Then $iErr = $_WD_ERROR_InvalidArgue
 			If $iErr = $_WD_ERROR_Success Then
-				$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie" & ($sOption <> '') ? "/" & $sOption : "")
+				$sResponse = __WD_Delete($sURLSession & "cookie" & ($sOption <> '') ? "/" & $sOption : "")
 				$iErr = @error
 			EndIf
 
 		Case 'get'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
+			$sResponse = __WD_Get($sURLSession & "cookie/" & $sOption)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -1030,7 +1031,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 			EndIf
 
 		Case 'getall'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
+			$sResponse = __WD_Get($sURLSession & "cookie")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
