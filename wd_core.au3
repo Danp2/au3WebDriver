@@ -987,7 +987,7 @@ EndFunc   ;==>_WD_GetSource
 ;                  |
 ;                  |ADD       - Create a new cookie. $sOption has to be a JSON string
 ;                  |DELETE    - Delete a single cookie. The name of the cookie to delete is specified in $sOption
-;                  |DELETEALL - Delete all cookies.
+;                  |DELETEALL - Delete all cookies
 ;                  |GET       - Retrieve the value of a single cookie. The name of the cookie to retrieve has to be specified in $sOption
 ;                  |GETALL    - Retrieve the values of all cookies
 ;                  $sOption  - [optional] a string value. Default is ""
