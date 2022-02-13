@@ -427,29 +427,29 @@ EndFunc   ;==>_WD_Navigate
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Action"
-	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURL
+	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand
 
 	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
-	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
+	$sURLCommand = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
 
 	Switch $sCommand
 		Case 'actions'
 			If $sOption <> '' Then
-				$sResponse = __WD_Post($sURL, $sOption)
+				$sResponse = __WD_Post($sURLCommand, $sOption)
 			Else
-				$sResponse = __WD_Delete($sURL)
+				$sResponse = __WD_Delete($sURLCommand)
 			EndIf
 
 			$iErr = @error
 
 		Case 'back', 'forward', 'refresh'
-			$sResponse = __WD_Post($sURL, $_WD_EmptyDict)
+			$sResponse = __WD_Post($sURLCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'title', 'url'
-			$sResponse = __WD_Get($sURL)
+			$sResponse = __WD_Get($sURLCommand)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
