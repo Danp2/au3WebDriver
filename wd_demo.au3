@@ -383,6 +383,17 @@ Func DemoCookies()
 	Local $sCookie = '{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
 	_WD_Cookies($sSession, 'add', $sCookie)
 	_WD_Cookies($sSession, 'Get', $sName)
+	
+	ConsoleWrite("- Get all cookies" & @CRLF)
+	Local $sAllCookies = _WD_Cookies($sSession, 'getall')
+	ConsoleWrite("- Cookies (before 'deleteall') : " & @CRLF & $sAllCookies & @CRLF)
+
+	ConsoleWrite("- Delete all cookies" & @CRLF)
+	_WD_Cookies($sSession, 'deleteall')
+
+	ConsoleWrite("- Get all cookies" & @CRLF)
+	$sAllCookies = _WD_Cookies($sSession, 'getall')
+	ConsoleWrite("- Cookies (after 'deleteall') : " & @CRLF & $sAllCookies & @CRLF)
 EndFunc   ;==>DemoCookies
 
 Func DemoAlerts()
