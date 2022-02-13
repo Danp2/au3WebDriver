@@ -397,11 +397,15 @@ Func DemoCookies()
 	Local $sNID = _WD_Cookies($sSession, 'Get', 'NID')
 	ConsoleWrite("- Cookie obtained 'NID' : " & $sNID & @CRLF)
 
-	Local $sName = "Testname"
+	Local $sName = "TestName"
 	Local $sValue = "TestValue"
 
+	; calculate UNIX EPOCH time
+	Local $sNowPlus2Years = _DateAdd('Y', 2, _NowCalc())
+	Local $iDateCalc = Int(_DateDiff('s', "1970/01/01 00:00:00", $sNowPlus2Years))
+
 	; create JSON string for cookie
-	Local $sCookie = _WD_JsonCookie($sName, $sValue, Default, 'www.google.com', True, False, 1707825601, "None")
+	Local $sCookie = _WD_JsonCookie($sName, $sValue, Default, 'www.google.com', True, False, $iDateCalc, "None")
 
 	ConsoleWrite("- WD: Add cookie:" & @CRLF)
 	_WD_Cookies($sSession, 'add', $sCookie)
