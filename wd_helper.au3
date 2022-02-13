@@ -2186,12 +2186,12 @@ EndFunc   ;==>_WD_JsonActionPause
 ;                  $bHTTPOnly = Default[, $iExpiryTime = Default[, $sSameSite = Default]]]]]])
 ; Parameters ....: $sName               - a string value. The name of the cookie.
 ;                  $sValue              - a string value. The cookie value.
-;                  $sPath               - [optional] a string value. Default is '/'. This defines the cookie path.
-;                  $sDomain             - [optional] a string value. Default is '' - will be ommited and current browsing context’s of active document’s will be used. This defines the domain the cookie is visible to.
-;                  $bSecure             - [optional] a boolean value. Default is False. This defines whether the cookie is a secure cookie.
-;                  $bHTTPOnly           - [optional] a boolean value. Default is False. This defines whether the cookie is an HTTP only cookie.
-;                  $iExpiryTime         - [optional] an integer value. Default is 0 - will be ommited. This defines when the cookie expires, specified in seconds since Unix Epoch.
-;                  $sSameSite           - [optional] a string value. Default will be ommited and this mean "None". This defines whether the cookie applies to a SameSite policy. One of the following modes:
+;                  $sPath               - [optional] This defines the cookie path. Default is '/'.
+;                  $sDomain             - [optional] This defines the domain the cookie is visible to. Default is '' - will be ommited and current browsing context’s of active document’s will be used.
+;                  $bSecure             - [optional] This defines whether the cookie is a secure cookie. Default is False.
+;                  $bHTTPOnly           - [optional] This defines whether the cookie is an HTTP only cookie. Default is False.
+;                  $iExpiryTime         - [optional] This defines when the cookie expires, specified in seconds since Unix Epoch. Default is 0 - will be ommited.
+;                  $sSameSite           - [optional] This defines whether the cookie applies to a SameSite policy. Default will be ommited and this mean "None". One of the following modes can be used:
 ;                  |None
 ;                  |Lax
 ;                  |Strict
