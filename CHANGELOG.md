@@ -13,10 +13,16 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- Files to fulfill the community standards
+	- bug_report.md and feature_request.md
+	- CODE_OF_CONDUCT.md file
+	- PULL_REQUEST_TEMPLATE.md file
+
 ### Changed
 
 - README.md restruturing
 - Rename project (repository) to au3WebDriver
+- CONTRIBUTING.md file includes now reference notices to bug report and feature request templates
 
 ### Deprecated
 
