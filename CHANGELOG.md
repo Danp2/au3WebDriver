@@ -1,9 +1,28 @@
+#####
+
 # Changelog
 
-All notable changes to "WebDriver" will be documented in this file.
+All notable changes to "au3WebDriver" will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+Go to [legend](#legend---types-of-changes) for further information about the types of changes.
+
+## [Unreleased]
+
+### Added
+
+### Changed
+
+- README.md restruturing
+- Rename project (repository) to au3WebDriver
+
+### Deprecated
+
+### Fixed
+
+### Removed
 
 ## [0.5.2] - 2022-02-11
 
@@ -16,8 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 - _WD_HighlightElement: Flagged as Deprecated and will be removed in a future release
-
-### Fixed
 
 ## [0.5.1.1] - 2022-01-31
 
@@ -476,7 +493,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - _WD_DownloadFile
 - Global variable to hold session details
 - wd_demo.au3
-	- GUI front-end 
+	- GUI front-end
 	- DemoDownload
 
 ### Changed
@@ -802,70 +819,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/Danp2/WebDriver/compare/0.5.2...HEAD
-[0.5.2]:    https://github.com/Danp2/WebDriver/compare/0.5.1.1...0.5.2
-[0.5.1.1]:    https://github.com/Danp2/WebDriver/compare/0.5.1.0...0.5.1.1
-[0.5.1.0]:    https://github.com/Danp2/WebDriver/compare/0.5.0.3...0.5.1.0
-[0.5.0.3]:    https://github.com/Danp2/WebDriver/compare/0.5.0.2...0.5.0.3
-[0.5.0.2]:    https://github.com/Danp2/WebDriver/compare/0.5.0.1...0.5.0.2
-[0.5.0.1]:    https://github.com/Danp2/WebDriver/compare/0.4.1.2...0.5.0.1
-[0.4.1.2]:    https://github.com/Danp2/WebDriver/compare/0.4.1.1...0.4.1.2
-[0.4.1.1]:    https://github.com/Danp2/WebDriver/compare/0.4.1.0...0.4.1.1
-[0.4.1.0]:    https://github.com/Danp2/WebDriver/compare/0.4.0.5...0.4.1.0
-[0.4.0.5]:    https://github.com/Danp2/WebDriver/compare/0.4.0.4...0.4.0.5
-[0.4.0.4]:    https://github.com/Danp2/WebDriver/compare/0.4.0.3...0.4.0.4
-[0.4.0.3]:    https://github.com/Danp2/WebDriver/compare/0.4.0.2...0.4.0.3
-[0.4.0.2]:    https://github.com/Danp2/WebDriver/compare/0.4.0.1...0.4.0.2
-[0.4.0.1]:    https://github.com/Danp2/WebDriver/compare/0.3.1.1...0.4.0.1
-[0.3.1.1]:    https://github.com/Danp2/WebDriver/compare/0.3.1.0...0.3.1.1
-[0.3.1.0]:    https://github.com/Danp2/WebDriver/compare/0.3.0.9...0.3.1.0
-[0.3.0.9]:    https://github.com/Danp2/WebDriver/compare/0.3.0.8...0.3.0.9
-[0.3.0.8]:    https://github.com/Danp2/WebDriver/compare/0.3.0.7...0.3.0.8
-[0.3.0.7]:    https://github.com/Danp2/WebDriver/compare/0.3.0.6...0.3.0.7
-[0.3.0.6]:    https://github.com/Danp2/WebDriver/compare/0.3.0.5...0.3.0.6
-[0.3.0.5]:    https://github.com/Danp2/WebDriver/compare/0.3.0.4...0.3.0.5
-[0.3.0.4]:    https://github.com/Danp2/WebDriver/compare/0.3.0.3...0.3.0.4
-[0.3.0.3]:    https://github.com/Danp2/WebDriver/compare/0.3.0.2...0.3.0.3
-[0.3.0.2]:    https://github.com/Danp2/WebDriver/compare/0.3.0.1...0.3.0.2
-[0.3.0.1]:    https://github.com/Danp2/WebDriver/compare/0.2.0.9...0.3.0.1
-[0.2.0.9]:    https://github.com/Danp2/WebDriver/compare/0.2.0.8...0.2.0.9
-[0.2.0.8]:    https://github.com/Danp2/WebDriver/compare/0.2.0.7...0.2.0.8
-[0.2.0.7]:    https://github.com/Danp2/WebDriver/compare/0.2.0.6...0.2.0.7
-[0.2.0.6]:    https://github.com/Danp2/WebDriver/compare/0.2.0.5...0.2.0.6
-[0.2.0.5]:    https://github.com/Danp2/WebDriver/compare/0.2.0.4...0.2.0.5
-[0.2.0.4]:    https://github.com/Danp2/WebDriver/compare/0.2.0.3...0.2.0.4
-[0.2.0.3]:    https://github.com/Danp2/WebDriver/compare/0.2.0.2...0.2.0.3
-[0.2.0.2]:    https://github.com/Danp2/WebDriver/compare/0.2.0.1...0.2.0.2
-[0.2.0.1]:    https://github.com/Danp2/WebDriver/compare/0.1.0.21...0.2.0.1
-[0.1.0.21]:   https://github.com/Danp2/WebDriver/compare/0.1.0.20...0.1.0.21
-[0.1.0.20]:   https://github.com/Danp2/WebDriver/compare/0.1.0.19...0.1.0.20
-[0.1.0.19]:   https://github.com/Danp2/WebDriver/compare/0.1.0.18...0.1.0.19
-[0.1.0.18.1]: https://github.com/Danp2/WebDriver/compare/0.1.0.18...0.1.0.18.1
-[0.1.0.18]:   https://github.com/Danp2/WebDriver/compare/0.1.0.17...0.1.0.18
-[0.1.0.17]:   https://github.com/Danp2/WebDriver/compare/0.1.0.16...0.1.0.17
-[0.1.0.16]:   https://github.com/Danp2/WebDriver/compare/0.1.0.15...0.1.0.16
-[0.1.0.15]:   https://github.com/Danp2/WebDriver/compare/0.1.0.14...0.1.0.15
-[0.1.0.14]:   https://github.com/Danp2/WebDriver/compare/0.1.0.13...0.1.0.14
-[0.1.0.13]:   https://github.com/Danp2/WebDriver/compare/0.1.0.12...0.1.0.13
-[0.1.0.12]:   https://github.com/Danp2/WebDriver/compare/0.1.0.11...0.1.0.12
-[0.1.0.11]:   https://github.com/Danp2/WebDriver/compare/0.1.0.10...0.1.0.11
-[0.1.0.10]:   https://github.com/Danp2/WebDriver/compare/0.1.0.9...0.1.0.10
-[0.1.0.9]:    https://github.com/Danp2/WebDriver/compare/0.1.0.8...0.1.0.9
-[0.1.0.8]:    https://github.com/Danp2/WebDriver/compare/0.1.0.7...0.1.0.8
-[0.1.0.7]:    https://github.com/Danp2/WebDriver/compare/0.1.0.6...0.1.0.7
-[0.1.0.6]:    https://github.com/Danp2/WebDriver/compare/0.1.0.5...0.1.0.6
-[0.1.0.5]:    https://github.com/Danp2/WebDriver/compare/0.1.0.4...0.1.0.5
-[0.1.0.4]:    https://github.com/Danp2/WebDriver/compare/0.1.0.3...0.1.0.4
-[0.1.0.3]:    https://github.com/Danp2/WebDriver/compare/0.1.0.2...0.1.0.3
-[0.1.0.2]:    https://github.com/Danp2/WebDriver/compare/0.1.0.1...0.1.0.2
-[0.1.0.1]:    https://github.com/Danp2/WebDriver/releases/tag/0.1.0.1
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.5.2...HEAD
+[0.5.2]:      https://github.com/Danp2/au3WebDriver/compare/0.5.1.1...0.5.2
+[0.5.1.1]:    https://github.com/Danp2/au3WebDriver/compare/0.5.1.0...0.5.1.1
+[0.5.1.0]:    https://github.com/Danp2/au3WebDriver/compare/0.5.0.3...0.5.1.0
+[0.5.0.3]:    https://github.com/Danp2/au3WebDriver/compare/0.5.0.2...0.5.0.3
+[0.5.0.2]:    https://github.com/Danp2/au3WebDriver/compare/0.5.0.1...0.5.0.2
+[0.5.0.1]:    https://github.com/Danp2/au3WebDriver/compare/0.4.1.2...0.5.0.1
+[0.4.1.2]:    https://github.com/Danp2/au3WebDriver/compare/0.4.1.1...0.4.1.2
+[0.4.1.1]:    https://github.com/Danp2/au3WebDriver/compare/0.4.1.0...0.4.1.1
+[0.4.1.0]:    https://github.com/Danp2/au3WebDriver/compare/0.4.0.5...0.4.1.0
+[0.4.0.5]:    https://github.com/Danp2/au3WebDriver/compare/0.4.0.4...0.4.0.5
+[0.4.0.4]:    https://github.com/Danp2/au3WebDriver/compare/0.4.0.3...0.4.0.4
+[0.4.0.3]:    https://github.com/Danp2/au3WebDriver/compare/0.4.0.2...0.4.0.3
+[0.4.0.2]:    https://github.com/Danp2/au3WebDriver/compare/0.4.0.1...0.4.0.2
+[0.4.0.1]:    https://github.com/Danp2/au3WebDriver/compare/0.3.1.1...0.4.0.1
+[0.3.1.1]:    https://github.com/Danp2/au3WebDriver/compare/0.3.1.0...0.3.1.1
+[0.3.1.0]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.9...0.3.1.0
+[0.3.0.9]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.8...0.3.0.9
+[0.3.0.8]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.7...0.3.0.8
+[0.3.0.7]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.6...0.3.0.7
+[0.3.0.6]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.5...0.3.0.6
+[0.3.0.5]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.4...0.3.0.5
+[0.3.0.4]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.3...0.3.0.4
+[0.3.0.3]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.2...0.3.0.3
+[0.3.0.2]:    https://github.com/Danp2/au3WebDriver/compare/0.3.0.1...0.3.0.2
+[0.3.0.1]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.9...0.3.0.1
+[0.2.0.9]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.8...0.2.0.9
+[0.2.0.8]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.7...0.2.0.8
+[0.2.0.7]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.6...0.2.0.7
+[0.2.0.6]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.5...0.2.0.6
+[0.2.0.5]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.4...0.2.0.5
+[0.2.0.4]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.3...0.2.0.4
+[0.2.0.3]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.2...0.2.0.3
+[0.2.0.2]:    https://github.com/Danp2/au3WebDriver/compare/0.2.0.1...0.2.0.2
+[0.2.0.1]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.21...0.2.0.1
+[0.1.0.21]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.20...0.1.0.21
+[0.1.0.20]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.19...0.1.0.20
+[0.1.0.19]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.18...0.1.0.19
+[0.1.0.18.1]: https://github.com/Danp2/au3WebDriver/compare/0.1.0.18...0.1.0.18.1
+[0.1.0.18]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.17...0.1.0.18
+[0.1.0.17]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.16...0.1.0.17
+[0.1.0.16]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.15...0.1.0.16
+[0.1.0.15]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.14...0.1.0.15
+[0.1.0.14]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.13...0.1.0.14
+[0.1.0.13]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.12...0.1.0.13
+[0.1.0.12]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.11...0.1.0.12
+[0.1.0.11]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.10...0.1.0.11
+[0.1.0.10]:   https://github.com/Danp2/au3WebDriver/compare/0.1.0.9...0.1.0.10
+[0.1.0.9]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.8...0.1.0.9
+[0.1.0.8]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.7...0.1.0.8
+[0.1.0.7]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.6...0.1.0.7
+[0.1.0.6]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.5...0.1.0.6
+[0.1.0.5]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.4...0.1.0.5
+[0.1.0.4]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.3...0.1.0.4
+[0.1.0.3]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.2...0.1.0.3
+[0.1.0.2]:    https://github.com/Danp2/au3WebDriver/compare/0.1.0.1...0.1.0.2
+[0.1.0.1]:    https://github.com/Danp2/au3WebDriver/releases/tag/0.1.0.1
 
 ---
 
 ### Legend - Types of changes
+
 - `Added` for new features.
 - `Changed` for changes in existing functionality.
 - `Deprecated` for soon-to-be removed features.
-- `Removed` for now removed features.
 - `Fixed` for any bug fixes.
+- `Removed` for now removed features.
 - `Security` in case of vulnerabilities.
+
+##
+
+[To the top](#)
