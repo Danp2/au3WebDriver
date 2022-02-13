@@ -996,8 +996,8 @@ EndFunc   ;==>_WD_GetSource
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
-; Modified ......:
-; Remarks .......: Please have a look at WD_Demo.au3 > DemoCookies function for how to add a new cookie
+; Modified ......: mLipok
+; Remarks .......: Please have a look at wd_demo.au3 > DemoCookies function for how to add a new cookie
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#cookies
 ; Example .......: No
