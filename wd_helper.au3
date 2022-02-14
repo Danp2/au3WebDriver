@@ -1399,7 +1399,8 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						If @error Then
 							$iErr = $_WD_ERROR_GeneralError
 						Else
-							$FilesInZip = $oShell.NameSpace($sTempFile).items
+							Local $oNameSpace = $oShell.NameSpace($sTempFile)
+							$FilesInZip = $oNameSpace.items
 							If @error Then
 								$iErr = $_WD_ERROR_GeneralError
 							Else
