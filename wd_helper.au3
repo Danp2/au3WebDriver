@@ -1383,39 +1383,42 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				ElseIf $bUpdateAvail Or $bForce Then
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
-
-					; Close any instances of webdriver and delete from disk
-					__WD_CloseDriver($sDriverEXE)
-					FileDelete($sInstallDir & $sDriverEXE)
-
-					; Handle COM Errors
-					Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
-					#forceref $oErr
-
-					; Extract new instance of webdriver
-					$oShell = ObjCreate("Shell.Application")
-					If @error Then
-						$iErr = $_WD_ERROR_GeneralError
+					If @error then
+						$iErr = @error
 					Else
-						$FilesInZip = $oShell.NameSpace($sTempFile).items
+						; Close any instances of webdriver and delete from disk
+						__WD_CloseDriver($sDriverEXE)
+						FileDelete($sInstallDir & $sDriverEXE)
+
+						; Handle COM Errors
+						Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+						#forceref $oErr
+
+						; Extract new instance of webdriver
+						$oShell = ObjCreate("Shell.Application")
 						If @error Then
 							$iErr = $_WD_ERROR_GeneralError
 						Else
-							For $FileItem In $FilesInZip ; Check the files in the archive separately
-								If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
-									$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
-								EndIf
-							Next
+							$FilesInZip = $oShell.NameSpace($sTempFile).items
 							If @error Then
 								$iErr = $_WD_ERROR_GeneralError
 							Else
-								$iErr = $_WD_ERROR_Success
-								$bResult = True
+								For $FileItem In $FilesInZip ; Check the files in the archive separately
+									If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
+										$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+									EndIf
+								Next
+								If @error Then
+									$iErr = $_WD_ERROR_GeneralError
+								Else
+									$iErr = $_WD_ERROR_Success
+									$bResult = True
+								EndIf
 							EndIf
 						EndIf
-					EndIf
 
-					FileDelete($sTempFile)
+						FileDelete($sTempFile)
+					EndIf
 				EndIf
 			EndIf
 		EndIf
