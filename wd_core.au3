@@ -1016,7 +1016,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 
 		Case 'delete', 'deleteall'
 			If $sCommand = 'delete' And IsString($sOption) = 0 Then $iErr = $_WD_ERROR_InvalidArgue
-			If $sCommand = 'deleteall' And (IsString($sOption) = 0 Or StringLen($sOption) <> 0) Then $iErr = $_WD_ERROR_InvalidArgue
+			If $sCommand = 'deleteall' And $sOption <> '' Then $iErr = $_WD_ERROR_InvalidArgue
 			If $iErr = $_WD_ERROR_Success Then
 				$sResponse = __WD_Delete($sURLSession & "cookie" & ($sOption <> '') ? "/" & $sOption : "")
 				$iErr = @error
