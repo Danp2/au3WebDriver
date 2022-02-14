@@ -2191,7 +2191,7 @@ EndFunc   ;==>_WD_JsonActionPause
 ;                  $bSecure             - [optional] This defines whether the cookie is a secure cookie. Default is False.
 ;                  $bHTTPOnly           - [optional] This defines whether the cookie is an HTTP only cookie. Default is False.
 ;                  $iExpiryTime         - [optional] This defines when the cookie expires, specified in seconds since Unix Epoch. Default is 0 - will be ommited.
-;                  $sSameSite           - [optional] This defines whether the cookie applies to a SameSite policy. Default will be ommited and this mean "None". One of the following modes can be used:
+;                  $sSameSite           - [optional] This defines whether the cookie applies to a SameSite policy. Default is '' - will be ommited and this mean "None". One of the following modes can be used:
 ;                  |None
 ;                  |Lax
 ;                  |Strict
