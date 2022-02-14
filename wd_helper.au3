@@ -2203,24 +2203,27 @@ EndFunc   ;==>_WD_JsonActionPause
 ; Link ..........: https://www.w3.org/TR/webdriver/#dfn-table-for-cookie-conversion
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_JsonCookie($sName, $sValue, $sPath = Default, $sDomain = Default, $bSecure = Default , $bHTTPOnly = Default, $iExpiryTime = Default, $sSameSite =Default)
+Func _WD_JsonCookie($sName, $sValue, $sPath = Default, $sDomain = Default, $bSecure = Default, $bHTTPOnly = Default, $iExpiryTime = Default, $sSameSite = Default)
 	Local Const $sFuncName = "_WD_JsonCookie"
+
+	; validate Default values
 	If $sPath = Default Then $sPath = '/'
 	If $sDomain = Default Then $sDomain = ''
 	If $bSecure = Default Then $bSecure = False
 	If $bHTTPOnly = Default Then $bHTTPOnly = False
-	If $iExpiryTime = Default Then $iExpiryTime  = 0
+	If $iExpiryTime = Default Then $iExpiryTime = 0
 	If $sSameSite = Default Then $sSameSite = ''
 
+	; Create JSON
 	Local $vData = Json_ObjCreate()
 	Json_Put($vData, '.cookie.name', $sName)
 	Json_Put($vData, '.cookie.value', $sValue)
-	If $sPath Then Json_Put($vData, '.cookie.path', $sPath)
-	If $sDomain Then Json_Put($vData, '.cookie.domain', $sDomain)
+	If IsString($sPath) And StringLen($sPath) And $sPath <> '/' Then Json_Put($vData, '.cookie.path', $sPath)
+	If IsString($sDomain) And StringLen($sDomain) Then Json_Put($vData, '.cookie.domain', $sDomain)
 	If IsBool($bSecure) Then Json_Put($vData, '.cookie.secure', $bSecure)
 	If IsBool($bHTTPOnly) Then Json_Put($vData, '.cookie.httponly', $bHTTPOnly)
 	If IsInt($iExpiryTime) And $iExpiryTime > 0 Then Json_Put($vData, '.cookie.expiry', $iExpiryTime)
-	If $sSameSite Then Json_Put($vData, '.cookie.sameSite', $sSameSite)
+	If IsString($sSameSite) And StringLen($sSameSite) Then Json_Put($vData, '.cookie.sameSite', $sSameSite)
 
 	Local $sJSON = Json_Encode($vData)
 
