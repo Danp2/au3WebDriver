@@ -1417,9 +1417,8 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 								EndIf
 							EndIf
 						EndIf
-
-						FileDelete($sTempFile)
 					EndIf
+					FileDelete($sTempFile)
 				EndIf
 			EndIf
 		EndIf
