@@ -1383,7 +1383,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				ElseIf $bUpdateAvail Or $bForce Then
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
-					If @error then
+					If @error Then
 						$iErr = @error
 					Else
 						; Close any instances of webdriver and delete from disk
