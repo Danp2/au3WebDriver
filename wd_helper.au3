@@ -2184,8 +2184,8 @@ EndFunc   ;==>_WD_JsonActionPause
 ; Name ..........: _WD_JsonCookie
 ; Syntax ........: _WD_JsonCookie($sName, $sValue[, $sPath = Default[, $sDomain = Default[, $bSecure = Default [,
 ;                  $bHTTPOnly = Default[, $iExpiryTime = Default[, $sSameSite = Default]]]]]])
-; Parameters ....: $sName               - a string value. The name of the cookie.
-;                  $sValue              - a string value. The cookie value.
+; Parameters ....: $sName               - The name of the cookie.
+;                  $sValue              - The cookie value.
 ;                  $sPath               - [optional] This defines the cookie path. Default is '/'.
 ;                  $sDomain             - [optional] This defines the domain the cookie is visible to. Default is '' - will be ommited and current browsing context’s of active document’s will be used.
 ;                  $bSecure             - [optional] This defines whether the cookie is a secure cookie. Default is False.
