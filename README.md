@@ -106,6 +106,7 @@ Supporting multiple browsers via the same code base is now possible with just a 
 | _WD_ElementActionEx     | Perform advanced action on desginated element.                             |
 | _WD_GetTable            | Return all elements of a table.                                            |
 | _WD_IsFullScreen        | Return a boolean indicating if the session is in full screen mode.         |
+| _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                        |
 | _WD_CheckContext        | Check if browser context is still valid.                                   |
 | _WD_JsonActionKey       | Formats keyboard "action" strings for use in _WD_Action                    |
 | _WD_JsonActionPointer   | Formats pointer "action" strings for use in _WD_Action                     |
