@@ -1256,9 +1256,9 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  $bForce      - [optional] Force update? Default is False
 ; Return values .: Success - True (Driver was updated).
 ;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
-;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
@@ -1383,38 +1383,41 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				ElseIf $bUpdateAvail Or $bForce Then
 					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
-
-					; Close any instances of webdriver and delete from disk
-					__WD_CloseDriver($sDriverEXE)
-					FileDelete($sInstallDir & $sDriverEXE)
-
-					; Handle COM Errors
-					Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
-					#forceref $oErr
-
-					; Extract new instance of webdriver
-					$oShell = ObjCreate("Shell.Application")
 					If @error Then
-						$iErr = $_WD_ERROR_GeneralError
+						$iErr = @error
 					Else
-						$FilesInZip = $oShell.NameSpace($sTempFile).items
+						; Close any instances of webdriver and delete from disk
+						__WD_CloseDriver($sDriverEXE)
+						FileDelete($sInstallDir & $sDriverEXE)
+
+						; Handle COM Errors
+						Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+						#forceref $oErr
+
+						; Extract new instance of webdriver
+						$oShell = ObjCreate("Shell.Application")
 						If @error Then
 							$iErr = $_WD_ERROR_GeneralError
 						Else
-							For $FileItem In $FilesInZip ; Check the files in the archive separately
-								If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
-									$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
-								EndIf
-							Next
+							Local $oNameSpace = $oShell.NameSpace($sTempFile)
+							$FilesInZip = $oNameSpace.items
 							If @error Then
 								$iErr = $_WD_ERROR_GeneralError
 							Else
-								$iErr = $_WD_ERROR_Success
-								$bResult = True
+								For $FileItem In $FilesInZip ; Check the files in the archive separately
+									If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
+										$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+									EndIf
+								Next
+								If @error Then
+									$iErr = $_WD_ERROR_GeneralError
+								Else
+									$iErr = $_WD_ERROR_Success
+									$bResult = True
+								EndIf
 							EndIf
 						EndIf
 					EndIf
-
 					FileDelete($sTempFile)
 				EndIf
 			EndIf
@@ -1543,7 +1546,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
-	If @error Then $iErr = $_WD_ERROR_GeneralError
+	If @error Then $iErr = $_WD_ERROR_NotFound
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $hFile = FileOpen($sDest, $FO_OVERWRITE + $FO_BINARY)
@@ -1556,8 +1559,6 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 		Else
 			$iErr = $_WD_ERROR_GeneralError
 		EndIf
-	Else
-		$iErr = $_WD_ERROR_NotFound
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
