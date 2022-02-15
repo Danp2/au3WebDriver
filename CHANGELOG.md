@@ -15,6 +15,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - _WD_JsonCookie (mLipok)
 - _WD_Cookies: Added DeleteAll option (mLipok)
+- _WD_ElementSelectAction: Added SelectedIndex option (mLipok)
 - Files to fulfill the community standards
 	- bug_report.md and feature_request.md
 	- CODE_OF_CONDUCT.md file
@@ -22,6 +23,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Changed
 
+- _WD_ElementSelectAction: Options array expanded to include additional columns (index, selected) (mLipok)
 - README.md restruturing
 - Rename project (repository) to au3WebDriver
 - CONTRIBUTING.md file includes now reference notices to bug report and feature request templates
