@@ -13,6 +13,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- _WD_GetDevicePixelRatio (mLipok)
+
 ### Changed
 
 - README.md restruturing
