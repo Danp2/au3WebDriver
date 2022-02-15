@@ -19,6 +19,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - README.md restruturing
 - Rename project (repository) to au3WebDriver
+- wd_demo.au3
+	- Updated DemoCookies
 
 ### Deprecated
 
