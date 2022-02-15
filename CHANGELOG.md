@@ -17,12 +17,15 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- bug_report.md and feature_request.md
 	- CODE_OF_CONDUCT.md file
 	- PULL_REQUEST_TEMPLATE.md file
+- _WD_JsonCookie() (mLipok)
 
 ### Changed
 
 - README.md restruturing
 - Rename project (repository) to au3WebDriver
 - CONTRIBUTING.md file includes now reference notices to bug report and feature request templates
+- wd_demo.au3
+	- Updated DemoCookies
 
 ### Deprecated
 

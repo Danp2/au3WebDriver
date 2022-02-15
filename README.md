@@ -110,6 +110,7 @@ Supporting multiple browsers via the same code base is now possible with just a 
 | _WD_JsonActionKey       | Formats keyboard "action" strings for use in _WD_Action                    |
 | _WD_JsonActionPointer   | Formats pointer "action" strings for use in _WD_Action                     |
 | _WD_JsonActionPause     | Formats pause "action" strings for use in _WD_Action                       |
+| _WD_JsonCookie          | Formats "cookie" JSON strings for use in _WD_Cookies.                      |
 
 <p>
 </details>
