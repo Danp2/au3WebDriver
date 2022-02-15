@@ -2195,7 +2195,7 @@ EndFunc   ;==>_WD_JsonActionPause
 ;                  |None
 ;                  |Lax
 ;                  |Strict
-; Return values .: cookie as formated JSON strings
+; Return values .: Cookie as formatted JSON strings
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
