@@ -1256,7 +1256,6 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  $bForce      - [optional] Force update? Default is False
 ; Return values .: Success - True (Driver was updated).
 ;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
-;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotFound
