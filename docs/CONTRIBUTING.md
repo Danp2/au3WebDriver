@@ -4,6 +4,8 @@
 
 ### Preparing
 
+- Please ensure that you have read and noticed the [CODE OF CONDUCT](https://github.com/Danp2/au3WebDriver/blob/master/docs/CODE_OF_CONDUCT.md) document.
+- Please also notice that there are "Bug report" and "Feature request" templates which you can use.
 - Please try to follow the existing code style as best as you can.
 - If you're unsure about anything, don't hesitate to ask.
 

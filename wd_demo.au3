@@ -2,6 +2,7 @@
 ; standard UDF's
 #include <ButtonConstants.au3>
 #include <ColorConstants.au3>
+#include <Date.au3>
 #include <GuiComboBoxEx.au3>
 #include <GUIConstantsEx.au3>
 #include <WindowsConstants.au3>
@@ -386,14 +387,48 @@ Func DemoScript()
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()
+	ConsoleWrite("- WD: Navigating:" & @CRLF)
 	_WD_Navigate($sSession, "http://google.com")
-	_WD_Cookies($sSession, 'Get', 'NID')
 
-	Local $sName = "Testname"
+	ConsoleWrite("- WD: Get all cookies:" & @CRLF)
+	Local $sAllCookies = _WD_Cookies($sSession, 'getall')
+	ConsoleWrite("- Cookies (obtained at start after navigate) : " & $sAllCookies & @CRLF)
+
+	ConsoleWrite("- WD: Get 'NID' cookie:" & @CRLF)
+	Local $sNID = _WD_Cookies($sSession, 'Get', 'NID')
+	ConsoleWrite("- Cookie obtained 'NID' : " & $sNID & @CRLF)
+
+	Local $sName = "TestName"
 	Local $sValue = "TestValue"
-	Local $sCookie = '{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
+
+	; calculate UNIX EPOCH time
+	Local $sNowPlus2Years = _DateAdd('Y', 2, _NowCalc())
+	Local $iDateCalc = Int(_DateDiff('s', "1970/01/01 00:00:00", $sNowPlus2Years))
+
+	; create JSON string for cookie
+	Local $sCookie = _WD_JsonCookie($sName, $sValue, Default, 'www.google.com', True, False, $iDateCalc, "None")
+
+	ConsoleWrite("- WD: Add cookie:" & @CRLF)
 	_WD_Cookies($sSession, 'add', $sCookie)
-	_WD_Cookies($sSession, 'Get', $sName)
+
+	ConsoleWrite("- WD: Check cookie:" & @CRLF)
+	Local $sResult = _WD_Cookies($sSession, 'get', $sName)
+
+	; compare results in console
+	ConsoleWrite("- Cookie added    : " & $sCookie & @CRLF)
+	ConsoleWrite("- Cookie obtained : " & $sResult & @CRLF)
+
+	ConsoleWrite("- WD: Get all cookies:" & @CRLF)
+	$sAllCookies = _WD_Cookies($sSession, 'getall')
+	ConsoleWrite("- Cookies (obtained before 'deleteall') : " & $sAllCookies & @CRLF)
+
+	ConsoleWrite("- WD: Delete all cookies:" & @CRLF)
+	_WD_Cookies($sSession, 'deleteall')
+
+	ConsoleWrite("- WD: Get all cookies:" & @CRLF)
+	$sAllCookies = _WD_Cookies($sSession, 'getall')
+	ConsoleWrite("- Cookies (obtained after 'deleteall') : " & $sAllCookies & @CRLF)
+
 EndFunc   ;==>DemoCookies
 
 Func DemoAlerts()

@@ -13,16 +13,27 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- _WD_JsonCookie (mLipok)
+- _WD_Cookies: Added DeleteAll option (mLipok)
 - _WD_GetDevicePixelRatio (mLipok)
+- Files to fulfill the community standards
+	- bug_report.md and feature_request.md
+	- CODE_OF_CONDUCT.md file
+	- PULL_REQUEST_TEMPLATE.md file
 
 ### Changed
 
 - README.md restruturing
 - Rename project (repository) to au3WebDriver
+- CONTRIBUTING.md file includes now reference notices to bug report and feature request templates
+- wd_demo.au3
+	- Updated DemoCookies
 
 ### Deprecated
 
 ### Fixed
+
+- _WD_UpdateDriver: Detect error during download and addtional error handling
 
 ### Removed
 

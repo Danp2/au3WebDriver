@@ -985,39 +985,45 @@ EndFunc   ;==>_WD_GetSource
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sCommand - One of the following actions:
 ;                  |
-;                  |ADD    - Create a new cookie. $sOption has to be a JSON string
-;                  |DELETE - Delete a single cookie. The name of the cookie to delete is specified in $sOption
-;                  |GET    - Retrieve the value of a single cookie. The name of the cookie to retrieve has to be specified in $sOption
-;                  |GETALL - Retrieve the values of all cookies
+;                  |ADD       - Create a new cookie. $sOption has to be a JSON string
+;                  |DELETE    - Delete a single cookie. The name of the cookie to delete is specified in $sOption
+;                  |DELETEALL - Delete all cookies
+;                  |GET       - Retrieve the value of a single cookie. The name of the cookie to retrieve has to be specified in $sOption
+;                  |GETALL    - Retrieve the values of all cookies
 ;                  $sOption  - [optional] a string value. Default is ""
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Danp2
-; Modified ......:
-; Remarks .......: Please have a look at WD_Demo.au3 > DemoCookies function for how to add a new cookie
-; Related .......:
+; Modified ......: mLipok
+; Remarks .......: Please have a look at wd_demo.au3 > DemoCookies function for how to add a new cookie
+; Related .......: _WD_JsonCookie
 ; Link ..........: https://www.w3.org/TR/webdriver#cookies
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Cookies"
-	Local $sResult, $sResponse, $iErr
-
+	Local $sResult, $sResponse, $iErr = $_WD_ERROR_Success
 	If $sOption = Default Then $sOption = ''
 
+	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/"
 	Switch $sCommand
 		Case 'add'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie", $sOption)
+			$sResponse = __WD_Post($sURLSession & "cookie", $sOption)
 			$iErr = @error
 
-		Case 'delete'
-			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
-			$iErr = @error
+		Case 'delete', 'deleteall'
+			If $sCommand = 'delete' And IsString($sOption) = 0 Then $iErr = $_WD_ERROR_InvalidArgue
+			If $sCommand = 'deleteall' And $sOption <> '' Then $iErr = $_WD_ERROR_InvalidArgue
+			If $iErr = $_WD_ERROR_Success Then
+				$sResponse = __WD_Delete($sURLSession & "cookie" & ($sOption <> '') ? "/" & $sOption : "")
+				$iErr = @error
+			EndIf
 
 		Case 'get'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie/" & $sOption)
+			$sResponse = __WD_Get($sURLSession & "cookie/" & $sOption)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -1025,7 +1031,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 			EndIf
 
 		Case 'getall'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/cookie")
+			$sResponse = __WD_Get($sURLSession & "cookie")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -1033,7 +1039,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 			EndIf
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|DeleteAll|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
