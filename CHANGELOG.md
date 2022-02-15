@@ -1,9 +1,38 @@
+#####
+
 # Changelog
 
-All notable changes to "WebDriver" will be documented in this file.
+All notable changes to "au3WebDriver" will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+Go to [legend](#legend---types-of-changes) for further information about the types of changes.
+
+## [Unreleased]
+
+### Added
+
+- _WD_JsonCookie (mLipok)
+- _WD_Cookies: Added DeleteAll option (mLipok)
+- Files to fulfill the community standards
+	- bug_report.md and feature_request.md
+	- CODE_OF_CONDUCT.md file
+	- PULL_REQUEST_TEMPLATE.md file
+
+### Changed
+
+- README.md restruturing
+- Rename project (repository) to au3WebDriver
+- CONTRIBUTING.md file includes now reference notices to bug report and feature request templates
+- wd_demo.au3
+	- Updated DemoCookies
+
+### Deprecated
+
+### Fixed
+
+### Removed
 
 ## [0.5.2] - 2022-02-11
 
@@ -476,7 +505,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - _WD_DownloadFile
 - Global variable to hold session details
 - wd_demo.au3
-	- GUI front-end 
+	- GUI front-end
 	- DemoDownload
 
 ### Changed
