@@ -22,6 +22,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Fixed
 
+- _WD_UpdateDriver: Detect error during download and addtional error handling
+
 ### Removed
 
 ## [0.5.2] - 2022-02-11
