@@ -13,11 +13,12 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- _WD_JsonCookie (mLipok)
+- _WD_Cookies: Added DeleteAll option (mLipok)
 - Files to fulfill the community standards
 	- bug_report.md and feature_request.md
 	- CODE_OF_CONDUCT.md file
 	- PULL_REQUEST_TEMPLATE.md file
-- _WD_JsonCookie() (mLipok)
 
 ### Changed
 
