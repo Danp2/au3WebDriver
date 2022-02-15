@@ -13,10 +13,14 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- _WD_JsonCookie() (mLipok)
+
 ### Changed
 
 - README.md restruturing
 - Rename project (repository) to au3WebDriver
+- wd_demo.au3
+	- Updated DemoCookies
 
 ### Deprecated
 

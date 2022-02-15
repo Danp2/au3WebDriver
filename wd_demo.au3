@@ -386,14 +386,37 @@ Func DemoScript()
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()
+	ConsoleWrite("- WD: Navigating:" & @CRLF)
 	_WD_Navigate($sSession, "http://google.com")
-	_WD_Cookies($sSession, 'Get', 'NID')
 
-	Local $sName = "Testname"
+	ConsoleWrite("- WD: Get all cookies:" & @CRLF)
+	Local $sAllCookies = _WD_Cookies($sSession, 'getall')
+	ConsoleWrite("- Cookies (obtained at start after navigate) : " & $sAllCookies & @CRLF)
+
+	ConsoleWrite("- WD: Get 'NID' cookie:" & @CRLF)
+	Local $sNID = _WD_Cookies($sSession, 'Get', 'NID')
+	ConsoleWrite("- Cookie obtained 'NID' : " & $sNID & @CRLF)
+
+	Local $sName = "TestName"
 	Local $sValue = "TestValue"
-	Local $sCookie = '{"cookie": {"name":"' & $sName & '","value":"' & $sValue & '"}}'
+
+	; calculate UNIX EPOCH time
+	Local $sNowPlus2Years = _DateAdd('Y', 2, _NowCalc())
+	Local $iDateCalc = Int(_DateDiff('s', "1970/01/01 00:00:00", $sNowPlus2Years))
+
+	; create JSON string for cookie
+	Local $sCookie = _WD_JsonCookie($sName, $sValue, Default, 'www.google.com', True, False, $iDateCalc, "None")
+
+	ConsoleWrite("- WD: Add cookie:" & @CRLF)
 	_WD_Cookies($sSession, 'add', $sCookie)
-	_WD_Cookies($sSession, 'Get', $sName)
+
+	ConsoleWrite("- WD: Check cookie:" & @CRLF)
+	Local $sResult = _WD_Cookies($sSession, 'get', $sName)
+
+	; compare results in console
+	ConsoleWrite("- Cookie added    : " & $sCookie & @CRLF)
+	ConsoleWrite("- Cookie obtained : " & $sResult & @CRLF)
+
 EndFunc   ;==>DemoCookies
 
 Func DemoAlerts()
