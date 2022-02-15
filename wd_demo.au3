@@ -2,6 +2,7 @@
 ; standard UDF's
 #include <ButtonConstants.au3>
 #include <ColorConstants.au3>
+#include <Date.au3>
 #include <GuiComboBoxEx.au3>
 #include <GUIConstantsEx.au3>
 #include <WindowsConstants.au3>
@@ -409,8 +410,14 @@ Func DemoCookies()
 
 	ConsoleWrite("- WD: Add cookie:" & @CRLF)
 	_WD_Cookies($sSession, 'add', $sCookie)
-	_WD_Cookies($sSession, 'get', $sName)
-	
+
+	ConsoleWrite("- WD: Check cookie:" & @CRLF)
+	Local $sResult = _WD_Cookies($sSession, 'get', $sName)
+
+	; compare results in console
+	ConsoleWrite("- Cookie added    : " & $sCookie & @CRLF)
+	ConsoleWrite("- Cookie obtained : " & $sResult & @CRLF)
+
 	ConsoleWrite("- WD: Get all cookies:" & @CRLF)
 	$sAllCookies = _WD_Cookies($sSession, 'getall')
 	ConsoleWrite("- Cookies (obtained before 'deleteall') : " & $sAllCookies & @CRLF)
@@ -421,13 +428,6 @@ Func DemoCookies()
 	ConsoleWrite("- WD: Get all cookies:" & @CRLF)
 	$sAllCookies = _WD_Cookies($sSession, 'getall')
 	ConsoleWrite("- Cookies (obtained after 'deleteall') : " & $sAllCookies & @CRLF)
-
-	ConsoleWrite("- WD: Check cookie:" & @CRLF)
-	Local $sResult = _WD_Cookies($sSession, 'get', $sName)
-
-	; compare results in console
-	ConsoleWrite("- Cookie added    : " & $sCookie & @CRLF)
-	ConsoleWrite("- Cookie obtained : " & $sResult & @CRLF)
 
 EndFunc   ;==>DemoCookies
 
