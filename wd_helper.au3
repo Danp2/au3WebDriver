@@ -2009,7 +2009,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Modified ......:
 ; Remarks .......:
 ; Related .......:
-; Link ..........:
+; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetDevicePixelRatio($sSession)
