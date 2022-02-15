@@ -427,29 +427,29 @@ EndFunc   ;==>_WD_Navigate
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Action"
-	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURL
+	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand
 
 	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
-	$sURL = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
+	$sURLCommand = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
 
 	Switch $sCommand
 		Case 'actions'
 			If $sOption <> '' Then
-				$sResponse = __WD_Post($sURL, $sOption)
+				$sResponse = __WD_Post($sURLCommand, $sOption)
 			Else
-				$sResponse = __WD_Delete($sURL)
+				$sResponse = __WD_Delete($sURLCommand)
 			EndIf
 
 			$iErr = @error
 
 		Case 'back', 'forward', 'refresh'
-			$sResponse = __WD_Post($sURL, $_WD_EmptyDict)
+			$sResponse = __WD_Post($sURLCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'title', 'url'
-			$sResponse = __WD_Get($sURL)
+			$sResponse = __WD_Get($sURLCommand)
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -512,59 +512,59 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
-
+	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/"
 	Switch $sCommand
 		Case 'close'
-			$sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window")
+			$sResponse = __WD_Delete($sURLSession & "window")
 			$iErr = @error
 
 		Case 'fullscreen', 'maximize', 'minimize'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $_WD_EmptyDict)
+			$sResponse = __WD_Post($sURLSession & "window/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'handles'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
+			$sResponse = __WD_Get($sURLSession & "window/" & $sCommand)
 			$iErr = @error
 
 		Case 'new'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
+			$sResponse = __WD_Post($sURLSession & "window/" & $sCommand, $sOption)
 			$iErr = @error
 
 		Case 'frame', 'print'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
+			$sResponse = __WD_Post($sURLSession & $sCommand, $sOption)
 			$iErr = @error
 
 		Case 'parent'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/frame/parent", $sOption)
+			$sResponse = __WD_Post($sURLSession & "frame/parent", $sOption)
 			$iErr = @error
 
 		Case 'rect'
 			If $sOption = '' Then
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand)
+				$sResponse = __WD_Get($sURLSession & "window/" & $sCommand)
 			Else
-				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window/" & $sCommand, $sOption)
+				$sResponse = __WD_Post($sURLSession & "window/" & $sCommand, $sOption)
 			EndIf
 
 			$iErr = @error
 
 		Case 'screenshot'
 			If $sOption = '' Then
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+				$sResponse = __WD_Get($sURLSession & $sCommand)
 			Else
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand & '/' & $sOption)
+				$sResponse = __WD_Get($sURLSession & $sCommand & '/' & $sOption)
 			EndIf
 
 			$iErr = @error
 
 		Case 'switch'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/window", $sOption)
+			$sResponse = __WD_Post($sURLSession & "window", $sOption)
 			$iErr = @error
 
 		Case 'window'
 			If $sOption = '' Then
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand)
+				$sResponse = __WD_Get($sURLSession & $sCommand)
 			Else
-				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand, $sOption)
+				$sResponse = __WD_Post($sURLSession & $sCommand, $sOption)
 			EndIf
 
 			$iErr = @error
@@ -747,28 +747,29 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 
 	$sCommand = StringLower($sCommand)
 
+	Local $sURLElement = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/"
 	Switch $sCommand
 		Case 'complabel', 'comprole', 'displayed', 'enabled', 'name', 'rect', 'selected', 'shadow', 'screenshot', 'text'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand)
+			$sResponse = __WD_Get($sURLElement & $sElement & "/" & $sCommand)
 			$iErr = @error
 
 		Case 'active'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sCommand)
+			$sResponse = __WD_Get($sURLElement & $sCommand)
 			$iErr = @error
 
 		Case 'attribute', 'css', 'property'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand & "/" & $sOption)
+			$sResponse = __WD_Get($sURLElement & $sElement & "/" & $sCommand & "/" & $sOption)
 			$iErr = @error
 
 		Case 'clear', 'click'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '"}')
+			$sResponse = __WD_Post($sURLElement & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '"}')
 			$iErr = @error
 
 		Case 'value'
 			If $sOption Then
-				$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & __WD_EscapeString($sOption) & '"}')
+				$sResponse = __WD_Post($sURLElement & $sElement & "/" & $sCommand, '{"id":"' & $sElement & '", "text":"' & __WD_EscapeString($sOption) & '"}')
 			Else
-				$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/" & $sElement & "/property/value")
+				$sResponse = __WD_Get($sURLElement & $sElement & "/property/value")
 			EndIf
 
 			$iErr = @error
@@ -905,13 +906,14 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 
 	$sCommand = StringLower($sCommand)
 
+	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/"
 	Switch $sCommand
 		Case 'accept', 'dismiss'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/" & $sCommand, $_WD_EmptyDict)
+			$sResponse = __WD_Post($sURLSession & "alert/" & $sCommand, $_WD_EmptyDict)
 			$iErr = @error
 
 		Case 'gettext'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
+			$sResponse = __WD_Get($sURLSession & "alert/text")
 			$iErr = @error
 
 			If $iErr = $_WD_ERROR_Success Then
@@ -920,11 +922,11 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			EndIf
 
 		Case 'sendtext'
-			$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text", '{"text":"' & $sOption & '"}')
+			$sResponse = __WD_Post($sURLSession & "alert/text", '{"text":"' & $sOption & '"}')
 			$iErr = @error
 
 		Case 'status'
-			$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/alert/text")
+			$sResponse = __WD_Get($sURLSession & "alert/text")
 			$iErr = @error
 
 			$sResult = ($iErr = $_WD_ERROR_NoAlert) ? False : True
