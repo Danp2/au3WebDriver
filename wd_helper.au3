@@ -1259,6 +1259,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
