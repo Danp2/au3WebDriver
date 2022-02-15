@@ -2186,16 +2186,16 @@ EndFunc   ;==>_WD_JsonActionPause
 ;                  $bHTTPOnly = Default[, $iExpiryTime = Default[, $sSameSite = Default]]]]]])
 ; Parameters ....: $sName               - The name of the cookie.
 ;                  $sValue              - The cookie value.
-;                  $sPath               - [optional] This defines the cookie path. Default is '/'.
-;                  $sDomain             - [optional] This defines the domain the cookie is visible to. Default is '' - will be ommited and current browsing context’s of active document’s will be used.
-;                  $bSecure             - [optional] This defines whether the cookie is a secure cookie. Default is False.
-;                  $bHTTPOnly           - [optional] This defines whether the cookie is an HTTP only cookie. Default is False.
-;                  $iExpiryTime         - [optional] This defines when the cookie expires, specified in seconds since Unix Epoch. Default is 0 - will be ommited.
-;                  $sSameSite           - [optional] This defines whether the cookie applies to a SameSite policy. Default is '' - will be ommited and this mean "None". One of the following modes can be used:
+;                  $sPath               - [optional] This defines the cookie path.
+;                  $sDomain             - [optional] This defines the domain the cookie is visible to.
+;                  $bSecure             - [optional] This defines whether the cookie is a secure cookie.
+;                  $bHTTPOnly           - [optional] This defines whether the cookie is an HTTP only cookie.
+;                  $iExpiryTime         - [optional] This defines when the cookie expires, specified in seconds since Unix Epoch.
+;                  $sSameSite           - [optional] This defines whether the cookie applies to a SameSite policy. One of the following modes can be used:
 ;                  |None
 ;                  |Lax
 ;                  |Strict
-; Return values .: cookie as JSON strings
+; Return values .: cookie as formated JSON strings
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
