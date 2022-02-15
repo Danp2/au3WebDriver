@@ -996,13 +996,14 @@ EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
-; Description ...: Perform action on desginated Select element.
+; Description ...: Perform action on desginated <select> element.
 ; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
-;                  $sSelectElement - Element ID of Select element from _WD_FindElement
+;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
-;                  |OPTIONS - Retrieve array containing value / label attributes from the Select element's options
-;                  |VALUE   - Retrieve current value
+;                  |OPTIONS        - Retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
+;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
+;                  |VALUE          - Retrieves value of the first selected <option> element
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1012,39 +1013,43 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: If no option is selected, SELECTEDINDEX will return -1
 ; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local $sNodeName, $vResult
-
+	Local $sNodeName, $vResult, $sScript
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		If $sNodeName = 'select' Then
+		If $sNodeName = 'select' Then ; check if designated element is <select> element
 			Switch $sCommand
-				Case 'value'
-					; Retrieve current value of designated Select element
-					$vResult = _WD_ExecuteScript($sSession, "return arguments[0].value", __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
-
 				Case 'options'
-					; Retrieve array containing value / label attributes from the Select element's options
-					Local $sScript = "var result =''; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '\n'} return result;"
+					$sScript = "var result ='' ; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'} return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
+
 					If $iErr = $_WD_ERROR_Success Then
-						Local $sText = StringStripWS($vResult, $STR_STRIPTRAILING)
-						Local $aOut[0][2]
-						_ArrayAdd($aOut, $sText, 0, Default, @LF, 1)
-						$vResult = $aOut
+						Local $aAllOptions[0][4]
+						_ArrayAdd($aAllOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
+						$vResult = $aAllOptions
 					EndIf
+
+				Case 'selectedIndex'
+					$sScript = "return arguments[0].selectedIndex"
+					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
+
+				Case 'value'
+					$sScript = "return arguments[0].value"
+					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$iErr = @error
+
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Value|Options) $sCommand=>" & $sCommand), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(options|selectedIndex|value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
