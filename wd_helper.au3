@@ -1386,7 +1386,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					; Set return value to indicate if newer driver is available
 					$bResult = $bUpdateAvail
 				ElseIf $bUpdateAvail Or $bForce Then
-					; @TempDir should be used to avoid potential AV problems, for example by downloading stuff to computers
+					; @TempDir should be used to avoid potential AV problems, for example by downloading stuff to @DesktopDir
 					$sTempFile = _TempFile(@TempDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 					If @error Then
