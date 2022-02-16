@@ -14,6 +14,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Added
 
 - _WD_JsonCookie (mLipok)
+- _WD_GetDevicePixelRatio (mLipok)
 - _WD_Cookies: Added DeleteAll option (mLipok)
 - _WD_ElementSelectAction: Added SelectedIndex option (mLipok)
 - Files to fulfill the community standards

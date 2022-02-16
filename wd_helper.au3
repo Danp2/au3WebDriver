@@ -2005,6 +2005,27 @@ Func _WD_IsFullScreen($sSession)
 EndFunc   ;==>_WD_IsFullScreen
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetDevicePixelRatio
+; Description ...: Returns an integer indicating the DevicePixelRatio
+; Syntax ........: _WD_GetDevicePixelRatio($sSession)
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - DevicePixelRatio
+;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript()
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetDevicePixelRatio($sSession)
+	Local Const $sFuncName = "_WD_GetDevicePixelRatio"
+	Local $sResponse = _WD_ExecuteScript($sSession, "return window.devicePixelRatio", Default, Default, $_WD_JSON_Value)
+	Local $iErr = @error
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
+EndFunc   ;==>_WD_GetDevicePixelRatio
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CheckContext
 ; Description ...: Check if browser context is still valid.
 ; Syntax ........: _WD_CheckContext($sSession[, $bReconnect = Default[, $vTarget = Default]])
