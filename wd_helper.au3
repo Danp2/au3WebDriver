@@ -2022,7 +2022,6 @@ Func _WD_GetDevicePixelRatio($sSession)
 	Local Const $sFuncName = "_WD_GetDevicePixelRatio"
 	Local $sResponse = _WD_ExecuteScript($sSession, "return window.devicePixelRatio", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
-	If $iErr Then $sResponse = 0
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
 EndFunc   ;==>_WD_GetDevicePixelRatio
 
