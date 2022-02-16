@@ -3,7 +3,7 @@
 #include <File.au3> ; Needed For _WD_UpdateDriver
 #include <InetConstants.au3>
 #include <Misc.au3> ; Needed For _WD_UpdateDriver >> _VersionCompare
-#include <WinAPIFiles.au3> ; Needed For _WD_UpdateDriver >> _WinAPI_GetBinaryType
+#include <WinAPIFiles.au3> ; Needed For _WD_UpdateDriver >> _WinAPI_GetBinaryType and _WD_DownloadFile
 
 ; WebDriver related UDF's
 #include "wd_core.au3"
