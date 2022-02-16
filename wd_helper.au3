@@ -1561,6 +1561,11 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 			FileWrite($hFile, $sData)
 			FileClose($hFile)
 
+			; make sure that file is not used after download, for example by AV software scaning procedure
+			Do
+				__WD_Sleep(100)
+			Until Not _WinAPI_FileInUse($sDest)
+
 			$bResult = True
 		Else
 			$iErr = $_WD_ERROR_GeneralError
