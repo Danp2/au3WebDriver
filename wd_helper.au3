@@ -1386,7 +1386,8 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					; Set return value to indicate if newer driver is available
 					$bResult = $bUpdateAvail
 				ElseIf $bUpdateAvail Or $bForce Then
-					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
+					; @TempDir should be used to avoid potential AV problems, for example by downloading stuff to computers
+					$sTempFile = _TempFile(@TempDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 					If @error Then
 						$iErr = @error
@@ -1395,13 +1396,12 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						__WD_CloseDriver($sDriverEXE)
 						FileDelete($sInstallDir & $sDriverEXE)
 
+						#Region - Extract new instance of webdriver
 						; Handle COM Errors
 						Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
 						#forceref $oErr
-
-						; Extract new instance of webdriver
 						$oShell = ObjCreate("Shell.Application")
-						If @error Then
+						If @error Or FileGetSize($sTempFile) = 0 Or IsObj($oShell.NameSpace($sTempFile)) = 0 Then
 							$iErr = $_WD_ERROR_GeneralError
 						Else
 							Local $oNameSpace = $oShell.NameSpace($sTempFile)
@@ -1422,6 +1422,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 								EndIf
 							EndIf
 						EndIf
+						#EndRegion - Extract new instance of webdriver
 					EndIf
 					FileDelete($sTempFile)
 				EndIf
