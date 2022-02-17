@@ -1535,8 +1535,10 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  $iOptions - [optional] Download options
 ; Return values .: Success - True (Download succeeded).
 ;                  Failure - False (Download failed) and sets @error to one of the following values:
-;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_SendRecv
 ;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -1552,7 +1554,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_FORCEBYPASS + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
-	If @error Then $iErr = $_WD_ERROR_NotFound
+	If @error Then $iErr = $_WD_ERROR_SendRecv
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $hFile = FileOpen($sDest, $FO_OVERWRITE + $FO_BINARY)
