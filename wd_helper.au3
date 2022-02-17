@@ -1569,7 +1569,11 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 					$iErr = @error
 					ExitLoop
 				ElseIf Not _WinAPI_FileInUse($sDest) Then
-					$bResult = True
+					If @error Then
+						$iErr = $_WD_ERROR_NotFound
+					Else
+						$bResult = True
+					EndIf
 					ExitLoop
 				ElseIf TimerDiff($hWaitTimer) > $iTimeout Then
 					$iErr = $_WD_ERROR_Timeout
