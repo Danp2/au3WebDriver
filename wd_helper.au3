@@ -1546,10 +1546,10 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ; ===============================================================================================================================
 Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local Const $sFuncName = "_WD_DownloadFile"
-	Local $bResult = False
+	Local $bResult = False, $hWaitTimer
 	Local $iErr = $_WD_ERROR_Success
 
-	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
+	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_FORCEBYPASS + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
 	If @error Then $iErr = $_WD_ERROR_NotFound
@@ -1561,12 +1561,18 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 			FileWrite($hFile, $sData)
 			FileClose($hFile)
 
+			$hWaitTimer = TimerInit()
 			; make sure that file is not used after download, for example by AV software scaning procedure
-			Do
+			While 1
 				__WD_Sleep(100)
-			Until Not _WinAPI_FileInUse($sDest)
-
-			$bResult = True
+				If Not _WinAPI_FileInUse($sDest) Then
+					$bResult = True
+					ExitLoop
+				ElseIf TimerDiff($hWaitTimer) > $iTimeout Then
+					$iErr = $_WD_ERROR_Timeout
+					ExitLoop
+				EndIf
+			WEnd
 		Else
 			$iErr = $_WD_ERROR_GeneralError
 		EndIf
