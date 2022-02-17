@@ -1565,7 +1565,10 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 			; make sure that file is not used after download, for example by AV software scaning procedure
 			While 1
 				__WD_Sleep(100)
-				If Not _WinAPI_FileInUse($sDest) Then
+				If @error Then
+					$iErr = @error
+					ExitLoop
+				ElseIf Not _WinAPI_FileInUse($sDest) Then
 					$bResult = True
 					ExitLoop
 				ElseIf TimerDiff($hWaitTimer) > $iTimeout Then
