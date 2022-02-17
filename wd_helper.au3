@@ -1575,7 +1575,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 						$bResult = True
 					EndIf
 					ExitLoop
-				ElseIf TimerDiff($hWaitTimer) > $iTimeout Then
+				ElseIf TimerDiff($hWaitTimer) > $_WD_DefaultTimeout Then
 					$iErr = $_WD_ERROR_Timeout
 					ExitLoop
 				EndIf
