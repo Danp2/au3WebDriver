@@ -1106,7 +1106,7 @@ Func _WD_Option($sOption, $vValue = Default)
 		Case "console"
 			If $vValue == "" Then Return $_WD_CONSOLE
 			If Not (IsString($vValue) Or IsInt($vValue) Or IsFunc($vValue) Or $vValue == Null) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string/int/function/null) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(default/function/int/null/string) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_CONSOLE = $vValue
 
