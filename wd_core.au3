@@ -105,7 +105,7 @@ Global Enum _
 		$_WD_ERROR_SessionInvalid, _ ;
 		$_WD_ERROR_UnknownCommand, _ ;
 		$_WD_ERROR_UserAbort, _ ;
-		$_WD_ERROR_Download, _ ;
+		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_COUNTER ;
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
@@ -127,7 +127,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Invalid session ID", _
 		"Unknown Command", _
 		"User Aborted", _
-		"Download issue" _
+		"File issue" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
