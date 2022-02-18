@@ -157,7 +157,7 @@ Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one alrea
 Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug output
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
-Global $_WD_CONSOLE = Default ; Destination for console output
+Global $_WD_CONSOLE = ConsoleWrite ; Destination for console output
 Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
 Global $_WD_Sleep = Sleep ; Default to calling standard Sleep function
 Global $_WD_DefaultTimeout = 10000 ; 10 seconds
@@ -1105,8 +1105,8 @@ Func _WD_Option($sOption, $vValue = Default)
 
 		Case "console"
 			If $vValue == "" Then Return $_WD_CONSOLE
-			If Not (IsString($vValue) Or IsInt($vValue) Or IsFunc($vValue)) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string/int/function) $vValue: " & $vValue), 0, 0)
+			If Not (IsString($vValue) Or IsInt($vValue) Or IsFunc($vValue) Or $vValue = Null) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(func/int/null/string) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_CONSOLE = $vValue
 
@@ -1723,10 +1723,10 @@ Func __WD_StripPath($sFilePath)
 EndFunc   ;==>__WD_StripPath
 
 Func __WD_ConsoleWrite($sMsg)
-	If $_WD_CONSOLE = Default Then
-		ConsoleWrite($sMsg)
-	ElseIf IsFunc($_WD_CONSOLE) Then
+	If IsFunc($_WD_CONSOLE) Then
 		Call($_WD_CONSOLE, $sMsg)
+	ElseIf $_WD_CONSOLE = Null Then
+		; do nothing
 	Else
 		FileWrite($_WD_CONSOLE, $sMsg)
 	EndIf
