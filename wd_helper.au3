@@ -1541,7 +1541,7 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
