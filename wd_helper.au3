@@ -1264,6 +1264,8 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_FileIssue
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
@@ -1401,8 +1403,10 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
 						#forceref $oErr
 						$oShell = ObjCreate("Shell.Application")
-						If @error Or FileGetSize($sTempFile) = 0 Or IsObj($oShell.NameSpace($sTempFile)) = 0 Then
+						If @error Then
 							$iErr = $_WD_ERROR_GeneralError
+						ElseIf FileGetSize($sTempFile) = 0 Or IsObj($oShell.NameSpace($sTempFile)) = 0 Then
+							$iErr = $_WD_ERROR_FileIssue
 						Else
 							Local $oNameSpace = $oShell.NameSpace($sTempFile)
 							$FilesInZip = $oNameSpace.items
