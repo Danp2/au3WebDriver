@@ -1535,8 +1535,8 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  $iOptions - [optional] Download options
 ; Return values .: Success - True (Download succeeded).
 ;                  Failure - False (Download failed) and sets @error to one of the following values:
-;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danp2
