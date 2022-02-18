@@ -1535,7 +1535,7 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  $iOptions - [optional] Download options
 ; Return values .: Success - True (Download succeeded).
 ;                  Failure - False (Download failed) and sets @error to one of the following values:
-;                  - $_WD_ERROR_SendRecv
+;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_GeneralError
@@ -1572,7 +1572,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 					ExitLoop
 				ElseIf Not _WinAPI_FileInUse($sDest) Then
 					If @error Then
-						$iErr = $_WD_ERROR_NotFound
+						$iErr = $_WD_ERROR_FileIssue
 					Else
 						$bResult = True
 					EndIf
