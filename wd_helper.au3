@@ -1539,6 +1539,7 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
