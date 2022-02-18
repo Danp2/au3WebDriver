@@ -1230,7 +1230,7 @@ Func _WD_IsLatestRelease()
 	Local $sRegex = '<a.*href="\/Danp2\/au3WebDriver\/releases\/tag\/(.*?)"'
 
 	Local $sResult = InetRead($sGitURL)
-	If @error Then $iErr = $_WD_ERROR_Download
+	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), $sRegex, $STR_REGEXPARRAYMATCH)
@@ -1554,7 +1554,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_FORCEBYPASS + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
-	If @error Then $iErr = $_WD_ERROR_SendRecv
+	If @error Then $iErr = $_WD_ERROR_NotFound
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $hFile = FileOpen($sDest, $FO_OVERWRITE + $FO_BINARY)
