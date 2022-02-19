@@ -1569,7 +1569,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 			FileClose($hFile)
 
 			$hWaitTimer = TimerInit()
-			; make sure that file is not used after download, for example by AV software scaning procedure
+			; make sure that file is not used after download, for example by AV software scanning procedure
 			While 1
 				__WD_Sleep(100)
 				If @error Then
