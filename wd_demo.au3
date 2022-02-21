@@ -1,9 +1,3 @@
-;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_12_0_My"
-#AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_14_5"
-;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_15_1"
-;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_15_4"
-;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_15_4_alpha38"
-
 #Region - include files
 ; standard UDF's
 #include <ButtonConstants.au3>
