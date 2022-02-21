@@ -1557,7 +1557,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local $bResult = False, $hWaitTimer
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 
-	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_FORCEBYPASS + $INET_BINARYTRANSFER
+	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
 	If @error Then $iErr = $_WD_ERROR_NotFound
