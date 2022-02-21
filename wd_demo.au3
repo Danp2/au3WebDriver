@@ -206,7 +206,8 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $sDemoName)
 
 	If $sOutput = '_DebugOut' Then
-;~ 		WinClose('wd_demo - console log output')
+		Local $hWndReportWindow = WinGetHandle($__g_sReportTitle_Debug, $__g_sReportWindowText_Debug)
+		GUIDelete($hWndReportWindow)
 	EndIf
 EndFunc   ;==>RunDemo
 
