@@ -1394,7 +1394,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					If @error Then
 						$iErr = @error
 					Else
-						; Close any instances of webdriver and delete from disk
+						; Close any instances of webdriver
 						__WD_CloseDriver($sDriverEXE)
 
 						#Region - Extract new instance of webdriver
@@ -1412,6 +1412,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 							If @error Then
 								$iErr = $_WD_ERROR_GeneralError
 							Else
+								; delete webdriver from disk before unpacking to avoid potential problems
 								FileDelete($sInstallDir & $sDriverEXE)
 								For $FileItem In $FilesInZip ; Check the files in the archive separately
 									If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
