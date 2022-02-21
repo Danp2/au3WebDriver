@@ -1396,7 +1396,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					Else
 						; Close any instances of webdriver and delete from disk
 						__WD_CloseDriver($sDriverEXE)
-						FileDelete($sInstallDir & $sDriverEXE)
 
 						#Region - Extract new instance of webdriver
 						; Handle COM Errors
@@ -1413,6 +1412,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 							If @error Then
 								$iErr = $_WD_ERROR_GeneralError
 							Else
+								FileDelete($sInstallDir & $sDriverEXE)
 								For $FileItem In $FilesInZip ; Check the files in the archive separately
 									If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
 										$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
