@@ -1555,7 +1555,7 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local Const $sFuncName = "_WD_DownloadFile"
 	Local $bResult = False, $hWaitTimer
-	Local $iErr = $_WD_ERROR_Success
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_FORCEBYPASS + $INET_BINARYTRANSFER
 
@@ -1579,12 +1579,14 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 				ElseIf Not _WinAPI_FileInUse($sDest) Then
 					If @error Then
 						$iErr = $_WD_ERROR_FileIssue
+						$iExt = 1
 					Else
 						$bResult = True
 					EndIf
 					ExitLoop
 				ElseIf TimerDiff($hWaitTimer) > $_WD_DefaultTimeout Then
-					$iErr = $_WD_ERROR_Timeout
+					$iErr = $_WD_ERROR_FileIssue
+					$iExt = 2
 					ExitLoop
 				EndIf
 			WEnd
@@ -1594,10 +1596,10 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & ': ' & $iExt & @CRLF)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
 EndFunc   ;==>_WD_DownloadFile
 
 ; #FUNCTION# ====================================================================================================================
