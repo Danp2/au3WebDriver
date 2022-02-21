@@ -165,7 +165,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	Local $sBrowserName = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
 
 	; Check and set desired output for __WD_ConsoleWrite()
-	Local $sOutput = _RunDemo_Output($idOutput)
+	_RunDemo_Output($idOutput)
 
 	; Check & update WebDriver per user setting
 	_RunDemo_Update($idUpdate, $sBrowserName)
@@ -276,7 +276,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 	If $sSession Then _WD_DeleteSession($sSession)
 	If $iWebDriver_PID Then _WD_Shutdown()
 
-	If $sOutput = '_DebugOut' Then
+	If FuncName(_WD_Option('console')) = '_DebugOut' Then
 		Local $hWndReportWindow = WinGetHandle($__g_sReportTitle_Debug, $__g_sReportWindowText_Debug)
 		GUIDelete($hWndReportWindow)
 	EndIf
