@@ -22,17 +22,14 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - _WD_ElementSelectAction: Options array expanded to include additional columns (index, selected) (mLipok)
 - _WD_Option: Logging can use a custom function or be completely disabled (mLipok)
+- wd_capabilities.au3 now uses internal function __WD_ConsoleWrite
 - wd_demo.au3
 	- Updated DemoCookies
 	- Enhanced logging options
 
-### Deprecated
-
 ### Fixed
 
 - _WD_UpdateDriver: Detect error during download and additional error handling
-
-### Removed
 
 ### Project
 
