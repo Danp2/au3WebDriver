@@ -277,8 +277,12 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 	If $iWebDriver_PID Then _WD_Shutdown()
 
 	If FuncName(_WD_Option('console')) = '_DebugOut' Then
+		; Close debug window and reset environment for next run
 		Local $hWndReportWindow = WinGetHandle($__g_sReportTitle_Debug, $__g_sReportWindowText_Debug)
 		GUIDelete($hWndReportWindow)
+		$__g_bReportWindowWaitClose_Debug = True
+		$__g_bReportWindowClosed_Debug = True
+	 	$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
 	EndIf
 
 	Return SetError($iError, $iExtended, $bForceDispose)
