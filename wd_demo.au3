@@ -1,3 +1,9 @@
+;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_12_0_My"
+#AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_14_5"
+;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_15_1"
+;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_15_4"
+;~ #AutoIt3Wrapper_AutoIt3Dir="z:\AutoItPortable\AutoIt_3_3_15_4_alpha38"
+
 #Region - include files
 ; standard UDF's
 #include <ButtonConstants.au3>
@@ -164,26 +170,14 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	; Get selected browser
 	Local $sBrowserName = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
 
+	; Check and set desired output for __WD_ConsoleWrite()
+	Local $sOutput = _RunDemo_Output($idOutput)
+
 	; Check & update WebDriver per user setting
 	_RunDemo_Update($idUpdate, $sBrowserName)
 
 	; Check and set desired headless mode
 	Local $bHeadless = _RunDemo_Headless($idHeadless)
-
-	Local $sOutput = _RunDemo_Output($idOutput)
-
-	Switch $sOutput
-		Case 'ConsoleWrite'
-			_WD_Option('console', ConsoleWrite)
-		Case 'WD_Console.log'
-			_WD_Option('console', @ScriptDir & '\WD_Console.log')
-		Case '_DebugOut'
-			_DebugSetup('wd_demo - console log output')
-			_WD_Option('console', _DebugOut)
-		Case 'Null'
-			_WD_Option('console', Null)
-	EndSwitch
-
 
 	; Execute browser setup routine for user's browser selection
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
@@ -245,6 +239,19 @@ EndFunc   ;==>_RunDemo_Headless
 Func _RunDemo_Output($idOutput)
 	Local $sOutput
 	_GUICtrlComboBox_GetLBText($idOutput, _GUICtrlComboBox_GetCurSel($idOutput), $sOutput)
+
+	Switch $sOutput
+		Case 'ConsoleWrite'
+			_WD_Option('console', ConsoleWrite)
+		Case 'WD_Console.log'
+			_WD_Option('console', @ScriptDir & '\WD_Console.log')
+		Case '_DebugOut'
+			_DebugSetup('wd_demo - console log output')
+			_WD_Option('console', _DebugOut)
+		Case 'Null'
+			_WD_Option('console', Null)
+	EndSwitch
+
 	Return $sOutput
 EndFunc   ;==>_RunDemo_Output
 
