@@ -204,11 +204,6 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	Next
 
 	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $sDemoName)
-
-	If $sOutput = '_DebugOut' Then
-		Local $hWndReportWindow = WinGetHandle($__g_sReportTitle_Debug, $__g_sReportWindowText_Debug)
-		GUIDelete($hWndReportWindow)
-	EndIf
 EndFunc   ;==>RunDemo
 
 Func _RunDemo_Update($idUpdate, $sBrowserName)
@@ -280,6 +275,11 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 
 	If $sSession Then _WD_DeleteSession($sSession)
 	If $iWebDriver_PID Then _WD_Shutdown()
+
+	If $sOutput = '_DebugOut' Then
+		Local $hWndReportWindow = WinGetHandle($__g_sReportTitle_Debug, $__g_sReportWindowText_Debug)
+		GUIDelete($hWndReportWindow)
+	EndIf
 
 	Return SetError($iError, $iExtended, $bForceDispose)
 EndFunc   ;==>_RunDemo_ErrorHander
