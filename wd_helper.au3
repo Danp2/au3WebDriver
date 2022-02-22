@@ -73,6 +73,17 @@ Global Enum _
 		$_WD_BUTTON_Right = 2
 #EndRegion Global Constants
 
+#Region - Global Variables
+; [0] Browser Name, [1] Executable Name, [2] Webdriver Name, [3] 64 bit?
+Global $_WD_SupportedBrowsers[][4] = _
+		[ _
+		["chrome", "chrome.exe", "chromedriver.exe", False], _
+		["firefox", "firefox.exe", "geckodriver.exe", True], _
+		["msedge", "msedge.exe", "msedgedriver.exe", True], _
+		["opera", "opera.exe", "operadriver.exe", True] _
+		]
+#EndRegion - Global Variables
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_NewTab
 ; Description ...: Create new tab in current browser session.
