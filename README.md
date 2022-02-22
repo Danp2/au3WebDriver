@@ -160,14 +160,13 @@ Download and install one of the following WebDriver (depending on the browser ty
 | Browser                                                                                              | Download                                                                      | WebDriver specification status                                                                                   |
 | :---:                                                                                                | :---                                                                          | :---                                                                                                             |
 | ![Chrome16]    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
-| ![Edge16]          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md) [^1] |
-| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^2]                                  |
+| ![Edge16]          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/)  |
+| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^1]                                  |
 
-Limitation notice. [^3]
+Limitation notice. [^2]
 
-[^1]: "Microsoft Edge" (is chromium based) which means it's a WebDriver implementation derived from ChromeDriver. The status or limitations are at least the same as for ChromeDriver.
-[^2]: Login Required
-[^3]: Not all WebDriver functions have been implemented by each browser. Keep that in mind and check the "WebDriver specification status" for your desired WebDriver of choice.
+[^1]: Login Required
+[^2]: Not all WebDriver functions have been implemented by each browser. Keep that in mind and check the "WebDriver specification status" for your desired WebDriver of choice.
 
 #### *Installation*
 
