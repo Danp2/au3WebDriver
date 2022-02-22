@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [0.6.0] - 2022-02-22
 
 ### Added
 
@@ -17,39 +17,44 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_GetDevicePixelRatio (mLipok)
 - _WD_Cookies: Added DeleteAll option (mLipok)
 - _WD_ElementSelectAction: Added SelectedIndex option (mLipok)
-- Files to fulfill the community standards
-	- bug_report.md and feature_request.md
-	- CODE_OF_CONDUCT.md file
-	- PULL_REQUEST_TEMPLATE.md file
 
 ### Changed
 
 - _WD_ElementSelectAction: Options array expanded to include additional columns (index, selected) (mLipok)
-- README.md restruturing
-- Rename project (repository) to au3WebDriver
-- CONTRIBUTING.md file includes now reference notices to bug report and feature request templates
+- _WD_Option: Logging can use a custom function or be completely disabled (mLipok)
+- wd_capabilities.au3 now uses internal function __WD_ConsoleWrite
 - wd_demo.au3
 	- Updated DemoCookies
-
-### Deprecated
+	- Enhanced logging options
 
 ### Fixed
 
-- _WD_UpdateDriver: Detect error during download and addtional error handling
+- _WD_UpdateDriver: Detect error during download and additional error handling
 
-### Removed
+### Project
+
+- Rename project (repository) to au3WebDriver
+- README.md restructuring
+- Added files to fulfill the community standards
+	- bug_report.md and feature_request.md
+	- CODE_OF_CONDUCT.md file
+	- PULL_REQUEST_TEMPLATE.md file
+- CONTRIBUTING.md file now contains references to bug report template and feature request template
 
 ## [0.5.2] - 2022-02-11
 
 ### Changed
 
-- REVISIONS.md renamed to CHANGELOG.md and format updated
 - _WD_HighlightElements: Refactored for speed; now supports single or multiple elements
 - _WD_UpdateDriver: Adjusted URL to match revised Github repo name
 
 ### Deprecated
 
 - _WD_HighlightElement: Flagged as Deprecated and will be removed in a future release
+
+### Project
+
+- REVISIONS.md renamed to CHANGELOG.md and format updated
 
 ## [0.5.1.1] - 2022-01-31
 
@@ -834,7 +839,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - Initial release
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.5.2...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.6.0...HEAD
+[0.6.0]:      https://github.com/Danp2/au3WebDriver/compare/0.5.2...0.6.0
 [0.5.2]:      https://github.com/Danp2/au3WebDriver/compare/0.5.1.1...0.5.2
 [0.5.1.1]:    https://github.com/Danp2/au3WebDriver/compare/0.5.1.0...0.5.1.1
 [0.5.1.0]:    https://github.com/Danp2/au3WebDriver/compare/0.5.0.3...0.5.1.0
@@ -902,6 +908,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - `Fixed` for any bug fixes.
 - `Removed` for now removed features.
 - `Security` in case of vulnerabilities.
+- `Project` for documentation or contribution improvements.
 
 ##
 

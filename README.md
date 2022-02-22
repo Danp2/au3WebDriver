@@ -17,8 +17,7 @@
 
 ## Description
 
-This au3WebDriver UDF (project) allows to interact with any browser that supports the [W3C WebDriver specifications](https://www.w3.org/TR/webdriver/).<br>
-Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
+This au3WebDriver UDF (project) allows to interact with any browser that supports the [W3C WebDriver specifications](https://www.w3.org/TR/webdriver/).  Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
 
 ## Documentation
 
@@ -34,7 +33,7 @@ Supporting multiple browsers via the same code base is now possible with just a 
 
 | Chrome                                                                                            | Edge                                                                                        | Firefox                                                                                              |
 | :---                                                                                              | :---                                                                                        | :---                                                                                                 |
-| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_48x48.png) | ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_48x48.png) | ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png) |
+| ![Chrome48] | ![Edge48] | ![Firefox48] |
 
 
 ### *Functions*
@@ -160,13 +159,13 @@ Download and install one of the following WebDriver (depending on the browser ty
 
 | Browser                                                                                              | Download                                                                      | WebDriver specification status                                                                                   |
 | :---:                                                                                                | :---                                                                          | :---                                                                                                             |
-| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_16x16.png)    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
-| ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png)          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md) [^1] |
-| ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png) | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Web/WebDriver#specifications)                                  |
+| ![Chrome16]    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
+| ![Edge16]          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/)  |
+| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^1]                                  |
 
 Limitation notice. [^2]
 
-[^1]: "Microsoft Edge" (is chromium based) which means it's a WebDriver implementation derived from ChromeDriver. The status or limitations are at least the same as for ChromeDriver.
+[^1]: Login Required
 [^2]: Not all WebDriver functions have been implemented by each browser. Keep that in mind and check the "WebDriver specification status" for your desired WebDriver of choice.
 
 #### *Installation*
@@ -236,3 +235,10 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3Web
 ##
 
 [To the top](#)
+
+[Chrome48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_48x48.png
+[Chrome16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_16x16.png
+[Edge48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_48x48.png
+[Edge16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png
+[Firefox48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png
+[Firefox16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png
