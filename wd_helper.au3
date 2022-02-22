@@ -1480,22 +1480,21 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 	Local $sEXE, $sBrowserVersion = "0"
 	Local $iErr = $_WD_ERROR_Success
-	Switch $sBrowser
-		Case 'chrome'
-			$sEXE = "chrome.exe"
-		Case 'firefox'
-			$sEXE = "firefox.exe"
-		Case 'msedge'
-			$sEXE = "msedge.exe"
-		Case Else
-			$iErr = $_WD_ERROR_InvalidValue
-	EndSwitch
+
+	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, 0)
+
+	If @error Then
+		$iErr = $_WD_ERROR_InvalidValue
+	Else
+		$sEXE = $_WD_SupportedBrowsers[$iIndex][1]
+	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $sPath = RegRead($cRegKey & $sEXE, "")
 		If @error Then
 			$iErr = $_WD_ERROR_NotFound
 		Else
+			$sPath = StringRegExpReplace($sPath, '["'']', '') ; String quotation marks
 			$sBrowserVersion = FileGetVersion($sPath)
 		EndIf
 	EndIf
