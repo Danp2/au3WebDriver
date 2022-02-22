@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Added
+### Changed
+### Deprecated
+### Fixed
+### Removed
+### Security
+### Project
+
 ## [0.6.0] - 2022-02-22
 
 ### Added
