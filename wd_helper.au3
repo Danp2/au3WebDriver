@@ -652,7 +652,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
- 	Local Const $sFuncName = "_WD_HighlightElement"
+	Local Const $sFuncName = "_WD_HighlightElement"
 
 	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
 	Local $iErr = @error
@@ -700,7 +700,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 
 	If IsString($vElements) Then
 		$sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-		$sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
+		$sResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
 		$iErr = @error
 
 	ElseIf IsArray($vElements) And UBound($vElements) > 0 Then
@@ -2139,7 +2139,7 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.id', 'keyboard_' & $iSuffix)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
@@ -2198,7 +2198,7 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 			Json_Put($vData, '.y', $iYOffset)
 	EndSwitch
 
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
@@ -2227,7 +2227,7 @@ Func _WD_JsonActionPause($iDuration)
 	Json_Put($vData, '.type', 'pause')
 	Json_Put($vData, '.duration', $iDuration)
 
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
