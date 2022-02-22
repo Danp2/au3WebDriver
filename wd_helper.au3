@@ -3,7 +3,7 @@
 #include <File.au3> ; Needed For _WD_UpdateDriver
 #include <InetConstants.au3>
 #include <Misc.au3> ; Needed For _WD_UpdateDriver >> _VersionCompare
-#include <WinAPIFiles.au3> ; Needed For _WD_UpdateDriver >> _WinAPI_GetBinaryType
+#include <WinAPIFiles.au3> ; Needed For _WD_UpdateDriver >> _WinAPI_GetBinaryType and _WD_DownloadFile >> _WinAPI_FileInUse
 
 ; WebDriver related UDF's
 #include "wd_core.au3"
@@ -1264,6 +1264,8 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_FileIssue
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
@@ -1386,29 +1388,32 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					; Set return value to indicate if newer driver is available
 					$bResult = $bUpdateAvail
 				ElseIf $bUpdateAvail Or $bForce Then
-					$sTempFile = _TempFile($sInstallDir, "webdriver_", ".zip")
+					; @TempDir should be used to avoid potential AV problems, for example by downloading stuff to @DesktopDir
+					$sTempFile = _TempFile(@TempDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 					If @error Then
 						$iErr = @error
 					Else
-						; Close any instances of webdriver and delete from disk
+						; Close any instances of webdriver
 						__WD_CloseDriver($sDriverEXE)
-						FileDelete($sInstallDir & $sDriverEXE)
 
+						#Region - Extract new instance of webdriver
 						; Handle COM Errors
 						Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
 						#forceref $oErr
-
-						; Extract new instance of webdriver
 						$oShell = ObjCreate("Shell.Application")
 						If @error Then
 							$iErr = $_WD_ERROR_GeneralError
+						ElseIf FileGetSize($sTempFile) = 0 Or IsObj($oShell.NameSpace($sTempFile)) = 0 Then
+							$iErr = $_WD_ERROR_FileIssue
 						Else
 							Local $oNameSpace = $oShell.NameSpace($sTempFile)
 							$FilesInZip = $oNameSpace.items
 							If @error Then
 								$iErr = $_WD_ERROR_GeneralError
 							Else
+								; delete webdriver from disk before unpacking to avoid potential problems
+								FileDelete($sInstallDir & $sDriverEXE)
 								For $FileItem In $FilesInZip ; Check the files in the archive separately
 									If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
 										$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
@@ -1422,6 +1427,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 								EndIf
 							EndIf
 						EndIf
+						#EndRegion - Extract new instance of webdriver
 					EndIf
 					FileDelete($sTempFile)
 				EndIf
@@ -1534,10 +1540,13 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ;                  $iOptions - [optional] Download options
 ; Return values .: Success - True (Download succeeded).
 ;                  Failure - False (Download failed) and sets @error to one of the following values:
-;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_FileIssue
+;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -1545,8 +1554,8 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ; ===============================================================================================================================
 Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local Const $sFuncName = "_WD_DownloadFile"
-	Local $bResult = False
-	Local $iErr = $_WD_ERROR_Success
+	Local $bResult = False, $hWaitTimer
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
@@ -1560,17 +1569,37 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 			FileWrite($hFile, $sData)
 			FileClose($hFile)
 
-			$bResult = True
+			$hWaitTimer = TimerInit()
+			; make sure that file is not used after download, for example by AV software scanning procedure
+			While 1
+				__WD_Sleep(100)
+				If @error Then
+					$iErr = @error
+					ExitLoop
+				ElseIf Not _WinAPI_FileInUse($sDest) Then
+					If @error Then
+						$iErr = $_WD_ERROR_FileIssue
+						$iExt = 1
+					Else
+						$bResult = True
+					EndIf
+					ExitLoop
+				ElseIf TimerDiff($hWaitTimer) > $_WD_DefaultTimeout Then
+					$iErr = $_WD_ERROR_FileIssue
+					$iExt = 2
+					ExitLoop
+				EndIf
+			WEnd
 		Else
 			$iErr = $_WD_ERROR_GeneralError
 		EndIf
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & ': ' & $iExt & @CRLF)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
 EndFunc   ;==>_WD_DownloadFile
 
 ; #FUNCTION# ====================================================================================================================
