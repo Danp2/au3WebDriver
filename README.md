@@ -33,7 +33,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 
 | Chrome                                                                                            | Edge                                                                                        | Firefox                                                                                              |
 | :---                                                                                              | :---                                                                                        | :---                                                                                                 |
-| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_48x48.png) | ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_48x48.png) | ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png) |
+| ![Chrome48] | ![Edge48] | ![Firefox48] |
 
 
 ### *Functions*
@@ -159,9 +159,9 @@ Download and install one of the following WebDriver (depending on the browser ty
 
 | Browser                                                                                              | Download                                                                      | WebDriver specification status                                                                                   |
 | :---:                                                                                                | :---                                                                          | :---                                                                                                             |
-| ![Chrome](https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_16x16.png)    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
-| ![Edge](https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png)          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md) [^1] |
-| ![Firefox](https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png) | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^2}                                  |
+| ![Chrome16]    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
+| ![Edge16]          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md) [^1] |
+| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^2]                                  |
 
 Limitation notice. [^3]
 
@@ -236,3 +236,10 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3Web
 ##
 
 [To the top](#)
+
+[Chrome48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_48x48.png
+[Chrome16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/chrome/chrome_16x16.png
+[Edge48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_48x48.png
+[Edge16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png
+[Firefox48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png
+[Firefox16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png
