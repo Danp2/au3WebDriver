@@ -60,11 +60,13 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-email@address.com.
-All complaints will be reviewed and investigated promptly and fairly.
+reported to the community leaders responsible for enforcement through the 
+["Report content"][report content] option available for issues, pull requests, 
+and comments. All complaints will be reviewed and investigated promptly and fairly.
 
-All community leaders are obligated to respect the privacy and security of the
+![Button to report a comment](https://docs.github.com/assets/images/help/repository/menu-report-issue-or-pr.png)
+
+All community leaders are obligated to respect the privacy and security of the 
 reporter of any incident.
 
 ## Enforcement Guidelines
@@ -131,3 +133,4 @@ For answers to common questions about this code of conduct, see the FAQ at
 [Mozilla CoC]: https://github.com/mozilla/diversity
 [FAQ]: https://www.contributor-covenant.org/faq
 [translations]: https://www.contributor-covenant.org/translations
+[report content]: https://docs.github.com/en/github/building-a-strong-community/reporting-abuse-or-spam#reporting-an-issue-or-pull-request
