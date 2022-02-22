@@ -3,6 +3,7 @@
 #include <ButtonConstants.au3>
 #include <ColorConstants.au3>
 #include <Date.au3>
+#include <Debug.au3>
 #include <GuiComboBoxEx.au3>
 #include <GUIConstantsEx.au3>
 #include <WindowsConstants.au3>
@@ -96,6 +97,13 @@ Func _WD_Demo()
 	GUICtrlSetData($idHeadless, "Yes", "No")
 	#EndRegion - Headless
 
+	#Region - Output
+	$iPos += $iSpacing
+	GUICtrlCreateLabel("ConsoleOut", 15, $iPos + 2)
+	Local $idOutput = GUICtrlCreateCombo("ConsoleWrite", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
+	GUICtrlSetData($idOutput, "WD_Console.log|_DebugOut|Null", "ConsoleWrite")
+	#EndRegion - Output
+
 	#Region - demos
 	$iPos += $iSpacing
 	GUICtrlCreateLabel("Demos", 15, $iPos + $iSpacing + 2)
@@ -130,9 +138,9 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
-				_RunDemo_GUISwitcher($GUI_DISABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
-				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
-				_RunDemo_GUISwitcher($GUI_ENABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
+				_RunDemo_GUISwitcher($GUI_DISABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idOutput, $idButton_Run, $aCheckboxes)
+				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
+				_RunDemo_GUISwitcher($GUI_ENABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idOutput, $idButton_Run, $aCheckboxes)
 
 			Case Else
 				For $i = 0 To $iCount - 1
@@ -149,12 +157,15 @@ Func _WD_Demo()
 	GUIDelete($hGUI)
 EndFunc   ;==>_WD_Demo
 
-Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless)
+Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	; Check selected debugging option and set desired debug level
 	$_WD_DEBUG = $aDebugLevel[_GUICtrlComboBox_GetCurSel($idDebugging)][1]
 
 	; Get selected browser
 	Local $sBrowserName = $aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][0]
+
+	; Check and set desired output for __WD_ConsoleWrite()
+	_RunDemo_Output($idOutput)
 
 	; Check & update WebDriver per user setting
 	_RunDemo_Update($idUpdate, $sBrowserName)
@@ -215,11 +226,31 @@ Func _RunDemo_Headless($idHeadless)
 	Return ($sHeadless = 'Yes')
 EndFunc   ;==>_RunDemo_Headless
 
-Func _RunDemo_GUISwitcher($iState, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idButton_Run, $aCheckboxes)
+Func _RunDemo_Output($idOutput)
+	Local $sOutput
+	_GUICtrlComboBox_GetLBText($idOutput, _GUICtrlComboBox_GetCurSel($idOutput), $sOutput)
+
+	Switch $sOutput
+		Case 'ConsoleWrite'
+			_WD_Option('console', ConsoleWrite)
+		Case 'WD_Console.log'
+			_WD_Option('console', @ScriptDir & '\WD_Console.log')
+		Case '_DebugOut'
+			_DebugSetup('wd_demo - console log output')
+			_WD_Option('console', _DebugOut)
+		Case 'Null'
+			_WD_Option('console', Null)
+	EndSwitch
+
+	Return $sOutput
+EndFunc   ;==>_RunDemo_Output
+
+Func _RunDemo_GUISwitcher($iState, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idOutput, $idButton_Run, $aCheckboxes)
 	GUICtrlSetState($idBrowsers, $iState)
 	GUICtrlSetState($idDebugging, $iState)
 	GUICtrlSetState($idUpdate, $iState)
 	GUICtrlSetState($idHeadless, $iState)
+	GUICtrlSetState($idOutput, $iState)
 	GUICtrlSetState($idButton_Run, $iState)
 	For $i = 0 To UBound($aCheckboxes, $UBOUND_ROWS) - 1 Step 1
 		GUICtrlSetState($aCheckboxes[$i], $iState)
@@ -244,6 +275,15 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 
 	If $sSession Then _WD_DeleteSession($sSession)
 	If $iWebDriver_PID Then _WD_Shutdown()
+
+	If FuncName(_WD_Option('console')) = '_DebugOut' Then
+		; Close debug window and reset environment for next run
+		Local $hWndReportWindow = WinGetHandle($__g_sReportTitle_Debug, $__g_sReportWindowText_Debug)
+		GUIDelete($hWndReportWindow)
+		$__g_bReportWindowWaitClose_Debug = True
+		$__g_bReportWindowClosed_Debug = True
+	 	$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
+	EndIf
 
 	Return SetError($iError, $iExtended, $bForceDispose)
 EndFunc   ;==>_RunDemo_ErrorHander
