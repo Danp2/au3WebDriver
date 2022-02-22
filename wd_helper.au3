@@ -1314,21 +1314,15 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success Then
-			Switch $sBrowser
-				Case 'chrome'
-					$sDriverEXE = "chromedriver.exe"
-				Case 'firefox'
-					$sDriverEXE = "geckodriver.exe"
-				Case 'msedge'
-					$sDriverEXE = "msedgedriver.exe"
-			EndSwitch
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, 0)
+			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][2]
 
 			; Determine current local webdriver Architecture
 			If FileExists($sInstallDir & $sDriverEXE) Then
 				_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE)
 				Local $bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
 				If $bKeepArch Then $bFlag64 = $bDriverIs64Bit
-				If $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
+				If $_WD_SupportedBrowsers[$iIndex][3] And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
 ;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
 ;~ 						__WD_ConsoleWrite($sFuncName & ': ' & $sDriverEXE & ' = ' & (($bDriverIs64Bit) ? ("switching 64>32 Bit") : ("switching 32>64 Bit")) & @CRLF)
@@ -1354,6 +1348,19 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 						$sURLNewDriver = "https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest
 						$sURLNewDriver &= ($bFlag64) ? "-win64.zip" : "-win32.zip"
+					Else
+						$iErr = $_WD_ERROR_GeneralError
+					EndIf
+
+				Case 'opera'
+					$sResult = BinaryToString(InetRead("https://github.com/operasoftware/operachromiumdriver/releases/latest"))
+
+					If @error = $_WD_ERROR_Success Then
+						$sDriverLatest = StringRegExp($sResult, '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(.*?)"', 1)[0]
+						If StringLeft($sDriverLatest, 1) = 'v' Then $sDriverLatest = StringMid($sDriverLatest, 3)
+
+						$sURLNewDriver = "https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_"
+						$sURLNewDriver &= ($bFlag64) ? "win64.zip" : "win32.zip"
 					Else
 						$iErr = $_WD_ERROR_GeneralError
 					EndIf
