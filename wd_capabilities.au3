@@ -15,7 +15,7 @@
 ; Author ........: mLipok
 ; Modified ......:
 ; URL ...........:
-; Date ..........: 2021/12/07
+; Date ..........: 2022/02/23
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
@@ -288,6 +288,8 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserType = '') ; $s_MatchTy
 		$s_SpecificOptions_KeyName = 'moz:firefoxOptions'
 	ElseIf StringInStr($s_BrowserType, 'edge') Then
 		$s_SpecificOptions_KeyName = 'ms:edgeOptions'
+	ElseIf StringInStr($s_BrowserType, 'opera') Then
+		$s_SpecificOptions_KeyName = 'operaOptions'
 	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserType = '' Then
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserType = '' Then
