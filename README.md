@@ -31,9 +31,9 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 
 ### *Browser support*
 
-| Chrome                                                                                            | Edge                                                                                        | Firefox                                                                                              |
-| :---                                                                                              | :---                                                                                        | :---                                                                                                 |
-| ![Chrome48] | ![Edge48] | ![Firefox48] |
+| Chrome      | Edge    | Firefox        | Opera      |
+|-------------|---------|----------------|------------|
+| ![Chrome48] | ![Edge48] | ![Firefox48] | ![Opera48] |
 
 
 ### *Functions*
@@ -155,13 +155,15 @@ Download and add the following mandatory Third-Party UDFs to your project folder
   - [HtmlTable2Array UDF](https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/) - Extraction of data from HTML tables to an array.
   - [WinHttp_WebSocket UDF](https://github.com/Danp2/autoit-websocket) - Needed for websocket CDP functionality.
 
-Download and install one of the following WebDriver (depending on the browser type and version you want to automate).
+Download and install one of the following WebDrivers (depending on the browser type and version you want to automate).
 
-| Browser                                                                                              | Download                                                                      | WebDriver specification status                                                                                   |
-| :---:                                                                                                | :---                                                                          | :---                                                                                                             |
-| ![Chrome16]    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
-| ![Edge16]          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/)  |
-| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^1]                                  |
+| Browser | Download | Implementation status |
+|:---:|---|---|
+| ![Chrome16] | [Chrome](https://sites.google.com/chromium.org/driver/downloads) | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md) |
+| ![Edge16] | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/) |
+| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest) | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^1] |
+| ![Opera16] | [Opera](https://github.com/operasoftware/operachromiumdriver/releases/latest) |  |
+
 
 Limitation notice. [^2]
 
@@ -176,10 +178,7 @@ To automate your browser, follow the following steps.
 2. Move the UDFs to your project folder or to a directory where AutoIt can find them.
     - All *wd_\*.au3* files and the Third-Party UDFs *\*.au3* should be placed in the same directory.
     - Otherwise you have to adjust the `#include` statements in the files.
-3. Move your desired WebDriver of choice to directory of the *wd_\*.au3* files.
-    - chromedriver.exe (Chrome)
-    - geckodriver.exe (Firefox)
-    - msedgedriver.exe (Edge, chromium based)
+3. Move your desired WebDriver of choice to the directory containing the *wd_\*.au3* files.
 
 #### *Usage*
 
@@ -242,3 +241,5 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3Web
 [Edge16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png
 [Firefox48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png
 [Firefox16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png
+[Opera48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_48x48.png
+[Opera16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_16x16.png
