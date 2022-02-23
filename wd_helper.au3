@@ -1414,12 +1414,17 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 							Else
 								; delete webdriver from disk before unpacking to avoid potential problems
 								FileDelete($sInstallDir & $sDriverEXE)
+								Local $bEXEWasFound = False
 								For $FileItem In $FilesInZip ; Check the files in the archive separately
-									If StringRight($FileItem.Name, 4) = ".exe" Then ; extract only EXE files
+									; https://docs.microsoft.com/pl-pl/windows/win32/shell/folder
+									; https://docs.microsoft.com/pl-pl/windows/win32/shell/folder-items
+									; https://docs.microsoft.com/pl-pl/windows/win32/shell/folderitem
+									If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then ; extract only EXE files
+										$bEXEWasFound = True
 										$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
 									EndIf
 								Next
-								If @error Then
+								If @error Or Not $bEXEWasFound Then
 									$iErr = $_WD_ERROR_GeneralError
 								Else
 									$iErr = $_WD_ERROR_Success
