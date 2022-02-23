@@ -258,9 +258,9 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CapabilitiesInitialize
 ; Description ...: Initialize $_WD_CAPS__API and presets for 'alwaysMatch' Or 'firstMatch'
-; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_BrowserType = ''])
+; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_BrowserName = ''])
 ; Parameters ....: $s_MatchType         - a string value. 'alwaysMatch' Or 'firstMatch'.
-;                  $s_BrowserType      - [optional] The browser name as defined in $_WD_SupportedBrowsers. Default is ''
+;                  $s_BrowserName - [optional] The browser name as defined in $_WD_SupportedBrowsers. Default is ''
 ; Return values .: None, or set @error
 ; Author ........: mLipok
 ; Modified ......:
@@ -269,22 +269,22 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserType = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
+Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
 	#Region - parameters validation
 ;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
 	If Not StringInStr('alwaysMatch|firstMatch', $s_MatchType) Then _
 			Return SetError(1)
 ;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
 
-;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$s_BrowserType = " & $s_BrowserType & @CRLF & "$s_MatchType = " & $s_MatchType)
+;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$s_BrowserName = " & $s_BrowserName & @CRLF & "$s_MatchType = " & $s_MatchType)
 	Local $s_SpecificOptions_KeyName = ''
 
-	If $s_BrowserType <> '' Then
-		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserType), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+	If $s_BrowserName <> '' Then
+		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserName), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 		$s_SpecificOptions_KeyName = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_OptionsKey]
-	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserType = '' Then
+	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
 		$s_SpecificOptions_KeyName = ''
-	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserType = '' Then
+	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
 		Return SetError(2)
 ;~ 	Else
 ;~ 		Return SetError(3) ; this should be tested/reviewed later (@mLipok 23-02-2022)
@@ -320,7 +320,7 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserType = '') ; $s_MatchTy
 
 	#Region - FOR TESTING ONLY
 	Local $s_Information = _
-			"$s_BrowserType = " & $s_BrowserType & @CRLF & _
+			"$s_BrowserName = " & $s_BrowserName & @CRLF & _
 			"$s_MatchType = " & $s_MatchType & @CRLF & _
 			"$s_SpecificOptions_KeyName = " & $s_SpecificOptions_KeyName & @CRLF & _
 			"$i_FirstMatch_Counter = " & $i_FirstMatch_Counter & @CRLF & _
