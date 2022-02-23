@@ -1304,14 +1304,14 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		If $iErr = $_WD_ERROR_Success Then
 			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, 0)
-			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][2]
+			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
 			; Determine current local webdriver Architecture
 			If FileExists($sInstallDir & $sDriverEXE) Then
 				_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE)
 				Local $bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
 				If $bKeepArch Then $bFlag64 = $bDriverIs64Bit
-				If $_WD_SupportedBrowsers[$iIndex][3] And $bDriverIs64Bit <> $bFlag64 Then
+				If $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_64Bit] And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
 ;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
 ;~ 						__WD_ConsoleWrite($sFuncName & ': ' & $sDriverEXE & ' = ' & (($bDriverIs64Bit) ? ("switching 64>32 Bit") : ("switching 32>64 Bit")) & @CRLF)
@@ -1482,7 +1482,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 	If @error Then
 		$iErr = $_WD_ERROR_InvalidValue
 	Else
-		$sEXE = $_WD_SupportedBrowsers[$iIndex][1]
+		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
