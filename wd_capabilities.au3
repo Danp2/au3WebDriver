@@ -260,11 +260,7 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Description ...: Initialize $_WD_CAPS__API and presets for 'alwaysMatch' Or 'firstMatch'
 ; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_BrowserType = ''])
 ; Parameters ....: $s_MatchType         - a string value. 'alwaysMatch' Or 'firstMatch'.
-;                  $s_BrowserType      - [optional] a string value. Default is ''. One of:
-;                               | 'chrome'
-;                               | 'firefox'
-;                               | 'msedge'
-;                               | '' an empty string
+;                  $s_BrowserType      - [optional] The browser name as defined in $_WD_SupportedBrowsers. Default is ''
 ; Return values .: None, or set @error
 ; Author ........: mLipok
 ; Modified ......:
