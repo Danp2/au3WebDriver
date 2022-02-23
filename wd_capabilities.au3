@@ -169,7 +169,6 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value1 = Default Then $value1 = 'default'
 	If $value2 = Default Then $value2 = 'default'
 	If StringInStr('alwaysMatch|firstMatch', $key) Then
-		If $value1 = 'edge' Then $value1 = 'MSEdge'
 		$_WD_CAPS__CURRENTIDX = __WD_CapabilitiesInitialize($key, $value1)
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
@@ -264,7 +263,7 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ;                  $s_BrowserType      - [optional] a string value. Default is ''. One of:
 ;                               | 'chrome'
 ;                               | 'firefox'
-;                               | 'edge'
+;                               | 'msedge'
 ;                               | '' an empty string
 ; Return values .: None, or set @error
 ; Author ........: mLipok
