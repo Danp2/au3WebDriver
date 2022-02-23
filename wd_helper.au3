@@ -1276,7 +1276,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; ===============================================================================================================================
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
-	Local $iErr = $_WD_ERROR_Success, $sDriverEXE, $sBrowserVersion, $bResult = False
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $sBrowserVersion, $bResult = False
 	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
 	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
 	Local $bKeepArch = False
@@ -1416,16 +1416,17 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 								FileDelete($sInstallDir & $sDriverEXE)
 								Local $bEXEWasFound = False
 								For $FileItem In $FilesInZip ; Check the files in the archive separately
-									; https://docs.microsoft.com/pl-pl/windows/win32/shell/folder
-									; https://docs.microsoft.com/pl-pl/windows/win32/shell/folder-items
-									; https://docs.microsoft.com/pl-pl/windows/win32/shell/folderitem
+									; https://docs.microsoft.com/en-us/windows/win32/shell/folderitem
 									If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then ; extract only EXE files
 										$bEXEWasFound = True
 										$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
 									EndIf
 								Next
-								If @error Or Not $bEXEWasFound Then
+								If @error Then
 									$iErr = $_WD_ERROR_GeneralError
+								ElseIf Not $bEXEWasFound Then
+									$iErr = $_WD_ERROR_FileIssue
+									$iExt = 11
 								Else
 									$iErr = $_WD_ERROR_Success
 									$bResult = True
@@ -1447,10 +1448,10 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 ;~ 		__WD_ConsoleWrite($sFuncName & ': Local File = ' & $sInstallDir & $sDriverEXE & @CRLF)
 ;~ 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Result = ' & $bResult & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & ' : Result = ' & $bResult & @CRLF)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
 ; #FUNCTION# ====================================================================================================================
@@ -1601,7 +1602,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $iErr & ': ' & $iExt & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
