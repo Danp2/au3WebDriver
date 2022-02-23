@@ -157,18 +157,19 @@ Download and add the following mandatory Third-Party UDFs to your project folder
 
 Download and install one of the following WebDrivers (depending on the browser type and version you want to automate).
 
-| Browser | Download | Implementation status |
-|:---:|---|---|
-| ![Chrome16] | [Chrome](https://sites.google.com/chromium.org/driver/downloads) | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md) |
-| ![Edge16] | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/) |
-| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest) | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^1] |
-| ![Opera16] | [Opera](https://github.com/operasoftware/operachromiumdriver/releases/latest) |  |
+|    Browser   | Download             | Implementation status        |
+|:------------:|----------------------|------------------------------|
+|  ![Chrome16] | [Chrome][ChromeDL]   | [Status][ChromeStatus]       |
+|   ![Edge16]  | [Edge][EdgeDL]       | [Status][EdgeStatus]         |
+| ![Firefox16] | [Firefox][FirefoxDL] | [Status][FirefoxStatus] [^1] |
+|  ![Opera16]  | [Opera][OperaDL]     | [^2]                         |
 
 
-Limitation notice. [^2]
+Limitation notice. [^3]
 
 [^1]: Login Required
-[^2]: Not all WebDriver functions have been implemented by each browser. Keep that in mind and check the "WebDriver specification status" for your desired WebDriver of choice.
+[^2]: Derived from ChromeDriver per project [ReadMe](https://github.com/operasoftware/operachromiumdriver/blob/master/README.md)
+[^3]: Not all WebDriver functions have been fully implemented by each browser. Keep that in mind and check the "Implementation status" for your desired WebDriver of choice.
 
 #### *Installation*
 
@@ -243,3 +244,10 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3Web
 [Firefox16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png
 [Opera48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_48x48.png
 [Opera16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_16x16.png
+[ChromeDL]: https://sites.google.com/chromium.org/driver/downloads
+[ChromeStatus]: https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md
+[EdgeStatus]: https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/
+[EdgeDL]: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+[FirefoxStatus]: https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status
+[FirefoxDL]: https://github.com/mozilla/geckodriver/releases/latest
+[OperaDL]: https://github.com/operasoftware/operachromiumdriver/releases/latest
