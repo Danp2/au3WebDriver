@@ -169,6 +169,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value1 = Default Then $value1 = 'default'
 	If $value2 = Default Then $value2 = 'default'
 	If StringInStr('alwaysMatch|firstMatch', $key) Then
+		If $value1 = 'edge' Then $value1 = 'MSEdge'
 		$_WD_CAPS__CURRENTIDX = __WD_CapabilitiesInitialize($key, $value1)
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
@@ -282,18 +283,16 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserType = '') ; $s_MatchTy
 
 ;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$s_BrowserType = " & $s_BrowserType & @CRLF & "$s_MatchType = " & $s_MatchType)
 	Local $s_SpecificOptions_KeyName = ''
-	If StringInStr($s_BrowserType, 'chrome') Then
-		$s_SpecificOptions_KeyName = 'goog:chromeOptions'
-	ElseIf StringInStr($s_BrowserType, 'firefox') Then
-		$s_SpecificOptions_KeyName = 'moz:firefoxOptions'
-	ElseIf StringInStr($s_BrowserType, 'edge') Then
-		$s_SpecificOptions_KeyName = 'ms:edgeOptions'
-	ElseIf StringInStr($s_BrowserType, 'opera') Then
-		$s_SpecificOptions_KeyName = 'operaOptions'
+
+	If $s_BrowserType <> '' Then
+		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserType), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+		$s_SpecificOptions_KeyName = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_OptionsKey]
 	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserType = '' Then
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserType = '' Then
 		Return SetError(2)
+;~ 	Else
+;~ 		Return SetError(3) ; this should be tested/reviewed later (@mLipok 23-02-2022)
 	EndIf
 	#EndRegion - parameters validation
 
