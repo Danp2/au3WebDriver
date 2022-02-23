@@ -14,11 +14,11 @@
 
 #Region - Global's declarations
 Global Const $sElementSelector = "//input[@name='q']"
-Global Const $aBrowsers[][2] = _
+Global Const $aBrowsers[][3] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
-		["MSEdge", SetupEdge] _
+		["MSEdge", SetupEdge], _
 		["Opera", SetupOpera] _
 		]
 
@@ -283,7 +283,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		GUIDelete($hWndReportWindow)
 		$__g_bReportWindowWaitClose_Debug = True
 		$__g_bReportWindowClosed_Debug = True
-	 	$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
+		$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
 	EndIf
 
 	Return SetError($iError, $iExtended, $bForceDispose)
@@ -798,4 +798,24 @@ Func SetupEdge($bHeadless)
 EndFunc   ;==>SetupEdge
 
 Func SetupOpera($bHeadless)
-EndFunc   ;==>SetupEdge
+	_WD_Option('Driver', 'operadriver.exe')
+	_WD_Option('Port', 9515)
+	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\opera.log"')
+
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"operaOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
+	_WD_CapabilitiesAdd('w3c', True)
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sCapabilities = _WD_CapabilitiesGet()
+	#Region - for testing stage only
+;~ 	$sCapabilities = "{}"
+;~ 	$sCapabilities = '{"capabilities":{}}'
+;~ 	$sCapabilities = '{"capabilities":{"operaOptions": {}}}'
+;~ 	$sCapabilities = '{"capabilities":{"operaOptions": {"w3c":true}}}'
+;~ 	$sCapabilities = '{"capabilities":{"operaOptions": {"w3c":true, "binary": "C:\Users\agatk\AppData\Local\Programs\Opera\opera.exe"}}}'
+	#EndRegion - for testing stage only
+	Return $sCapabilities
+EndFunc   ;==>SetupOpera
