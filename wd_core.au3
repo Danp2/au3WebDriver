@@ -166,6 +166,15 @@ Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
+
+; [0] Browser Name, [1] Executable Name, [2] Webdriver Name, [3] 64 bit?, [4] Browser options key
+Global $_WD_SupportedBrowsers[][5] = _
+		[ _
+		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions"], _
+		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions"], _
+		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions"], _
+		["opera", "opera.exe", "operadriver.exe", True, "operaOptions"] _
+		]
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
