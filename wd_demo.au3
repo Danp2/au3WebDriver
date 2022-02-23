@@ -283,7 +283,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		GUIDelete($hWndReportWindow)
 		$__g_bReportWindowWaitClose_Debug = True
 		$__g_bReportWindowClosed_Debug = True
-		$__g_iReportType_Debug = 2  ; Prevents window from appearing during script exit
+		$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
 	EndIf
 
 	Return SetError($iError, $iExtended, $bForceDispose)
