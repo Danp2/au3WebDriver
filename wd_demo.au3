@@ -789,7 +789,7 @@ Func SetupEdge($bHeadless)
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
-	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
+	_WD_CapabilitiesAdd('alwaysMatch', 'msedge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
