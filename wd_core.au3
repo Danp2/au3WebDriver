@@ -1724,7 +1724,7 @@ Func __WD_StripPath($sFilePath)
 	Return StringRegExpReplace($sFilePath, "^.*\\(.*)$", "$1")
 EndFunc   ;==>__WD_StripPath
 
-Func __WD_ConsoleWrite($sMsg)
+Func __WD_ConsoleWrite($sMsg, $iError = @error, $iExtended = @extended)
 	If IsFunc($_WD_CONSOLE) Then
 		Call($_WD_CONSOLE, $sMsg)
 	ElseIf $_WD_CONSOLE = Null Then
@@ -1732,6 +1732,7 @@ Func __WD_ConsoleWrite($sMsg)
 	Else
 		FileWrite($_WD_CONSOLE, $sMsg)
 	EndIf
+	Return SetError($iError, $iExtended)
 EndFunc   ;==>__WD_ConsoleWrite
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
