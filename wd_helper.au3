@@ -1526,7 +1526,7 @@ Func _WD_GetBrowserPath($sBrowser)
 		$sPath = RegRead("HKLM" & $sRegKeyCommon & $sEXE, "")
 		If @error Then $sPath = RegRead("HKCU" & $sRegKeyCommon & $sEXE, "")
 
-		; if both checks not found key in the registry
+		; Generate $_WD_ERROR_NotFound if neither key is found
 		If @error Then
 			$iErr = $_WD_ERROR_NotFound
 		Else
