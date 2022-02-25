@@ -652,7 +652,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
- 	Local Const $sFuncName = "_WD_HighlightElement"
+	Local Const $sFuncName = "_WD_HighlightElement"
 
 	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
 	Local $iErr = @error
@@ -700,7 +700,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 
 	If IsString($vElements) Then
 		$sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-		$sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
+		$sResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
 		$iErr = @error
 
 	ElseIf IsArray($vElements) And UBound($vElements) > 0 Then
@@ -1479,29 +1479,52 @@ EndFunc   ;==>_WD_UpdateDriver
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
-	Local Const $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
-	Local $sEXE, $sBrowserVersion = "0"
 	Local $iErr = $_WD_ERROR_Success
+	Local $sBrowserVersion = "0"
+
+	Local $sPath = _WD_GetBrowserPath($sBrowser)
+	If @error Then
+		$iErr = $_WD_ERROR_NotFound
+	ElseIf Not FileExists($sPath) Then
+		$iErr = $_WD_ERROR_FileIssue
+	Else
+		$sBrowserVersion = FileGetVersion($sPath)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
+EndFunc   ;==>_WD_GetBrowserVersion
+
+Func _WD_GetBrowserPath($sBrowser)
+	Local Const $sFuncName = "_WD_GetBrowserPath"
+	Local $iErr = $_WD_ERROR_Success
+	Local $sEXE, $sPath
 
 	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
-
 	If @error Then
 		$iErr = $_WD_ERROR_InvalidValue
 	Else
 		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
 	EndIf
 
+	Local $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
+
 	If $iErr = $_WD_ERROR_Success Then
-		Local $sPath = RegRead($cRegKey & $sEXE, "")
-		If @error Then
+		$sPath = RegRead($cRegKey & $sEXE, "")
+		$iErr = @error
+		If @error And StringInStr($sEXE, 'opera') Then
+			$cRegKey = 'HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
+			$sPath = RegRead($cRegKey & $sEXE, "")
+			$iErr = @error
+		EndIf
+
+		If $iErr Then
 			$iErr = $_WD_ERROR_NotFound
 		Else
 			$sPath = StringRegExpReplace($sPath, '["'']', '') ; String quotation marks
-			$sBrowserVersion = FileGetVersion($sPath)
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
-EndFunc   ;==>_WD_GetBrowserVersion
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sPath)
+EndFunc   ;==>_WD_GetBrowserPath
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetWebDriverVersion
@@ -2151,7 +2174,7 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.id', 'keyboard_' & $iSuffix)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
@@ -2210,7 +2233,7 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 			Json_Put($vData, '.y', $iYOffset)
 	EndSwitch
 
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
@@ -2239,7 +2262,7 @@ Func _WD_JsonActionPause($iDuration)
 	Json_Put($vData, '.type', 'pause')
 	Json_Put($vData, '.duration', $iDuration)
 
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
