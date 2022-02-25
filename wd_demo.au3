@@ -283,7 +283,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		GUIDelete($hWndReportWindow)
 		$__g_bReportWindowWaitClose_Debug = True
 		$__g_bReportWindowClosed_Debug = True
-		$__g_iReportType_Debug = 2  ; Prevents window from appearing during script exit
+		$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
 	EndIf
 
 	Return SetError($iError, $iExtended, $bForceDispose)
@@ -803,12 +803,13 @@ Func SetupOpera($bHeadless)
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\opera.log"')
 
-;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
-	_WD_CapabilitiesAdd('binary', 'C:\Users\Szef\AppData\Local\Programs\Opera\opera.exe')
+	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
+	ConsoleWrite("! _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
+
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
