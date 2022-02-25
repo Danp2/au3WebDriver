@@ -1,5 +1,6 @@
 #include-once
-#include <WinAPIProc.au3>
+#include <WinAPIFiles.au3> ; used in _WD_Startup
+#include <WinAPIProc.au3> ; used in __WD_CloseDriver
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include "WinHttp.au3" ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
@@ -1192,7 +1193,7 @@ EndFunc   ;==>_WD_Option
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_Shutdown
 ; Link ..........:
@@ -1234,11 +1235,14 @@ Func _WD_Startup()
 			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
 		EndIf
 
+		_WinAPI_GetBinaryType(@ScriptDir & "\" & $_WD_DRIVER)
+		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
+
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": au3WD UDF:" & @TAB & $__WDVERSION & $sUpdate & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & @CRLF)
 	Else
