@@ -1503,8 +1503,8 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ;                  Failure - "" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_NotFound
-;; Author ........: Danp2
-; Modified ......: Mlipok
+; Author ........: Danp2
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -1512,23 +1512,26 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; ===============================================================================================================================
 Func _WD_GetBrowserPath($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserPath"
+	Local Const $sRegKeyCommon = '\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 	Local $iErr = $_WD_ERROR_Success
 	Local $sEXE, $sPath = ""
-	Local $cRegKey = '\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 
 	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 	If @error Then
 		$iErr = $_WD_ERROR_InvalidValue
 	Else
 		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
-		$sPath = RegRead("HKLM" & $cRegKey & $sEXE, "")
 
-		If @error Then $sPath = RegRead("HKCU" & $cRegKey & $sEXE, "")
+		; check HKLM or in case of error HKCU
+		$sPath = RegRead("HKLM" & $sRegKeyCommon & $sEXE, "")
+		If @error Then $sPath = RegRead("HKCU" & $sRegKeyCommon & $sEXE, "")
 
+		; if both checks not found key in the registry
 		If @error Then
 			$iErr = $_WD_ERROR_NotFound
 		Else
 			$sPath = StringRegExpReplace($sPath, '["'']', '') ; String quotation marks
+			If StringInStr($sBrowser, 'opera') Then $sPath = StringReplace($sPath, 'Launcher.exe', $sEXE) ; Registry entries can contain "Launcher.exe" instead "opera.exe"
 		EndIf
 	EndIf
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sPath)
