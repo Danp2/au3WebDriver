@@ -807,6 +807,10 @@ Func SetupOpera($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	; REMARK
+	; using 32bit operadriver.exe requires to set 'binary' capabilities,
+	; using 64bit operadriver.exe dosen't require to set this capability, but at the same time setting is not affecting the script
+	; So this is good habbit to setup for any case.
 	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
 	ConsoleWrite("! _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
 
