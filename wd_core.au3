@@ -180,7 +180,7 @@ Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions"], _
 		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions"], _
 		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions"], _
-		["opera", "opera.exe", "operadriver.exe", True, "operaOptions"] _
+		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions"] _
 		]
 #EndRegion Global Variables
 
