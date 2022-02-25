@@ -803,13 +803,14 @@ Func SetupOpera($bHeadless)
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\opera.log"')
 
-	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"operaOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
-	#Region - for testing stage only
-;~ 	$sCapabilities = "{}"
-;~ 	$sCapabilities = '{"capabilities":{}}'
-;~ 	$sCapabilities = '{"capabilities":{"operaOptions": {}}}'
-;~ 	$sCapabilities = '{"capabilities":{"operaOptions": {"w3c":true}}}'
-;~ 	$sCapabilities = '{"capabilities":{"operaOptions": {"w3c":true, "binary": "C:\Users\agatk\AppData\Local\Programs\Opera\opera.exe"}}}'
-	#EndRegion - for testing stage only
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
+	_WD_CapabilitiesAdd('w3c', True)
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesAdd('binary', 'C:\Users\Szef\AppData\Local\Programs\Opera\opera.exe')
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
 EndFunc   ;==>SetupOpera
