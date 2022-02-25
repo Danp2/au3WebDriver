@@ -1494,30 +1494,38 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
 EndFunc   ;==>_WD_GetBrowserVersion
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetBrowserPath
+; Description ...: Retrieve path to browser executable from registry
+; Syntax ........: _WD_GetBrowserPath($sBrowser)
+; Parameters ....: $sBrowser - Name of browser
+; Return values .: Success - Full path to browser executable
+;                  Failure - "" and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotFound
+;; Author ........: Danp2
+; Modified ......: Mlipok
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func _WD_GetBrowserPath($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserPath"
 	Local $iErr = $_WD_ERROR_Success
-	Local $sEXE, $sPath
+	Local $sEXE, $sPath = ""
+	Local $cRegKey = '\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 
 	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 	If @error Then
 		$iErr = $_WD_ERROR_InvalidValue
 	Else
 		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
-	EndIf
+		$sPath = RegRead("HKLM" & $cRegKey & $sEXE, "")
 
-	Local $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
+		If @error Then $sPath = RegRead("HKCU" & $cRegKey & $sEXE, "")
 
-	If $iErr = $_WD_ERROR_Success Then
-		$sPath = RegRead($cRegKey & $sEXE, "")
-		$iErr = @error
-		If @error And StringInStr($sEXE, 'opera') Then
-			$cRegKey = 'HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
-			$sPath = RegRead($cRegKey & $sEXE, "")
-			$iErr = @error
-		EndIf
-
-		If $iErr Then
+		If @error Then
 			$iErr = $_WD_ERROR_NotFound
 		Else
 			$sPath = StringRegExpReplace($sPath, '["'']', '') ; String quotation marks
