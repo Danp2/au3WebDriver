@@ -1,5 +1,6 @@
 #include-once
-#include <WinAPIProc.au3>
+#include <WinAPIFiles.au3> ; used in _WD_Startup
+#include <WinAPIProc.au3> ; used in __WD_CloseDriver
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include "WinHttp.au3" ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
@@ -108,6 +109,14 @@ Global Enum _
 		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_COUNTER ;
 
+Global Enum _
+		$_WD_BROWSER_Name, _
+		$_WD_BROWSER_ExeName, _
+		$_WD_BROWSER_DriverName, _
+		$_WD_BROWSER_64Bit, _
+		$_WD_BROWSER_OptionsKey, _
+		$_WD_BROWSER__COUNTER
+
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Success", _
 		"General Error", _
@@ -166,6 +175,14 @@ Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
+
+Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
+		[ _
+		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions"], _
+		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions"], _
+		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions"], _
+		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions"] _
+		]
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
@@ -1192,7 +1209,7 @@ EndFunc   ;==>_WD_Option
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_Shutdown
 ; Link ..........:
@@ -1234,11 +1251,14 @@ Func _WD_Startup()
 			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
 		EndIf
 
+		_WinAPI_GetBinaryType(@ScriptDir & "\" & $_WD_DRIVER)
+		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
+
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": au3WD UDF:" & @TAB & $__WDVERSION & $sUpdate & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & @CRLF)
 	Else
@@ -1724,7 +1744,7 @@ Func __WD_StripPath($sFilePath)
 	Return StringRegExpReplace($sFilePath, "^.*\\(.*)$", "$1")
 EndFunc   ;==>__WD_StripPath
 
-Func __WD_ConsoleWrite($sMsg)
+Func __WD_ConsoleWrite($sMsg, $iError = @error, $iExtended = @extended)
 	If IsFunc($_WD_CONSOLE) Then
 		Call($_WD_CONSOLE, $sMsg)
 	ElseIf $_WD_CONSOLE = Null Then
@@ -1732,6 +1752,7 @@ Func __WD_ConsoleWrite($sMsg)
 	Else
 		FileWrite($_WD_CONSOLE, $sMsg)
 	EndIf
+	Return SetError($iError, $iExtended)
 EndFunc   ;==>__WD_ConsoleWrite
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
