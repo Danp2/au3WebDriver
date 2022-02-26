@@ -2252,6 +2252,7 @@ EndFunc   ;==>_WD_JsonActionPause
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonCookie
+; Description ...: Formats "cookie" strings for use in _WD_Cookies
 ; Syntax ........: _WD_JsonCookie($sName, $sValue[, $sPath = Default[, $sDomain = Default[, $bSecure = Default [,
 ;                  $bHTTPOnly = Default[, $iExpiryTime = Default[, $sSameSite = Default]]]]]])
 ; Parameters ....: $sName               - The name of the cookie.
