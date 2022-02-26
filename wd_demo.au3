@@ -18,7 +18,7 @@ Global Const $aBrowsers[][2] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
-		["MSEdge", SetupEdge] _
+		["MSEdge", SetupEdge], _
 		["Opera", SetupOpera] _
 		]
 
@@ -283,7 +283,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		GUIDelete($hWndReportWindow)
 		$__g_bReportWindowWaitClose_Debug = True
 		$__g_bReportWindowClosed_Debug = True
-	 	$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
+		$__g_iReportType_Debug = 2 ; Prevents window from appearing during script exit
 	EndIf
 
 	Return SetError($iError, $iExtended, $bForceDispose)
@@ -789,7 +789,7 @@ Func SetupEdge($bHeadless)
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
-	_WD_CapabilitiesAdd('alwaysMatch', 'edge')
+	_WD_CapabilitiesAdd('alwaysMatch', 'msedge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
@@ -798,4 +798,24 @@ Func SetupEdge($bHeadless)
 EndFunc   ;==>SetupEdge
 
 Func SetupOpera($bHeadless)
-EndFunc   ;==>SetupEdge
+	#forceref $bHeadless
+	_WD_Option('Driver', 'operadriver.exe')
+	_WD_Option('Port', 9515)
+	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\opera.log"')
+
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
+	_WD_CapabilitiesAdd('w3c', True)
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	; REMARK
+	; using 32bit operadriver.exe requires to set 'binary' capabilities,
+	; using 64bit operadriver.exe dosen't require to set this capability, but at the same time setting is not affecting the script
+	; So this is good habit to setup for any case.
+	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
+	ConsoleWrite("! _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
+
+	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
+	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
+	Local $sCapabilities = _WD_CapabilitiesGet()
+	Return $sCapabilities
+EndFunc   ;==>SetupOpera
