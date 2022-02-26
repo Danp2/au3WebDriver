@@ -14,7 +14,7 @@
 
 #Region - Global's declarations
 Global Const $sElementSelector = "//input[@name='q']"
-Global Const $aBrowsers[][3] = _
+Global Const $aBrowsers[][2] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
@@ -810,7 +810,7 @@ Func SetupOpera($bHeadless)
 	; REMARK
 	; using 32bit operadriver.exe requires to set 'binary' capabilities,
 	; using 64bit operadriver.exe dosen't require to set this capability, but at the same time setting is not affecting the script
-	; So this is good habbit to setup for any case.
+	; So this is good habit to setup for any case.
 	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
 	ConsoleWrite("! _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
 
