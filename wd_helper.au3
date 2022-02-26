@@ -1423,29 +1423,37 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						$oShell = ObjCreate("Shell.Application")
 						If @error Then
 							$iErr = $_WD_ERROR_GeneralError
-						ElseIf FileGetSize($sTempFile) = 0 Or IsObj($oShell.NameSpace($sTempFile)) = 0 Then
+						ElseIf FileGetSize($sTempFile) = 0 Then
 							$iErr = $_WD_ERROR_FileIssue
+							$iExt = 11 ; $iExt from 11 to 19 are related to _WD_UpdateDriver()
+						ElseIf IsObj($oShell.NameSpace($sTempFile)) = 0 Then
+							$iErr = $_WD_ERROR_FileIssue
+							$iExt = 12
+						ElseIf IsObj($oShell.NameSpace($sInstallDir)) = 0 Then
+							$iErr = $_WD_ERROR_FileIssue
+							$iExt = 13
 						Else
-							Local $oNameSpace = $oShell.NameSpace($sTempFile)
-							$FilesInZip = $oNameSpace.items
+							Local $oNameSpace_Temp = $oShell.NameSpace($sTempFile)
+							$FilesInZip = $oNameSpace_Temp.items
 							If @error Then
 								$iErr = $_WD_ERROR_GeneralError
 							Else
-								; delete webdriver from disk before unpacking to avoid potential problems
-								FileDelete($sInstallDir & $sDriverEXE)
+								Local $oNameSpace_Install = $oShell.NameSpace($sInstallDir)
 								Local $bEXEWasFound = False
-								For $FileItem In $FilesInZip ; Check the files in the archive separately
+								For $FileItem In $FilesInZip     ; Check the files in the archive separately
 									; https://docs.microsoft.com/en-us/windows/win32/shell/folderitem
-									If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then ; extract only EXE files
+									If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
+										; delete webdriver from disk before unpacking to avoid potential problems
+										FileDelete($sInstallDir & $sDriverEXE)
 										$bEXEWasFound = True
-										$oShell.NameSpace($sInstallDir).CopyHere($FileItem, 20) ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+										$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
 									EndIf
 								Next
 								If @error Then
 									$iErr = $_WD_ERROR_GeneralError
 								ElseIf Not $bEXEWasFound Then
 									$iErr = $_WD_ERROR_FileIssue
-									$iExt = 11
+									$iExt = 19 ; $iExt from 11 to 19 are related to _WD_UpdateDriver()
 								Else
 									$iErr = $_WD_ERROR_Success
 									$bResult = True
@@ -1637,7 +1645,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 				ElseIf Not _WinAPI_FileInUse($sDest) Then
 					If @error Then
 						$iErr = $_WD_ERROR_FileIssue
-						$iExt = 1
+						$iExt = 1 ; $iExt from 1 to 9 are related to _WD_DownloadFile()
 					Else
 						$bResult = True
 					EndIf
