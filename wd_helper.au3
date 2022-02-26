@@ -1530,8 +1530,8 @@ Func _WD_GetBrowserPath($sBrowser)
 		If @error Then
 			$iErr = $_WD_ERROR_NotFound
 		Else
-			$sPath = StringRegExpReplace($sPath, '["'']', '') ; String quotation marks
-			If StringInStr($sBrowser, 'opera') Then $sPath = StringReplace($sPath, 'Launcher.exe', $sEXE) ; Registry entries can contain "Launcher.exe" instead "opera.exe"
+			$sPath = StringRegExpReplace($sPath, '["'']', '') ; Remove quotation marks
+			$sPath = StringRegExpReplace($sPath, '(.+\\)(.*exe)', '$1' & $sEXE) ; Registry entries can contain "Launcher.exe" instead "opera.exe"
 		EndIf
 	EndIf
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sPath)
