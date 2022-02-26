@@ -19,6 +19,7 @@ Global Const $aBrowsers[][2] = _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
 		["MSEdge", SetupEdge] _
+		["Opera", SetupOpera] _
 		]
 
 ; Column 0 - Function Name
@@ -794,4 +795,7 @@ Func SetupEdge($bHeadless)
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
+EndFunc   ;==>SetupEdge
+
+Func SetupOpera($bHeadless)
 EndFunc   ;==>SetupEdge
