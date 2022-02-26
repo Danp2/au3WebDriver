@@ -1255,7 +1255,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Name ..........: _WD_UpdateDriver
 ; Description ...: Replace web driver with newer version, if available.
 ; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default]]])
-; Parameters ....: $sBrowser    - Name of browser
+; Parameters ....: $sBrowser    - Browser name or full path to browser executable
 ;                  $sInstallDir - [optional] Install directory. Default is @ScriptDir
 ;                  $bFlag64     - [optional] Install 64bit version? Default is current driver architecture or False
 ;                  $bForce      - [optional] Force update? Default is False
@@ -1301,6 +1301,18 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
+
+		If @error And FileExists($sBrowser) Then
+			; Directly retrieve file version if full path was supplied
+			$sBrowserVersion = FileGetVersion($sBrowser)
+
+			If Not @error Then
+				; Extract filename and confirm match in list of supported browsers
+				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+				If _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name) <> -1 Then _
+					$iErr = $_WD_ERROR_Success
+			EndIf
+		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
 			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
