@@ -35,7 +35,6 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 |-------------|---------|----------------|------------|
 | ![Chrome48] | ![Edge48] | ![Firefox48] | ![Opera48] |
 
-
 ### *Functions*
 
 <details>
@@ -163,7 +162,6 @@ Download and install one of the following WebDrivers (depending on the browser t
 |   ![Edge16]  | [Edge][EdgeDL]       | [Status][EdgeStatus]         |
 | ![Firefox16] | [Firefox][FirefoxDL] | [Status][FirefoxStatus] [^1] |
 |  ![Opera16]  | [Opera][OperaDL]     | [^2]                         |
-
 
 Limitation notice. [^3]
 

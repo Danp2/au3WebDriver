@@ -13,6 +13,29 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- Support for Opera browser
+- _WD_GetBrowserPath
+
+### Changed
+
+- __WD_ConsoleWrite: Updated to preserve @error and @extended
+- _WD_Startup: Added display of webdriver bit level (32 / 64)
+- _WD_UpdateDriver: Support alternate browser location 
+
+### Deprecated
+
+### Fixed
+
+- _WD_UpdateDriver: Unpacking webdriver executable failed on some workstations; Better error handling
+
+### Removed
+### Security
+### Project
+
+## [0.6.0] - 2022-02-22
+
+### Added
+
 - _WD_JsonCookie (mLipok)
 - _WD_GetDevicePixelRatio (mLipok)
 - _WD_Cookies: Added DeleteAll option (mLipok)
