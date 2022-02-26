@@ -652,7 +652,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
- 	Local Const $sFuncName = "_WD_HighlightElement"
+	Local Const $sFuncName = "_WD_HighlightElement"
 
 	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
 	Local $iErr = @error
@@ -700,7 +700,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 
 	If IsString($vElements) Then
 		$sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-		$sResult = _WD_ExecuteScript($sSession, $sScript,  __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
+		$sResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
 		$iErr = @error
 
 	ElseIf IsArray($vElements) And UBound($vElements) > 0 Then
@@ -1479,29 +1479,63 @@ EndFunc   ;==>_WD_UpdateDriver
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
-	Local Const $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
-	Local $sEXE, $sBrowserVersion = "0"
 	Local $iErr = $_WD_ERROR_Success
+	Local $sBrowserVersion = "0"
+
+	Local $sPath = _WD_GetBrowserPath($sBrowser)
+	If @error Then
+		$iErr = $_WD_ERROR_NotFound
+	ElseIf Not FileExists($sPath) Then
+		$iErr = $_WD_ERROR_FileIssue
+	Else
+		$sBrowserVersion = FileGetVersion($sPath)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
+EndFunc   ;==>_WD_GetBrowserVersion
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetBrowserPath
+; Description ...: Retrieve path to browser executable from registry
+; Syntax ........: _WD_GetBrowserPath($sBrowser)
+; Parameters ....: $sBrowser - Name of browser
+; Return values .: Success - Full path to browser executable
+;                  Failure - "" and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotFound
+; Author ........: Danp2
+; Modified ......: mLipok
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetBrowserPath($sBrowser)
+	Local Const $sFuncName = "_WD_GetBrowserPath"
+	Local Const $sRegKeyCommon = '\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
+	Local $iErr = $_WD_ERROR_Success
+	Local $sEXE, $sPath = ""
 
 	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
-
 	If @error Then
 		$iErr = $_WD_ERROR_InvalidValue
 	Else
 		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
-	EndIf
 
-	If $iErr = $_WD_ERROR_Success Then
-		Local $sPath = RegRead($cRegKey & $sEXE, "")
+		; check HKLM or in case of error HKCU
+		$sPath = RegRead("HKLM" & $sRegKeyCommon & $sEXE, "")
+		If @error Then $sPath = RegRead("HKCU" & $sRegKeyCommon & $sEXE, "")
+
+		; Generate $_WD_ERROR_NotFound if neither key is found
 		If @error Then
 			$iErr = $_WD_ERROR_NotFound
 		Else
 			$sPath = StringRegExpReplace($sPath, '["'']', '') ; String quotation marks
-			$sBrowserVersion = FileGetVersion($sPath)
+			If StringInStr($sBrowser, 'opera') Then $sPath = StringReplace($sPath, 'Launcher.exe', $sEXE) ; Registry entries can contain "Launcher.exe" instead "opera.exe"
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
-EndFunc   ;==>_WD_GetBrowserVersion
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sPath)
+EndFunc   ;==>_WD_GetBrowserPath
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetWebDriverVersion
@@ -2151,7 +2185,7 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.id', 'keyboard_' & $iSuffix)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
@@ -2210,7 +2244,7 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 			Json_Put($vData, '.y', $iYOffset)
 	EndSwitch
 
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
@@ -2239,7 +2273,7 @@ Func _WD_JsonActionPause($iDuration)
 	Json_Put($vData, '.type', 'pause')
 	Json_Put($vData, '.duration', $iDuration)
 
- 	Local $sJSON = Json_Encode($vData)
+	Local $sJSON = Json_Encode($vData)
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON & @CRLF)
