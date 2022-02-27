@@ -1277,8 +1277,8 @@ EndFunc   ;==>_WD_IsLatestRelease
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $sBrowserVersion, $bResult = False
-	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
-	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
+	Local $sDriverCurrent, $sDriverLatest, $sURLNewDriver
+	Local $sTempFile, $oShell, $FilesInZip
 	Local $bKeepArch = False
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
@@ -1332,8 +1332,14 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			EndIf
 
 			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
-
 			; Determine latest available webdriver version for the designated browser
+			Local $aBrowser = _ArrayExtract($_WD_SupportedBrowsers, $iIndex, $iIndex)
+			Local $aDriverInfo = __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
+			$iErr = @error
+
+			$sDriverLatest = $aDriverInfo[1]
+			$sURLNewDriver = $aDriverInfo[0]
+#cs
 			Switch $sBrowser
 				Case 'chrome'
 					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
@@ -1399,6 +1405,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						$iErr = $_WD_ERROR_GeneralError
 					EndIf
 			EndSwitch
+#ce
 
 			If $iErr = $_WD_ERROR_Success Then
 				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
