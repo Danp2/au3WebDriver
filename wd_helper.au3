@@ -2417,3 +2417,78 @@ EndFunc   ;==>__WD_ErrHnd
 Func __WD_JsonElement($sElement)
 	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
 EndFunc   ;==>__WD_JsonElement
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_GetLatestWebdriverURL
+; Description ...: Generates URL for downloading latest matching webdriver version
+; Syntax ........: __WD_GetLatestWebdriverURL($aBrowser, $sBrowserVersion, $bFlag64)
+; Parameters ....: $aBrowser        - Row extracted from $_WD_SupportedBrowsers.
+;                  $sBrowserVersion - Current browser version.
+;                  $bFlag64         - Install 64bit version?
+; Return values .: Success - URL for downloading requested webdriver
+;                  Failure - "" and sets @error to $_WD_ERROR_GeneralError
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_GetLatestWebdriverURL($aBrowser, $sBrowserVersion, $bFlag64)
+	Local Const $sFuncName = "__WD_GetLatestWebdriverURL"
+
+	Local $iStartPos, $iConversion, $sNewDriverURL = '', $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $sURL = $aBrowser[0][$_WD_BROWSER_LatestReleaseURL]
+	Local $sRegex = $aBrowser[0][$_WD_BROWSER_LatestReleaseRegex]
+	Local $sNewURL = $aBrowser[0][$_WD_BROWSER_NewDriverURL]
+
+	If StringRegExp($sURL, '["'']') Then
+		Local $sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
+		$sURL = Execute($sURL)
+	EndIf
+
+	Local $sDriverLatest = InetRead($sURL)
+
+	If @error = $_WD_ERROR_Success Then
+		Select
+			Case BinaryMid($sDriverLatest, 1, 4) = '0x0000FEFF'                   ; UTF-32 BE
+				$iStartPos = 5
+				$iConversion = $SB_UTF16LE
+			Case BinaryMid($sDriverLatest, 1, 4) = '0xFFFE0000'                   ; UTF-32 LE
+				$iStartPos = 5
+				$iConversion = $SB_UTF16LE
+			Case BinaryMid($sDriverLatest, 1, 2) = '0xFEFF'                       ; UTF-16 BE
+				$iStartPos = 3
+				$iConversion = $SB_UTF16BE
+			Case BinaryMid($sDriverLatest, 1, 2) = '0xFFFE'                       ; UTF-16 LE
+				$iStartPos = 3
+				$iConversion = $SB_UTF16LE
+			Case BinaryMid($sDriverLatest, 1, 3) = '0xEFBBBF'                     ; UTF-8
+				$iStartPos = 4
+				$iConversion = $SB_UTF8
+			Case Else
+				$iStartPos = 1
+				$iConversion = $SB_ANSI
+		EndSelect
+
+		$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
+
+		If StringLen($sRegex) Then
+			$aResults = StringRegExp($sDriverLatest, $sRegex, $STR_REGEXPARRAYMATCH)
+
+			If @error Then
+				$iErr = $_WD_ERROR_GeneralError
+				$iExt = 2
+			Else
+				$sDriverLatest = $aResults[0]
+			EndIf
+		EndIf
+
+		$sNewDriverURL = Execute($sNewURL)
+	Else
+		$iErr = $_WD_ERROR_GeneralError
+		$iExt = 1
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sNewDriverURL)
+EndFunc   ;==>__WD_GetLatestWebdriverURL
