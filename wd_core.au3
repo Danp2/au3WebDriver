@@ -115,6 +115,9 @@ Global Enum _
 		$_WD_BROWSER_DriverName, _
 		$_WD_BROWSER_64Bit, _
 		$_WD_BROWSER_OptionsKey, _
+		$_WD_BROWSER_LatestReleaseURL, _
+		$_WD_BROWSER_LatestReleaseRegex, _
+		$_WD_BROWSER_NewDriverURL, _
 		$_WD_BROWSER__COUNTER
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
@@ -178,10 +181,10 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 
 Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 		[ _
-		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions"], _
-		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions"], _
-		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions"], _
-		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions"] _
+		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions", "'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort", "", '"https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"'], _
+		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions", "https://github.com/mozilla/geckodriver/releases/latest", '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(?:v)(.*?)"', '"https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest & (($bFlag64) ? "-win64.zip" : "-win32.zip")'], _
+		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions", "'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort", "", '"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'], _
+		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions", "https://github.com/operasoftware/operachromiumdriver/releases/latest", '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(?:v\.)(.*?)"', '"https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'] _
 		]
 #EndRegion Global Variables
 
