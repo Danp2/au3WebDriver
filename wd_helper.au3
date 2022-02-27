@@ -2419,9 +2419,9 @@ Func __WD_JsonElement($sElement)
 EndFunc   ;==>__WD_JsonElement
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_GetLatestWebdriverURL
+; Name ..........: __WD_GetLatestWebdriverInfo
 ; Description ...: Generates URL for downloading latest matching webdriver version
-; Syntax ........: __WD_GetLatestWebdriverURL($aBrowser, $sBrowserVersion, $bFlag64)
+; Syntax ........: __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 ; Parameters ....: $aBrowser        - Row extracted from $_WD_SupportedBrowsers.
 ;                  $sBrowserVersion - Current browser version.
 ;                  $bFlag64         - Install 64bit version?
@@ -2434,16 +2434,17 @@ EndFunc   ;==>__WD_JsonElement
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_GetLatestWebdriverURL($aBrowser, $sBrowserVersion, $bFlag64)
+Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 	Local Const $sFuncName = "__WD_GetLatestWebdriverURL"
-
-	Local $iStartPos, $iConversion, $sNewDriverURL = '', $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $iStartPos, $iConversion, $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $aInfo[2] = ["", ""]
 	Local $sURL = $aBrowser[0][$_WD_BROWSER_LatestReleaseURL]
 	Local $sRegex = $aBrowser[0][$_WD_BROWSER_LatestReleaseRegex]
 	Local $sNewURL = $aBrowser[0][$_WD_BROWSER_NewDriverURL]
 
 	If StringRegExp($sURL, '["'']') Then
 		Local $sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
+		#forceref $sVersionShort
 		$sURL = Execute($sURL)
 	EndIf
 
@@ -2474,7 +2475,7 @@ Func __WD_GetLatestWebdriverURL($aBrowser, $sBrowserVersion, $bFlag64)
 		$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
 
 		If StringLen($sRegex) Then
-			$aResults = StringRegExp($sDriverLatest, $sRegex, $STR_REGEXPARRAYMATCH)
+			Local $aResults = StringRegExp($sDriverLatest, $sRegex, $STR_REGEXPARRAYMATCH)
 
 			If @error Then
 				$iErr = $_WD_ERROR_GeneralError
@@ -2484,11 +2485,18 @@ Func __WD_GetLatestWebdriverURL($aBrowser, $sBrowserVersion, $bFlag64)
 			EndIf
 		EndIf
 
-		$sNewDriverURL = Execute($sNewURL)
+		If Not $iErr Then
+			$aInfo[0] = Execute($sNewURL)
+			ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $sNewURL = ' & $sNewURL & @CRLF & '>Error code: ' & @error & @CRLF) ;### Debug Console
+	ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $bFlag64 = ' & $bFlag64 & @CRLF & '>Error code: ' & @error & @CRLF) ;### Debug Console
+			ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $aInfo[0] = ' & $aInfo[0] & @CRLF & '>Error code: ' & @error & @CRLF) ;### Debug Console
+
+			$aInfo[1] = $sDriverLatest
+		EndIf
 	Else
 		$iErr = $_WD_ERROR_GeneralError
 		$iExt = 1
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sNewDriverURL)
-EndFunc   ;==>__WD_GetLatestWebdriverURL
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $aInfo)
+EndFunc   ;==>__WD_GetLatestWebdriverInfo
