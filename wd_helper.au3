@@ -1302,18 +1302,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
 
-		If @error And FileExists($sBrowser) Then
-			; Directly retrieve file version if full path was supplied
-			$sBrowserVersion = FileGetVersion($sBrowser)
-
-			If Not @error Then
-				; Extract filename and confirm match in list of supported browsers
-				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-				If _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name) <> -1 Then _
-					$iErr = $_WD_ERROR_Success
-			EndIf
-		EndIf
-
 		If $iErr = $_WD_ERROR_Success Then
 			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
@@ -1336,76 +1324,8 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			Local $aBrowser = _ArrayExtract($_WD_SupportedBrowsers, $iIndex, $iIndex)
 			Local $aDriverInfo = __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 			$iErr = @error
-
 			$sDriverLatest = $aDriverInfo[1]
 			$sURLNewDriver = $aDriverInfo[0]
-#cs
-			Switch $sBrowser
-				Case 'chrome'
-					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
-					$sDriverLatest = BinaryToString(InetRead('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort))
-					$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
-
-				Case 'firefox'
-					$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
-
-					If @error = $_WD_ERROR_Success Then
-						$sDriverLatest = StringRegExp($sResult, '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(.*?)"', 1)[0]
-						If StringLeft($sDriverLatest, 1) = 'v' Then $sDriverLatest = StringMid($sDriverLatest, 2)
-
-						$sURLNewDriver = "https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest
-						$sURLNewDriver &= ($bFlag64) ? "-win64.zip" : "-win32.zip"
-					Else
-						$iErr = $_WD_ERROR_GeneralError
-					EndIf
-
-				Case 'opera'
-					$sResult = BinaryToString(InetRead("https://github.com/operasoftware/operachromiumdriver/releases/latest"))
-
-					If @error = $_WD_ERROR_Success Then
-						$sDriverLatest = StringRegExp($sResult, '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(.*?)"', 1)[0]
-						If StringLeft($sDriverLatest, 1) = 'v' Then $sDriverLatest = StringMid($sDriverLatest, 3)
-
-						$sURLNewDriver = "https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_"
-						$sURLNewDriver &= ($bFlag64) ? "win64.zip" : "win32.zip"
-					Else
-						$iErr = $_WD_ERROR_GeneralError
-					EndIf
-
-				Case 'msedge'
-					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
-					$sDriverLatest = InetRead('https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort)
-
-					If @error = $_WD_ERROR_Success Then
-						Select
-							Case BinaryMid($sDriverLatest, 1, 4) = '0x0000FEFF'                   ; UTF-32 BE
-								$iStartPos = 5
-								$iConversion = $SB_UTF16LE
-							Case BinaryMid($sDriverLatest, 1, 4) = '0xFFFE0000'                   ; UTF-32 LE
-								$iStartPos = 5
-								$iConversion = $SB_UTF16LE
-							Case BinaryMid($sDriverLatest, 1, 2) = '0xFEFF'                       ; UTF-16 BE
-								$iStartPos = 3
-								$iConversion = $SB_UTF16BE
-							Case BinaryMid($sDriverLatest, 1, 2) = '0xFFFE'                       ; UTF-16 LE
-								$iStartPos = 3
-								$iConversion = $SB_UTF16LE
-							Case BinaryMid($sDriverLatest, 1, 3) = '0xEFBBBF'                     ; UTF-8
-								$iStartPos = 4
-								$iConversion = $SB_UTF8
-							Case Else
-								$iStartPos = 1
-								$iConversion = $SB_ANSI
-						EndSelect
-
-						$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
-						$sURLNewDriver = "https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_"
-						$sURLNewDriver &= ($bFlag64) ? "win64.zip" : "win32.zip"
-					Else
-						$iErr = $_WD_ERROR_GeneralError
-					EndIf
-			EndSwitch
-#ce
 
 			If $iErr = $_WD_ERROR_Success Then
 				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
@@ -1492,7 +1412,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ; Name ..........: _WD_GetBrowserVersion
 ; Description ...: Get version number of specified browser.
 ; Syntax ........: _WD_GetBrowserVersion($sBrowser)
-; Parameters ....: $sBrowser - Name of browser
+; Parameters ....: $sBrowser - Browser name or full path to browser executable
 ; Return values .: Success - Version number ("#.#.#.#" format) returned by FileGetVersion for the browser exe
 ;                  Failure - "0" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_FileIssue
@@ -1500,7 +1420,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_GetWebDriverVersion
+; Related .......: _WD_GetBrowserPath, _WD_UpdateDriver
 ; Link ..........:
 ; Example .......: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
 ; ===============================================================================================================================
@@ -1510,8 +1430,21 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Local $sBrowserVersion = "0"
 
 	Local $sPath = _WD_GetBrowserPath($sBrowser)
+
 	If @error Then
 		$iErr = $_WD_ERROR_NotFound
+
+		If FileExists($sBrowser) Then
+			; Directly retrieve file version if full path was supplied
+			$sBrowserVersion = FileGetVersion($sBrowser)
+
+			If Not @error Then
+				; Extract filename and confirm match in list of supported browsers
+				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+				If _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name) <> -1 Then _
+					$iErr = $_WD_ERROR_Success
+			EndIf
+		EndIf
 	ElseIf Not FileExists($sPath) Then
 		$iErr = $_WD_ERROR_FileIssue
 	Else
@@ -1533,7 +1466,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_GetBrowserVersion, _WD_UpdateDriver
 ; Link ..........:
 ; Example .......: MsgBox(0, "", _WD_GetBrowserPath('firefox'))
 ; ===============================================================================================================================
@@ -1577,7 +1510,7 @@ EndFunc   ;==>_WD_GetBrowserPath
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_GetBrowserVersion
+; Related .......: _WD_UpdateDriver
 ; Link ..........:
 ; Example .......: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
 ; ===============================================================================================================================
@@ -2432,8 +2365,8 @@ EndFunc   ;==>__WD_JsonElement
 ; Parameters ....: $aBrowser        - Row extracted from $_WD_SupportedBrowsers.
 ;                  $sBrowserVersion - Current browser version.
 ;                  $bFlag64         - Install 64bit version?
-; Return values .: Success - URL for downloading requested webdriver
-;                  Failure - "" and sets @error to $_WD_ERROR_GeneralError
+; Return values .: Success - Array containing [0] URL for downloading requested webdriver & [1] matching webdriver version
+;                  Failure - Empty array and sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
