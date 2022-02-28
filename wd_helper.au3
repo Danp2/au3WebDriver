@@ -1526,6 +1526,7 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local Const $sFuncName = "_WD_GetWebDriverVersion"
 	Local $sDriverVersion = "0"
 	Local $iErr = $_WD_ERROR_Success
+	Local $iExt = 0
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 	If Not FileExists($sInstallDir & $sDriverEXE) Then
@@ -1533,16 +1534,25 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Else
 		Local $sCmd = $sInstallDir & $sDriverEXE & " --version"
 		Local $iPID = Run($sCmd, $sInstallDir, @SW_HIDE, $STDOUT_CHILD)
-		If @error Then $iErr = $_WD_ERROR_GeneralError
+		If @error Then
+			$iErr = $_WD_ERROR_GeneralError
+			$iExt = 1
+		EndIf
 
 		If $iPID Then
 			ProcessWaitClose($iPID)
 			Local $sOutput = StdoutRead($iPID)
-			$sDriverVersion = StringRegExp($sOutput, "\s+([^\s]+)", 1)[0]
+			Local $aMatches = StringRegExp($sOutput, "\s+([^\s]+)", 1)
+			If @error Then
+				$iErr = $_WD_ERROR_GeneralError
+				$iExt = 2
+			Else
+				$sDriverVersion = $aMatches[0]
+			EndIf
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sDriverVersion)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sDriverVersion)
 EndFunc   ;==>_WD_GetWebDriverVersion
 
 ; #FUNCTION# ====================================================================================================================
