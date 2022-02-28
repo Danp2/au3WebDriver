@@ -1416,7 +1416,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ; Parameters ....: $sBrowser - Browser name ('chrome', 'firefox', 'msedge', 'opera') or full path to browser executable.
 ; Return values .: Success - Version number ("#.#.#.#" format) returned by FileGetVersion for the browser exe
 ;                  Failure - "0" and sets @error to one of the following values:
-;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......: mLipok
@@ -1470,7 +1470,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Remarks .......:
 ; Related .......: _WD_GetBrowserVersion, _WD_UpdateDriver
 ; Link ..........:
-; Example .......: No
+; Example .......: MsgBox(0, "", _WD_GetBrowserPath('firefox'))
 ; ===============================================================================================================================
 Func _WD_GetBrowserPath($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserPath"
