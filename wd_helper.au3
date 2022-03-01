@@ -1430,18 +1430,23 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Local $sBrowserVersion = "0"
 
 	If FileExists($sBrowser) Then
-		; Directly retrieve file version if full path was supplied
-		$sBrowserVersion = FileGetVersion($sBrowser)
-		If @error Then
+		If _WinAPI_GetBinaryType($sBrowser) = 0 Then
 			$iErr = $_WD_ERROR_FileIssue
-			$iExt = 21
+			$iExt = 22
 		Else
-			; Extract filename and confirm match in list of supported browsers
-			$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-			_ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			; Directly retrieve file version if full path was supplied
+			$sBrowserVersion = FileGetVersion($sBrowser)
 			If @error Then
-				# CONSIDER to add new $_WD_ERROR_NotSupported
-				$iErr = $_WD_ERROR_NotFound
+				$iErr = $_WD_ERROR_FileIssue
+				$iExt = 23
+			Else
+				; Extract filename and confirm match in list of supported browsers
+				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+				_ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+				If @error Then
+					# CONSIDER to add new $_WD_ERROR_NotSupported
+					$iErr = $_WD_ERROR_NotFound
+				EndIf
 			EndIf
 		EndIf
 	Else
@@ -1450,12 +1455,17 @@ Func _WD_GetBrowserVersion($sBrowser)
 			$iErr = @error
 		ElseIf Not FileExists($sPath) Then
 			$iErr = $_WD_ERROR_FileIssue
-			$iExt = 22
+			$iExt = 24
 		Else
-			$sBrowserVersion = FileGetVersion($sPath)
-			If @error Then
+			If _WinAPI_GetBinaryType($sPath) = 0 Then
 				$iErr = $_WD_ERROR_FileIssue
-				$iExt = 23
+				$iExt = 25
+			Else
+				$sBrowserVersion = FileGetVersion($sPath)
+				If @error Then
+					$iErr = $_WD_ERROR_FileIssue
+					$iExt = 26
+				EndIf
 			EndIf
 		EndIf
 	EndIf
