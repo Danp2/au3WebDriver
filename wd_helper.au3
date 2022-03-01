@@ -1426,32 +1426,41 @@ EndFunc   ;==>_WD_UpdateDriver
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
-	Local $iErr = $_WD_ERROR_Success
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sBrowserVersion = "0"
 
-	Local $sPath = _WD_GetBrowserPath($sBrowser)
-
-	If @error Then
-		$iErr = $_WD_ERROR_NotFound
-
-		If FileExists($sBrowser) Then
-			; Directly retrieve file version if full path was supplied
-			$sBrowserVersion = FileGetVersion($sBrowser)
-
-			If Not @error Then
-				; Extract filename and confirm match in list of supported browsers
-				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-				If _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name) <> -1 Then _
-					$iErr = $_WD_ERROR_Success
+	If FileExists($sBrowser) Then
+		; Directly retrieve file version if full path was supplied
+		$sBrowserVersion = FileGetVersion($sBrowser)
+		If @error Then
+			$iErr = $_WD_ERROR_FileIssue
+			$iExt = 21
+		Else
+			; Extract filename and confirm match in list of supported browsers
+			$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			_ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			If @error Then
+				# CONSIDER to add new $_WD_ERROR_NotSupported
+				$iErr = $_WD_ERROR_NotFound
 			EndIf
 		EndIf
-	ElseIf Not FileExists($sPath) Then
-		$iErr = $_WD_ERROR_FileIssue
 	Else
-		$sBrowserVersion = FileGetVersion($sPath)
+		Local $sPath = _WD_GetBrowserPath($sBrowser)
+		If @error Then
+			$iErr = @error
+		ElseIf Not FileExists($sPath) Then
+			$iErr = $_WD_ERROR_FileIssue
+			$iExt = 22
+		Else
+			$sBrowserVersion = FileGetVersion($sPath)
+			If @error Then
+				$iErr = $_WD_ERROR_FileIssue
+				$iExt = 23
+			EndIf
+		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sBrowserVersion)
 EndFunc   ;==>_WD_GetBrowserVersion
 
 ; #FUNCTION# ====================================================================================================================
@@ -1476,8 +1485,10 @@ Func _WD_GetBrowserPath($sBrowser)
 	Local $iErr = $_WD_ERROR_Success
 	Local $sEXE, $sPath = ""
 
+	; Confirm match in list of supported browsers
 	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 	If @error Then
+		# CONSIDER to add new $_WD_ERROR_NotSupported
 		$iErr = $_WD_ERROR_InvalidValue
 	Else
 		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
