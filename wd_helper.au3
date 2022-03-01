@@ -1429,7 +1429,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sBrowserVersion = "0"
 
-	If StringInStr($sBrowser,'\') Then
+	If StringInStr($sBrowser, '\') Then
 		If FileExists($sBrowser) = 0 Then
 			$iErr = $_WD_ERROR_FileIssue
 			$iExt = 21
@@ -1456,7 +1456,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 		Local $sPath = _WD_GetBrowserPath($sBrowser)
 		If @error Then
 			$iErr = @error
-		ElseIf Not FileExists($sPath) Then
+		ElseIf FileExists($sPath) = 0 Then
 			$iErr = $_WD_ERROR_FileIssue
 			$iExt = 24
 		Else
