@@ -1303,6 +1303,12 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success Then
+			If StringInStr($sBrowser, '\') Then 
+				; Extract filename from full path
+				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			EndIf
+
+			; Match in list of supported browsers
 			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
@@ -1416,6 +1422,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ; Return values .: Success - Version number ("#.#.#.#" format) returned by FileGetVersion for the browser exe
 ;                  Failure - "0" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_FileIssue
+;                  - $_WD_ERROR_NotSupported
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......: mLipok
@@ -1426,32 +1433,44 @@ EndFunc   ;==>_WD_UpdateDriver
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
-	Local $iErr = $_WD_ERROR_Success
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sBrowserVersion = "0"
 
 	Local $sPath = _WD_GetBrowserPath($sBrowser)
-
 	If @error Then
-		$iErr = $_WD_ERROR_NotFound
+		$iErr = @error
+		$iExt = @extended
 
+		; as registry checks fails, now checking if file exist and is exeutable
 		If FileExists($sBrowser) Then
-			; Directly retrieve file version if full path was supplied
-			$sBrowserVersion = FileGetVersion($sBrowser)
+			If _WinAPI_GetBinaryType($sBrowser) = 0 Then
+				$iErr = $_WD_ERROR_FileIssue
+				$iExt = 31 ; $iExt from 31 to 39 are related to _WD_GetBrowserVersion()
+			Else
+				; Reseting as we are now checking file instead registry entries
+				$iErr = $_WD_ERROR_Success
+				$iExt = 0
 
-			If Not @error Then
 				; Extract filename and confirm match in list of supported browsers
 				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-				If _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name) <> -1 Then _
-					$iErr = $_WD_ERROR_Success
+				If _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name) = -1 Then
+					$iErr = $_WD_ERROR_NotSupported
+				Else
+					$sPath = $sBrowser
+				EndIf
 			EndIf
 		EndIf
-	ElseIf Not FileExists($sPath) Then
-		$iErr = $_WD_ERROR_FileIssue
-	Else
-		$sBrowserVersion = FileGetVersion($sPath)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
+	If $iErr = $_WD_ERROR_Success Then
+		$sBrowserVersion = FileGetVersion($sPath)
+		If @error Then
+			$iErr = $_WD_ERROR_FileIssue
+			$iExt = 32
+		EndIf
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sBrowserVersion)
 EndFunc   ;==>_WD_GetBrowserVersion
 
 ; #FUNCTION# ====================================================================================================================
@@ -1473,12 +1492,14 @@ EndFunc   ;==>_WD_GetBrowserVersion
 Func _WD_GetBrowserPath($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserPath"
 	Local Const $sRegKeyCommon = '\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
-	Local $iErr = $_WD_ERROR_Success
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sEXE, $sPath = ""
 
+	; Confirm match in list of supported browsers
 	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 	If @error Then
-		$iErr = $_WD_ERROR_InvalidValue
+		$iErr = $_WD_ERROR_NotSupported
+		$iExt = 21 ; $iExt from 21 to 29 are related to _WD_GetBrowserPath()
 	Else
 		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
 
@@ -1489,12 +1510,21 @@ Func _WD_GetBrowserPath($sBrowser)
 		; Generate $_WD_ERROR_NotFound if neither key is found
 		If @error Then
 			$iErr = $_WD_ERROR_NotFound
+			$iExt = 22
 		Else
 			$sPath = StringRegExpReplace($sPath, '["'']', '') ; Remove quotation marks
 			$sPath = StringRegExpReplace($sPath, '(.+\\)(.*exe)', '$1' & $sEXE) ; Registry entries can contain "Launcher.exe" instead "opera.exe"
+
+			If FileExists($sPath) = 0 Then
+				$iErr = $_WD_ERROR_FileIssue
+				$iExt = 23
+			ElseIf _WinAPI_GetBinaryType($sPath) = 0 Then
+				$iErr = $_WD_ERROR_FileIssue
+				$iExt = 24
+			EndIf
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sPath)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sPath)
 EndFunc   ;==>_WD_GetBrowserPath
 
 ; #FUNCTION# ====================================================================================================================
