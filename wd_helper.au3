@@ -1266,6 +1266,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_UserAbort
+;                  - $_WD_ERROR_NotSupported
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
@@ -1481,6 +1482,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Return values .: Success - Full path to browser executable
 ;                  Failure - "" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotSupported
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......: mLipok
