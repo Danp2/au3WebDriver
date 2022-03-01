@@ -1429,8 +1429,11 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sBrowserVersion = "0"
 
-	If FileExists($sBrowser) Then
-		If _WinAPI_GetBinaryType($sBrowser) = 0 Then
+	If StringInStr($sBrowser,'\') Then
+		If FileExists($sBrowser) = 0 Then
+			$iErr = $_WD_ERROR_FileIssue
+			$iExt = 21
+		ElseIf _WinAPI_GetBinaryType($sBrowser) = 0 Then
 			$iErr = $_WD_ERROR_FileIssue
 			$iExt = 22
 		Else
