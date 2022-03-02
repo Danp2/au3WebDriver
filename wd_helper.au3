@@ -1302,15 +1302,10 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
+		Local $iIndex = @extended
 
 		If $iErr = $_WD_ERROR_Success Then
-			If StringInStr($sBrowser, '\') Then
-				; Extract filename from full path
-				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-			EndIf
-
-			; Match in list of supported browsers
-			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			; Match exe file name in list of supported browsers
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
 			; Determine current local webdriver Architecture
@@ -1357,8 +1352,10 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						$iExt = @extended
 					EndIf
 					FileDelete($sTempFile)
-					ShellExecute($sInstallDir)
-					Exit
+					; ShellExecute and Exit are only for easier testing together with wd_demo.au3
+					; Should be deleted before merge to master
+					; ShellExecute($sInstallDir)
+					; Exit
 				EndIf
 			EndIf
 		EndIf
