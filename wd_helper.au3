@@ -1367,12 +1367,12 @@ EndFunc   ;==>_WD_UpdateDriver
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_UpdateExtractor
-; Description ...:
+; Description ...: Extract webdriver executable from zip file
 ; Syntax ........: __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE[, $sSubDir = ""])
-; Parameters ....: $sTempFile           - a string value.
-;                  $sInstallDir         - a string value.
-;                  $sDriverEXE          - a string value.
-;                  $sSubDir             - [optional] a string value. Default is "".
+; Parameters ....: $sTempFile           - Full path to zip file.
+;                  $sInstallDir         - Directory where extracted files are placed
+;                  $sDriverEXE          - Name of webdriver executable
+;                  $sSubDir             - [optional] Directory containing files to extract.
 ; Return values .: None
 ; Author ........: Danp2
 ; Modified ......: mLipok
