@@ -1460,7 +1460,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
-		If _WinAPI_GetBinaryType($sPath) = 0 Then ; check if file is exeutable
+		If _WinAPI_GetBinaryType($sPath) = 0 Then ; check if file is executable
 			$iErr = $_WD_ERROR_FileIssue
 			$iExt = 31 ; $iExt from 31 to 39 are related to _WD_GetBrowserVersion()
 		Else
