@@ -803,6 +803,7 @@ Func SetupOpera($bHeadless)
 	_WD_Option('Port', 9515)
 	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\opera.log"')
 
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
 	_WD_CapabilitiesAdd('w3c', True)
