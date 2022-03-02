@@ -1279,7 +1279,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $sBrowserVersion, $bResult = False
 	Local $sDriverCurrent, $sDriverLatest, $sURLNewDriver
-	Local $sTempFile, $oShell, $FilesInZip
+	Local $sTempFile
 	Local $bKeepArch = False
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
@@ -1302,10 +1302,15 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
-		Local $iIndex = @extended
 
 		If $iErr = $_WD_ERROR_Success Then
-			; Match exe file name in list of supported browsers
+			If StringInStr($sBrowser, '\') Then
+				; Extract filename from full path
+				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			EndIf
+
+			; Match in list of supported browsers
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
 			; Determine current local webdriver Architecture
@@ -1345,53 +1350,15 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						; Close any instances of webdriver
 						__WD_CloseDriver($sDriverEXE)
 
-						#Region - Extract new instance of webdriver
-						; Handle COM Errors
-						Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
-						#forceref $oErr
-						$oShell = ObjCreate("Shell.Application")
-						If @error Then
-							$iErr = $_WD_ERROR_GeneralError
-						ElseIf FileGetSize($sTempFile) = 0 Then
-							$iErr = $_WD_ERROR_FileIssue
-							$iExt = 11 ; $iExt from 11 to 19 are related to _WD_UpdateDriver()
-						ElseIf IsObj($oShell.NameSpace($sTempFile)) = 0 Then
-							$iErr = $_WD_ERROR_FileIssue
-							$iExt = 12
-						ElseIf IsObj($oShell.NameSpace($sInstallDir)) = 0 Then
-							$iErr = $_WD_ERROR_FileIssue
-							$iExt = 13
-						Else
-							Local $oNameSpace_Temp = $oShell.NameSpace($sTempFile)
-							$FilesInZip = $oNameSpace_Temp.items
-							If @error Then
-								$iErr = $_WD_ERROR_GeneralError
-							Else
-								Local $oNameSpace_Install = $oShell.NameSpace($sInstallDir)
-								Local $bEXEWasFound = False
-								For $FileItem In $FilesInZip     ; Check the files in the archive separately
-									; https://docs.microsoft.com/en-us/windows/win32/shell/folderitem
-									If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
-										; delete webdriver from disk before unpacking to avoid potential problems
-										FileDelete($sInstallDir & $sDriverEXE)
-										$bEXEWasFound = True
-										$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
-									EndIf
-								Next
-								If @error Then
-									$iErr = $_WD_ERROR_GeneralError
-								ElseIf Not $bEXEWasFound Then
-									$iErr = $_WD_ERROR_FileIssue
-									$iExt = 19 ; $iExt from 11 to 19 are related to _WD_UpdateDriver()
-								Else
-									$iErr = $_WD_ERROR_Success
-									$bResult = True
-								EndIf
-							EndIf
-						EndIf
-						#EndRegion - Extract new instance of webdriver
+						; Extract
+						__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE)
+						If Not @error Then $bResult = True
+						$iErr = @error
+						$iExt = @extended
 					EndIf
 					FileDelete($sTempFile)
+					ShellExecute($sInstallDir)
+					Exit
 				EndIf
 			EndIf
 		EndIf
@@ -1409,6 +1376,93 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_UpdateExtractor
+; Description ...:
+; Syntax ........: __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE[, $sSubDir = ""])
+; Parameters ....: $sTempFile           - a string value.
+;                  $sInstallDir         - a string value.
+;                  $sDriverEXE          - a string value.
+;                  $sSubDir             - [optional] a string value. Default is "".
+; Return values .: None
+; Author ........: Danp2
+; Modified ......: mLipok
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
+	Local Const $sFuncName = "__WD_UpdateExtractor"
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
+
+	; Handle COM Errors
+	Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+	#forceref $oErr
+
+	Local $oShell = ObjCreate("Shell.Application")
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+	ElseIf FileGetSize($sTempFile) = 0 Then
+		$iErr = $_WD_ERROR_FileIssue
+		$iExt = 11 ; $iExt from 11 to 19 are related to __WD_UpdateExtractor()
+	ElseIf IsObj($oShell.NameSpace($sTempFile)) = 0 Then
+		$iErr = $_WD_ERROR_FileIssue
+		$iExt = 12
+	ElseIf IsObj($oShell.NameSpace($sInstallDir)) = 0 Then
+		$iErr = $_WD_ERROR_FileIssue
+		$iExt = 13
+	Else
+		Local $oNameSpace_Temp = $oShell.NameSpace($sTempFile & $sSubDir)
+		Local $FilesInZip = $oNameSpace_Temp.items
+		If @error Then
+			$iErr = $_WD_ERROR_GeneralError
+			$iExt = 14
+		Else
+			Local $oNameSpace_Install = $oShell.NameSpace($sInstallDir)
+			Local $bEXEWasFound = False
+			For $FileItem In $FilesInZip     ; Check the files in the archive separately
+				; https://docs.microsoft.com/en-us/windows/win32/shell/folderitem
+
+				; ConsoleWrite only for testing - should be deleted before merge to master
+				ConsoleWrite("! " & @ScriptLineNumber & ' ' & $FileItem.Name & @CRLF)
+				ConsoleWrite("! " & @ScriptLineNumber & ' ' & $FileItem.Type & @CRLF)
+				ConsoleWrite("! " & @ScriptLineNumber & ' ' & $FileItem.IsFolder & @CRLF)
+				ConsoleWrite("! " & @ScriptLineNumber & ' ' & IsBool($FileItem.IsFolder) & @CRLF)
+				ConsoleWrite("! " & @ScriptLineNumber & ' ' & IsString($FileItem.IsFolder) & @CRLF)
+				ConsoleWrite("! " & @ScriptLineNumber & ' ' & VarGetType($FileItem.IsFolder) & @CRLF)
+
+				If $FileItem.IsFolder Then
+					; try to Extract subdir content
+					__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, '\' & $FileItem.Name)
+				Else
+					If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
+						$bEXEWasFound = True
+						; delete webdriver from disk before unpacking to avoid potential problems
+						FileDelete($sInstallDir & $sDriverEXE)
+						$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+					EndIf
+				EndIf
+			Next
+			If @error Then
+				$iErr = $_WD_ERROR_GeneralError
+				$iExt = 15
+			ElseIf Not $bEXEWasFound Then
+				$iErr = $_WD_ERROR_NotFound
+				$iExt = 19 ; $iExt from 11 to 19 are related to __WD_UpdateExtractor()
+			Else
+				$iErr = $_WD_ERROR_Success
+			EndIf
+		EndIf
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt)
+EndFunc   ;==>__WD_UpdateExtractor
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetBrowserVersion
