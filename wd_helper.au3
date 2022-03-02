@@ -1441,7 +1441,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 	$iErr = @error
 	$iExt = @extended
 	If @error Then
-		; as registry checks fails, now checking if file exist and is exeutable
+		; as registry checks fails, now checking if file exist
 		If FileExists($sBrowser) Then
 			; Reseting as we are now checking file instead registry entries
 			$iErr = $_WD_ERROR_Success
@@ -1460,7 +1460,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
-		If _WinAPI_GetBinaryType($sPath) = 0 Then
+		If _WinAPI_GetBinaryType($sPath) = 0 Then ; check if file is exeutable
 			$iErr = $_WD_ERROR_FileIssue
 			$iExt = 31 ; $iExt from 31 to 39 are related to _WD_GetBrowserVersion()
 		Else
