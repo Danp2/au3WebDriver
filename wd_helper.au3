@@ -1438,10 +1438,9 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Local $sBrowserVersion = "0"
 
 	Local $sPath = _WD_GetBrowserPath($sBrowser)
+	$iErr = @error
+	$iExt = @extended
 	If @error Then
-		$iErr = @error
-		$iExt = @extended
-
 		; as registry checks fails, now checking if file exist and is exeutable
 		If FileExists($sBrowser) Then
 			If _WinAPI_GetBinaryType($sBrowser) = 0 Then
@@ -1454,9 +1453,11 @@ Func _WD_GetBrowserVersion($sBrowser)
 
 				; Extract filename and confirm match in list of supported browsers
 				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-				If _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name) = -1 Then
+				Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+				If $iIndex = -1 Then
 					$iErr = $_WD_ERROR_NotSupported
 				Else
+					$iExt = $iIndex
 					$sPath = $sBrowser
 				EndIf
 			EndIf
@@ -1523,6 +1524,8 @@ Func _WD_GetBrowserPath($sBrowser)
 			ElseIf _WinAPI_GetBinaryType($sPath) = 0 Then
 				$iErr = $_WD_ERROR_FileIssue
 				$iExt = 24
+			Else
+				$iExt = $iIndex
 			EndIf
 		EndIf
 	EndIf
