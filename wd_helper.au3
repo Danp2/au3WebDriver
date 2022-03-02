@@ -1315,9 +1315,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 				If $bKeepArch Then $bFlag64 = $bDriverIs64Bit
 				If $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_64Bit] And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
-;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
-;~ 						__WD_ConsoleWrite($sFuncName & ': ' & $sDriverEXE & ' = ' & (($bDriverIs64Bit) ? ("switching 64>32 Bit") : ("switching 32>64 Bit")) & @CRLF)
-;~ 					EndIf
 				EndIf
 			EndIf
 
@@ -1352,10 +1349,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						$iExt = @extended
 					EndIf
 					FileDelete($sTempFile)
-					; ShellExecute and Exit are only for easier testing together with wd_demo.au3
-					; Should be deleted before merge to master
-					; ShellExecute($sInstallDir)
-					; Exit
 				EndIf
 			EndIf
 		EndIf
@@ -1365,8 +1358,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-;~ 		__WD_ConsoleWrite($sFuncName & ': Local File = ' & $sInstallDir & $sDriverEXE & @CRLF)
-;~ 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & ' : Result = ' & $bResult & @CRLF)
 	EndIf
@@ -1421,14 +1412,6 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 			Local $bEXEWasFound = False
 			For $FileItem In $FilesInZip     ; Check the files in the archive separately
 				; https://docs.microsoft.com/en-us/windows/win32/shell/folderitem
-
-				; ConsoleWrite only for testing - should be deleted before merge to master
-				ConsoleWrite("! " & @ScriptLineNumber & ' ' & $FileItem.Name & @CRLF)
-				ConsoleWrite("! " & @ScriptLineNumber & ' ' & $FileItem.Type & @CRLF)
-				ConsoleWrite("! " & @ScriptLineNumber & ' ' & $FileItem.IsFolder & @CRLF)
-				ConsoleWrite("! " & @ScriptLineNumber & ' ' & IsBool($FileItem.IsFolder) & @CRLF)
-				ConsoleWrite("! " & @ScriptLineNumber & ' ' & IsString($FileItem.IsFolder) & @CRLF)
-				ConsoleWrite("! " & @ScriptLineNumber & ' ' & VarGetType($FileItem.IsFolder) & @CRLF)
 
 				If $FileItem.IsFolder Then
 					; try to Extract subdir content
