@@ -107,7 +107,19 @@ Global Enum _
 		$_WD_ERROR_UnknownCommand, _ ;
 		$_WD_ERROR_UserAbort, _ ;
 		$_WD_ERROR_FileIssue, _ ;
+		$_WD_ERROR_NotSupported, _ ;
 		$_WD_ERROR_COUNTER ;
+
+Global Enum _
+		$_WD_BROWSER_Name, _
+		$_WD_BROWSER_ExeName, _
+		$_WD_BROWSER_DriverName, _
+		$_WD_BROWSER_64Bit, _
+		$_WD_BROWSER_OptionsKey, _
+		$_WD_BROWSER_LatestReleaseURL, _
+		$_WD_BROWSER_LatestReleaseRegex, _
+		$_WD_BROWSER_NewDriverURL, _
+		$_WD_BROWSER__COUNTER
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Success", _
@@ -128,7 +140,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Invalid session ID", _
 		"Unknown Command", _
 		"User Aborted", _
-		"File issue" _
+		"File issue", _
+		"Browser or feature not supported" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
@@ -167,6 +180,14 @@ Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
+
+Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
+		[ _
+		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions", "'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", "", '"https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"'], _
+		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions", "https://github.com/mozilla/geckodriver/releases/latest", '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(?:v)(.*?)"', '"https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest & (($bFlag64) ? "-win64.zip" : "-win32.zip")'], _
+		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions", "'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", "", '"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'], _
+		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions", "https://github.com/operasoftware/operachromiumdriver/releases/latest", '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(?:v\.)(.*?)"', '"https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'] _
+		]
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
@@ -305,16 +326,16 @@ Func _WD_GetSession($sSession)
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-
+	
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
-
+	
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
 	EndIf
-
+	
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
 	EndIf
