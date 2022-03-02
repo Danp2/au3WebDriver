@@ -1443,32 +1443,32 @@ Func _WD_GetBrowserVersion($sBrowser)
 	If @error Then
 		; as registry checks fails, now checking if file exist and is exeutable
 		If FileExists($sBrowser) Then
-			If _WinAPI_GetBinaryType($sBrowser) = 0 Then
-				$iErr = $_WD_ERROR_FileIssue
-				$iExt = 31 ; $iExt from 31 to 39 are related to _WD_GetBrowserVersion()
-			Else
-				; Reseting as we are now checking file instead registry entries
-				$iErr = $_WD_ERROR_Success
-				$iExt = 0
+			; Reseting as we are now checking file instead registry entries
+			$iErr = $_WD_ERROR_Success
+			$iExt = 0
 
-				; Extract filename and confirm match in list of supported browsers
-				$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-				Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
-				If $iIndex = -1 Then
-					$iErr = $_WD_ERROR_NotSupported
-				Else
-					$iExt = $iIndex
-					$sPath = $sBrowser
-				EndIf
+			; Extract filename and confirm match in list of supported browsers
+			$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			If @error Then
+				$iErr = $_WD_ERROR_NotSupported
+			Else
+				$iExt = $iIndex
+				$sPath = $sBrowser
 			EndIf
 		EndIf
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
-		$sBrowserVersion = FileGetVersion($sPath)
-		If @error Then
+		If _WinAPI_GetBinaryType($sPath) = 0 Then
 			$iErr = $_WD_ERROR_FileIssue
-			$iExt = 32
+			$iExt = 31 ; $iExt from 31 to 39 are related to _WD_GetBrowserVersion()
+		Else
+			$sBrowserVersion = FileGetVersion($sPath)
+			If @error Then
+				$iErr = $_WD_ERROR_FileIssue
+				$iExt = 32
+			EndIf
 		EndIf
 	EndIf
 
@@ -1517,16 +1517,7 @@ Func _WD_GetBrowserPath($sBrowser)
 		Else
 			$sPath = StringRegExpReplace($sPath, '["'']', '') ; Remove quotation marks
 			$sPath = StringRegExpReplace($sPath, '(.+\\)(.*exe)', '$1' & $sEXE) ; Registry entries can contain "Launcher.exe" instead "opera.exe"
-
-			If FileExists($sPath) = 0 Then
-				$iErr = $_WD_ERROR_FileIssue
-				$iExt = 23
-			ElseIf _WinAPI_GetBinaryType($sPath) = 0 Then
-				$iErr = $_WD_ERROR_FileIssue
-				$iExt = 24
-			Else
-				$iExt = $iIndex
-			EndIf
+			$iExt = $iIndex
 		EndIf
 	EndIf
 	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sPath)
