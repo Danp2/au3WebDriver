@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Added
+
+- Support for Opera browser
+- _WD_GetBrowserPath
+
+### Changed
+
+- __WD_ConsoleWrite: Updated to preserve @error and @extended.
+- _WD_Startup: Added display of webdriver bit level (32 / 64).
+- _WD_UpdateDriver: Support alternate browser location.
+- _WD_UpdateDriver: Extract webdriver executable located in a subfolder
+- _WD_CapabilitiesAdd: Must use 'msedge' instead of 'edge' when for browser name. `Script breaking change`
+
+### Deprecated
+
+### Fixed
+
+- _WD_UpdateDriver: Unpacking webdriver executable failed on some workstations; Better error handling
+
+### Removed
+### Security
+### Project
+
 ## [0.6.0] - 2022-02-22
 
 ### Added
