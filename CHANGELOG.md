@@ -29,6 +29,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Fixed
 
 - _WD_UpdateDriver: Unpacking webdriver executable failed on some workstations; Better error handling
+- _WD_GetWebDriverVersion: Resolve error `Subscript used on non-accessible variable`
 
 ### Removed
 ### Security

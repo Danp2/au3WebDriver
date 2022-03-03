@@ -1255,7 +1255,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Name ..........: _WD_UpdateDriver
 ; Description ...: Replace web driver with newer version, if available.
 ; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default]]])
-; Parameters ....: $sBrowser    - Name of browser
+; Parameters ....: $sBrowser    - Browser name or full path to browser executable
 ;                  $sInstallDir - [optional] Install directory. Default is @ScriptDir
 ;                  $bFlag64     - [optional] Install 64bit version? Default is current driver architecture or False
 ;                  $bForce      - [optional] Force update? Default is False
@@ -1266,6 +1266,7 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_UserAbort
+;                  - $_WD_ERROR_NotSupported
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
@@ -1277,8 +1278,8 @@ EndFunc   ;==>_WD_IsLatestRelease
 Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $sBrowserVersion, $bResult = False
-	Local $sDriverCurrent, $sVersionShort, $sDriverLatest, $sURLNewDriver
-	Local $sTempFile, $oShell, $FilesInZip, $sResult, $iStartPos, $iConversion
+	Local $sDriverCurrent, $sDriverLatest, $sURLNewDriver
+	Local $sTempFile
 	Local $bKeepArch = False
 
 	If $sInstallDir = Default Then $sInstallDir = @ScriptDir
@@ -1301,85 +1302,29 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
+		Local $iIndex = @extended
 
 		If $iErr = $_WD_ERROR_Success Then
-			Switch $sBrowser
-				Case 'chrome'
-					$sDriverEXE = "chromedriver.exe"
-				Case 'firefox'
-					$sDriverEXE = "geckodriver.exe"
-				Case 'msedge'
-					$sDriverEXE = "msedgedriver.exe"
-			EndSwitch
+			; Match exe file name in list of supported browsers
+			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
 			; Determine current local webdriver Architecture
 			If FileExists($sInstallDir & $sDriverEXE) Then
 				_WinAPI_GetBinaryType($sInstallDir & $sDriverEXE)
 				Local $bDriverIs64Bit = (@extended = $SCS_64BIT_BINARY)
 				If $bKeepArch Then $bFlag64 = $bDriverIs64Bit
-				If $sBrowser <> 'chrome' And $bDriverIs64Bit <> $bFlag64 Then
+				If $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_64Bit] And $bDriverIs64Bit <> $bFlag64 Then
 					$bForce = True
-;~ 					If $WDDebugSave = $_WD_DEBUG_Info Then
-;~ 						__WD_ConsoleWrite($sFuncName & ': ' & $sDriverEXE & ' = ' & (($bDriverIs64Bit) ? ("switching 64>32 Bit") : ("switching 32>64 Bit")) & @CRLF)
-;~ 					EndIf
 				EndIf
 			EndIf
 
 			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
-
 			; Determine latest available webdriver version for the designated browser
-			Switch $sBrowser
-				Case 'chrome'
-					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".", 0, -1) - 1)
-					$sDriverLatest = BinaryToString(InetRead('https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & $sVersionShort))
-					$sURLNewDriver = "https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"
-
-				Case 'firefox'
-					$sResult = BinaryToString(InetRead("https://github.com/mozilla/geckodriver/releases/latest"))
-
-					If @error = $_WD_ERROR_Success Then
-						$sDriverLatest = StringRegExp($sResult, '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(.*?)"', 1)[0]
-						If StringLeft($sDriverLatest, 1) = 'v' Then $sDriverLatest = StringMid($sDriverLatest, 2)
-
-						$sURLNewDriver = "https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest
-						$sURLNewDriver &= ($bFlag64) ? "-win64.zip" : "-win32.zip"
-					Else
-						$iErr = $_WD_ERROR_GeneralError
-					EndIf
-
-				Case 'msedge'
-					$sVersionShort = StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, ".") - 1)
-					$sDriverLatest = InetRead('https://msedgedriver.azureedge.net/LATEST_RELEASE_' & $sVersionShort)
-
-					If @error = $_WD_ERROR_Success Then
-						Select
-							Case BinaryMid($sDriverLatest, 1, 4) = '0x0000FEFF'                   ; UTF-32 BE
-								$iStartPos = 5
-								$iConversion = $SB_UTF16LE
-							Case BinaryMid($sDriverLatest, 1, 4) = '0xFFFE0000'                   ; UTF-32 LE
-								$iStartPos = 5
-								$iConversion = $SB_UTF16LE
-							Case BinaryMid($sDriverLatest, 1, 2) = '0xFEFF'                       ; UTF-16 BE
-								$iStartPos = 3
-								$iConversion = $SB_UTF16BE
-							Case BinaryMid($sDriverLatest, 1, 2) = '0xFFFE'                       ; UTF-16 LE
-								$iStartPos = 3
-								$iConversion = $SB_UTF16LE
-							Case BinaryMid($sDriverLatest, 1, 3) = '0xEFBBBF'                     ; UTF-8
-								$iStartPos = 4
-								$iConversion = $SB_UTF8
-							Case Else
-								$iStartPos = 1
-								$iConversion = $SB_ANSI
-						EndSelect
-
-						$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
-						$sURLNewDriver = "https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_"
-						$sURLNewDriver &= ($bFlag64) ? "win64.zip" : "win32.zip"
-					Else
-						$iErr = $_WD_ERROR_GeneralError
-					EndIf
-			EndSwitch
+			Local $aBrowser = _ArrayExtract($_WD_SupportedBrowsers, $iIndex, $iIndex)
+			Local $aDriverInfo = __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
+			$iErr = @error
+			$sDriverLatest = $aDriverInfo[1]
+			$sURLNewDriver = $aDriverInfo[0]
 
 			If $iErr = $_WD_ERROR_Success Then
 				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
@@ -1397,51 +1342,11 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						; Close any instances of webdriver
 						__WD_CloseDriver($sDriverEXE)
 
-						#Region - Extract new instance of webdriver
-						; Handle COM Errors
-						Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
-						#forceref $oErr
-						$oShell = ObjCreate("Shell.Application")
-						If @error Then
-							$iErr = $_WD_ERROR_GeneralError
-						ElseIf FileGetSize($sTempFile) = 0 Then
-							$iErr = $_WD_ERROR_FileIssue
-							$iExt = 11 ; $iExt from 11 to 19 are related to _WD_UpdateDriver()
-						ElseIf IsObj($oShell.NameSpace($sTempFile)) = 0 Then
-							$iErr = $_WD_ERROR_FileIssue
-							$iExt = 12
-						ElseIf IsObj($oShell.NameSpace($sInstallDir)) = 0 Then
-							$iErr = $_WD_ERROR_FileIssue
-							$iExt = 13
-						Else
-							Local $oNameSpace_Temp = $oShell.NameSpace($sTempFile)
-							$FilesInZip = $oNameSpace_Temp.items
-							If @error Then
-								$iErr = $_WD_ERROR_GeneralError
-							Else
-								Local $oNameSpace_Install = $oShell.NameSpace($sInstallDir)
-								Local $bEXEWasFound = False
-								For $FileItem In $FilesInZip     ; Check the files in the archive separately
-									; https://docs.microsoft.com/en-us/windows/win32/shell/folderitem
-									If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
-										; delete webdriver from disk before unpacking to avoid potential problems
-										FileDelete($sInstallDir & $sDriverEXE)
-										$bEXEWasFound = True
-										$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
-									EndIf
-								Next
-								If @error Then
-									$iErr = $_WD_ERROR_GeneralError
-								ElseIf Not $bEXEWasFound Then
-									$iErr = $_WD_ERROR_FileIssue
-									$iExt = 19 ; $iExt from 11 to 19 are related to _WD_UpdateDriver()
-								Else
-									$iErr = $_WD_ERROR_Success
-									$bResult = True
-								EndIf
-							EndIf
-						EndIf
-						#EndRegion - Extract new instance of webdriver
+						; Extract
+						__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE)
+						If Not @error Then $bResult = True
+						$iErr = @error
+						$iExt = @extended
 					EndIf
 					FileDelete($sTempFile)
 				EndIf
@@ -1453,8 +1358,6 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-;~ 		__WD_ConsoleWrite($sFuncName & ': Local File = ' & $sInstallDir & $sDriverEXE & @CRLF)
-;~ 		__WD_ConsoleWrite($sFuncName & ': URLNewDriver = ' & $sURLNewDriver & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest & @CRLF)
 		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & ' : Result = ' & $bResult & @CRLF)
 	EndIf
@@ -1462,48 +1365,192 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_UpdateExtractor
+; Description ...: Extract webdriver executable from zip file
+; Syntax ........: __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE[, $sSubDir = ""])
+; Parameters ....: $sTempFile           - Full path to zip file.
+;                  $sInstallDir         - Directory where extracted files are placed
+;                  $sDriverEXE          - Name of webdriver executable
+;                  $sSubDir             - [optional] Directory containing files to extract.
+; Return values .: None
+; Author ........: Danp2
+; Modified ......: mLipok
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
+	Local Const $sFuncName = "__WD_UpdateExtractor"
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
+
+	; Handle COM Errors
+	Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+	#forceref $oErr
+
+	Local $oShell = ObjCreate("Shell.Application")
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+	ElseIf FileGetSize($sTempFile) = 0 Then
+		$iErr = $_WD_ERROR_FileIssue
+		$iExt = 11 ; $iExt from 11 to 19 are related to __WD_UpdateExtractor()
+	ElseIf IsObj($oShell.NameSpace($sTempFile)) = 0 Then
+		$iErr = $_WD_ERROR_FileIssue
+		$iExt = 12
+	ElseIf IsObj($oShell.NameSpace($sInstallDir)) = 0 Then
+		$iErr = $_WD_ERROR_FileIssue
+		$iExt = 13
+	Else
+		Local $oNameSpace_Temp = $oShell.NameSpace($sTempFile & $sSubDir)
+		Local $FilesInZip = $oNameSpace_Temp.items
+		If @error Then
+			$iErr = $_WD_ERROR_GeneralError
+			$iExt = 14
+		Else
+			Local $oNameSpace_Install = $oShell.NameSpace($sInstallDir)
+			Local $bEXEWasFound = False
+			For $FileItem In $FilesInZip     ; Check the files in the archive separately
+				; https://docs.microsoft.com/en-us/windows/win32/shell/folderitem
+
+				If $FileItem.IsFolder Then
+					; try to Extract subdir content
+					__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, '\' & $FileItem.Name)
+				Else
+					If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
+						$bEXEWasFound = True
+						; delete webdriver from disk before unpacking to avoid potential problems
+						FileDelete($sInstallDir & $sDriverEXE)
+						$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+					EndIf
+				EndIf
+			Next
+			If @error Then
+				$iErr = $_WD_ERROR_GeneralError
+				$iExt = 15
+			ElseIf Not $bEXEWasFound Then
+				$iErr = $_WD_ERROR_NotFound
+				$iExt = 19 ; $iExt from 11 to 19 are related to __WD_UpdateExtractor()
+			Else
+				$iErr = $_WD_ERROR_Success
+			EndIf
+		EndIf
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & @CRLF)
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt)
+EndFunc   ;==>__WD_UpdateExtractor
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetBrowserVersion
 ; Description ...: Get version number of specified browser.
 ; Syntax ........: _WD_GetBrowserVersion($sBrowser)
-; Parameters ....: $sBrowser - a string value. 'chrome', 'firefox', 'msedge'
+; Parameters ....: $sBrowser - Browser name or full path to browser executable
 ; Return values .: Success - Version number ("#.#.#.#" format) returned by FileGetVersion for the browser exe
 ;                  Failure - "0" and sets @error to one of the following values:
-;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_FileIssue
+;                  - $_WD_ERROR_NotSupported
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_GetWebDriverVersion
+; Related .......: _WD_GetBrowserPath, _WD_UpdateDriver
 ; Link ..........:
 ; Example .......: MsgBox(0, "", _WD_GetBrowserVersion('chrome'))
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
-	Local Const $cRegKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
-	Local $sEXE, $sBrowserVersion = "0"
-	Local $iErr = $_WD_ERROR_Success
-	Switch $sBrowser
-		Case 'chrome'
-			$sEXE = "chrome.exe"
-		Case 'firefox'
-			$sEXE = "firefox.exe"
-		Case 'msedge'
-			$sEXE = "msedge.exe"
-		Case Else
-			$iErr = $_WD_ERROR_InvalidValue
-	EndSwitch
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $sBrowserVersion = "0"
 
-	If $iErr = $_WD_ERROR_Success Then
-		Local $sPath = RegRead($cRegKey & $sEXE, "")
-		If @error Then
-			$iErr = $_WD_ERROR_NotFound
-		Else
-			$sBrowserVersion = FileGetVersion($sPath)
+	Local $sPath = _WD_GetBrowserPath($sBrowser)
+	$iErr = @error
+	$iExt = @extended
+	If @error Then
+		; as registry checks fails, now checking if file exist
+		If FileExists($sBrowser) Then
+			; Reseting as we are now checking file instead registry entries
+			$iErr = $_WD_ERROR_Success
+			$iExt = 0
+
+			; Extract filename and confirm match in list of supported browsers
+			$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			If @error Then
+				$iErr = $_WD_ERROR_NotSupported
+			Else
+				$iExt = $iIndex
+				$sPath = $sBrowser
+			EndIf
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sBrowserVersion)
+
+	If $iErr = $_WD_ERROR_Success Then
+		If _WinAPI_GetBinaryType($sPath) = 0 Then ; check if file is executable
+			$iErr = $_WD_ERROR_FileIssue
+			$iExt = 31 ; $iExt from 31 to 39 are related to _WD_GetBrowserVersion()
+		Else
+			$sBrowserVersion = FileGetVersion($sPath)
+			If @error Then
+				$iErr = $_WD_ERROR_FileIssue
+				$iExt = 32
+			EndIf
+		EndIf
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sBrowserVersion)
 EndFunc   ;==>_WD_GetBrowserVersion
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetBrowserPath
+; Description ...: Retrieve path to browser executable from registry
+; Syntax ........: _WD_GetBrowserPath($sBrowser)
+; Parameters ....: $sBrowser - Name of browser
+; Return values .: Success - Full path to browser executable
+;                  Failure - "" and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotSupported
+;                  - $_WD_ERROR_NotFound
+; Author ........: Danp2
+; Modified ......: mLipok
+; Remarks .......:
+; Related .......: _WD_GetBrowserVersion, _WD_UpdateDriver
+; Link ..........:
+; Example .......: MsgBox(0, "", _WD_GetBrowserPath('firefox'))
+; ===============================================================================================================================
+Func _WD_GetBrowserPath($sBrowser)
+	Local Const $sFuncName = "_WD_GetBrowserPath"
+	Local Const $sRegKeyCommon = '\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $sEXE, $sPath = ""
+
+	; Confirm match in list of supported browsers
+	Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+	If @error Then
+		$iErr = $_WD_ERROR_NotSupported
+		$iExt = 21 ; $iExt from 21 to 29 are related to _WD_GetBrowserPath()
+	Else
+		$sEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
+
+		; check HKLM or in case of error HKCU
+		$sPath = RegRead("HKLM" & $sRegKeyCommon & $sEXE, "")
+		If @error Then $sPath = RegRead("HKCU" & $sRegKeyCommon & $sEXE, "")
+
+		; Generate $_WD_ERROR_NotFound if neither key is found
+		If @error Then
+			$iErr = $_WD_ERROR_NotFound
+			$iExt = 22
+		Else
+			$sPath = StringRegExpReplace($sPath, '["'']', '') ; Remove quotation marks
+			$sPath = StringRegExpReplace($sPath, '(.+\\)(.*exe)', '$1' & $sEXE) ; Registry entries can contain "Launcher.exe" instead "opera.exe"
+			$iExt = $iIndex
+		EndIf
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sPath)
+EndFunc   ;==>_WD_GetBrowserPath
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetWebDriverVersion
@@ -1518,7 +1565,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_GetBrowserVersion
+; Related .......: _WD_UpdateDriver
 ; Link ..........:
 ; Example .......: MsgBox(0, "", _WD_GetWebDriverVersion(@ScriptDir,'chromedriver.exe'))
 ; ===============================================================================================================================
@@ -2376,3 +2423,81 @@ EndFunc   ;==>__WD_ErrHnd
 Func __WD_JsonElement($sElement)
 	Return '{"' & $_WD_ELEMENT_ID & '":"' & $sElement & '"}'
 EndFunc   ;==>__WD_JsonElement
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_GetLatestWebdriverInfo
+; Description ...: Generates URL for downloading latest matching webdriver version
+; Syntax ........: __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
+; Parameters ....: $aBrowser        - Row extracted from $_WD_SupportedBrowsers.
+;                  $sBrowserVersion - Current browser version.
+;                  $bFlag64         - Install 64bit version?
+; Return values .: Success - Array containing [0] URL for downloading requested webdriver & [1] matching webdriver version
+;                  Failure - Empty array and sets @error to $_WD_ERROR_GeneralError
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
+	Local Const $sFuncName = "__WD_GetLatestWebdriverURL"
+	Local $iStartPos, $iConversion, $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $aInfo[2] = ["", ""]
+	Local $sURL = $aBrowser[0][$_WD_BROWSER_LatestReleaseURL]
+	Local $sRegex = $aBrowser[0][$_WD_BROWSER_LatestReleaseRegex]
+	Local $sNewURL = $aBrowser[0][$_WD_BROWSER_NewDriverURL]
+	#forceref $sBrowserVersion, $bFlag64
+
+	If StringRegExp($sURL, '["'']') Then
+		$sURL = Execute($sURL)
+	EndIf
+
+	Local $sDriverLatest = InetRead($sURL)
+
+	If @error = $_WD_ERROR_Success Then
+		Select
+			Case BinaryMid($sDriverLatest, 1, 4) = '0x0000FEFF'                   ; UTF-32 BE
+				$iStartPos = 5
+				$iConversion = $SB_UTF16LE
+			Case BinaryMid($sDriverLatest, 1, 4) = '0xFFFE0000'                   ; UTF-32 LE
+				$iStartPos = 5
+				$iConversion = $SB_UTF16LE
+			Case BinaryMid($sDriverLatest, 1, 2) = '0xFEFF'                       ; UTF-16 BE
+				$iStartPos = 3
+				$iConversion = $SB_UTF16BE
+			Case BinaryMid($sDriverLatest, 1, 2) = '0xFFFE'                       ; UTF-16 LE
+				$iStartPos = 3
+				$iConversion = $SB_UTF16LE
+			Case BinaryMid($sDriverLatest, 1, 3) = '0xEFBBBF'                     ; UTF-8
+				$iStartPos = 4
+				$iConversion = $SB_UTF8
+			Case Else
+				$iStartPos = 1
+				$iConversion = $SB_ANSI
+		EndSelect
+
+		$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
+
+		If StringLen($sRegex) Then
+			Local $aResults = StringRegExp($sDriverLatest, $sRegex, $STR_REGEXPARRAYMATCH)
+
+			If @error Then
+				$iErr = $_WD_ERROR_GeneralError
+				$iExt = 2
+			Else
+				$sDriverLatest = $aResults[0]
+			EndIf
+		EndIf
+
+		If Not $iErr Then
+			$aInfo[0] = Execute($sNewURL)
+			$aInfo[1] = $sDriverLatest
+		EndIf
+	Else
+		$iErr = $_WD_ERROR_GeneralError
+		$iExt = 1
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $aInfo)
+EndFunc   ;==>__WD_GetLatestWebdriverInfo
