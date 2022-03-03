@@ -21,6 +21,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - __WD_ConsoleWrite: Updated to preserve @error and @extended.
 - _WD_Startup: Added display of webdriver bit level (32 / 64).
 - _WD_UpdateDriver: Support alternate browser location.
+- _WD_UpdateDriver: Extract webdriver executable located in a subfolder
 - _WD_CapabilitiesAdd: Must use 'msedge' instead of 'edge' when for browser name. `Script breaking change`
 
 ### Deprecated
