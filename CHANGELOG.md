@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [0.7.0]
+## [0.7.0] - 2022-03-03
 
 ### Added
 
@@ -23,8 +23,6 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_UpdateDriver: Support alternate browser location.
 - _WD_UpdateDriver: Extract webdriver executable located in a subfolder
 - _WD_CapabilitiesAdd: Must use 'msedge' instead of 'edge' when for browser name. `Script breaking change`
-
-### Deprecated
 
 ### Fixed
 
