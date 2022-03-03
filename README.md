@@ -95,6 +95,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_IsLatestRelease     | Compares local UDF version to latest release on Github.                    |
 | _WD_UpdateDriver        | Replace web driver with newer version, if available.                       |
 | _WD_GetBrowserVersion   | Get version number of specified browser.                                   |
+| _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                                   |
 | _WD_GetWebDriverVersion | Get version number of specifed webdriver.                                  |
 | _WD_DownloadFile        | Download file and save to disk.                                            |
 | _WD_SetTimeouts         | User friendly function to set webdriver session timeouts.                  |
