@@ -174,7 +174,7 @@ Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = ConsoleWrite ; Destination for console output
-Global $_WD_CONSOLE_Sufix = @CRLF ; Suffix added to the end of Message in $_WD_CONSOLE function
+Global $_WD_CONSOLE_Suffix = @CRLF ; Suffix added to the end of Message in $_WD_CONSOLE function
 Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
 Global $_WD_Sleep = Sleep ; Default to calling standard Sleep function
 Global $_WD_DefaultTimeout = 10000 ; 10 seconds
@@ -327,16 +327,16 @@ Func _WD_GetSession($sSession)
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-	
+
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
-	
+
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
-	
+
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
 	EndIf
@@ -1089,6 +1089,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  |BASEURL        - IP address used for web driver communication
 ;                  |BINARYFORMAT   - Format used to store binary data
 ;                  |CONSOLE        - Destination for console output
+;                  |CONSOLESUFFIX  - Suffix for console output
 ;                  |DEBUGTRIM      - Length of response text written to the debug cocnsole
 ;                  |DEFAULTTIMEOUT - Default timeout (in miliseconds) used by other functions if no other value is supplied
 ;                  |DRIVER         - Full path name to web driver executable
@@ -1135,9 +1136,9 @@ Func _WD_Option($sOption, $vValue = Default)
 			EndIf
 			$_WD_CONSOLE = $vValue
 
-		Case "consolesufix"
-			If $vValue == "" Then Return $_WD_CONSOLE_Sufix
-			$_WD_CONSOLE_Sufix = $vValue
+		Case "consolesuffix"
+			If $vValue == "" Then Return $_WD_CONSOLE_Suffix
+			$_WD_CONSOLE_Suffix = $vValue
 
 		Case "debugtrim"
 			If $vValue == "" Then Return $_WD_RESPONSE_TRIM
@@ -1261,7 +1262,7 @@ Func _WD_Startup()
 			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
 		EndIf
 
-		_WinAPI_GetBinaryType(@ScriptDir & "\" & $_WD_DRIVER)
+		_WinAPI_GetBinaryType($_WD_DRIVER)
 		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
@@ -1756,11 +1757,11 @@ EndFunc   ;==>__WD_StripPath
 
 Func __WD_ConsoleWrite($sMsg, $iError = @error, $iExtended = @extended)
 	If IsFunc($_WD_CONSOLE) Then
-		Call($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Sufix)
+		Call($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
 	ElseIf $_WD_CONSOLE = Null Then
 		; do nothing
 	Else
-		FileWrite($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Sufix)
+		FileWrite($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
 	EndIf
 	Return SetError($iError, $iExtended)
 EndFunc   ;==>__WD_ConsoleWrite
