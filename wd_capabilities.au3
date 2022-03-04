@@ -190,7 +190,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 			$s_Notation &= '[' & $value1 & ']' ; here is specified keyName in {proxy} JSON OBJECT
 		EndIf
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
+;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
 	ElseIf $key = 'w3c' Or $key = 'maxInstances' Or $key = 'binary' Then  ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
 ;~ 		https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
@@ -203,23 +203,23 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		Else
 			$value1 = $key
 		EndIf
-		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
-		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & ' = ' & $value1 & @CRLF)
+		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
+		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & ' = ' & $value1)
 	ElseIf $key = 'prefs' Then ; for adding "prefs" capability in specific/vendor capabilities : ........
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__PREFS)
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 		$s_Notation &= '[' & $key & ']'
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
+;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
 	ElseIf $key = 'log' Then ; for adding "log" capability in specific/vendor capabilities : ........
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__LOG)
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 		$s_Notation &= '[' & $key & ']'
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
+;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
 	ElseIf $key = 'env' Then ; for adding "env" capability in specific/vendor capabilities : ........
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ENV)
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 		$s_Notation &= '[' & $key & ']'
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
+;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
 	ElseIf $value2 = '' Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__STRINGORBOOL)
 		$s_Notation &= '[' & $key & ']'
@@ -228,7 +228,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	EndIf
 	If @error Then Return SetError(@error, @extended, $s_Notation)
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
-;~ 	If Not @compiled Then __WD_ConsoleWrite("> $s_Notation - " & $s_Notation & @CRLF)
+;~ 	If Not @compiled Then __WD_ConsoleWrite("> $s_Notation - " & $s_Notation)
 EndFunc   ;==>_WD_CapabilitiesAdd
 
 ; #FUNCTION# ====================================================================================================================
@@ -271,10 +271,10 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; ===============================================================================================================================
 Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
 	#Region - parameters validation
-;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
+;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 	If Not StringInStr('alwaysMatch|firstMatch', $s_MatchType) Then _
 			Return SetError(1)
-;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
+;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 
 ;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$s_BrowserName = " & $s_BrowserName & @CRLF & "$s_MatchType = " & $s_MatchType)
 	Local $s_SpecificOptions_KeyName = ''
@@ -294,7 +294,7 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchTy
 	#Region - reindexing API
 	Local $i_API_Recent_Size = UBound($_WD_CAPS__API), $i_API_New_Size = $i_API_Recent_Size + 1, $i_API_New_IDX = $i_API_New_Size - 1
 	ReDim $_WD_CAPS__API[$i_API_New_Size][$_WD_CAPS__COUNTER]
-	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
+	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 	#EndRegion - reindexing API
 
 	#Region - new "MATCH" Initialization
@@ -315,7 +315,7 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchTy
 	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__EXCSWITCH] = -1 ; used for indexing ......  "excludeSwitches" : [JSON ARRRAY]
 	$_WD_CAPS__CURRENTIDX = $i_API_New_IDX ; set last API IDX as CURRENT API IDX
 	#EndRegion - new "MATCH" Initialization
-;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber & @CRLF)
+;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 	Return $_WD_CAPS__CURRENTIDX ; return current API IDX
 
 	#Region - FOR TESTING ONLY
@@ -402,7 +402,7 @@ Func __WD_CapabilitiesNotation($i_BUILDER_TYPE)
 			Local $i_Current_ExcSwitch = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__EXCSWITCH]
 			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & $s_SpecificOptions_KeyName & '[excludeSwitches][' & $i_Current_ExcSwitch & ']' ; here is specified which one of [excluedSwitches] JSON ARRAY element should be used
 	EndSwitch
-;~ 	If Not @compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & @CRLF)
+;~ 	If Not @compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
 	Return $s_Notation
 EndFunc   ;==>__WD_CapabilitiesNotation
 #EndRegion - wd_capabilities.au3 UDF - internal functions
@@ -423,15 +423,15 @@ EndFunc   ;==>__WD_CapabilitiesNotation
 ; ===============================================================================================================================
 Func _WD_CapabilitiesDump($s_Comment)
 	If @Compiled Then Return ; because of GDRP reason do not throw nothing to console when compiled script
-	__WD_ConsoleWrite(@LF & '! _WD_Capabilities: API START: ' & $s_Comment & @LF)
-	__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1) & @CRLF)
-	__WD_ConsoleWrite("- $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2) & @CRLF)
-	__WD_ConsoleWrite(_ArrayToString($_WD_CAPS__API) & @LF)
-	__WD_ConsoleWrite(@LF & '! _WD_Capabilities: API END: ' & $s_Comment & @LF & @LF)
+	__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
+	__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
+	__WD_ConsoleWrite("- $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2))
+	__WD_ConsoleWrite(_ArrayToString($_WD_CAPS__API))
+	__WD_ConsoleWrite('! _WD_Capabilities: API END: ' & $s_Comment)
 
-	__WD_ConsoleWrite(@LF & '! _WD_Capabilities: JSON START: ' & $s_Comment & @LF)
+	__WD_ConsoleWrite('! _WD_Capabilities: JSON START: ' & $s_Comment)
 	__WD_ConsoleWrite(_WD_CapabilitiesGet())
-	__WD_ConsoleWrite(@LF & '! _WD_Capabilities: JSON END: ' & $s_Comment & @LF & @LF)
+	__WD_ConsoleWrite('! _WD_Capabilities: JSON END: ' & $s_Comment)
 EndFunc   ;==>_WD_CapabilitiesDump
 
 ; #FUNCTION# ====================================================================================================================
