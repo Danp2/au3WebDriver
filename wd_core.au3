@@ -1589,6 +1589,7 @@ EndFunc   ;==>__WD_Delete
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
+	Local Const $sFuncName = "__WD_Error"
 	Local $sMsg, $iErr = $i_WD_ERROR
 
 	If $sMessage = Default Then $sMessage = ''
