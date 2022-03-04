@@ -68,7 +68,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 		$iErr = @error
 
 		If $_WD_DEBUG = $_WD_DEBUG_Info Then
-			__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+			__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 		EndIf
 
 		Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResponse)
@@ -225,7 +225,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "...")
 	EndIf
 
 	If $iErr Then
