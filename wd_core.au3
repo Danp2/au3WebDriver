@@ -1,4 +1,5 @@
 #include-once
+#include <MsgBoxConstants.au3> ; used in __WD_Error
 #include <WinAPIFiles.au3> ; used in _WD_Startup
 #include <WinAPIProc.au3> ; used in __WD_CloseDriver
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
@@ -172,6 +173,7 @@ Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching 
 Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one already exists
 Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug output
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
+Global $_WD_ERROR_OUTPUTDEBUG = False ; Log errors to "OutputDebugString"
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = ConsoleWrite ; Destination for console output
 Global $_WD_CONSOLE_Suffix = @CRLF ; Suffix added to the end of Message in $_WD_CONSOLE function
@@ -1096,6 +1098,8 @@ EndFunc   ;==>_WD_Cookies
 ;                  |DRIVERCLOSE    - Close prior driver instances before launching new one (Boolean)
 ;                  |DRIVERDETECT   - Use existing driver instance if it exists (Boolean)
 ;                  |DRIVERPARAMS   - Parameters to pass to web driver executable
+;                  |ERRORMSGBOX    - Enable/Disable reporting errors to MsgBox() (Boolean)
+;                  |OUTPUTDEBUG    - Enable/Disable reporting errors to OutputDebugString (Boolean)
 ;                  |HTTPTIMEOUTS   - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 ;                  |PORT           - Port used for web driver communication
 ;                  |SLEEP          - Function to be called when UDF pauses the script execution
@@ -1189,6 +1193,20 @@ Func _WD_Option($sOption, $vValue = Default)
 			EndIf
 			$_WD_WINHTTP_TIMEOUTS = $vValue
 
+		Case "errormsgbox"
+			If $vValue == "" Then Return $_WD_ERROR_MSGBOX
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_ERROR_MSGBOX = $vValue
+
+		Case "OutputDebug"
+			If $vValue == "" Then Return $_WD_ERROR_OUTPUTDEBUG
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+			EndIf
+			$_WD_ERROR_OUTPUTDEBUG = $vValue
+
 		Case "port"
 			If $vValue == "" Then Return $_WD_PORT
 			If Not IsInt($vValue) Then
@@ -1204,7 +1222,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			$_WD_Sleep = $vValue
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|HTTPTimeouts|Port|Sleep) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
@@ -1570,8 +1588,8 @@ EndFunc   ;==>__WD_Delete
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default)
-	Local $sMsg
+Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
+	Local $sMsg, $iErr = $i_WD_ERROR
 
 	If $sMessage = Default Then $sMessage = ''
 
@@ -1588,15 +1606,30 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default)
 				$sMsg = $sMsg & ": " & $sMessage
 			EndIf
 
+			$sMsg &= (($iExt) ? (' : Extended = ' & $iExt) : (''))
+
 			__WD_ConsoleWrite($sMsg)
 
 			If @Compiled Then
-				If $_WD_ERROR_MSGBOX And $i_WD_ERROR <> $_WD_ERROR_Success And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
-				DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
+				If $i_WD_ERROR <> $_WD_ERROR_Success Then
+					If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then
+						Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WD_Core.au3 Error:", $sMsg)
+						If $iAnswer = $IDCANCEL Then
+							$iErr = $_WD_ERROR_UserAbort
+						EndIf
+					EndIf
+					If $_WD_ERROR_OUTPUTDEBUG Then
+						DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
+					EndIf
+				EndIf
+			EndIf
+
+			If $_WD_DEBUG = $_WD_DEBUG_Info And $iErr = $_WD_ERROR_UserAbort Then
+				__WD_ConsoleWrite($sFuncName & ': UserAbort on: ' & $sMsg)
 			EndIf
 	EndSwitch
 
-	Return $i_WD_ERROR
+	Return $iErr
 EndFunc   ;==>__WD_Error
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
