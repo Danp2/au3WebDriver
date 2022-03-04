@@ -1204,7 +1204,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			$_WD_Sleep = $vValue
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|HTTPTimeouts|Port|Sleep) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|HTTPTimeouts|Port|Sleep) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
