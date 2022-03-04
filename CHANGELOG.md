@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Fixed
+
+- _WD_Startup: Display of webdriver bit level (32 / 64)
+
+### Removed
+
+
+### Security
+
+
+### Project
 ## [0.7.0] - 2022-03-03
 
 ### Added

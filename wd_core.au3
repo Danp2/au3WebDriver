@@ -1256,7 +1256,7 @@ Func _WD_Startup()
 			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
 		EndIf
 
-		_WinAPI_GetBinaryType(@ScriptDir & "\" & $_WD_DRIVER)
+		_WinAPI_GetBinaryType($_WD_DRIVER)
 		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
