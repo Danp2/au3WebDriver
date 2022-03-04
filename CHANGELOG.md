@@ -13,7 +13,11 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- _WD_Option: Support for "ConsoleSuffix" option
+
 ### Changed
+
+- __WD_ConsoleWrite: Utilize new ConsoleSuffix setting
 
 ### Deprecated
 
