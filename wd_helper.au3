@@ -1061,7 +1061,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 		__WD_ConsoleWrite($sFuncName & ': ' & ((IsArray($vResult)) ? "(array)" : $vResult))
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $_WD_HTTPRESULT, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
@@ -1362,7 +1362,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & ' : Result = ' & $bResult)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1441,7 +1441,7 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt)
 EndFunc   ;==>__WD_UpdateExtractor
 
 ; #FUNCTION# ====================================================================================================================
@@ -1501,7 +1501,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sBrowserVersion)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $sBrowserVersion)
 EndFunc   ;==>_WD_GetBrowserVersion
 
 ; #FUNCTION# ====================================================================================================================
@@ -1549,7 +1549,7 @@ Func _WD_GetBrowserPath($sBrowser)
 			$iExt = $iIndex
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sPath)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $sPath)
 EndFunc   ;==>_WD_GetBrowserPath
 
 ; #FUNCTION# ====================================================================================================================
@@ -1599,7 +1599,7 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $sDriverVersion)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $sDriverVersion)
 EndFunc   ;==>_WD_GetWebDriverVersion
 
 ; #FUNCTION# ====================================================================================================================
@@ -1670,7 +1670,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_DownloadFile
 
 ; #FUNCTION# ====================================================================================================================
@@ -2499,5 +2499,5 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 		$iExt = 1
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iExt, $aInfo)
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $aInfo)
 EndFunc   ;==>__WD_GetLatestWebdriverInfo
