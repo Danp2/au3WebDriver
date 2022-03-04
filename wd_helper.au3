@@ -997,7 +997,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
 ; Description ...: Perform action on desginated <select> element.
-; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $vParameters = Null])
+; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $aParameters = Default])
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
@@ -1009,7 +1009,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
 ;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array containing 4 columns (value, label, index and selected status)
 ;                  |VALUE          - Retrieves value of the first selected <option> element
-;                  $vParameters    - [optional] a variant value. Default is Null.
+;                  $aParameters    - List of parameters (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1024,11 +1024,11 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters = Null)
+Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters = Default)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
 	Local $sNodeName, $vResult, $sScript
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
-	Local $iErr = @error
+	Local $iErr = @error, $iExt = 0
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $sNodeName = 'select' Then ; check if designated element is <select> element
@@ -1039,19 +1039,23 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$iErr = @error
 
 				Case 'multiSelect' ; https://stackoverflow.com/a/1296068/5314940
-					$sScript = _
-							"var LabelsToSelect = ['" & _ArrayToString($vParameters, "', '") & "'];" & _
-							"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
-							"{" & _
-							"  o = arguments[0].options[i];" & _
-							"  if ( LabelsToSelect.indexOf( o.label ) != -1 )" & _
-							"  {" & _
-							"    o.selected = true;" & _
-							"  }" & _
-							"}; return true;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
-					$iErr = @error
-
+					If UBound($aParameters, $UBOUND_ROWS) = 0 Or UBound($aParameters, $UBOUND_COLUMS) <> 0 Then
+						$iErr = $_WD_ERROR_InvalidArgue
+						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
+					Else
+						$sScript = _
+								"var LabelsToSelect = ['" & _ArrayToString($aParameters, "', '") & "'];" & _
+								"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
+								"{" & _
+								"  o = arguments[0].options[i];" & _
+								"  if ( LabelsToSelect.indexOf( o.label ) != -1 )" & _
+								"  {" & _
+								"    o.selected = true;" & _
+								"  }" & _
+								"}; return true;"
+						$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+						$iErr = @error
+					EndIf
 				Case 'options'
 					$sScript = "var result ='' ; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'} return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
@@ -1106,11 +1110,12 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			EndSwitch
 		Else
 			$iErr = $_WD_ERROR_InvalidArgue
+			$iExt = 49 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 		EndIf
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & ((IsArray($vResult)) ? "(array)" : $vResult) & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': $sCommand = ' & $sCommand & ' : Error = ' & $iErr & ' : Extended = ' & $iExt & ' : Result = ' & ((IsArray($vResult)) ? "(array)" : $vResult) & @CRLF)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
