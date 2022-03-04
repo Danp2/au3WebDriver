@@ -1575,14 +1575,15 @@ EndFunc   ;==>__WD_Delete
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
 ; Description ...: Writes Error to the console and show message-boxes if the script is compiled.
-; Syntax ........: __WD_Error($sWhere, $i_WD_ERROR[, $sMessage = Default])
+; Syntax ........: __WD_Error($sWhere, $i_WD_ERROR[, $sMessage = Default[, $iExt = 0]])
 ; Parameters ....: $sWhere     - Name of calling routine
 ;                  $i_WD_ERROR - Error constant
-;                  $sMessage   - [optional] Additional Information (default = "")
+;                  $sMessage   - Message that will be passed to the console/output [optional]
+;                  $iExt       - Extended information [optional]
 ; Return values..: Success - Error Const from $i_WD_ERROR
 ;                  Failure - None
 ; Author ........: Thorsten Willert, Dan Pollak
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
