@@ -9,6 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Added
+
+- _WD_Option: Support for "ConsoleSuffix" option
+
+### Changed
+
+- __WD_ConsoleWrite: Utilize new ConsoleSuffix setting
+
+### Deprecated
+
+### Fixed
+
+- _WD_Startup: Display of webdriver bit level (32 / 64)
+
+### Removed
+
+
+### Security
+
+
+### Project
+## [0.7.0] - 2022-03-03
+
+### Added
+
+- Support for Opera browser
+- _WD_GetBrowserPath
+
+### Changed
+
+- __WD_ConsoleWrite: Updated to preserve @error and @extended.
+- _WD_Startup: Added display of webdriver bit level (32 / 64).
+- _WD_UpdateDriver: Support alternate browser location.
+- _WD_UpdateDriver: Extract webdriver executable located in a subfolder
+- _WD_CapabilitiesAdd: Must use 'msedge' instead of 'edge' when for browser name. `Script breaking change`
+
+### Fixed
+
+- _WD_UpdateDriver: Unpacking webdriver executable failed on some workstations; Better error handling
+- _WD_GetWebDriverVersion: Resolve error `Subscript used on non-accessible variable`
+
 ## [0.6.0] - 2022-02-22
 
 ### Added
@@ -839,7 +882,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - Initial release
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.7.0...HEAD
+[0.7.0]:      https://github.com/Danp2/au3WebDriver/compare/0.6.0...0.7.0
 [0.6.0]:      https://github.com/Danp2/au3WebDriver/compare/0.5.2...0.6.0
 [0.5.2]:      https://github.com/Danp2/au3WebDriver/compare/0.5.1.1...0.5.2
 [0.5.1.1]:    https://github.com/Danp2/au3WebDriver/compare/0.5.1.0...0.5.1.1

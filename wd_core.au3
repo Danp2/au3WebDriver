@@ -1,5 +1,6 @@
 #include-once
-#include <WinAPIProc.au3>
+#include <WinAPIFiles.au3> ; used in _WD_Startup
+#include <WinAPIProc.au3> ; used in __WD_CloseDriver
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include "WinHttp.au3" ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
@@ -64,7 +65,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.6.0"
+Global Const $__WDVERSION = "0.7.0"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -106,7 +107,19 @@ Global Enum _
 		$_WD_ERROR_UnknownCommand, _ ;
 		$_WD_ERROR_UserAbort, _ ;
 		$_WD_ERROR_FileIssue, _ ;
+		$_WD_ERROR_NotSupported, _ ;
 		$_WD_ERROR_COUNTER ;
+
+Global Enum _
+		$_WD_BROWSER_Name, _
+		$_WD_BROWSER_ExeName, _
+		$_WD_BROWSER_DriverName, _
+		$_WD_BROWSER_64Bit, _
+		$_WD_BROWSER_OptionsKey, _
+		$_WD_BROWSER_LatestReleaseURL, _
+		$_WD_BROWSER_LatestReleaseRegex, _
+		$_WD_BROWSER_NewDriverURL, _
+		$_WD_BROWSER__COUNTER
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Success", _
@@ -127,7 +140,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Invalid session ID", _
 		"Unknown Command", _
 		"User Aborted", _
-		"File issue" _
+		"File issue", _
+		"Browser or feature not supported" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
@@ -160,12 +174,21 @@ Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug 
 Global $_WD_ERROR_MSGBOX = True ; Shows in compiled scripts error messages in msgboxes
 Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = ConsoleWrite ; Destination for console output
+Global $_WD_CONSOLE_Suffix = @CRLF ; Suffix added to the end of Message in $_WD_CONSOLE function
 Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
 Global $_WD_Sleep = Sleep ; Default to calling standard Sleep function
 Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
+
+Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
+		[ _
+		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions", "'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", "", '"https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"'], _
+		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions", "https://github.com/mozilla/geckodriver/releases/latest", '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(?:v)(.*?)"', '"https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest & (($bFlag64) ? "-win64.zip" : "-win32.zip")'], _
+		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions", "'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", "", '"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'], _
+		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions", "https://github.com/operasoftware/operachromiumdriver/releases/latest", '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(?:v\.)(.*?)"', '"https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'] _
+		]
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
@@ -192,7 +215,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -235,7 +258,7 @@ Func _WD_DeleteSession($sSession)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -270,7 +293,7 @@ Func _WD_Status()
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -311,7 +334,7 @@ Func _WD_GetSession($sSession)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -357,7 +380,7 @@ Func _WD_Timeouts($sSession, $sTimeouts = Default)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -391,7 +414,7 @@ Func _WD_Navigate($sSession, $sURL)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -465,7 +488,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -597,7 +620,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...")
 	EndIf
 
 	If $iErr Then
@@ -689,7 +712,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -807,7 +830,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...")
 	EndIf
 
 	If $iErr Then
@@ -856,7 +879,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		Local $iErr = @error
 
 		If $_WD_DEBUG = $_WD_DEBUG_Info Then
-			__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+			__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...")
 		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
@@ -938,7 +961,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, $sResult)
@@ -972,7 +995,7 @@ Func _WD_GetSource($sSession)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -1047,7 +1070,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	EndSwitch
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -1066,6 +1089,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  |BASEURL        - IP address used for web driver communication
 ;                  |BINARYFORMAT   - Format used to store binary data
 ;                  |CONSOLE        - Destination for console output
+;                  |CONSOLESUFFIX  - Suffix for console output
 ;                  |DEBUGTRIM      - Length of response text written to the debug cocnsole
 ;                  |DEFAULTTIMEOUT - Default timeout (in miliseconds) used by other functions if no other value is supplied
 ;                  |DRIVER         - Full path name to web driver executable
@@ -1111,6 +1135,10 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(func/int/null/string) $vValue: " & $vValue), 0, 0)
 			EndIf
 			$_WD_CONSOLE = $vValue
+
+		Case "consolesuffix"
+			If $vValue == "" Then Return $_WD_CONSOLE_Suffix
+			$_WD_CONSOLE_Suffix = $vValue
 
 		Case "debugtrim"
 			If $vValue == "" Then Return $_WD_RESPONSE_TRIM
@@ -1176,7 +1204,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			$_WD_Sleep = $vValue
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|HTTPTimeouts|Port|Sleep) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|HTTPTimeouts|Port|Sleep) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
@@ -1192,7 +1220,7 @@ EndFunc   ;==>_WD_Option
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_Shutdown
 ; Link ..........:
@@ -1203,7 +1231,7 @@ Func _WD_Startup()
 	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID
 
 	If $_WD_DRIVER = "" Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set." & @CRLF), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
 	EndIf
 
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
@@ -1234,22 +1262,25 @@ Func _WD_Startup()
 			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
 		EndIf
 
-		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": au3WD UDF:" & @TAB & $__WDVERSION & $sUpdate & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS & @CRLF)
-		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & @CRLF)
+		_WinAPI_GetBinaryType($_WD_DRIVER)
+		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
+
+		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
+		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
+		__WD_ConsoleWrite($sFuncName & ": au3WD UDF:" & @TAB & $__WDVERSION & $sUpdate)
+		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
+		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
+		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
+		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT)
 	Else
-		__WD_ConsoleWrite($sFuncName & ': ' & $sCommand & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': ' & $sCommand)
 	EndIf
 
 	$sFile = __WD_StripPath($_WD_DRIVER)
 	$iPID = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $iPID Then
-		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!" & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
 	Else
 		$iPID = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 
@@ -1300,7 +1331,7 @@ Func __WD_Get($sURL)
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
 	EndIf
 
 	$_WD_HTTPRESULT = 0
@@ -1349,7 +1380,7 @@ Func __WD_Get($sURL)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; $iResult = " & $iResult & "; $sResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...")
 	EndIf
 
 	If $iResult Then
@@ -1383,7 +1414,7 @@ Func __WD_Post($sURL, $sData)
 	Local $iResult, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData)
 	EndIf
 
 	$_WD_HTTPRESULT = 0
@@ -1432,7 +1463,7 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...")
 	EndIf
 
 	If $iResult Then
@@ -1464,7 +1495,7 @@ Func __WD_Delete($sURL)
 	Local $iResult, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
 	EndIf
 
 	$_WD_HTTPRESULT = 0
@@ -1513,7 +1544,7 @@ Func __WD_Delete($sURL)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
+		__WD_ConsoleWrite($sFuncName & ': StatusCode=' & $_WD_HTTPRESULT & "; ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...")
 	EndIf
 
 	If $iResult Then
@@ -1557,7 +1588,7 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default)
 				$sMsg = $sMsg & ": " & $sMessage
 			EndIf
 
-			__WD_ConsoleWrite($sMsg & @CRLF)
+			__WD_ConsoleWrite($sMsg)
 
 			If @Compiled Then
 				If $_WD_ERROR_MSGBOX And $i_WD_ERROR <> $_WD_ERROR_Success And $i_WD_ERROR < 6 Then MsgBox(16, "WD_Core.au3 Error:", $sMsg)
@@ -1724,14 +1755,15 @@ Func __WD_StripPath($sFilePath)
 	Return StringRegExpReplace($sFilePath, "^.*\\(.*)$", "$1")
 EndFunc   ;==>__WD_StripPath
 
-Func __WD_ConsoleWrite($sMsg)
+Func __WD_ConsoleWrite($sMsg, $iError = @error, $iExtended = @extended)
 	If IsFunc($_WD_CONSOLE) Then
-		Call($_WD_CONSOLE, $sMsg)
+		Call($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
 	ElseIf $_WD_CONSOLE = Null Then
 		; do nothing
 	Else
-		FileWrite($_WD_CONSOLE, $sMsg)
+		FileWrite($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
 	EndIf
+	Return SetError($iError, $iExtended)
 EndFunc   ;==>__WD_ConsoleWrite
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================

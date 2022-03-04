@@ -5,8 +5,8 @@
     <h2 align="center">Welcome to <code>au3WebDriver</code></h2>
 </p>
 
-[![license](https://img.shields.io/badge/license-MIT-ff69b4.svg?style=flat-square&logo=spdx)](https://github.com/Danp2/au3WebDriver/blob/master/LICENSE)
-[![contributors](https://img.shields.io/github/contributors/Danp2/au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/au3WebDriver/graphs/contributors)
+[![license](https://img.shields.io/badge/license-MIT-ff69b4.svg?style=flat-square&logo=spdx)][license]
+[![contributors](https://img.shields.io/github/contributors/Danp2/au3WebDriver.svg?style=flat-square&logo=github)][Contributors]
 ![repo size](https://img.shields.io/github/repo-size/Danp2/au3WebDriver.svg?style=flat-square&logo=github)
 [![last commit](https://img.shields.io/github/last-commit/Danp2/au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/au3WebDriver/commits/master)
 [![release](https://img.shields.io/github/release/Danp2/au3WebDriver.svg?style=flat-square&logo=github)](https://github.com/Danp2/au3WebDriver/releases/latest)
@@ -17,24 +17,23 @@
 
 ## Description
 
-This au3WebDriver UDF (project) allows to interact with any browser that supports the [W3C WebDriver specifications](https://www.w3.org/TR/webdriver/).  Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
+This au3WebDriver UDF (project) allows to interact with any browser that supports the [W3C WebDriver specifications][W3C Webdriver].  Supporting multiple browsers via the same code base is now possible with just a few configuration settings.
 
 ## Documentation
 
 |                                                                                                                      | Reference                                                     | Description                                                                                            |
 | :---:                                                                                                                | :---                                                          | :---                                                                                                   |
-| <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/W3C_icon.svg/212px-W3C_icon.svg.png" width="20"> | [W3C WebDriver](https://www.w3.org/TR/webdriver/)             | Official W3C WebDriver standard/specification.                                                         |
-| 📚                                                                                                                   | [WebDriver Wiki](https://www.autoitscript.com/wiki/WebDriver) | Further information about this UDF (project) like big picture, capabilities, troubleshooting and more. |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/W3C_icon.svg/212px-W3C_icon.svg.png" width="20"> | [W3C WebDriver]             | Official W3C WebDriver standard/specification.                                                         |
+| 📚                                                                                                                   | [WebDriver Wiki] | Further information about this UDF (project) like big picture, capabilities, troubleshooting and more. |
 | 📖                                                                                                                   | Webdriver.chm                                                 | Function CHM help file that comes with this UDF (project) download.                                    |
 
 ## Features
 
 ### *Browser support*
 
-| Chrome                                                                                            | Edge                                                                                        | Firefox                                                                                              |
-| :---                                                                                              | :---                                                                                        | :---                                                                                                 |
-| ![Chrome48] | ![Edge48] | ![Firefox48] |
-
+| Chrome      | Edge    | Firefox        | Opera      |
+|-------------|---------|----------------|------------|
+| ![Chrome48] | ![Edge48] | ![Firefox48] | ![Opera48] |
 
 ### *Functions*
 
@@ -96,6 +95,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_IsLatestRelease     | Compares local UDF version to latest release on Github.                    |
 | _WD_UpdateDriver        | Replace web driver with newer version, if available.                       |
 | _WD_GetBrowserVersion   | Get version number of specified browser.                                   |
+| _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                                   |
 | _WD_GetWebDriverVersion | Get version number of specifed webdriver.                                  |
 | _WD_DownloadFile        | Download file and save to disk.                                            |
 | _WD_SetTimeouts         | User friendly function to set webdriver session timeouts.                  |
@@ -149,24 +149,26 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 Download and add the following mandatory Third-Party UDFs to your project folder (independent of the browser you want to automate).
 
 - Mandatory ✔
-  - [Json UDF](https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn) - Archive includes *Json.au3* & *BinaryCall.au3*.
-  - [WinHTTP UDF](https://github.com/dragana-r/autoit-winhttp/releases/latest) - Archive includes *WinHttp.au3* & *WinHttpConstants.au3*.
+  - [Json UDF] - Archive includes *Json.au3* & *BinaryCall.au3*.
+  - [WinHTTP UDF] - Archive includes *WinHttp.au3* & *WinHttpConstants.au3*.
 - Optional ⚠
-  - [HtmlTable2Array UDF](https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/) - Extraction of data from HTML tables to an array.
-  - [WinHttp_WebSocket UDF](https://github.com/Danp2/autoit-websocket) - Needed for websocket CDP functionality.
+  - [HtmlTable2Array UDF] - Extraction of data from HTML tables to an array.
+  - [WinHttp_WebSocket UDF] - Needed for websocket CDP functionality.
 
-Download and install one of the following WebDriver (depending on the browser type and version you want to automate).
+Download and install one of the following WebDrivers (depending on the browser type and version you want to automate).
 
-| Browser                                                                                              | Download                                                                      | WebDriver specification status                                                                                   |
-| :---:                                                                                                | :---                                                                          | :---                                                                                                             |
-| ![Chrome16]    | [Chrome](https://sites.google.com/chromium.org/driver/downloads)              | [Status](https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md)                    |
-| ![Edge16]          | [Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/) | [Status](https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/)  |
-| ![Firefox16] | [Firefox](https://github.com/mozilla/geckodriver/releases/latest)             | [Status](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status) [^1]                                  |
+|    Browser   | Download             | Implementation status        |
+|:------------:|----------------------|------------------------------|
+|  ![Chrome16] | [Chrome][ChromeDL]   | [Status][ChromeStatus]       |
+|   ![Edge16]  | [Edge][EdgeDL]       | [Status][EdgeStatus]         |
+| ![Firefox16] | [Firefox][FirefoxDL] | [Status][FirefoxStatus] [^1] |
+|  ![Opera16]  | [Opera][OperaDL]     | [^2]                         |
 
-Limitation notice. [^2]
+Limitation notice. [^3]
 
 [^1]: Login Required
-[^2]: Not all WebDriver functions have been implemented by each browser. Keep that in mind and check the "WebDriver specification status" for your desired WebDriver of choice.
+[^2]: Derived from ChromeDriver per project [ReadMe][Opera ReadMe]
+[^3]: Not all WebDriver functions have been fully implemented by each browser. Keep that in mind and check the "Implementation status" for your desired WebDriver of choice.
 
 #### *Installation*
 
@@ -176,14 +178,11 @@ To automate your browser, follow the following steps.
 2. Move the UDFs to your project folder or to a directory where AutoIt can find them.
     - All *wd_\*.au3* files and the Third-Party UDFs *\*.au3* should be placed in the same directory.
     - Otherwise you have to adjust the `#include` statements in the files.
-3. Move your desired WebDriver of choice to directory of the *wd_\*.au3* files.
-    - chromedriver.exe (Chrome)
-    - geckodriver.exe (Firefox)
-    - msedgedriver.exe (Edge, chromium based)
+3. Move your desired WebDriver of choice to the directory containing the *wd_\*.au3* files.
 
 #### *Usage*
 
-Run [wd_demo.au3](https://github.com/Danp2/au3WebDriver/blob/master/wd_demo.au3), choose your "Browser" from the dropdown and press the "Run Demo!" button that will perform the "DemoNavigation" demo to validate your installation.
+Run `wd_demo.au3`, choose your "Browser" from the dropdown and press the "Run Demo!" button that will perform the "DemoNavigation" demo to validate your installation.
 
 <details>
 <summary><i>Result example</i></summary>
@@ -211,11 +210,11 @@ Useful information about possible configurations following soon.<br>
 
 ## Contributing
 
-Just look at [CONTRIBUTING](https://github.com/Danp2/au3WebDriver/blob/master/docs/CONTRIBUTING.md), thank you!
+Just look at [CONTRIBUTING], thank you!
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3WebDriver/blob/master/LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE] for more information.
 
 ## Acknowledgements
 
@@ -230,7 +229,7 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3Web
   - Thanks to [@Danp2](https://github.com/Danp2) for the project idea, creation and maintenance
   - Thanks to [@mLipok](https://github.com/mLipok) for his *wd_capabilities.au3*
   - Thanks to [@Sven-Seyfert](https://github.com/Sven-Seyfert) for the project logo
-  - **Big thanks** to all the hard-working [contributors](https://github.com/Danp2/au3WebDriver/graphs/contributors)
+  - **Big thanks** to all the hard-working [contributors]
 
 ##
 
@@ -242,3 +241,22 @@ Distributed under the MIT License. See [LICENSE](https://github.com/Danp2/au3Web
 [Edge16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/edge/edge_16x16.png
 [Firefox48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_48x48.png
 [Firefox16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/firefox/firefox_16x16.png
+[Opera48]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_48x48.png
+[Opera16]: https://raw.githubusercontent.com/alrra/browser-logos/main/src/opera/opera_16x16.png
+[ChromeDL]: https://sites.google.com/chromium.org/driver/downloads
+[ChromeStatus]: https://chromium.googlesource.com/chromium/src/+/master/docs/chromedriver_status.md
+[EdgeStatus]: https://docs.microsoft.com/en-us/microsoft-edge/webdriver-chromium/
+[EdgeDL]: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+[FirefoxStatus]: https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette/WebDriver/status
+[FirefoxDL]: https://github.com/mozilla/geckodriver/releases/latest
+[OperaDL]: https://github.com/operasoftware/operachromiumdriver/releases/latest
+[License]: https://github.com/Danp2/au3WebDriver/blob/master/LICENSE
+[Contributors]: https://github.com/Danp2/au3WebDriver/graphs/contributors
+[W3C WebDriver]: https://www.w3.org/TR/webdriver/
+[WebDriver Wiki]: https://www.autoitscript.com/wiki/WebDriver
+[Opera ReadMe]: https://github.com/operasoftware/operachromiumdriver/blob/master/README.md
+[Json UDF]: https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+[WinHTTP UDF]: https://github.com/dragana-r/autoit-winhttp/releases/latest
+[HtmlTable2Array UDF]: https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/
+[WinHttp_WebSocket UDF]: https://github.com/Danp2/autoit-websocket
+[CONTRIBUTING]: https://github.com/Danp2/au3WebDriver/blob/master/docs/CONTRIBUTING.md
