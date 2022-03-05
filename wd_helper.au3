@@ -1114,11 +1114,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': $sCommand = ' & $sCommand & ' : Error = ' & $iErr & ' : Extended = ' & $iExt & ' : Result = ' & ((IsArray($vResult)) ? "(array)" : $vResult))
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
+	Local $sMessage = '$sCommand = ' & $sCommand & ' : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), $_WD_HTTPRESULT, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
