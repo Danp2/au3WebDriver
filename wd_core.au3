@@ -1602,13 +1602,12 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
 			If $i_WD_ERROR <> $_WD_ERROR_Success Then ContinueCase
 
 		Case $_WD_DEBUG_Info
-			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$i_WD_ERROR]
+			$sMsg = $sWhere & " ==> ERROR = " & $i_WD_ERROR & " > " & $aWD_ERROR_DESC[$i_WD_ERROR]
+			$sMsg &= (($iExt) ? (' : Extended = ' & $iExt) : (''))
 
 			If $sMessage <> "" Then
 				$sMsg = $sMsg & ": " & $sMessage
 			EndIf
-
-			$sMsg &= (($iExt) ? (' : Extended = ' & $iExt) : (''))
 
 			__WD_ConsoleWrite($sMsg)
 
