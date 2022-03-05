@@ -1575,23 +1575,23 @@ EndFunc   ;==>__WD_Delete
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
 ; Description ...: Writes Error to the console and show message-boxes if the script is compiled.
-; Syntax ........: __WD_Error($sWhere, $i_WD_ERROR[, $sMessage = Default[, $iExt = 0]])
+; Syntax ........: __WD_Error($sWhere, $iErr[, $sMessage = Default[, $iExt = 0]])
 ; Parameters ....: $sWhere     - Name of calling routine
-;                  $i_WD_ERROR - Error constant
+;                  $iErr       - The error number from the calling function
 ;                  $sMessage   - Message that will be passed to the console/output [optional]
-;                  $iExt       - Extended information [optional]
-; Return values..: Success - Error Const from $i_WD_ERROR
+;                  $iExt       - Extended information from the calling function [optional]
+; Return values..: Success - $iErr - as it should be used in the calling function like this: SetError(__WD_Error(...))
 ;                  Failure - None
-; Author ........: Thorsten Willert, Dan Pollak
+; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
+Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = 0)
 	Local Const $sFuncName = "__WD_Error"
-	Local $sMsg, $iErr = $i_WD_ERROR
+	Local $sMsg
 
 	If $sMessage = Default Then $sMessage = ''
 
@@ -1609,9 +1609,9 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
 
 			If $iErr <> $_WD_ERROR_Success Then
 				If $_WD_ERROR_MSGBOX And $iErr < 6 Then
-					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WD_Core UDF Error:", $sMsg)
+					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "Webdriver UDF Error:", $sMsg)
 					If $iAnswer = $IDCANCEL Then
-						$iErr = $_WD_ERROR_UserAbort
+						$iErr = $_WD_ERROR_UserAbort ; change $iErr to give a way to brake further processing by user interaction
 						If $_WD_DEBUG = $_WD_DEBUG_Info Then
 							__WD_ConsoleWrite($sFuncName & " : User Abort")
 						EndIf
