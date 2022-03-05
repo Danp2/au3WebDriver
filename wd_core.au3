@@ -1575,12 +1575,12 @@ EndFunc   ;==>__WD_Delete
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
 ; Description ...: Writes Error to the console and show message-boxes if the script is compiled.
-; Syntax ........: __WD_Error($sWhere, $iErr[, $sMessage = Default[, $iExt = 0]])
+; Syntax ........: __WD_Error($sWhere, $iErr[, $sMessage = Default[, $iExt = Default]])
 ; Parameters ....: $sWhere     - Name of calling routine
 ;                  $iErr       - The error number from the calling function
 ;                  $sMessage   - Message that will be passed to the console/output [optional]
 ;                  $iExt       - Extended information from the calling function [optional]
-; Return values..: Success - $iErr - as it should be used in the calling function like this: SetError(__WD_Error(...))
+; Return values..: Success - $iErr
 ;                  Failure - None
 ; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
@@ -1589,11 +1589,12 @@ EndFunc   ;==>__WD_Delete
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = 0)
+Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 	Local Const $sFuncName = "__WD_Error"
 	Local $sMsg
 
 	If $sMessage = Default Then $sMessage = ''
+	If $iExt = Default Then $iExt = 0
 
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_None
@@ -1624,7 +1625,9 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = 0)
 
 	EndSwitch
 
-	Return $iErr
+	; $iErr should be returned as "Return Value" as it is used in the calling function like this:     Return SetError(__WD_Error(...))
+	; $iExt should be returned as @extended as it can be used in the calling function like this:         Return SetError(__WD_Error(..., $iExt), @extended, ....)
+	Return SetError($iErr, $iExt, $iErr)
 EndFunc   ;==>__WD_Error
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
