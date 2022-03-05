@@ -1599,22 +1599,21 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
 		Case $_WD_DEBUG_None
 
 		Case $_WD_DEBUG_Error
-			If $i_WD_ERROR <> $_WD_ERROR_Success Then ContinueCase
+			If $iErr <> $_WD_ERROR_Success Then ContinueCase
 
 		Case $_WD_DEBUG_Info
-			$sMsg = $sWhere & " ==> ERROR = " & $i_WD_ERROR & " > " & $aWD_ERROR_DESC[$i_WD_ERROR]
-			$sMsg &= (($iExt) ? (' : Extended = ' & $iExt) : (''))
-			$sMsg &= (($sMessage) ? (': ' & $sMessage) : (''))
-
+			Local $sExtended = (($iExt) ? (" / " & $iExt) : (""))
+			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " ( " & $iErr & $sExtended & " )"
+			$sMsg &= (($sMessage) ? (" : " & $sMessage) : (""))
 			__WD_ConsoleWrite($sMsg)
 
-			If @Compiled And $i_WD_ERROR <> $_WD_ERROR_Success Then
-				If $_WD_ERROR_MSGBOX And $i_WD_ERROR < 6 Then
-					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WD_Core.au3 Error:", $sMsg)
+			If $iErr <> $_WD_ERROR_Success Then
+				If $_WD_ERROR_MSGBOX And $iErr < 6 Then
+					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WD_Core UDF Error:", $sMsg)
 					If $iAnswer = $IDCANCEL Then
 						$iErr = $_WD_ERROR_UserAbort
 						If $_WD_DEBUG = $_WD_DEBUG_Info Then
-							__WD_ConsoleWrite($sFuncName & ': UserAbort on: ' & $sMsg)
+							__WD_ConsoleWrite($sFuncName & " : User Abort")
 						EndIf
 					EndIf
 				EndIf
@@ -1622,6 +1621,7 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
 					DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
 				EndIf
 			EndIf
+
 	EndSwitch
 
 	Return $iErr
