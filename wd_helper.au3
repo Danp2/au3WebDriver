@@ -1061,7 +1061,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand)
 		__WD_ConsoleWrite($sFuncName & ': ' & ((IsArray($vResult)) ? "(array)" : $vResult))
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $_WD_HTTPRESULT, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
