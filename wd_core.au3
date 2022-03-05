@@ -1618,16 +1618,15 @@ Func __WD_Error($sWhere, $i_WD_ERROR, $sMessage = Default, $iExt = 0)
 						Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WD_Core.au3 Error:", $sMsg)
 						If $iAnswer = $IDCANCEL Then
 							$iErr = $_WD_ERROR_UserAbort
+							If $_WD_DEBUG = $_WD_DEBUG_Info Then
+								__WD_ConsoleWrite($sFuncName & ': UserAbort on: ' & $sMsg)
+							EndIf
 						EndIf
 					EndIf
 					If $_WD_ERROR_OUTPUTDEBUG Then
 						DllCall("kernel32.dll", "none", "OutputDebugString", "str", $sMsg)
 					EndIf
 				EndIf
-			EndIf
-
-			If $_WD_DEBUG = $_WD_DEBUG_Info And $iErr = $_WD_ERROR_UserAbort Then
-				__WD_ConsoleWrite($sFuncName & ': UserAbort on: ' & $sMsg)
 			EndIf
 	EndSwitch
 
