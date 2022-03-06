@@ -1624,10 +1624,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 
 	EndSwitch
 
-	Return SetError($iErr, $iExt, $iErr)
-	; $iErr should be returned as "Return Value" also $iExt should be returned as @extended
-	; as they are used in the calling (outer) function, for example in _WD_ElementSelectAction() :
-	; 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), @extended, $vResult)
+	Return $iErr
 EndFunc   ;==>__WD_Error
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
