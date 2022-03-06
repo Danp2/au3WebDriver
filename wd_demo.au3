@@ -168,6 +168,10 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	; Check and set desired output for __WD_ConsoleWrite()
 	_RunDemo_Output($idOutput)
 
+	; This following 2 options setting is for "compability" with au3WebDriver UDF "0.7.0", because in later versions this feature was disabled by default
+	_WD_Option("errormsgbox", (@Compiled = 1))
+	_WD_Option("OutputDebug", (@Compiled = 1))
+
 	; Check & update WebDriver per user setting
 	_RunDemo_Update($idUpdate, $sBrowserName)
 
