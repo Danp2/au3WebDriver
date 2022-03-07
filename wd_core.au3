@@ -336,16 +336,16 @@ Func _WD_GetSession($sSession)
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-	
+
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
-	
+
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
-	
+
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), $_WD_HTTPRESULT, $sResult)
 	EndIf
@@ -1581,7 +1581,6 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 	Local $sMsg
 
 	If $sMessage = Default Then $sMessage = ''
-	If $iExt = Default Then $sMessage &= (($_WD_HTTPRESULT) ? (" HTTP status = " & $_WD_HTTPRESULT) : ("")) ; _WD_LastHTTPResult()
 
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_None
@@ -1592,6 +1591,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 		Case $_WD_DEBUG_Info
 			Local $sExtended = (($iExt <> Default) ? (" / " & $iExt) : (""))
 			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " ( " & $iErr & $sExtended & " )"
+			If $iExt = Default Then $sMsg &= (($_WD_HTTPRESULT) ? (" HTTP status = " & $_WD_HTTPRESULT) : ("")) ; _WD_LastHTTPResult()
 			$sMsg &= (($sMessage) ? (" : " & $sMessage) : (""))
 			__WD_ConsoleWrite($sMsg)
 
