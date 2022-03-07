@@ -168,7 +168,7 @@ Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
 Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
-Global $_WD_HTTPRESULT ; Result of last WinHTTP request
+Global $_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
 Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
@@ -1348,14 +1348,13 @@ EndFunc   ;==>_WD_Shutdown
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Get($sURL)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
 	EndIf
-
-	$_WD_HTTPRESULT = 0
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1431,14 +1430,13 @@ EndFunc   ;==>__WD_Get
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Post($sURL, $sData)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "__WD_Post"
 	Local $iResult, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData)
 	EndIf
-
-	$_WD_HTTPRESULT = 0
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1491,7 +1489,7 @@ Func __WD_Post($sURL, $sData)
 		Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponseText)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Post
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1511,15 +1509,13 @@ EndFunc   ;==>__WD_Post
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Delete($sURL)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "__WD_Delete"
-
 	Local $iResult, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
 	EndIf
-
-	$_WD_HTTPRESULT = 0
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
