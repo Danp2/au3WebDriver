@@ -2202,8 +2202,7 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
 	Local $sJSON = Json_Encode($vData)
-
-	Return SetError(__WD_Error($sFuncName, @error, $sJSON), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionKey
 
 ; #FUNCTION# ====================================================================================================================
@@ -2257,8 +2256,7 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 	EndSwitch
 
 	Local $sJSON = Json_Encode($vData)
-
-	Return SetError(__WD_Error($sFuncName, @error, $sJSON), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionPointer
 
 ; #FUNCTION# ====================================================================================================================
@@ -2282,8 +2280,7 @@ Func _WD_JsonActionPause($iDuration)
 	Json_Put($vData, '.duration', $iDuration)
 
 	Local $sJSON = Json_Encode($vData)
-
-	Return SetError(__WD_Error($sFuncName, @error, $sJSON), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionPause
 
 ; #FUNCTION# ====================================================================================================================
@@ -2325,8 +2322,7 @@ Func _WD_JsonCookie($sName, $sValue, $sPath = Default, $sDomain = Default, $bSec
 	If $sSameSite <> Default Then Json_Put($vData, '.cookie.sameSite', $sSameSite)
 
 	Local $sJSON = Json_Encode($vData)
-
-	Return SetError(__WD_Error($sFuncName, @error, $sJSON), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonCookie
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
