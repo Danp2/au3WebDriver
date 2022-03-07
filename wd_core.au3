@@ -1489,7 +1489,7 @@ Func __WD_Post($sURL, $sData)
 		Return SetError(__WD_Error($sFuncName, $iResult, $sResponseText), $_WD_HTTPRESULT, $sResponseText)
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), $_WD_HTTPRESULT, $sResponseText)
+	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
 EndFunc   ;==>__WD_Post
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
