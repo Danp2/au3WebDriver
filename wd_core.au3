@@ -499,15 +499,11 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 
 	EndSwitch
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), $_WD_HTTPRESULT, "")
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Action
 
 ; #FUNCTION# ====================================================================================================================
@@ -632,15 +628,12 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...")
-	EndIf
-
+	Local $sMessage = StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..."
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), $_WD_HTTPRESULT, "")
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_Window
 
 ; #FUNCTION# ====================================================================================================================
