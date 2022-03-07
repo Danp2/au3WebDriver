@@ -1,7 +1,11 @@
 #include-once
+; standard UDF's
+#include <File.au3>
 #include <MsgBoxConstants.au3> ; used in __WD_Error
 #include <WinAPIFiles.au3> ; used in _WD_Startup
 #include <WinAPIProc.au3> ; used in __WD_CloseDriver
+
+; WebDriver related UDF's
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include "WinHttp.au3" ; https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 
