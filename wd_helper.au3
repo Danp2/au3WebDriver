@@ -465,23 +465,6 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_LastHTTPResult
-; Description ...: Return the result of the last WinHTTP request.
-; Syntax ........: _WD_LastHTTPResult()
-; Parameters ....: None
-; Return values .: Result of last WinHTTP request
-; Author ........: Danp2
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_LastHTTPResult()
-	Return $_WD_HTTPRESULT
-EndFunc   ;==>_WD_LastHTTPResult
-
-; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
 ; Description ...: Returns the number of frames/iframes in the current document context.
 ; Syntax ........: _WD_GetFrameCount($sSession)
