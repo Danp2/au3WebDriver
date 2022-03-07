@@ -1593,6 +1593,8 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 	Local Const $sFuncName = "__WD_Error"
 	Local $sMsg
 
+	If $iExt = Default Then $iExt = _WD_LastHTTPResult()
+
 	If $sMessage = Default Then $sMessage = ''
 
 	Switch $_WD_DEBUG
