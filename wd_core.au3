@@ -233,13 +233,13 @@ Func _WD_CreateSession($sCapabilities = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sMessage), $_WD_HTTPRESULT, "")
 		EndIf
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, ""), $_WD_HTTPRESULT, "")
 	EndIf
 
 	; Save response details for future use
 	$_WD_SESSION_DETAILS = $sResponse
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sSession)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, ""), $_WD_HTTPRESULT, $sSession)
 EndFunc   ;==>_WD_CreateSession
 
 ; #FUNCTION# ====================================================================================================================
@@ -270,7 +270,7 @@ Func _WD_DeleteSession($sSession)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, 1)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 1)
 EndFunc   ;==>_WD_DeleteSession
 
 ; #FUNCTION# ====================================================================================================================
@@ -302,10 +302,10 @@ Func _WD_Status()
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr, ""), $_WD_HTTPRESULT, 0)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $oResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, ""), $_WD_HTTPRESULT, $oResult)
 EndFunc   ;==>_WD_Status
 
 ; #FUNCTION# ====================================================================================================================
@@ -343,13 +343,13 @@ Func _WD_GetSession($sSession)
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, $sResult)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, ""), $_WD_HTTPRESULT, $sResult)
 	EndIf
 	#ce See remarks in header
 
 	$sResult = $_WD_SESSION_DETAILS
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, ""), $_WD_HTTPRESULT, $sResult)
 EndFunc   ;==>_WD_GetSession
 
 ; #FUNCTION# ====================================================================================================================
@@ -389,10 +389,10 @@ Func _WD_Timeouts($sSession, $sTimeouts = Default)
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr, ""), $_WD_HTTPRESULT, 0)
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResponse)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, ""), $_WD_HTTPRESULT, $sResponse)
 EndFunc   ;==>_WD_Timeouts
 
 ; #FUNCTION# ====================================================================================================================
