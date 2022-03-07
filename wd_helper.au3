@@ -1098,7 +1098,6 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 	EndIf
 
 	Local $sMessage = '$sCommand = ' & $sCommand & ' : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
-	If Not $iExt Then $iExt = $_WD_HTTPRESULT
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
