@@ -211,6 +211,7 @@ Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CreateSession($sCapabilities = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = ""
 
@@ -257,6 +258,7 @@ EndFunc   ;==>_WD_CreateSession
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_DeleteSession($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_DeleteSession"
 
 	Local $sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
@@ -288,6 +290,7 @@ EndFunc   ;==>_WD_DeleteSession
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Status()
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Status"
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
 	Local $iErr = @error, $oResult = Null
@@ -325,6 +328,7 @@ EndFunc   ;==>_WD_Status
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetSession($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetSession"
 	Local $sResult
 	#forceref $sSession, $sFuncName
@@ -369,6 +373,7 @@ EndFunc   ;==>_WD_GetSession
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Timeouts($sSession, $sTimeouts = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Timeouts"
 	Local $sResponse, $sURL
 
@@ -413,6 +418,7 @@ EndFunc   ;==>_WD_Timeouts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Navigate($sSession, $sURL)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Navigate"
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 
@@ -456,6 +462,7 @@ EndFunc   ;==>_WD_Navigate
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Action"
 	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand
 
@@ -536,6 +543,7 @@ EndFunc   ;==>_WD_Action
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Window"
 	Local $sResponse, $oJSON, $sResult = "", $iErr
 
@@ -659,6 +667,7 @@ EndFunc   ;==>_WD_Window
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_FindElement"
 	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr
 	Local $oJSON, $oValues, $sKey, $iRow, $aElements[0]
@@ -770,6 +779,7 @@ EndFunc   ;==>_WD_FindElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_ElementAction"
 	Local $sResponse, $sResult = '', $iErr, $oJSON
 
@@ -866,6 +876,7 @@ EndFunc   ;==>_WD_ElementAction
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
@@ -929,6 +940,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Alert($sSession, $sCommand, $sOption = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $oJSON, $sResult = ''
 
@@ -988,6 +1000,7 @@ EndFunc   ;==>_WD_Alert
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetSource($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetSource"
 	Local $sResponse, $iErr, $sResult = "", $oJSON
 
@@ -1036,6 +1049,7 @@ EndFunc   ;==>_WD_GetSource
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Cookies"
 	Local $sResult, $sResponse, $iErr = $_WD_ERROR_Success
 	If $sOption = Default Then $sOption = ''
