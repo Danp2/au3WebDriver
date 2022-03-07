@@ -336,16 +336,16 @@ Func _WD_GetSession($sSession)
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-
+	
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
-
+	
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
-
+	
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), $_WD_HTTPRESULT, $sResult)
 	EndIf
@@ -1406,12 +1406,8 @@ Func __WD_Get($sURL)
 		$iResult = $_WD_ERROR_InvalidValue
 	EndIf
 
-	Local $sMessage = " : $iResult=" & $iResult & " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
-	If $iResult Then
-		Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
-	EndIf
-
-	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
+	Local $sMessage = " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Get
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1436,7 +1432,7 @@ EndFunc   ;==>__WD_Get
 Func __WD_Post($sURL, $sData)
 	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "__WD_Post"
-	Local $iResult, $sResponseText, $iErr
+	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData)
@@ -1485,12 +1481,8 @@ Func __WD_Post($sURL, $sData)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	Local $sMessage = ' : StatusCode=' & $_WD_HTTPRESULT & " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
-	If $iResult Then
-		Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
-	EndIf
-
-	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
+	Local $sMessage = " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Post
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1501,7 +1493,9 @@ EndFunc   ;==>__WD_Post
 ; Return values..: Success - Response from web driver.
 ;                  Failure - Response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_SendRecv
 ;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_SocketError
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -1512,7 +1506,7 @@ EndFunc   ;==>__WD_Post
 Func __WD_Delete($sURL)
 	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "__WD_Delete"
-	Local $iResult, $sResponseText, $iErr
+	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
@@ -1561,12 +1555,8 @@ Func __WD_Delete($sURL)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	Local $sMessage = ' : StatusCode=' & $_WD_HTTPRESULT & " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
-	If $iResult Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sMessage), $_WD_HTTPRESULT, $sResponseText)
-	EndIf
-
-	Return SetError($_WD_ERROR_Success, 0, $sResponseText)
+	Local $sMessage = " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Delete
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
