@@ -1794,6 +1794,23 @@ Func __WD_ConsoleWrite($sMsg, $iError = @error, $iExtended = @extended)
 	Return SetError($iError, $iExtended)
 EndFunc   ;==>__WD_ConsoleWrite
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_LastHTTPResult
+; Description ...: Return the result of the last WinHTTP request.
+; Syntax ........: _WD_LastHTTPResult()
+; Parameters ....: None
+; Return values .: Result of last WinHTTP request
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_LastHTTPResult()
+	Return $_WD_HTTPRESULT
+EndFunc   ;==>_WD_LastHTTPResult
+
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Sleep
 ; Description ...: Pause script execution for designated timeframe.
