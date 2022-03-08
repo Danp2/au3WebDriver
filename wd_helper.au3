@@ -279,13 +279,13 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 		$iErr = @error
 
 		If $iErr <> $_WD_ERROR_Success Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), $_WD_HTTPRESULT, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
 		EndIf
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, "")
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), $_WD_HTTPRESULT, "")
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, "")
 EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
@@ -637,7 +637,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), $_WD_HTTPRESULT, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), 0, $bResult)
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -693,7 +693,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
@@ -751,7 +751,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	WEnd
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, 0)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, 1)
@@ -812,7 +812,7 @@ Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
 EndFunc   ;==>_WD_Screenshot
 
 ; #FUNCTION# ====================================================================================================================
@@ -848,7 +848,7 @@ Func _WD_PrintToPDF($sSession, $sOptions = Default)
 		$sResult = ''
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_PrintToPDF
 
 ; #FUNCTION# ====================================================================================================================
@@ -1169,7 +1169,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, $sResult)
 EndFunc   ;==>_WD_GetShadowRoot
 
 ; #FUNCTION# ====================================================================================================================
@@ -1222,7 +1222,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	EndIf
 
 	Local $sMessage = $sResult & " file(s) selected"
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_SelectFiles
 
 ; #FUNCTION# ====================================================================================================================
@@ -1262,7 +1262,7 @@ Func _WD_IsLatestRelease()
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), $_WD_HTTPRESULT, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), 0, $bResult)
 EndFunc   ;==>_WD_IsLatestRelease
 
 ; #FUNCTION# ====================================================================================================================
@@ -2053,32 +2053,32 @@ Func _WD_GetTable($sSession, $sBaseElement)
 
 	If @error = 0xDEAD And @extended = 0xBEEF Then
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		$iLines = UBound($aElements)
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/td", "", True) ; Retrieve the number of table columns by checking the first table row
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		$iColumns = UBound($aElements)
 		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/td", "", True) ; Retrieve all table cells
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		For $i = 0 To UBound($aElements) - 1
 			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
 			$iColumn = Mod($i, $iColumns)
 			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
-			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), $_WD_HTTPRESULT, "")
+			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		Next
 	Else
 		; Get the table element
 		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		; Retrieve its HTML
 		$sHTML = _WD_ElementAction($sSession, $sElement, "Property", "outerHTML")
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		; Convert to array
 		$aTable = _HtmlTableGetWriteToArray($sHTML, 1, False, $_WD_IFILTER)
