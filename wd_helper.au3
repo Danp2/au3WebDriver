@@ -315,9 +315,9 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
+	$_WD_HTTPRESULT = 0
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -523,9 +523,9 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_FrameEnter"
 	Local $sOption, $sValue, $sResponse, $oJSON
+	$_WD_HTTPRESULT = 0
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
 	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
@@ -661,7 +661,6 @@ EndFunc   ;==>_WD_HighlightElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_HighlightElements"
 	Local Const $aMethod[] = _
 			[ _
@@ -671,6 +670,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
 			]
 	Local $sScript, $sResult, $iErr, $sElements
+	$_WD_HTTPRESULT = 0
 
 	If $iMethod = Default Then $iMethod = 1
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
@@ -714,9 +714,9 @@ EndFunc   ;==>_WD_HighlightElements
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local $iErr, $sReadyState
+	$_WD_HTTPRESULT = 0
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -870,8 +870,8 @@ EndFunc   ;==>_WD_PrintToPDF
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_jQuerify"
+	$_WD_HTTPRESULT = 0
 
 	If $sjQueryFile = Default Then
 		$sjQueryFile = ""
@@ -1698,9 +1698,9 @@ EndFunc   ;==>_WD_DownloadFile
 ; Example .......: _WD_SetTimeouts($sSession, 50000)
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_SetTimeouts"
 	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
+	$_WD_HTTPRESULT = 0
 
 	; Build string to pass to _WD_Timeouts
 	If $iPageLoad <> Default Then
@@ -1827,9 +1827,9 @@ EndFunc   ;==>_WD_GetElementByName
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_SetElementValue"
 	Local $sResult, $iErr, $sScript
+	$_WD_HTTPRESULT = 0
 
 	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
 	If $iStyle < $_WD_OPTION_Standard Or $iStyle > $_WD_OPTION_Advanced Then $iStyle = $_WD_OPTION_Standard
@@ -1887,9 +1887,9 @@ EndFunc   ;==>_WD_SetElementValue
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_ElementActionEx"
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
+	$_WD_HTTPRESULT = 0
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -2043,10 +2043,9 @@ EndFunc   ;==>_WD_ElementActionEx
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetTable($sSession, $sBaseElement)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_GetTable"
-	Local $aElements, $iLines, $iColumns, $iRow, $iColumn
-	Local $sElement, $sHTML
+	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML
+	$_WD_HTTPRESULT = 0
 
 	; Determine if optional UDF is available
 	Call("_HtmlTableGetWriteToArray", "")
