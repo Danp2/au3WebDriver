@@ -261,15 +261,10 @@ Func _WD_DeleteSession($sSession)
 	Local $sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), 0, 0)
 	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, 1)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, 1)
 EndFunc   ;==>_WD_DeleteSession
 
 ; #FUNCTION# ====================================================================================================================
