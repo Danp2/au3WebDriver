@@ -94,6 +94,7 @@ Global Enum _
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Default, $sFeatures = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_NewTab"
 	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $iTabIndex, $aTemp
 
@@ -198,6 +199,7 @@ EndFunc   ;==>_WD_NewTab
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Attach($sSession, $sString, $sMode = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Attach"
 	Local $sTabHandle = '', $bFound = False, $sCurrentTab = '', $aHandles
 
@@ -266,6 +268,7 @@ EndFunc   ;==>_WD_Attach
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_LinkClickByText"
 
 	If $bPartial = Default Then $bPartial = True
@@ -314,6 +317,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
 
@@ -396,6 +400,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetMouseElement($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetMouseElement"
 	Local $sScript = "return Array.from(document.querySelectorAll(':hover')).pop()"
 	Local $sElement = _WD_ExecuteScript($sSession, $sScript, '', Default, $_WD_JSON_Element)
@@ -421,6 +426,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetElementFromPoint"
 	Local $sElement, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
@@ -474,6 +480,7 @@ EndFunc   ;==>_WD_GetElementFromPoint
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetFrameCount($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetFrameCount"
 	Local $iValue = _WD_ExecuteScript($sSession, "return window.frames.length", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
@@ -496,6 +503,7 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_IsWindowTop($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_IsWindowTop"
 	Local $blnResult = _WD_ExecuteScript($sSession, "return window.top == window.self", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
@@ -518,6 +526,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_FrameEnter"
 	Local $sOption
 	Local $sResponse, $oJSON
@@ -566,6 +575,7 @@ EndFunc   ;==>_WD_FrameEnter
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_FrameLeave"
 	Local $sOption
 	Local $sResponse, $oJSON, $asJSON
@@ -630,6 +640,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_HighlightElement"
 
 	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
@@ -659,6 +670,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_HighlightElements"
 	Local Const $aMethod[] = _
 			[ _
@@ -711,6 +723,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local $iErr, $sReadyState
 
@@ -778,6 +791,7 @@ EndFunc   ;==>_WD_LoadWait
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Screenshot"
 	Local $sResponse, $vResult = "", $iErr, $dBinary
 
@@ -829,6 +843,7 @@ EndFunc   ;==>_WD_Screenshot
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_PrintToPDF($sSession, $sOptions = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_PrintToPDF"
 	Local $sResponse, $sResult, $iErr
 
@@ -865,6 +880,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_jQuerify"
 
 	If $sjQueryFile = Default Then
@@ -947,6 +963,7 @@ EndFunc   ;==>_WD_jQuerify
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_ElementOptionSelect"
 	If $sStartElement = Default Then $sStartElement = ""
 
@@ -990,6 +1007,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_ElementSelectAction"
 	Local $sNodeName, $vResult, $sScript
 	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
@@ -1144,6 +1162,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetShadowRoot"
 	Local $sResponse, $sResult = "", $oJSON
 
@@ -1185,8 +1204,8 @@ EndFunc   ;==>_WD_GetShadowRoot
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_SelectFiles"
-
 	Local $sResult = "0", $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
@@ -1690,6 +1709,7 @@ EndFunc   ;==>_WD_DownloadFile
 ; Example .......: _WD_SetTimeouts($sSession, 50000)
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_SetTimeouts"
 	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
 
@@ -1758,6 +1778,7 @@ EndFunc   ;==>_WD_SetTimeouts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementById($sSession, $sID)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetElementById"
 
 	Local $sXpath = '//*[@id="' & $sID & '"]'
@@ -1785,6 +1806,7 @@ EndFunc   ;==>_WD_GetElementById
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementByName($sSession, $sName)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetElementByName"
 
 	Local $sXpath = '//*[@name="' & $sName & '"]'
@@ -1818,6 +1840,7 @@ EndFunc   ;==>_WD_GetElementByName
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_SetElementValue"
 	Local $sResult, $iErr, $sScript
 
@@ -1876,6 +1899,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_ElementActionEx"
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 
@@ -2031,6 +2055,7 @@ EndFunc   ;==>_WD_ElementActionEx
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetTable($sSession, $sBaseElement)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetTable"
 	Local $aElements, $iLines, $iColumns, $iRow, $iColumn
 	Local $sElement, $sHTML
@@ -2089,6 +2114,7 @@ EndFunc   ;==>_WD_GetTable
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_IsFullScreen($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_IsFullScreen"
 	Local $bResult = _WD_ExecuteScript($sSession, 'return screen.width == window.innerWidth and screen.height == window.innerHeight;', Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
@@ -2110,6 +2136,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetDevicePixelRatio($sSession)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetDevicePixelRatio"
 	Local $sResponse = _WD_ExecuteScript($sSession, "return window.devicePixelRatio", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
@@ -2135,6 +2162,7 @@ EndFunc   ;==>_WD_GetDevicePixelRatio
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
+	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_CheckContext"
 	Local $iResult = $_WD_STATUS_Invalid
 
