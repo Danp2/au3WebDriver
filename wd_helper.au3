@@ -2467,7 +2467,7 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 
 			If @error Then
 				$iErr = $_WD_ERROR_GeneralError
-				$iExt = 2
+				$iExt = 1
 			Else
 				$sDriverLatest = $aResults[0]
 			EndIf
@@ -2479,7 +2479,7 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_GeneralError
-		$iExt = 1
+		$iExt = 2
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $aInfo)
