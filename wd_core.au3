@@ -168,7 +168,7 @@ Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
 Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
-Global $_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
 Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
 Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
@@ -205,13 +205,12 @@ Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_DeleteSession
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CreateSession($sCapabilities = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = ""
 
@@ -252,15 +251,13 @@ EndFunc   ;==>_WD_CreateSession
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_CreateSession
 ; Link ..........: https://www.w3.org/TR/webdriver#delete-session
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_DeleteSession($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_DeleteSession"
-
 	Local $sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error
 
@@ -284,13 +281,12 @@ EndFunc   ;==>_WD_DeleteSession
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#status
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Status()
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Status"
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
 	Local $iErr = @error, $oResult = Null
@@ -320,15 +316,17 @@ EndFunc   ;==>_WD_Status
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
-;                  until they determine how this should function. See w3c/webdriver@35df53a for details. Meanwhile, I temporarily
-;                  changed the code to return the information that is available
+; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec,
+;                  so the code is commented until they determine how this should function.
+;                  See w3c/webdriver@35df53a for details.
+;                  Meanwhile, I temporarily changed the code to return the information that is available.
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_CreateSession
 ; Link ..........: https://www.w3.org/TR/webdriver#get-session
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetSession($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_GetSession"
 	Local $sResult
 	#forceref $sSession, $sFuncName
@@ -366,14 +364,15 @@ EndFunc   ;==>_WD_GetSession
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: Separate timeouts can be set for "script", "pageLoad", and "implicit"
+; Remarks .......: Separate timeouts can be set for "script", "pageLoad", and "implicit".
+;                  This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#get-timeouts
 ;                  https://www.w3.org/TR/webdriver#set-timeouts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Timeouts($sSession, $sTimeouts = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Timeouts"
 	Local $sResponse, $sURL
 
@@ -412,13 +411,12 @@ EndFunc   ;==>_WD_Timeouts
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#navigate-to
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Navigate($sSession, $sURL)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Navigate"
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 
@@ -455,14 +453,14 @@ EndFunc   ;==>_WD_Navigate
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#navigation
 ;                  https://www.w3.org/TR/webdriver#actions
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Action"
 	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand
 
@@ -533,13 +531,13 @@ EndFunc   ;==>_WD_Action
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver/#contexts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Window"
 	Local $sResponse, $oJSON, $sResult = "", $iErr
 
@@ -653,14 +651,15 @@ EndFunc   ;==>_WD_Window
 ;                  - $_WD_ERROR_NoMatch
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
-; Modified ......: 01/10/2021
-; Remarks .......: An array of matching elements is returned when $bMultiple is True
+; Modified ......:
+; Remarks .......: An array of matching elements is returned when $bMultiple is True.
+;                  This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#element-retrieval
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_FindElement"
 	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr
 	Local $oJSON, $oValues, $sKey, $iRow, $aElements[0]
@@ -763,7 +762,7 @@ EndFunc   ;==>_WD_FindElement
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver/#state
 ;                  https://www.w3.org/TR/webdriver#element-interaction
@@ -772,7 +771,7 @@ EndFunc   ;==>_WD_FindElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_ElementAction"
 	Local $sResponse, $sResult = '', $iErr, $oJSON
 
@@ -863,13 +862,13 @@ EndFunc   ;==>_WD_ElementAction
 ;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
 
@@ -927,13 +926,13 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Alert($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $oJSON, $sResult = ''
 
@@ -987,17 +986,15 @@ EndFunc   ;==>_WD_Alert
 ;                  - $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.w3.org/TR/webdriver#get-page-source
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetSource($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetSource"
-	Local $sResponse, $iErr, $sResult = "", $oJSON
-
-	$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/source")
+	Local $iErr, $sResult = "", $oJSON
+	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/source")
 	$iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1036,13 +1033,14 @@ EndFunc   ;==>_WD_GetSource
 ;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: Please have a look at wd_demo.au3 > DemoCookies function for how to add a new cookie
+; Remarks .......: Please have a look at wd_demo.au3 > DemoCookies function for how to add a new cookie.
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_JsonCookie
 ; Link ..........: https://www.w3.org/TR/webdriver#cookies
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Cookies"
 	Local $sResult, $sResponse, $iErr = $_WD_ERROR_Success
 	If $sOption = Default Then $sOption = ''
@@ -1349,13 +1347,13 @@ EndFunc   ;==>_WD_Shutdown
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Get($sURL)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
@@ -1424,13 +1422,13 @@ EndFunc   ;==>__WD_Get
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Post($sURL, $sData)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "__WD_Post"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
@@ -1498,13 +1496,13 @@ EndFunc   ;==>__WD_Post
 ;                  - $_WD_ERROR_SocketError
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Delete($sURL)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "__WD_Delete"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 
