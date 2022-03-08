@@ -1514,7 +1514,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Name ..........: _WD_GetBrowserPath
 ; Description ...: Retrieve path to browser executable from registry
 ; Syntax ........: _WD_GetBrowserPath($sBrowser)
-; Parameters ....: $sBrowser - Name of browser
+; Parameters ....: $sBrowser - Name of browser - defined in $_WD_SupportedBrowsers
 ; Return values .: Success - Full path to browser executable
 ;                  Failure - "" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
