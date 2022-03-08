@@ -301,7 +301,7 @@ Func _WD_Status()
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, "")
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $oResult)
