@@ -326,10 +326,10 @@ EndFunc   ;==>_WD_Status
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetSession($sSession)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_GetSession"
 	Local $sResult
 	#forceref $sSession, $sFuncName
+	$_WD_HTTPRESULT = 0
 
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
@@ -372,9 +372,9 @@ EndFunc   ;==>_WD_GetSession
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Timeouts($sSession, $sTimeouts = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Timeouts"
 	Local $sResponse, $sURL
+	$_WD_HTTPRESULT = 0
 
 	If $sTimeouts = Default Then $sTimeouts = ''
 
@@ -460,9 +460,9 @@ EndFunc   ;==>_WD_Navigate
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Action"
 	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand
+	$_WD_HTTPRESULT = 0
 
 	If $sOption = Default Then $sOption = ''
 
@@ -537,9 +537,9 @@ EndFunc   ;==>_WD_Action
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Window"
 	Local $sResponse, $oJSON, $sResult = "", $iErr
+	$_WD_HTTPRESULT = 0
 
 	If $sOption = Default Then $sOption = ''
 
@@ -659,10 +659,10 @@ EndFunc   ;==>_WD_Window
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_FindElement"
 	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr
 	Local $oJSON, $oValues, $sKey, $iRow, $aElements[0]
+	$_WD_HTTPRESULT = 0
 
 	If $sStartNodeID = Default Then $sStartNodeID = ""
 	If $bMultiple = Default Then $bMultiple = False
@@ -771,9 +771,9 @@ EndFunc   ;==>_WD_FindElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_ElementAction"
 	Local $sResponse, $sResult = '', $iErr, $oJSON
+	$_WD_HTTPRESULT = 0
 
 	If $sOption = Default Then $sOption = ''
 
@@ -868,9 +868,9 @@ EndFunc   ;==>_WD_ElementAction
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_ExecuteScript"
 	Local $sResponse, $sData, $sCmd
+	$_WD_HTTPRESULT = 0
 
 	If $sArguments = Default Then $sArguments = ""
 	If $bAsync = Default Then $bAsync = False
@@ -932,9 +932,9 @@ EndFunc   ;==>_WD_ExecuteScript
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Alert($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Alert"
 	Local $sResponse, $iErr, $oJSON, $sResult = ''
+	$_WD_HTTPRESULT = 0
 
 	If $sOption = Default Then $sOption = ''
 
@@ -1040,10 +1040,10 @@ EndFunc   ;==>_WD_GetSource
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_Cookies"
 	Local $sResult, $sResponse, $iErr = $_WD_ERROR_Success
 	If $sOption = Default Then $sOption = ''
+	$_WD_HTTPRESULT = 0
 
 	Local $sURLSession = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/"
 	Switch $sCommand
@@ -1353,9 +1353,9 @@ EndFunc   ;==>_WD_Shutdown
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Get($sURL)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
+	$_WD_HTTPRESULT = 0
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
@@ -1428,9 +1428,9 @@ EndFunc   ;==>__WD_Get
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Post($sURL, $sData)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "__WD_Post"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
+	$_WD_HTTPRESULT = 0
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData)
@@ -1502,9 +1502,9 @@ EndFunc   ;==>__WD_Post
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_Delete($sURL)
-	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "__WD_Delete"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
+	$_WD_HTTPRESULT = 0
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
