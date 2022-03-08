@@ -334,16 +334,16 @@ Func _WD_GetSession($sSession)
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-
+	
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
-
+	
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
-
+	
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResult)
 	EndIf
