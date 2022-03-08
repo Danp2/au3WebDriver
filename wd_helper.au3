@@ -88,13 +88,13 @@ Global Enum _
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: For list of $sFeatures take a look in the following link
+; Remarks .......: For list of $sFeatures take a look in the following link.
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Window
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Default, $sFeatures = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_NewTab"
 	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $iTabIndex, $aTemp
 
@@ -104,7 +104,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 	If $sFeatures = Default Then $sFeatures = ''
 
 	; Get handle for current tab
-	Local $sCurrentTabHandle = _WD_Window($sSession, 'window')
+	Local $sCurrentTabHandle = _WD_Window($sSession, 'window') ; This function change $_WD_HTTPRESULT
 
 	If $sFeatures = '' Then
 		$sTabHandle = _WD_Window($sSession, 'new', '{"type":"tab"}')
@@ -193,19 +193,18 @@ EndFunc   ;==>_WD_NewTab
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Attach($sSession, $sString, $sMode = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Attach"
 	Local $sTabHandle = '', $bFound = False, $sCurrentTab = '', $aHandles
 
 	If $sMode = Default Then $sMode = 'title'
 
-	$aHandles = _WD_Window($sSession, 'handles')
+	$aHandles = _WD_Window($sSession, 'handles') ; This function change $_WD_HTTPRESULT
 
 	If @error = $_WD_ERROR_Success Then
 		$sCurrentTab = _WD_Window($sSession, 'window')
@@ -262,18 +261,17 @@ EndFunc   ;==>_WD_Attach
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_LinkClickByText"
 
 	If $bPartial = Default Then $bPartial = True
 
-	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
+	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -311,13 +309,13 @@ EndFunc   ;==>_WD_LinkClickByText
 ;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
 
@@ -394,16 +392,15 @@ EndFunc   ;==>_WD_WaitElement
 ;                  Failure - Response from web driver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/24538450/get-element-currently-under-mouse-without-using-mouse-events
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetMouseElement($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetMouseElement"
 	Local $sScript = "return Array.from(document.querySelectorAll(':hover')).pop()"
-	Local $sElement = _WD_ExecuteScript($sSession, $sScript, '', Default, $_WD_JSON_Element)
+	Local $sElement = _WD_ExecuteScript($sSession, $sScript, '', Default, $_WD_JSON_Element) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sElement), 0, $sElement)
@@ -421,12 +418,12 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetElementFromPoint"
 	Local $sElement, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
@@ -435,7 +432,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 
 	While True
 		$sParams = $iX & ", " & $iY
-		$sElement = _WD_ExecuteScript($sSession, $sScript1, $sParams, Default, $_WD_JSON_Element)
+		$sElement = _WD_ExecuteScript($sSession, $sScript1, $sParams, Default, $_WD_JSON_Element) ; This function change $_WD_HTTPRESULT
 		If @error Then
 			$iErr = $_WD_ERROR_RetValue
 			ExitLoop
@@ -475,14 +472,14 @@ EndFunc   ;==>_WD_GetElementFromPoint
 ; Author ........: Decibel, Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Nested frames are not included in the frame count
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetFrameCount($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetFrameCount"
-	Local $iValue = _WD_ExecuteScript($sSession, "return window.frames.length", Default, Default, $_WD_JSON_Value)
+	Local $iValue = _WD_ExecuteScript($sSession, "return window.frames.length", Default, Default, $_WD_JSON_Value) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 	If @error Then $iValue = 0
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, Number($iValue))
@@ -497,15 +494,14 @@ EndFunc   ;==>_WD_GetFrameCount
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Decibel
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_top.asp
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_IsWindowTop($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_IsWindowTop"
-	Local $blnResult = _WD_ExecuteScript($sSession, "return window.top == window.self", Default, Default, $_WD_JSON_Value)
+	Local $blnResult = _WD_ExecuteScript($sSession, "return window.top == window.self", Default, Default, $_WD_JSON_Value) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $blnResult)
 EndFunc   ;==>_WD_IsWindowTop
@@ -520,17 +516,16 @@ EndFunc   ;==>_WD_IsWindowTop
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: mLipok
-; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters
+; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_FrameEnter"
-	Local $sOption
-	Local $sResponse, $oJSON
-	Local $sValue
+	Local $sOption, $sValue, $sResponse, $oJSON
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
 	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
@@ -570,20 +565,16 @@ EndFunc   ;==>_WD_FrameEnter
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_FrameLeave"
-	Local $sOption
-	Local $sResponse, $oJSON, $asJSON
-	Local $sValue
+	Local $sValue, $oJSON, $asJSON, $sOption = '{}'
 
-	$sOption = '{}'
-
-	$sResponse = _WD_Window($sSession, "parent", $sOption)
+	Local $sResponse = _WD_Window($sSession, "parent", $sOption) ; This function change $_WD_HTTPRESULT
 
 	If @error <> $_WD_ERROR_Success Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
@@ -635,15 +626,15 @@ EndFunc   ;==>_WD_FrameLeave
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
 ; Remarks .......: This function will be removed in a future release. Update your code to use _WD_HighlightElements instead.
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_HighlightElements
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_HighlightElement"
 
-	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
+	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), $_WD_HTTPRESULT, $bResult)
@@ -664,13 +655,13 @@ EndFunc   ;==>_WD_HighlightElement
 ;                  Failure - False and sets @error to _WD_ERROR_InvalidArgue or the error code from _WD_ExecuteScript()
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_HighlightElements"
 	Local Const $aMethod[] = _
 			[ _
@@ -717,13 +708,13 @@ EndFunc   ;==>_WD_HighlightElements
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local $iErr, $sReadyState
 
@@ -785,13 +776,12 @@ EndFunc   ;==>_WD_LoadWait
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Window, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_Screenshot"
 	Local $sResponse, $vResult = "", $iErr, $dBinary
 
@@ -799,9 +789,9 @@ Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	If $iOutputType = Default Then $iOutputType = 1
 
 	If $sElement = '' Then
-		$sResponse = _WD_Window($sSession, 'Screenshot')
+		$sResponse = _WD_Window($sSession, 'Screenshot') ; This function change $_WD_HTTPRESULT
 	Else
-		$sResponse = _WD_ElementAction($sSession, $sElement, 'Screenshot')
+		$sResponse = _WD_ElementAction($sSession, $sElement, 'Screenshot') ; This function change $_WD_HTTPRESULT
 	EndIf
 	$iErr = @error
 
@@ -837,19 +827,19 @@ EndFunc   ;==>_WD_Screenshot
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517)
+; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517).
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Window
 ; Link ..........: https://www.w3.org/TR/webdriver/#print-page
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_PrintToPDF($sSession, $sOptions = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_PrintToPDF"
 	Local $sResponse, $sResult, $iErr
 
 	If $sOptions = Default Then $sOptions = $_WD_EmptyDict
 
-	$sResponse = _WD_Window($sSession, 'print', $sOptions)
+	$sResponse = _WD_Window($sSession, 'print', $sOptions) ; This function change $_WD_HTTPRESULT
 	$iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -874,13 +864,13 @@ EndFunc   ;==>_WD_PrintToPDF
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_ExecuteScript
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_jQuerify"
 
 	If $sjQueryFile = Default Then
@@ -957,17 +947,16 @@ EndFunc   ;==>_WD_jQuerify
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_ElementOptionSelect"
 	If $sStartElement = Default Then $sStartElement = ""
 
-	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement) ; This function change $_WD_HTTPRESULT
 
 	If @error = $_WD_ERROR_Success Then
 		_WD_ElementAction($sSession, $sElement, 'click')
@@ -1007,10 +996,10 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local $sNodeName, $vResult, $sScript
-	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
+	Local $vResult, $sScript
+
+	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName') ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error, $iExt = 0
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1156,19 +1145,18 @@ EndFunc   ;==>_WD_ConsoleVisible
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetShadowRoot"
 	Local $sResponse, $sResult = "", $oJSON
 
 	If $sStartElement = Default Then $sStartElement = ""
 
-	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1198,16 +1186,16 @@ EndFunc   ;==>_WD_GetShadowRoot
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: If $sFilename is empty, then prior selection is cleared
+; Remarks .......: If $sFilename is empty, then prior selection is cleared.
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_SelectFiles"
 	Local $sResult = "0", $sSavedEscape
-	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1704,12 +1692,13 @@ EndFunc   ;==>_WD_DownloadFile
 ; Modified ......:
 ; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
 ;                  When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Timeouts
 ; Link ..........: https://www.w3.org/TR/webdriver/#set-timeouts
 ; Example .......: _WD_SetTimeouts($sSession, 50000)
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_SetTimeouts"
 	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
 
@@ -1772,17 +1761,16 @@ EndFunc   ;==>_WD_SetTimeouts
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementById($sSession, $sID)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetElementById"
 
 	Local $sXpath = '//*[@id="' & $sID & '"]'
-	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
@@ -1800,17 +1788,16 @@ EndFunc   ;==>_WD_GetElementById
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetElementByName($sSession, $sName)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetElementByName"
 
 	Local $sXpath = '//*[@name="' & $sName & '"]'
-	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
@@ -1834,13 +1821,13 @@ EndFunc   ;==>_WD_GetElementByName
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_ElementAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_SetElementValue"
 	Local $sResult, $iErr, $sScript
 
@@ -1893,13 +1880,14 @@ EndFunc   ;==>_WD_SetElementValue
 ; Author ........: Danp2
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
-;                  There are examples in DemoElements function in wd_demo
+;                  There are examples in DemoElements() function in wd_demo.au3
+;                  This function change $_WD_HTTPRESULT
 ; Related .......: _WD_ElementAction, _WD_Action
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_ElementActionEx"
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 
@@ -2049,13 +2037,13 @@ EndFunc   ;==>_WD_ElementActionEx
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
 ; Modified ......: water, danp2
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_FindElement, _WD_ElementAction
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetTable($sSession, $sBaseElement)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
+	$_WD_HTTPRESULT = 0
 	Local Const $sFuncName = "_WD_GetTable"
 	Local $aElements, $iLines, $iColumns, $iRow, $iColumn
 	Local $sElement, $sHTML
@@ -2108,15 +2096,14 @@ EndFunc   ;==>_WD_GetTable
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/?do=findComment&comment=1480527
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_IsFullScreen($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_IsFullScreen"
-	Local $bResult = _WD_ExecuteScript($sSession, 'return screen.width == window.innerWidth and screen.height == window.innerHeight;', Default, Default, $_WD_JSON_Value)
+	Local $bResult = _WD_ExecuteScript($sSession, 'return screen.width == window.innerWidth and screen.height == window.innerHeight;', Default, Default, $_WD_JSON_Value) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
 EndFunc   ;==>_WD_IsFullScreen
@@ -2130,15 +2117,14 @@ EndFunc   ;==>_WD_IsFullScreen
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript()
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......:
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetDevicePixelRatio($sSession)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_GetDevicePixelRatio"
-	Local $sResponse = _WD_ExecuteScript($sSession, "return window.devicePixelRatio", Default, Default, $_WD_JSON_Value)
+	Local $sResponse = _WD_ExecuteScript($sSession, "return window.devicePixelRatio", Default, Default, $_WD_JSON_Value) ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
 EndFunc   ;==>_WD_GetDevicePixelRatio
@@ -2156,20 +2142,19 @@ EndFunc   ;==>_WD_GetDevicePixelRatio
 ;                  Failure - $_WD_STATUS_Invalid (0) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This function change $_WD_HTTPRESULT
 ; Related .......: _WD_Action, _WD_Window
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
-	$_WD_HTTPRESULT = 0 ; Reseting result of last WinHTTP request
 	Local Const $sFuncName = "_WD_CheckContext"
 	Local $iResult = $_WD_STATUS_Invalid
 
 	If $bReconnect = Default Then $bReconnect = True
 	If $vTarget = Default Then $vTarget = $_WD_TARGET_FirstTab
 
-	_WD_Action($sSession, 'url')
+	_WD_Action($sSession, 'url') ; This function change $_WD_HTTPRESULT
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
