@@ -1608,10 +1608,10 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 			__WD_ConsoleWrite($sMsg)
 
 			If $iErr <> $_WD_ERROR_Success Then
-				If $_WD_ERROR_MSGBOX And $iErr < 6 Then
+				If $_WD_ERROR_MSGBOX Then
 					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WebDriver UDF Error:", $sMsg)
 					If $iAnswer = $IDCANCEL Then
-						$iErr = $_WD_ERROR_UserAbort ; change $iErr to give a way to brake further processing by user interaction
+						$iErr = $_WD_ERROR_UserAbort ; change $iErr to give a way to stop further processing by user interaction
 						If $_WD_DEBUG = $_WD_DEBUG_Info Then
 							__WD_ConsoleWrite($sFuncName & " : User Abort")
 						EndIf
