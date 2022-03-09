@@ -291,15 +291,10 @@ Func _WD_Status()
 		$oResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), 0, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
 	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $oResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $oResult)
 EndFunc   ;==>_WD_Status
 
 ; #FUNCTION# ====================================================================================================================
@@ -329,16 +324,16 @@ Func _WD_GetSession($sSession)
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-	
+
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
-	
+
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
-	
+
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResult)
 	EndIf
@@ -383,15 +378,10 @@ Func _WD_Timeouts($sSession, $sTimeouts = Default)
 
 	Local $iErr = @error
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, 0)
 	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sResponse)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResponse)
 EndFunc   ;==>_WD_Timeouts
 
 ; #FUNCTION# ====================================================================================================================
@@ -414,18 +404,12 @@ EndFunc   ;==>_WD_Timeouts
 Func _WD_Navigate($sSession, $sURL)
 	Local Const $sFuncName = "_WD_Navigate"
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
-
 	Local $iErr = @error
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, 0)
 	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, 1)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, 1)
 EndFunc   ;==>_WD_Navigate
 
 ; #FUNCTION# ====================================================================================================================
@@ -495,7 +479,6 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
 	EndIf
-
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResult)
 EndFunc   ;==>_WD_Action
 
@@ -625,7 +608,6 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, "")
 	EndIf
-
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_Window
 
@@ -712,15 +694,10 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr), 0, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
 	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, ($bMultiple) ? $aElements : $sResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, ($bMultiple) ? $aElements : $sResult)
 EndFunc   ;==>_WD_FindElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -831,15 +808,10 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 		EndSwitch
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...")
-	EndIf
-
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
 	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResult)
 EndFunc   ;==>_WD_ElementAction
 
 ; #FUNCTION# ====================================================================================================================
@@ -964,10 +936,6 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Accept|Dismiss|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, $sResult)
 EndFunc   ;==>_WD_Alert
 
@@ -997,15 +965,10 @@ Func _WD_GetSource($sSession)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-	EndIf
-
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
 	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResult)
 EndFunc   ;==>_WD_GetSource
 
 ; #FUNCTION# ====================================================================================================================
