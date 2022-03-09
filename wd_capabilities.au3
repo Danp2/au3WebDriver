@@ -424,15 +424,17 @@ EndFunc   ;==>__WD_CapabilitiesNotation
 ; ===============================================================================================================================
 Func _WD_CapabilitiesDump($s_Comment)
 	If @Compiled Then Return ; because of GDRP reason do not throw nothing to console when compiled script
-	__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
-	__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
-	__WD_ConsoleWrite("- $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2))
-	__WD_ConsoleWrite(_ArrayToString($_WD_CAPS__API))
-	__WD_ConsoleWrite('! _WD_Capabilities: API END: ' & $s_Comment)
+	If $_WD_DEBUG <> $_WD_DEBUG_None Then
+		__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
+		__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
+		__WD_ConsoleWrite("- $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2))
+		__WD_ConsoleWrite(_ArrayToString($_WD_CAPS__API))
+		__WD_ConsoleWrite('! _WD_Capabilities: API END: ' & $s_Comment)
 
-	__WD_ConsoleWrite('! _WD_Capabilities: JSON START: ' & $s_Comment)
-	__WD_ConsoleWrite(_WD_CapabilitiesGet())
-	__WD_ConsoleWrite('! _WD_Capabilities: JSON END: ' & $s_Comment)
+		__WD_ConsoleWrite('! _WD_Capabilities: JSON START: ' & $s_Comment)
+		__WD_ConsoleWrite(_WD_CapabilitiesGet())
+		__WD_ConsoleWrite('! _WD_Capabilities: JSON END: ' & $s_Comment)
+	EndIf
 EndFunc   ;==>_WD_CapabilitiesDump
 
 ; #FUNCTION# ====================================================================================================================
