@@ -7,6 +7,7 @@
 #include <GuiComboBoxEx.au3>
 #include <GUIConstantsEx.au3>
 #include <WindowsConstants.au3>
+
 ; non standard UDF's
 #include "wd_helper.au3"
 #include "wd_capabilities.au3"
@@ -222,7 +223,7 @@ Func _RunDemo_Update($idUpdate, $sBrowserName)
 	If $sUpdate = 'Report only' Then $bForce = Null
 
 	Local $bUpdateResult = _WD_UpdateDriver($sBrowserName, @ScriptDir, $bFlag64, $bForce)
-	ConsoleWrite('$bUpdateResult = ' & $bUpdateResult & @CRLF)
+	ConsoleWrite('> UpdateResult = ' & $bUpdateResult & @CRLF)
 EndFunc   ;==>_RunDemo_Update
 
 Func _RunDemo_Headless($idHeadless)
@@ -316,20 +317,20 @@ EndFunc   ;==>DemoTimeouts
 
 Func DemoNavigation()
 	_WD_Navigate($sSession, "http://google.com")
-	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	ConsoleWrite("> URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_NewTab($sSession, Default, Default, "http://yahoo.com")
-	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	ConsoleWrite("> URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	;	_WD_Navigate($sSession, "http://yahoo.com")
 	_WD_NewTab($sSession, True, Default, 'http://bing.com', 'width=200,height=200')
-	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	ConsoleWrite("> URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_Attach($sSession, "google.com", "URL")
-	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	ConsoleWrite("> URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_Attach($sSession, "yahoo.com", "URL")
-	ConsoleWrite("URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	ConsoleWrite("> URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 EndFunc   ;==>DemoNavigation
 
