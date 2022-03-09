@@ -324,16 +324,16 @@ Func _WD_GetSession($sSession)
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error, $sResult = ''
-
+	
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
-
+	
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
-
+	
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResult)
 	EndIf
@@ -604,7 +604,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 		EndIf
 	EndIf
 
-	Local $sMessage = StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "..."
+	Local $sMessage = (($sResponse) ? (" : Response=" & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...") : (""))
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, "")
 	EndIf
@@ -853,10 +853,6 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 		Local $iErr = @error
 
-		If $_WD_DEBUG = $_WD_DEBUG_Info Then
-			__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...")
-		EndIf
-
 		If $iErr = $_WD_ERROR_Success Then
 			If StringLen($vSubNode) Then
 				Local $oJSON = Json_Decode($sResponse)
@@ -871,7 +867,8 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		$sResponse = ""
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
+	Local $sMessage = (($sResponse) ? (" : Response=" & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...") : (""))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
 ; #FUNCTION# ====================================================================================================================
@@ -1357,7 +1354,7 @@ Func __WD_Get($sURL)
 		$iResult = $_WD_ERROR_InvalidValue
 	EndIf
 
-	Local $sMessage = " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+	Local $sMessage = (($sResponseText) ? (" : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Get
 
@@ -1432,7 +1429,7 @@ Func __WD_Post($sURL, $sData)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	Local $sMessage = " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+	Local $sMessage = (($sResponseText) ? (" : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Post
 
@@ -1506,7 +1503,7 @@ Func __WD_Delete($sURL)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	Local $sMessage = " : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+	Local $sMessage = (($sResponseText) ? (" : ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
 EndFunc   ;==>__WD_Delete
 
