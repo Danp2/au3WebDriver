@@ -216,7 +216,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
 
-	If $_WD_DEBUG <> $_WD_DEBUG_None Then
+	If $_WD_DEBUG = $_WD_DEBUG_Info Then
 		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 	EndIf
 
