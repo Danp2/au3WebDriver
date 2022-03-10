@@ -268,7 +268,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 
 	Switch $iError
 		Case $_WD_ERROR_Success
-			MsgBox($MB_ICONINFORMATION, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
+			MsgBox($MB_ICONINFORMATION + $MB_TOPMOST, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
 		Case $_WD_ERROR_UserAbort
 			ConsoleWrite("- #" & @ScriptLineNumber & " : Aborted: " & $sDemoName & @CRLF)
 			MsgBox($MB_ICONINFORMATION, $sDemoName & ' aborted!', 'Click "Ok" button to shutdown the browser and console')
@@ -276,7 +276,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 			ConsoleWrite("! Error = " & $iError & " occured on: " & $sDemoName & @CRLF)
 			ConsoleWrite("! $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
 			ConsoleWrite("! $_WD_SESSION_DETAILS = " & $_WD_SESSION_DETAILS & @CRLF)
-			MsgBox($MB_ICONERROR, $sDemoName & ' error!', 'Check logs')
+			MsgBox($MB_ICONERROR + $MB_TOPMOST, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
 
 	If $sSession Then _WD_DeleteSession($sSession)
@@ -373,7 +373,7 @@ Func DemoElements()
 	Sleep(500)
 	Local $sValue1 = _WD_ElementAction($sSession, $sElement, 'property', 'value')
 	Local $sValue2 = _WD_ElementAction($sSession, $sElement, 'value')
-	MsgBox(0, 'result', $sValue1 & " / " & $sValue2)
+	MsgBox($MB_ICONINFORMATION + $MB_TOPMOST, 'result', $sValue1 & " / " & $sValue2)
 
 	; Click input element
 	_WD_ElementAction($sSession, $sElement, 'click')
@@ -385,7 +385,7 @@ Func DemoElements()
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
-	ConsoleWrite('- value = ' & $sValue & @CRLF)
+	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & @CRLF)
 
 	; Take element screenshot
 	$sResponse = _WD_ElementAction($sSession, $sElement, 'screenshot')
@@ -766,8 +766,6 @@ Func SetupGecko($bHeadless)
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
-	_WD_CapabilitiesAdd('prefs', 'app.update.auto', False)
-	_WD_CapabilitiesAdd('prefs', 'app.update.enabled', False)
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
