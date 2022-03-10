@@ -1968,7 +1968,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $sCommand
 		Case 'hover'
-
+			; No additional actions required for hover functionality
+			
 		Case 'click'
 			$sPostHoverAction = _
 					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
