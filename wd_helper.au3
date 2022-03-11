@@ -1531,8 +1531,8 @@ Func _WD_GetBrowserVersion($sBrowser)
 			$iExt = 0
 
 			; Extract filename and confirm match in list of supported browsers
-			$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			Local $sBrowserName = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 			If @error Then
 				$iErr = $_WD_ERROR_NotSupported
 			Else
