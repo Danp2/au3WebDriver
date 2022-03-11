@@ -1259,55 +1259,54 @@ Func _WD_Startup()
 	$sFile = __WD_StripPath($_WD_DRIVER)
 	$iPID = ProcessExists($sFile)
 
+	Local $bErrorOccured = False
 	If $_WD_DRIVER_DETECT And $iPID Then
 		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
 	Else
 		$iPID = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
-		Local $bErrorOccured = (@error Or ProcessWaitClose($iPID, 1))
-		
-		If $_WD_DEBUG = $_WD_DEBUG_Info or ($_WD_DEBUG = $_WD_DEBUG_Error And $bErrorOccured) Then
-			$sFunction = "_WD_IsLatestRelease"
-			$bLatest = Call($sFunction)
-
-			Select
-				Case @error = 0xDEAD And @extended = 0xBEEF
-					$sUpdate = "" ; update check not performed
-
-				Case @error
-					$sUpdate = " (Update status unknown [" & @error & "])"
-
-				Case $bLatest
-					$sUpdate = " (Up to date)"
-
-				Case Not $bLatest
-					$sUpdate = " (Update available)"
-
-			EndSelect
-
-			Local $sWinHttpVer = __WinHttpVer()
-			If $sWinHttpVer < "1.6.4.2" Then
-				$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
-			EndIf
-
-			_WinAPI_GetBinaryType($_WD_DRIVER)
-			Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
-
-			__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
-			__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
-			__WD_ConsoleWrite($sFuncName & ": WebDriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
-			__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
-			__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
-			__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
-			__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT)
-			__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
-		EndIf
-		
-		If $bErrorOccured Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "Error launching web driver!"), 0, 0)
-		EndIf
-		
+		$bErrorOccured = (@error Or ProcessWaitClose($iPID, 1))
 	EndIf
 
+	If $_WD_DEBUG = $_WD_DEBUG_Info or ($_WD_DEBUG = $_WD_DEBUG_Error And $bErrorOccured) Then
+		$sFunction = "_WD_IsLatestRelease"
+		$bLatest = Call($sFunction)
+
+		Select
+			Case @error = 0xDEAD And @extended = 0xBEEF
+				$sUpdate = "" ; update check not performed
+
+			Case @error
+				$sUpdate = " (Update status unknown [" & @error & "])"
+
+			Case $bLatest
+				$sUpdate = " (Up to date)"
+
+			Case Not $bLatest
+				$sUpdate = " (Update available)"
+
+		EndSelect
+
+		Local $sWinHttpVer = __WinHttpVer()
+		If $sWinHttpVer < "1.6.4.2" Then
+			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
+		EndIf
+
+		_WinAPI_GetBinaryType($_WD_DRIVER)
+		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
+
+		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
+		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
+		__WD_ConsoleWrite($sFuncName & ": WebDriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
+		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
+		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
+		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
+		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT)
+		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
+	EndIf
+	
+	If $bErrorOccured Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "Error launching web driver!"), 0, 0)
+	EndIf
 	Return SetError($_WD_ERROR_Success, 0, $iPID)
 EndFunc   ;==>_WD_Startup
 
