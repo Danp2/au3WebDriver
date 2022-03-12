@@ -1356,9 +1356,10 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
-		Local $iIndex = @extended
+		$iExt = @extended
 
 		If $iErr = $_WD_ERROR_Success Then
+			Local $iIndex = @extended
 			; Match exe file name in list of supported browsers
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
@@ -1377,6 +1378,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			Local $aBrowser = _ArrayExtract($_WD_SupportedBrowsers, $iIndex, $iIndex)
 			Local $aDriverInfo = __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 			$iErr = @error
+			$iExt = @extended
 			$sDriverLatest = $aDriverInfo[1]
 			$sURLNewDriver = $aDriverInfo[0]
 
@@ -1392,15 +1394,16 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 					If @error Then
 						$iErr = @error
+						$iExt = @extended
 					Else
 						; Close any instances of webdriver
 						__WD_CloseDriver($sDriverEXE)
 
 						; Extract
 						__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE)
-						If Not @error Then $bResult = True
 						$iErr = @error
 						$iExt = @extended
+						If Not @error Then $bResult = True
 					EndIf
 					FileDelete($sTempFile)
 				EndIf
@@ -1526,13 +1529,13 @@ Func _WD_GetBrowserVersion($sBrowser)
 	If @error Then
 		; as registry checks fails, now checking if file exist
 		If FileExists($sBrowser) Then
-			; Reseting as we are now checking file instead registry entries
+			; Resetting as we are now checking file instead registry entries
 			$iErr = $_WD_ERROR_Success
 			$iExt = 0
 
 			; Extract filename and confirm match in list of supported browsers
-			$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			Local $sBrowserName = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 			If @error Then
 				$iErr = $_WD_ERROR_NotSupported
 			Else
@@ -1968,7 +1971,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $sCommand
 		Case 'hover'
-
+			; No additional actions required for hover functionality
+			
 		Case 'click'
 			$sPostHoverAction = _
 					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
