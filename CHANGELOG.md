@@ -21,6 +21,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - __WD_ConsoleWrite: Utilize new ConsoleSuffix setting
 - __WD_Error: Refactored for improved functionality
 - _WD_CapabilitiesDump: Adhere to debug level settings
+- _WD_Startup: Additional logging when error detected
 
 ### Deprecated
 
