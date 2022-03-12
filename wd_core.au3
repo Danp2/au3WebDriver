@@ -1246,7 +1246,7 @@ EndFunc   ;==>_WD_Option
 ; ===============================================================================================================================
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
-	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID
+	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iErr = $_WD_ERROR_Success
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
@@ -1256,7 +1256,17 @@ Func _WD_Startup()
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
+	$sFile = __WD_StripPath($_WD_DRIVER)
+	$iPID = ProcessExists($sFile)
+
+	If $_WD_DRIVER_DETECT And $iPID Then
+		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
+	Else
+		$iPID = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
+		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
+	EndIf
+
+	If $_WD_DEBUG = $_WD_DEBUG_Info Or ($iErr <> $_WD_ERROR_Success And $_WD_DEBUG = $_WD_DEBUG_Error) Then
 		$sFunction = "_WD_IsLatestRelease"
 		$bLatest = Call($sFunction)
 
@@ -1290,23 +1300,12 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
 		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
 		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT)
-	Else
-		__WD_ConsoleWrite($sFuncName & ': ' & $sCommand)
+		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
 	EndIf
-
-	$sFile = __WD_StripPath($_WD_DRIVER)
-	$iPID = ProcessExists($sFile)
-
-	If $_WD_DRIVER_DETECT And $iPID Then
-		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
-	Else
-		$iPID = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
-
-		If @error Or ProcessWaitClose($iPID, 1) Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "Error launching web driver!"), 0, 0)
-		EndIf
+	
+	If $iErr Then
+		Return SetError(__WD_Error($sFuncName, $iErr, "Error launching WebDriver!"), 0, 0)
 	EndIf
-
 	Return SetError($_WD_ERROR_Success, 0, $iPID)
 EndFunc   ;==>_WD_Startup
 
