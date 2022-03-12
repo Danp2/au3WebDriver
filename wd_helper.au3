@@ -1529,7 +1529,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 	If @error Then
 		; as registry checks fails, now checking if file exist
 		If FileExists($sBrowser) Then
-			; Reseting as we are now checking file instead registry entries
+			; Resetting as we are now checking file instead registry entries
 			$iErr = $_WD_ERROR_Success
 			$iExt = 0
 
@@ -1971,7 +1971,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $sCommand
 		Case 'hover'
-
+			; No additional actions required for hover functionality
+			
 		Case 'click'
 			$sPostHoverAction = _
 					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
