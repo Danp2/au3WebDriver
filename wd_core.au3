@@ -361,7 +361,6 @@ EndFunc   ;==>_WD_GetSession
 Func _WD_Timeouts($sSession, $sTimeouts = Default)
 	Local Const $sFuncName = "_WD_Timeouts"
 	Local $sResponse, $sURL
-	$_WD_HTTPRESULT = 0
 
 	If $sTimeouts = Default Then $sTimeouts = ''
 
