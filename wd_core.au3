@@ -318,7 +318,6 @@ Func _WD_GetSession($sSession)
 	Local Const $sFuncName = "_WD_GetSession"
 	Local $sResult
 	#forceref $sSession, $sFuncName
-	$_WD_HTTPRESULT = 0
 
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
