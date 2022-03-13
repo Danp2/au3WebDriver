@@ -205,8 +205,8 @@ Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......: _WD_DeleteSession
+; Remarks .......:
+; Related .......: _WD_DeleteSession, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
 ; Example .......: No
 ; ===============================================================================================================================
@@ -251,8 +251,8 @@ EndFunc   ;==>_WD_CreateSession
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......: _WD_CreateSession
+; Remarks .......:
+; Related .......: _WD_CreateSession, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#delete-session
 ; Example .......: No
 ; ===============================================================================================================================
@@ -276,8 +276,8 @@ EndFunc   ;==>_WD_DeleteSession
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#status
 ; Example .......: No
 ; ===============================================================================================================================
@@ -310,8 +310,7 @@ EndFunc   ;==>_WD_Status
 ;                  so the code is commented until they determine how this should function.
 ;                  See w3c/webdriver@35df53a for details.
 ;                  Meanwhile, I temporarily changed the code to return the information that is available.
-;                  The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......: _WD_CreateSession
+; Related .......: _WD_CreateSession, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#get-session
 ; Example .......: No
 ; ===============================================================================================================================
@@ -355,8 +354,7 @@ EndFunc   ;==>_WD_GetSession
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Separate timeouts can be set for "script", "pageLoad", and "implicit".
-;                  The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#get-timeouts
 ;                  https://www.w3.org/TR/webdriver#set-timeouts
 ; Example .......: No
@@ -396,8 +394,8 @@ EndFunc   ;==>_WD_Timeouts
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#navigate-to
 ; Example .......: No
 ; ===============================================================================================================================
@@ -432,8 +430,8 @@ EndFunc   ;==>_WD_Navigate
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#navigation
 ;                  https://www.w3.org/TR/webdriver#actions
 ; Example .......: No
@@ -509,8 +507,8 @@ EndFunc   ;==>_WD_Action
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#contexts
 ; Example .......: No
 ; ===============================================================================================================================
@@ -630,8 +628,7 @@ EndFunc   ;==>_WD_Window
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: An array of matching elements is returned when $bMultiple is True.
-;                  The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#element-retrieval
 ; Example .......: No
 ; ===============================================================================================================================
@@ -734,8 +731,8 @@ EndFunc   ;==>_WD_FindElement
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#state
 ;                  https://www.w3.org/TR/webdriver#element-interaction
 ;                  https://www.w3.org/TR/webdriver/#take-element-screenshot
@@ -829,8 +826,8 @@ EndFunc   ;==>_WD_ElementAction
 ;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#executing-script
 ; Example .......: No
 ; ===============================================================================================================================
@@ -890,8 +887,8 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#user-prompts
 ; Example .......: No
 ; ===============================================================================================================================
@@ -946,8 +943,8 @@ EndFunc   ;==>_WD_Alert
 ;                  - $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#get-page-source
 ; Example .......: No
 ; ===============================================================================================================================
@@ -989,8 +986,7 @@ EndFunc   ;==>_WD_GetSource
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Please have a look at wd_demo.au3 > DemoCookies function for how to add a new cookie.
-;                  The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......: _WD_JsonCookie
+; Related .......: _WD_JsonCookie, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#cookies
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1297,8 +1293,8 @@ EndFunc   ;==>_WD_Shutdown
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1372,8 +1368,8 @@ EndFunc   ;==>__WD_Get
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1446,8 +1442,8 @@ EndFunc   ;==>__WD_Post
 ;                  - $_WD_ERROR_SocketError
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The value returned by _WD_LastHTTPResult() is changed by this function
-; Related .......:
+; Remarks .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
