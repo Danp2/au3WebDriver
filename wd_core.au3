@@ -306,10 +306,9 @@ EndFunc   ;==>_WD_Status
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec,
-;                  so the code is commented until they determine how this should function.
-;                  See w3c/webdriver@35df53a for details.
-;                  Meanwhile, I temporarily changed the code to return the information that is available.
+; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
+;                  until they determine how this should function. See w3c/webdriver@35df53a for details. Meanwhile, I temporarily
+;                  changed the code to return the information that is available
 ; Related .......: _WD_CreateSession, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#get-session
 ; Example .......: No
