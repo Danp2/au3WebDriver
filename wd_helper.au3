@@ -1252,7 +1252,7 @@ Func _WD_IsLatestRelease()
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), 0, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, String($bResult)), 0, $bResult)
 EndFunc   ;==>_WD_IsLatestRelease
 
 ; #FUNCTION# ====================================================================================================================
