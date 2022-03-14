@@ -1531,7 +1531,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 
 		Case $_WD_DEBUG_Info
 			Local $sExtended = (($iExt <> Default) ? (" / " & $iExt) : (""))
-			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " ( " & $iErr & $sExtended & " )"
+			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " (" & $iErr & $sExtended & ")"
 			If $iExt = Default Then $sMsg &= (($_WD_HTTPRESULT) ? (" HTTP status = " & $_WD_HTTPRESULT) : ("")) ; _WD_LastHTTPResult()
 			$sMsg &= (($sMessage) ? (" : " & $sMessage) : (""))
 			__WD_ConsoleWrite($sMsg)
