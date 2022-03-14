@@ -919,7 +919,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT)
+	Return SetError(__WD_Error($sFuncName, $iErr))
 EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
@@ -953,7 +953,7 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
 		_WD_ElementAction($sSession, $sElement, 'click')
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, @error), $_WD_HTTPRESULT)
+	Return SetError(__WD_Error($sFuncName, @error))
 EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
