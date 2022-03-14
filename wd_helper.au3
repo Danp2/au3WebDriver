@@ -521,7 +521,6 @@ EndFunc   ;==>_WD_IsWindowTop
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
 	Local $sOption, $sValue, $sResponse, $oJSON
-	$_WD_HTTPRESULT = 0
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
 	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
@@ -864,7 +863,6 @@ EndFunc   ;==>_WD_PrintToPDF
 ; ===============================================================================================================================
 Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 	Local Const $sFuncName = "_WD_jQuerify"
-	$_WD_HTTPRESULT = 0
 
 	If $sjQueryFile = Default Then
 		$sjQueryFile = ""
@@ -1820,7 +1818,6 @@ EndFunc   ;==>_WD_GetElementByName
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 	Local Const $sFuncName = "_WD_SetElementValue"
 	Local $sResult, $iErr, $sScript
-	$_WD_HTTPRESULT = 0
 
 	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
 	If $iStyle < $_WD_OPTION_Standard Or $iStyle > $_WD_OPTION_Advanced Then $iStyle = $_WD_OPTION_Standard
