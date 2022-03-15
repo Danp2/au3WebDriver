@@ -20,12 +20,16 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - __WD_ConsoleWrite: Utilize new ConsoleSuffix setting
 - __WD_Error: Refactored for improved functionality
+- _WD_CapabilitiesDump: Adhere to debug level settings
 
 ### Deprecated
 
 ### Fixed
 
 - _WD_Startup: Display of webdriver bit level (32 / 64)
+- wd_capabilities: Validate initialization result
+- _WD_UpdateDriver: Set @extended correctly
+- _WD_GetBrowserVersion: Binary type checking
 
 ### Removed
 
