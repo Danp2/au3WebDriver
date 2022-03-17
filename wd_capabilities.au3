@@ -168,7 +168,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                               | 'timeouts'
 ;                               |
 ;                               | Special:
-;                               | True (boolean) for specific vendor capabilities
+;                               | 'browserOptions' for specific vendor capabilities
 ;                               |
 ;                               | '' an empty string
 ;                  $value1              - [optional] a variant value. Default is ''.
@@ -194,7 +194,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	#TODO use $value2 for "noProxy"  https://www.w3.org/TR/webdriver/#dfn-page-load-strategy
 	Local $s_SpecificOptions_KeyName = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName]
 	Local $s_Notation = ''
-	If IsBool($key) And $key = True And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+	If $key = 'browserOptions' And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
 		#REMARK here is support for => 'goog:chromeOptions' And 'ms:edgeOptions' And 'moz:firefoxOptions'
 		#DOCUMENTATION goog:chromeOptions => ; https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
