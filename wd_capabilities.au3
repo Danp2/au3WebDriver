@@ -198,7 +198,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		#REMARK here is support for => 'goog:chromeOptions' And 'ms:edgeOptions' And 'moz:firefoxOptions'
 		#DOCUMENTATION goog:chromeOptions => ; https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
 		If $value1 <> '' Then
 			$s_Notation &= '[' & $key & ']'
 		EndIf
@@ -207,7 +207,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	ElseIf $key = 'timeouts' Then ; for adding "proxy" capability in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__TIMEOUTS)
 		$s_Notation &= '[' & $value1 & ']' ; here is specified keyName in {timeouts} JSON OBJECT
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
 	ElseIf $key = 'proxy' Then ; for adding "proxy" capability in standard capabilities : https://www.w3.org/TR/webdriver/#dfn-proxy-configuration
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__PROXY)
 		If $value1 = 'noProxy' Then ; for add string to "noProxy" JSON ARRAY in standard capabilities : https://www.w3.org/TR/webdriver/#dfn-proxy-configuration
@@ -217,31 +217,31 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		Else
 			$s_Notation &= '[' & $value1 & ']' ; here is specified keyName in {proxy} JSON OBJECT
 		EndIf
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
 ;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $key = 'args' Then ; for adding "args" capability in specific/vendor capabilities : ........
+	ElseIf $key = 'args' Then ; for adding "args" capability in specific/vendor capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ARGS)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
 		If $value1 Then
 			$value1 = $key & '=' & $value1
 		Else
 			$value1 = $key
 		EndIf
-		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & ' = ' & $value1)
-	ElseIf $key = 'prefs' Then ; for adding "prefs" capability in specific/vendor capabilities : ........
+;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
+;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & ' = ' & $value1)
+	ElseIf $key = 'prefs' Then ; for adding "prefs" capability in specific/vendor capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__PREFS)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
 		$s_Notation &= '[' & $key & ']'
 ;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $key = 'log' Then ; for adding "log" capability in specific/vendor capabilities : ........
+	ElseIf $key = 'log' Then ; for adding "log" capability in specific/vendor capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__LOG)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
 		$s_Notation &= '[' & $key & ']'
 ;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $key = 'env' Then ; for adding "env" capability in specific/vendor capabilities : ........
+	ElseIf $key = 'env' Then ; for adding "env" capability in specific/vendor capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ENV)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
 		$s_Notation &= '[' & $key & ']'
 ;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
 	ElseIf $value2 = '' And StringRegExp($key, $_WD_CAPS__STANDARD_LIST, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
@@ -362,7 +362,7 @@ EndFunc   ;==>__WD_CapabilitiesInitialize
 ; Return values .: None
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: When notation is modified in most cases parameters need to be switched for further processing
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
