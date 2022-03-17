@@ -168,9 +168,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                               | 'timeouts'
 ;                               |
 ;                               | Special:
-;                               | 'goog:chromeOptions'
-;                               | 'ms:edgeOptions'
-;                               | 'moz:firefoxOptions'
+;                               | True (boolean) for specific vendor capabilities
 ;                               |
 ;                               | '' an empty string
 ;                  $value1              - [optional] a variant value. Default is ''.
@@ -194,8 +192,19 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $_WD_CAPS__CURRENTIDX = -1 Then Return SetError(1) ; must be properly initialized
 
 	#TODO use $value2 for "noProxy"  https://www.w3.org/TR/webdriver/#dfn-page-load-strategy
+	Local $s_SpecificOptions_KeyName = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName]
 	Local $s_Notation = ''
-	If $key = 'excludeSwitches' Then ; for adding "excludeSwitches" capability in specific/vendor capabilities : ........
+	If IsBool($key) And $key = True And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+		#REMARK here is support for => 'goog:chromeOptions' And 'ms:edgeOptions' And 'moz:firefoxOptions'
+		#DOCUMENTATION goog:chromeOptions => ; https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
+		MsgBox(0, "TESTING 12345", @ScriptLineNumber)
+		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
+		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		If $value1 <> '' Then
+			$s_Notation &= '[' & $key & ']'
+		EndIf
+	ElseIf $key = 'excludeSwitches' Then ; for adding "excludeSwitches" capability in specific/vendor capabilities : ........
+		MsgBox(0, "TESTING 12345", @ScriptLineNumber)
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__EXCSWITCH)
 	ElseIf $key = 'timeouts' Then ; for adding "proxy" capability in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__TIMEOUTS)
@@ -212,14 +221,6 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		EndIf
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 ;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf _ArraySearch($_WD_SupportedBrowsers, StringLower($key), Default, Default, Default, Default, Default, $_WD_BROWSER_OptionsKey) <> -1 Then  ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
-		#HERE_IS_SUPPORT for $key = 'goog:chromeOptions' Or 'ms:edgeOptions' Or 'moz:firefoxOptions'
-		#DOCUMENTATION: goog:chromeOptions ; https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
-		If $value1 <> '' Then
-			$s_Notation &= '[' & $key & ']'
-		EndIf
 	ElseIf $key = 'args' Then ; for adding "args" capability in specific/vendor capabilities : ........
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ARGS)
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
