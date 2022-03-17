@@ -102,6 +102,9 @@ Global Enum _
 
 Global $_WD_CAPS__API[0][$_WD_CAPS__COUNTER]
 
+Global Const $_WD_CAPS__STANDARD_LIST = _ ; this should be RegExpPattern
+		'(?i)\A(browserName|browserVersion|platformName|acceptInsecureCerts|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
+
 Global Const $_WD_CAPS__ARRAY_HEADER_NAMES = _
 		"STANDARD__Type" & "|" & _
 		"STANDARD__FirstIdx" & "|" & _
@@ -145,17 +148,30 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Description ...: Add capablitities to JSON string
 ; Syntax ........: _WD_CapabilitiesAdd($key[, $value1 = ''[, $value2 = '']])
 ; Parameters ....: $key                 - one of the following
-;                               | 'excludeSwitches'
-;                               | 'timeouts'
+;                               | Standard:
+;                               | 'browserName'
+;                               | 'browserVersion'
+;                               | 'platformName'
+;                               | 'acceptInsecureCerts'
+;                               | 'pageLoadStrategy'
+;                               | 'setWindowRect'
+;                               | 'strictFileInteractability'
+;                               | 'unhandledPromptBehavior'
 ;                               | 'proxy'
-;                               | 'w3c'
-;                               | 'binary'
-;                               | 'debuggerAddress'
+;                               |
+;                               | Additional:
 ;                               | 'args'
-;                               | 'logs'
-;                               | 'maxInstances'
-;                               | 'prefs'
 ;                               | 'env'
+;                               | 'excludeSwitches'
+;                               | 'logs'
+;                               | 'prefs'
+;                               | 'timeouts'
+;                               |
+;                               | Special:
+;                               | 'goog:chromeOptions'
+;                               | 'ms:edgeOptions'
+;                               | 'moz:firefoxOptions'
+;                               |
 ;                               | '' an empty string
 ;                  $value1              - [optional] a variant value. Default is ''.
 ;                  $value2              - [optional] a variant value. Default is ''.
@@ -196,10 +212,14 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		EndIf
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 ;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $key = 'w3c' Or $key = 'maxInstances' Or $key = 'binary' Or $key = 'debuggerAddress' Then  ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
-;~ 		https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
+	ElseIf _ArraySearch($_WD_SupportedBrowsers, StringLower($key), Default, Default, Default, Default, Default, $_WD_BROWSER_OptionsKey) <> -1 Then  ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+		#HERE_IS_SUPPORT for $key = 'goog:chromeOptions' Or 'ms:edgeOptions' Or 'moz:firefoxOptions'
+		#DOCUMENTATION: goog:chromeOptions ; https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
-		$s_Notation &= '[' & $key & ']'
+		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
+		If $value1 <> '' Then
+			$s_Notation &= '[' & $key & ']'
+		EndIf
 	ElseIf $key = 'args' Then ; for adding "args" capability in specific/vendor capabilities : ........
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ARGS)
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
@@ -225,7 +245,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 		$s_Notation &= '[' & $key & ']'
 ;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $value2 = '' Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+	ElseIf $value2 = '' And StringRegExp($key, $_WD_CAPS__STANDARD_LIST, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__STRINGORBOOL)
 		$s_Notation &= '[' & $key & ']'
 	Else ; not supported option
