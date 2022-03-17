@@ -31,6 +31,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - wd_capabilities: Validate initialization result
 - _WD_UpdateDriver: Set @extended correctly
 - _WD_GetBrowserVersion: Binary type checking
+- _WD_Cookies: Deletion corrected
 
 ### Removed
 
