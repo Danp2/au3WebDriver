@@ -15,7 +15,7 @@
 ; Author ........: mLipok
 ; Modified ......:
 ; URL ...........:
-; Date ..........: 2022/02/23
+; Date ..........: 2022/03/17
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
@@ -197,14 +197,12 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If IsBool($key) And $key = True And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
 		#REMARK here is support for => 'goog:chromeOptions' And 'ms:edgeOptions' And 'moz:firefoxOptions'
 		#DOCUMENTATION goog:chromeOptions => ; https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
-		MsgBox(0, "TESTING 12345", @ScriptLineNumber)
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		__WD_CapabilitiesSwitch($key, $value1, $value2)          ; as the notation was modified now parameters should be switched
 		If $value1 <> '' Then
 			$s_Notation &= '[' & $key & ']'
 		EndIf
 	ElseIf $key = 'excludeSwitches' Then ; for adding "excludeSwitches" capability in specific/vendor capabilities : ........
-		MsgBox(0, "TESTING 12345", @ScriptLineNumber)
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__EXCSWITCH)
 	ElseIf $key = 'timeouts' Then ; for adding "proxy" capability in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__TIMEOUTS)
