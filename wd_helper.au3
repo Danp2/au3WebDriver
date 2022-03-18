@@ -1115,7 +1115,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 	EndIf
 
 	Local $sMessage = '$sCommand = ' & $sCommand & ' : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), $_WD_HTTPRESULT, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $_WD_HTTPRESULT, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
