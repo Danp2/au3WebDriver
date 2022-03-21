@@ -73,7 +73,6 @@
 
 	Internal functions:
 	__WD_CapabilitiesInitialize()
-	__WD_CapabilitiesSwitch()
 	__WD_CapabilitiesNotation()
 
 	Helper Functions:
@@ -230,7 +229,8 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 				Return SetError(1)
 			EndIf
 		EndIf
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
+		$value1 = $value2 ; switch
+
 	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
@@ -242,6 +242,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 			$v_WatchPoint = @ScriptLineNumber
 			$value1 &= '=' & $value2
 		EndIf
+
 	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
@@ -359,27 +360,6 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchTy
 	If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, $s_Information)
 	#EndRegion - FOR TESTING ONLY
 EndFunc   ;==>__WD_CapabilitiesInitialize
-
-; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_CapabilitiesSwitch
-; Description ...: switching parameters position to the left
-; Syntax ........: __WD_CapabilitiesSwitch(Byref $key, Byref $value1, Byref $value2)
-; Parameters ....: $key                 - [in/out] an unknown value.
-;                  $value1              - [in/out] a variant value.
-;                  $value2              - [in/out] a variant value.
-; Return values .: None
-; Author ........: mLipok
-; Modified ......:
-; Remarks .......: when notation is modified in most cases parameters need to be switched for further processing
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func __WD_CapabilitiesSwitch(ByRef $key, ByRef $value1, ByRef $value2)
-	$key = $value1
-	$value1 = $value2
-	$value2 = ''
-EndFunc   ;==>__WD_CapabilitiesSwitch
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CapabilitiesNotation
