@@ -163,6 +163,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                               | 'strictFileInteractability'
 ;                               | 'unhandledPromptBehavior'
 ;                               | 'proxy'
+;                               | 'timeouts'
 ;                               |
 ;                               | Additional:
 ;                               | 'args'
@@ -170,7 +171,6 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                               | 'excludeSwitches'
 ;                               | 'logs'
 ;                               | 'prefs'
-;                               | 'timeouts'
 ;                               |
 ;                               | '' an empty string
 ;                  $value1              - [optional] a variant value. Default is ''.
