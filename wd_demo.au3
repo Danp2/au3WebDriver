@@ -779,7 +779,7 @@ Func SetupChrome($bHeadless)
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'chrome')
-	_WD_CapabilitiesAdd('browserOptions', 'w3c', True)
+	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
@@ -810,13 +810,13 @@ Func SetupOpera($bHeadless)
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch":{"goog:chromeOptions": {"w3c":true, "excludeSwitches":["enable-automation"], "binary":"C:\\Users\\......\\AppData\\Local\\Programs\\Opera\\opera.exe"}}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
-	_WD_CapabilitiesAdd('browserOptions', 'w3c', True)
+	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	; REMARK
 	; using 32bit operadriver.exe requires to set 'binary' capabilities,
 	; using 64bit operadriver.exe dosen't require to set this capability, but at the same time setting is not affecting the script
 	; So this is good habit to setup for any case.
-	_WD_CapabilitiesAdd('browserOptions', 'binary', _WD_GetBrowserPath("opera"))
+	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
 	ConsoleWrite("! _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
