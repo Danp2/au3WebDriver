@@ -2,6 +2,7 @@
 ; standard UDF's
 #include <Array.au3>
 #include <MsgBoxConstants.au3>
+
 ; WebDriver related UDF's
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include "wd_core.au3"
@@ -15,7 +16,7 @@
 ; Author ........: mLipok
 ; Modified ......:
 ; URL ...........:
-; Date ..........: 2022/03/18
+; Date ..........: 2022/03/21
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
@@ -88,36 +89,40 @@
 Global Enum _
 		$_WD_CAPS__STANDARD__Type, _
 		$_WD_CAPS__STANDARD__FirstIdx, _
-		$_WD_CAPS__STANDARD__STRINGORBOOL, _
-		$_WD_CAPS__STANDARD__PROXY, _
-		$_WD_CAPS__STANDARD__TIMEOUTS, _
+		$_WD_CAPS__STANDARD__CURRENT, _
 		$_WD_CAPS__SPECIFICVENDOR__ObjectName, _
 		$_WD_CAPS__SPECIFICVENDOR__OPTS, _
-		$_WD_CAPS__SPECIFICVENDOR__ARGS, _
-		$_WD_CAPS__SPECIFICVENDOR__PREFS, _
-		$_WD_CAPS__SPECIFICVENDOR__LOG, _
-		$_WD_CAPS__SPECIFICVENDOR__ENV, _
-		$_WD_CAPS__SPECIFICVENDOR__EXCSWITCH, _
 		$_WD_CAPS__COUNTER
 
 Global $_WD_CAPS__API[0][$_WD_CAPS__COUNTER]
 
-Global Const $_WD_CAPS__STANDARD_LIST = _ ; this should be RegExpPattern
-		'(?i)\A(browserName|browserVersion|platformName|acceptInsecureCerts|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
+Global $_WD_CAPS__LISTOF_STANDARD = _ ; this should be RegExpPattern
+		'(?i)\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
+
+Global $_WD_CAPS__LISTOF_STANDARD_OBJECT = _ ; this should be RegExpPattern
+		'(?i)\A(proxy|timeouts)\Z'
+
+Global $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY = _ ; this should be RegExpPattern
+		'(?i)\A(noproxy)\Z'
+
+Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING = _ ; this should be RegExpPattern
+		'(?i)\A(binary|debuggerAddress|minidumpPath)\Z'
+
+Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN = _ ; this should be RegExpPattern
+		'(?i)\A(w3c|detach)\Z'
+
+Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY = _ ; this should be RegExpPattern
+		'(?i)\A(args|extensions|excludeSwitches|windowTypes)\Z'
+
+Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT = _ ; this should be RegExpPattern
+		'(?i)\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|localState)\Z'
 
 Global Const $_WD_CAPS__ARRAY_HEADER_NAMES = _
 		"STANDARD__Type" & "|" & _
 		"STANDARD__FirstIdx" & "|" & _
-		"STANDARD__STRINGORBOOL" & "|" & _
-		"STANDARD__PROXY" & "|" & _
-		"STANDARD__TIMEOUTS" & "|" & _
+		"STANDARD__CURRENT" & "|" & _
 		"SPECIFICVENDOR__ObjectName" & "|" & _
 		"SPECIFICVENDOR__OPTS" & "|" & _
-		"SPECIFICVENDOR__ARGS" & "|" & _
-		"SPECIFICVENDOR__PREFS" & "|" & _
-		"SPECIFICVENDOR__LOG" & "|" & _
-		"SPECIFICVENDOR__ENV" & "|" & _
-		"SPECIFICVENDOR__EXCSWITCH" & "|" & _
 		""
 
 Global $_WD_CAPS__OBJECT
@@ -167,16 +172,13 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                               | 'prefs'
 ;                               | 'timeouts'
 ;                               |
-;                               | Special:
-;                               | 'browserOptions' for specific vendor capabilities
-;                               |
 ;                               | '' an empty string
 ;                  $value1              - [optional] a variant value. Default is ''.
 ;                  $value2              - [optional] a variant value. Default is ''.
 ; Return values .: None
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......: parameters $value1 and $value2 depend on the $key value, take a look on example link
+; Remarks .......: Parameters $value1 and $value2 depend on the $key value, take a look on example link
 ; Related .......:
 ; Link ..........:
 ; Example .......: https://www.autoitscript.com/wiki/WebDriver#Advanced_Capabilities_example
@@ -184,75 +186,86 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value1 = Default Then $value1 = 'default'
 	If $value2 = Default Then $value2 = 'default'
+	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
+
 	If StringInStr('alwaysMatch|firstMatch', $key) Then
+		If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
 		Local $iResult = __WD_CapabilitiesInitialize($key, $value1)
 		If Not @error Then $_WD_CAPS__CURRENTIDX = $iResult
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
 	If $_WD_CAPS__CURRENTIDX = -1 Then Return SetError(1) ; must be properly initialized
 
-	#TODO use $value2 for "noProxy"  https://www.w3.org/TR/webdriver/#dfn-page-load-strategy
+;~ 	https://www.w3.org/TR/webdriver/#dfn-page-load-strategy
+;~ 	https://www.w3.org/TR/webdriver/#dfn-table-of-page-load-strategies
+
 	Local $s_SpecificOptions_KeyName = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName]
+	Local $v_WatchPoint
 	Local $s_Notation = ''
-	If $key = 'browserOptions' And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
-		#REMARK here is support for => 'goog:chromeOptions' And 'ms:edgeOptions' And 'moz:firefoxOptions'
-		#DOCUMENTATION goog:chromeOptions => ; https://sites.google.com/a/chromium.org/chromedriver/capabilities#TOC-Recognized-capabilities
+
+
+	If StringRegExp($key, $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+		If $value2 <> '' Then
+			If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
+			If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONERROR, "ERROR #" & @ScriptLineNumber, $s_Parameters_Info)
+			Return SetError($_WD_ERROR_NotSupported)
+		EndIf
+		$v_WatchPoint = @ScriptLineNumber
+		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT) & '[' & $key & ']'
+
+	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT)
+		If Not StringRegExp($value1, $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if arrays ($value1) is child of the object ($key)
+			$v_WatchPoint = @ScriptLineNumber
+			$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
+		Else
+			If $value2 <> '' Then
+				$v_WatchPoint = @ScriptLineNumber
+				$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
+				Local $iCurrent1 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
+				SetError(0)
+				$s_Notation &= '[' & $iCurrent1 & ']' ; here is specified which one of JSON ARRAY element should be used
+			Else ; not supported option
+				If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
+				Return SetError(1)
+			EndIf
+		EndIf
+		__WD_CapabilitiesSwitch($key, $value1, $value2)
+	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
-		If $value1 <> '' Then
-			$s_Notation &= '[' & $key & ']'
+		$s_Notation &= '[' & $key & ']'
+		Local $iCurrent2 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
+		SetError(0)
+		$s_Notation &= '[' & $iCurrent2 & ']' ; here is specified which one of JSON ARRAY element should be used
+		If $value2 Then
+			$v_WatchPoint = @ScriptLineNumber
+			$value1 &= '=' & $value2
 		EndIf
-	ElseIf $key = 'excludeSwitches' Then ; for adding "excludeSwitches" capability in specific/vendor capabilities : ........
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__EXCSWITCH)
-	ElseIf $key = 'timeouts' Then ; for adding "proxy" capability in standard capability : https://www.w3.org/TR/webdriver/#capabilities
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__TIMEOUTS)
-		$s_Notation &= '[' & $value1 & ']' ; here is specified keyName in {timeouts} JSON OBJECT
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
-	ElseIf $key = 'proxy' Then ; for adding "proxy" capability in standard capabilities : https://www.w3.org/TR/webdriver/#dfn-proxy-configuration
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__PROXY)
-		If $value1 = 'noProxy' Then ; for add string to "noProxy" JSON ARRAY in standard capabilities : https://www.w3.org/TR/webdriver/#dfn-proxy-configuration
-			$_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__STANDARD__PROXY] += 1 ; default is -1 so first should be 0
-			Local $i_Current_noProxy = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__STANDARD__PROXY]
-			$s_Notation &= '[noProxy][' & $i_Current_noProxy & ']' ; here is specified which one of [noProxy] JSON ARRAY element should be used
-		Else
-			$s_Notation &= '[' & $value1 & ']' ; here is specified keyName in {proxy} JSON OBJECT
-		EndIf
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $key = 'args' Then ; for adding "args" capability in specific/vendor capabilities
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ARGS)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
-		If $value1 Then
-			$value1 = $key & '=' & $value1
-		Else
-			$value1 = $key
-		EndIf
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation & ' = ' & $value1)
-	ElseIf $key = 'prefs' Then ; for adding "prefs" capability in specific/vendor capabilities
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__PREFS)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
-		$s_Notation &= '[' & $key & ']'
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $key = 'log' Then ; for adding "log" capability in specific/vendor capabilities
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__LOG)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
-		$s_Notation &= '[' & $key & ']'
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $key = 'env' Then ; for adding "env" capability in specific/vendor capabilities
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__ENV)
-		__WD_CapabilitiesSwitch($key, $value1, $value2)
-		$s_Notation &= '[' & $key & ']'
-;~ 		If Not @Compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
-	ElseIf $value2 = '' And StringRegExp($key, $_WD_CAPS__STANDARD_LIST, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
-		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__STRINGORBOOL)
-		$s_Notation &= '[' & $key & ']'
+	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+		$v_WatchPoint = @ScriptLineNumber
+		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
+		$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
+		$value1 = $value2 ; switch
+
+	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+		$v_WatchPoint = @ScriptLineNumber
+		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
+		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
+
+	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+		$v_WatchPoint = @ScriptLineNumber
+		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
+		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
+
 	Else ; not supported option
-		Return SetError(1)
+		If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
+		If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONERROR, "ERROR #" & @ScriptLineNumber, $s_Parameters_Info)
+		Return SetError($_WD_ERROR_NotSupported)
 	EndIf
 	If @error Then Return SetError(@error, @extended, $s_Notation)
+	If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1 & @CRLF)
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
-;~ 	If Not @compiled Then __WD_ConsoleWrite("> $s_Notation - " & $s_Notation)
 EndFunc   ;==>_WD_CapabilitiesAdd
 
 ; #FUNCTION# ====================================================================================================================
@@ -276,6 +289,7 @@ Func _WD_CapabilitiesGet()
 	Local $Json3 = Json_Encode($Data3, $Json_PRETTY_PRINT, "    ", ",\n", ",\n", ":")
 	Return $Json3
 EndFunc   ;==>_WD_CapabilitiesGet
+
 #EndRegion - wd_capabilities.au3 UDF - core functions
 
 #Region - wd_capabilities.au3 UDF - internal functions
@@ -327,15 +341,9 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchTy
 		$i_FirstMatch_Counter += 1 ; default is -1 so first should be 0
 		$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__STANDARD__FirstIdx] = $i_FirstMatch_Counter
 	EndIf
-	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__STANDARD__STRINGORBOOL] = Null
-	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__STANDARD__PROXY] = -1 ; used for indexing ......  "noProxy" : [JSON ARRRAY]
+	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__STANDARD__CURRENT] = Null
 	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName] = $s_SpecificOptions_KeyName
 	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__OPTS] = Null
-	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__ARGS] = -1 ; used for indexing ......  "args" : [JSON ARRRAY]
-	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__PREFS] = Null
-	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__LOG] = Null
-	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__ENV] = Null
-	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__EXCSWITCH] = -1 ; used for indexing ......  "excludeSwitches" : [JSON ARRRAY]
 	$_WD_CAPS__CURRENTIDX = $i_API_New_IDX ; set last API IDX as CURRENT API IDX
 	#EndRegion - new "MATCH" Initialization
 	Return $_WD_CAPS__CURRENTIDX ; return current API IDX
@@ -362,7 +370,7 @@ EndFunc   ;==>__WD_CapabilitiesInitialize
 ; Return values .: None
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......: When notation is modified in most cases parameters need to be switched for further processing
+; Remarks .......: when notation is modified in most cases parameters need to be switched for further processing
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
@@ -396,35 +404,17 @@ Func __WD_CapabilitiesNotation($i_BUILDER_TYPE)
 	Local $s_SpecificOptions_KeyName = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName]
 	If $s_SpecificOptions_KeyName Then $s_SpecificOptions_KeyName = '["' & $s_SpecificOptions_KeyName & '"]'
 
-	If $s_SpecificOptions_KeyName = '' And $i_BUILDER_TYPE >= $_WD_CAPS__SPECIFICVENDOR__ARGS Then _
-			Return SetError(1, 0, '') ; ARGS, PREFS, LOG, ENV and any further are possible only when Specific/Vendor Capability was specified
+	#TODO check
+;~ 	If $s_SpecificOptions_KeyName = '' And $i_BUILDER_TYPE >= $_WD_CAPS__SPECIFICVENDOR__ARGS Then _
+;~ 			Return SetError(1, 0, '') ; ARGS, PREFS, LOG, ENV and any further are possible only when Specific/Vendor Capability was specified
 
 	Local $s_Notation = ''
 	Switch $i_BUILDER_TYPE
-		Case $_WD_CAPS__STANDARD__STRINGORBOOL
+		Case $_WD_CAPS__STANDARD__CURRENT
 			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type
-		Case $_WD_CAPS__STANDARD__PROXY
-			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & '[proxy]' ; here is specified the name for {proxy} JSON OBJECT
-		Case $_WD_CAPS__STANDARD__TIMEOUTS
-			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & '[timeouts]' ; here is specified the name for {timeout} JSON OBJECT
 		Case $_WD_CAPS__SPECIFICVENDOR__OPTS
 			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & $s_SpecificOptions_KeyName ; here is specified the name for {SPECIFIC VENDOR NAME} JSON OBJECT
-		Case $_WD_CAPS__SPECIFICVENDOR__ARGS
-			$_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ARGS] += 1 ; default is -1 so first should be 0
-			Local $i_Current_Arg = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ARGS]
-			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & $s_SpecificOptions_KeyName & '[args][' & $i_Current_Arg & ']' ; here is specified which one of [args] JSON ARRAY element should be used
-		Case $_WD_CAPS__SPECIFICVENDOR__PREFS
-			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & $s_SpecificOptions_KeyName & '[prefs]' ; here is specified the name for {prefs} JSON OBJECT
-		Case $_WD_CAPS__SPECIFICVENDOR__LOG
-			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & $s_SpecificOptions_KeyName & '[log]' ; here is specified the name for {log} JSON OBJECT
-		Case $_WD_CAPS__SPECIFICVENDOR__ENV
-			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & $s_SpecificOptions_KeyName & '[env]' ; here is specified the name for {env} JSON OBJECT
-		Case $_WD_CAPS__SPECIFICVENDOR__EXCSWITCH
-			$_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__EXCSWITCH] += 1 ; default is -1 so first should be 0
-			Local $i_Current_ExcSwitch = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__EXCSWITCH]
-			$s_Notation = '[capabilities]' & $s_CurrentMatch_Type & $s_SpecificOptions_KeyName & '[excludeSwitches][' & $i_Current_ExcSwitch & ']' ; here is specified which one of [excluedSwitches] JSON ARRAY element should be used
 	EndSwitch
-;~ 	If Not @compiled Then __WD_ConsoleWrite("- IFNC: " & @ScriptLineNumber & ' $s_Notation =' & $s_Notation)
 	Return $s_Notation
 EndFunc   ;==>__WD_CapabilitiesNotation
 #EndRegion - wd_capabilities.au3 UDF - internal functions
@@ -445,6 +435,7 @@ EndFunc   ;==>__WD_CapabilitiesNotation
 ; ===============================================================================================================================
 Func _WD_CapabilitiesDump($s_Comment)
 	If @Compiled Then Return ; because of GDRP reason do not throw nothing to console when compiled script
+
 	If $_WD_DEBUG <> $_WD_DEBUG_None Then
 		__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
 		__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
