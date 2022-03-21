@@ -23,8 +23,6 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_CapabilitiesDump: Adhere to debug level settings
 - _WD_Startup: Additional logging when error detected
 
-### Deprecated
-
 ### Fixed
 
 - _WD_Startup: Display of webdriver bit level (32 / 64)
@@ -33,13 +31,16 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_GetBrowserVersion: Binary type checking
 - _WD_Cookies: Deletion corrected
 
-### Removed
+### Deprecated
 
+### Removed
 
 ### Security
 
-
 ### Project
+
+- Scripts should use _WD_LastHTTPResult() to obtain the result of the most recent HTTP request as Webdriver functions no longer set @extended to last HTTP request result.
+- Improved logging / error reporting by making sure that functions call __WD_Error.
 ## [0.7.0] - 2022-03-03
 
 ### Added
