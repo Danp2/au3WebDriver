@@ -226,7 +226,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 				$s_Notation &= '[' & $iCurrent1 & ']' ; here is specified which one of JSON ARRAY element should be used
 			Else ; not supported option
 				If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
-				Return SetError(1)
+				Return SetError($_WD_ERROR_NotSupported)
 			EndIf
 		EndIf
 		$value1 = $value2 ; switch
@@ -311,20 +311,20 @@ EndFunc   ;==>_WD_CapabilitiesGet
 Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
 	#Region - parameters validation
 	If Not StringInStr('alwaysMatch|firstMatch', $s_MatchType) Then _
-			Return SetError(1)
+			Return SetError($_WD_ERROR_NotSupported)
 
 	Local $s_SpecificOptions_KeyName = ''
 
 	If $s_BrowserName <> '' Then
 		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserName), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 		If @error Then
-			Return SetError(2) ; $_WD_ERROR_NotSupported
+			Return SetError($_WD_ERROR_NotSupported) ; $_WD_ERROR_NotSupported
 		EndIf
 		$s_SpecificOptions_KeyName = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_OptionsKey]
 	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
-		Return SetError(3)
+		Return SetError($_WD_ERROR_NotSupported)
 ;~ 	Else
 ;~ 		Return SetError(4) ; this should be tested/reviewed later (@mLipok 23-02-2022)
 	EndIf
@@ -375,7 +375,6 @@ EndFunc   ;==>__WD_CapabilitiesInitialize
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_CapabilitiesNotation($i_BUILDER_TYPE)
-;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$_WD_CAPS__CURRENTIDX = " & $_WD_CAPS__CURRENTIDX &  ' Ubound = ' & UBound($_WD_CAPS__API))
 	Local $s_CurrentMatch_Type = '[' & $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__STANDARD__Type] & ']'
 	If $s_CurrentMatch_Type = '[firstMatch]' Then
 		$s_CurrentMatch_Type &= '[' & $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__STANDARD__FirstIdx] & ']'
