@@ -1347,7 +1347,7 @@ Func __WD_Get($sURL)
 	EndIf
 
 	Local $sMessage = (($sResponseText) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
+	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Get
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1422,7 +1422,7 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	Local $sMessage = (($sResponseText) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
+	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Post
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1496,7 +1496,7 @@ Func __WD_Delete($sURL)
 	EndIf
 
 	Local $sMessage = (($sResponseText) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), $_WD_HTTPRESULT, $sResponseText)
+	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Delete
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
