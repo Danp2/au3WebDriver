@@ -48,13 +48,14 @@
 ;+
 ;                  The revised version uses websockets to provide CDP access for all compatible browsers. However, it
 ;                  will only with an OS that natively supports WebSockets (Windows 8, Windows Server 2012, or newer)
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
 	Local Const $sFuncName = "_WD_ExecuteCDPCommand"
 	Local $iErr = 0, $vData = Json_ObjCreate()
+	$_WD_HTTPRESULT = 0
 
 	If $sWebSocketURL = Default Then $sWebSocketURL = ''
 
@@ -71,7 +72,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 			__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
 		EndIf
 
-		Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResponse)
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
 	EndIf
 
 	; Websocket version
@@ -224,15 +225,11 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "...")
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sErrText), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, $sErrText), 0, "")
 	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sRecv)
+	Local $sMessage = (($sRecv) ? (" : " & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "...") : (""))
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, $sRecv)		
 EndFunc   ;==>_WD_CDPExecuteCommand
 
 ; #FUNCTION# ====================================================================================================================
@@ -254,7 +251,7 @@ EndFunc   ;==>_WD_CDPExecuteCommand
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -262,6 +259,7 @@ Func _WD_CDPGetSettings($sSession, $sOption)
 	Local Const $sFuncName = "_WD_GetCDPSettings"
 	Local $sJSON, $oJSON, $sDebuggerAddress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
 	Local $sKey, $vResult, $sBrowser
+	$_WD_HTTPRESULT = 0
 
 	$sJSON = _WD_GetSession($sSession)
 	$oJSON = Json_Decode($sJSON)
@@ -334,8 +332,7 @@ Func _WD_CDPGetSettings($sSession, $sOption)
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, "")
 	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $vResult)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $vResult)	
 EndFunc   ;==>_WD_CDPGetSettings
