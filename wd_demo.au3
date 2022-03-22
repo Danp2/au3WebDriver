@@ -273,9 +273,9 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 			ConsoleWrite("- #" & @ScriptLineNumber & " : Aborted: " & $sDemoName & @CRLF)
 			MsgBox($MB_ICONINFORMATION, $sDemoName & ' aborted!', 'Click "Ok" button to shutdown the browser and console')
 		Case Else
-			ConsoleWrite("! Error = " & $iError & " occured on: " & $sDemoName & @CRLF)
-			ConsoleWrite("! $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
-			ConsoleWrite("! $_WD_SESSION_DETAILS = " & $_WD_SESSION_DETAILS & @CRLF)
+			ConsoleWrite("! Error = " & $iError & " occurred on: " & $sDemoName & @CRLF)
+			ConsoleWrite("! _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+			ConsoleWrite("! _WD_GetSession = " &  _WD_GetSession($sSession) & @CRLF)
 			MsgBox($MB_ICONERROR + $MB_TOPMOST, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
 
@@ -423,13 +423,13 @@ Func DemoScript()
 	Local $sValue
 
 	$sValue = _WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}', Default, $_WD_JSON_Value)
-	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
+	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}', Default, $_WD_JSON_Value)
-	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
+	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
 
 	$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
-	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " $_WD_HTTPRESULT = " & $_WD_HTTPRESULT & @CRLF)
+	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()

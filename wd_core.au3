@@ -1242,7 +1242,7 @@ Func _WD_Startup()
 		EndIf
 
 		_WinAPI_GetBinaryType($_WD_DRIVER)
-		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" 64Bit") : (" 32Bit"))
+		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
