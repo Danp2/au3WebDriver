@@ -536,9 +536,7 @@ Func DemoFrames()
 	; changing context to first sub frame
 	_WD_FrameEnter($sSession, $sElement)
 
-	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
-	_WD_ElementAction($sSession, $sButton, 'click')
-	_WD_LoadWait($sSession, 2000)
+	_WD_LinkClickByText($sSession, "Not Sure Where")
 
 	_WD_FrameLeave($sSession)
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
