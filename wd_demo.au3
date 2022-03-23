@@ -595,8 +595,8 @@ Func DemoDownload()
 	Local $sUrl = _WD_Action($sSession, 'url')
 
 	; Find the element
-	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@id='hplogo']")
-
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@alt='Google']")
+	
 	If @error <> $_WD_ERROR_Success Then
 		; Try alternate element
 		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div[@id='hplogo']//img")
