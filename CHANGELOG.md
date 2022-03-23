@@ -13,7 +13,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
-- _WD_Option: Support for "ConsoleSuffix", "ErrorMsgbox", and "OutputDebug" options
+- _WD_Option: Support for "ConsoleSuffix", "ErrorMsgbox", "OutputDebug", and "Version" options
 - _WD_ElementSelectAction: Added Multiselect functionality
 
 ### Changed
