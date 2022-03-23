@@ -1172,6 +1172,10 @@ Func _WD_Option($sOption, $vValue = Default)
 			EndIf
 			$_WD_Sleep = $vValue
 
+		Case "version"
+			If $vValue == "" Then Return $__WDVERSION
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(none) $vValue: " & $vValue), 0, 0)
+
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
