@@ -1054,6 +1054,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  |HTTPTIMEOUTS   - Set WinHTTP timeouts on each Get, Post, Delete request (Boolean)
 ;                  |PORT           - Port used for web driver communication
 ;                  |SLEEP          - Function to be called when UDF pauses the script execution
+;                  |VERSION        - Version number of UDF library (read only)
 ;                  $vValue  - [optional] if no value is given, the current value is returned (default = "")
 ; Return values .: Success - 1 or current value.
 ;                  Failure - 0 or "" (empty string) and sets @error to $_WD_ERROR_InvalidDataType
@@ -1177,7 +1178,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(none) $vValue: " & $vValue), 0, 0)
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep) $sOption=>" & $sOption), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
 	Return 1
