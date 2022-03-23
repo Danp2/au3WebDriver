@@ -28,19 +28,19 @@ Global Const $aBrowsers[][2] = _
 ; Column 2 - Pass browser name as parameter to called function
 Global $aDemoSuite[][3] = _
 		[ _
-		["DemoTimeouts", False, False], _
-		["DemoNavigation", True, False], _
-		["DemoElements", False, False], _
-		["DemoScript", False, False], _
-		["DemoCookies", False, False], _
-		["DemoAlerts", False, False], _
-		["DemoFrames", False, False], _
-		["DemoActions", False, False], _
-		["DemoDownload", False, False], _
-		["DemoWindows", False, False], _
-		["DemoUpload", False, False], _
-		["DemoPrint", False, True], _
-		["DemoSleep", False, False] _
+		[FuncName(DemoTimeouts), False, False], _
+		[FuncName(DemoNavigation), True, False], _
+		[FuncName(DemoElements), False, False], _
+		[FuncName(DemoScript), False, False], _
+		[FuncName(DemoCookies), False, False], _
+		[FuncName(DemoAlerts), False, False], _
+		[FuncName(DemoFrames), False, False], _
+		[FuncName(DemoActions), False, False], _
+		[FuncName(DemoDownload), False, False], _
+		[FuncName(DemoWindows), False, False], _
+		[FuncName(DemoUpload), False, False], _
+		[FuncName(DemoPrint), False, True], _
+		[FuncName(DemoSleep), False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
