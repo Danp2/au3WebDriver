@@ -300,7 +300,7 @@ Func DemoTimeouts()
 	Local $oJSON = Json_Decode($sResponse)
 	Local $sTimouts = Json_Encode(Json_Get($oJSON, "[value]"))
 
-	_WD_Navigate($sSession, "http://google.com")
+	_WD_Navigate($sSession, "https://google.com")
 
 	; Set page load timeout
 	_WD_Timeouts($sSession, '{"pageLoad":2000}')
@@ -309,21 +309,21 @@ Func DemoTimeouts()
 	_WD_Timeouts($sSession)
 
 	; This should timeout
-	_WD_Navigate($sSession, "http://yahoo.com")
+	_WD_Navigate($sSession, "https://yahoo.com")
 
 	; Restore initial settings
 	_WD_Timeouts($sSession, $sTimouts)
 EndFunc   ;==>DemoTimeouts
 
 Func DemoNavigation()
-	_WD_Navigate($sSession, "http://google.com")
+	_WD_Navigate($sSession, "https://google.com")
 	ConsoleWrite("- #" & @ScriptLineNumber & " : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
-	_WD_NewTab($sSession, Default, Default, "http://yahoo.com")
+	_WD_NewTab($sSession, Default, Default, "https://yahoo.com")
 	ConsoleWrite("- #" & @ScriptLineNumber & " : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
-	;	_WD_Navigate($sSession, "http://yahoo.com")
-	_WD_NewTab($sSession, True, Default, 'http://bing.com', 'width=200,height=200')
+	;	_WD_Navigate($sSession, "https://yahoo.com")
+	_WD_NewTab($sSession, True, Default, 'https://bing.com', 'width=200,height=200')
 	ConsoleWrite("- #" & @ScriptLineNumber & " : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_Attach($sSession, "google.com", "URL")
@@ -337,7 +337,7 @@ EndFunc   ;==>DemoNavigation
 Func DemoElements()
 	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $hFileOpen
 
-	_WD_Navigate($sSession, "http://google.com")
+	_WD_Navigate($sSession, "https://google.com")
 
 	; Locate a single element
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
@@ -395,7 +395,7 @@ Func DemoElements()
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
 
-	_WD_Navigate($sSession, "http://demo.guru99.com/test/simple_context_menu.html")
+	_WD_Navigate($sSession, "https://demo.guru99.com/test/simple_context_menu.html")
 
 	Sleep(2000)
 
@@ -428,13 +428,14 @@ Func DemoScript()
 	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}', Default, $_WD_JSON_Value)
 	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
 
-	$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'http://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
-	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
+	; 2022-03-23 This website no longer exists
+	;$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'https://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
+	;ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()
 	ConsoleWrite("- #" & @ScriptLineNumber & " : WD: Navigating:" & @CRLF)
-	_WD_Navigate($sSession, "http://google.com")
+	_WD_Navigate($sSession, "https://google.com")
 
 	ConsoleWrite("- #" & @ScriptLineNumber & " : WD: Get all cookies:" & @CRLF)
 	Local $sAllCookies = _WD_Cookies($sSession, 'getall')
@@ -535,9 +536,7 @@ Func DemoFrames()
 	; changing context to first sub frame
 	_WD_FrameEnter($sSession, $sElement)
 
-	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//button[@id='w3loginbtn']")
-	_WD_ElementAction($sSession, $sButton, 'click')
-	_WD_LoadWait($sSession, 2000)
+	_WD_LinkClickByText($sSession, "Not Sure Where")
 
 	_WD_FrameLeave($sSession)
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
@@ -554,7 +553,7 @@ EndFunc   ;==>DemoFrames
 Func DemoActions()
 	Local $sElement, $sAction
 
-	_WD_Navigate($sSession, "http://google.com")
+	_WD_Navigate($sSession, "https://google.com")
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	ConsoleWrite("- #" & @ScriptLineNumber & " : $sElement = " & $sElement & @CRLF)
 
@@ -588,14 +587,14 @@ Func DemoActions()
 EndFunc   ;==>DemoActions
 
 Func DemoDownload()
-	_WD_Navigate($sSession, "http://google.com")
+	_WD_Navigate($sSession, "https://google.com")
 
 	; Get the website's URL
 	Local $sUrl = _WD_Action($sSession, 'url')
 
 	; Find the element
-	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@id='hplogo']")
-
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@alt='Google']")
+	
 	If @error <> $_WD_ERROR_Success Then
 		; Try alternate element
 		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div[@id='hplogo']//img")
@@ -611,7 +610,7 @@ Func DemoDownload()
 		; Download the file
 		_WD_DownloadFile($sUrl, @ScriptDir & "\testimage.png")
 
-		_WD_DownloadFile("http://www.google.com/notexisting.jpg", @ScriptDir & "\testimage2.jpg")
+		_WD_DownloadFile("https://www.google.com/notexisting.jpg", @ScriptDir & "\testimage2.jpg")
 	EndIf
 EndFunc   ;==>DemoDownload
 
@@ -619,11 +618,11 @@ Func DemoWindows()
 	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2, $bDecode, $oWRect
 
 	$sHnd1 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
-	_WD_Navigate($sSession, "http://google.com")
+	_WD_Navigate($sSession, "https://google.com")
 
 	_WD_NewTab($sSession)
 	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
-	_WD_Navigate($sSession, "http://yahoo.com")
+	_WD_Navigate($sSession, "https://yahoo.com")
 
 	; Get window coordinates
 	$oWRect = _WD_Window($sSession, 'rect')
