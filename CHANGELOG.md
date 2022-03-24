@@ -26,10 +26,11 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Fixed
 
 - _WD_Startup: Display of webdriver bit level (32 / 64)
-- wd_capabilities: Validate initialization result
 - _WD_UpdateDriver: Set @extended correctly
 - _WD_GetBrowserVersion: Binary type checking
 - _WD_Cookies: Deletion corrected
+- wd_capabilities: Validate initialization result
+- wd_demo: Updated routines to ensure proper functionality
 
 ### Deprecated
 
