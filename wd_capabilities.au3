@@ -283,11 +283,14 @@ EndFunc   ;==>_WD_CapabilitiesAdd
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CapabilitiesGet()
-	Local $Data2 = Json_Encode($_WD_CAPS__OBJECT)
-	Local $Data1 = Json_Decode($Data2)
-	Local $Json2 = Json_Encode($Data1, $Json_UNQUOTED_STRING)
+	Local $Data1 = Json_Encode($_WD_CAPS__OBJECT)
+	
+	Local $Data2 = Json_Decode($Data1)
+	Local $Json2 = Json_Encode($Data2, $Json_UNQUOTED_STRING)
+	
 	Local $Data3 = Json_Decode($Json2)
 	Local $Json3 = Json_Encode($Data3, $Json_PRETTY_PRINT, "    ", ",\n", ",\n", ":")
+	
 	Return $Json3
 EndFunc   ;==>_WD_CapabilitiesGet
 
