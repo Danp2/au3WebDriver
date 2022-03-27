@@ -294,6 +294,24 @@ Func _WD_CapabilitiesGet()
 	Return $Json3
 EndFunc   ;==>_WD_CapabilitiesGet
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_CapabilitiesNewType
+; Description ...: Suplement $_WD_CAPS__LISTOF_* by adding new capability type
+; Syntax ........: _WD_CapabilitiesNewType(Byref $s_LISTOF_CAPS, $sNewType)
+; Parameters ....: $s_LISTOF_CAPS       - refrence to $_WD_CAPS__LISTOF_* value that should be suplemented by supproting new capability type
+;                  $sNewType            - Name of new capbility type that should be supported
+; Return values .: None
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_CapabilitiesNewType(ByRef $s_LISTOF_CAPS, $sNewType)
+	$s_LISTOF_CAPS = StringTrimRight($s_LISTOF_CAPS, 3) & '|' & $sNewType & ')\Z'
+EndFunc   ;==>_WD_CapabilitiesNewType
+
 #EndRegion - wd_capabilities.au3 UDF - core functions
 
 #Region - wd_capabilities.au3 UDF - internal functions
