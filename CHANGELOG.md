@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [0.8.0] - 2022-03-28
 
 ### Added
 
-- _WD_Option: Support for "ConsoleSuffix", "ErrorMsgbox", and "OutputDebug" options
+- _WD_Option: Support for "ConsoleSuffix", "ErrorMsgbox", "OutputDebug", and "Version" options
 - _WD_ElementSelectAction: Added Multiselect functionality
 
 ### Changed
@@ -21,23 +21,22 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - __WD_ConsoleWrite: Utilize new ConsoleSuffix setting
 - __WD_Error: Refactored for improved functionality
 - _WD_CapabilitiesDump: Adhere to debug level settings
-
-### Deprecated
+- _WD_Startup: Additional logging when error detected
 
 ### Fixed
 
 - _WD_Startup: Display of webdriver bit level (32 / 64)
-- wd_capabilities: Validate initialization result
 - _WD_UpdateDriver: Set @extended correctly
 - _WD_GetBrowserVersion: Binary type checking
-
-### Removed
-
-
-### Security
-
+- _WD_Cookies: Deletion corrected
+- wd_capabilities: Validate initialization result
+- wd_demo: Updated routines to ensure proper functionality
 
 ### Project
+
+- Scripts should use _WD_LastHTTPResult() to obtain the result of the most recent HTTP request as Webdriver functions no longer set @extended to last HTTP request result.
+- Improved logging / error reporting by making sure that functions call __WD_Error.
+
 ## [0.7.0] - 2022-03-03
 
 ### Added
@@ -888,7 +887,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - Initial release
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.8.0...HEAD
+[0.8.0]:      https://github.com/Danp2/au3WebDriver/compare/0.7.0...0.8.0
 [0.7.0]:      https://github.com/Danp2/au3WebDriver/compare/0.6.0...0.7.0
 [0.6.0]:      https://github.com/Danp2/au3WebDriver/compare/0.5.2...0.6.0
 [0.5.2]:      https://github.com/Danp2/au3WebDriver/compare/0.5.1.1...0.5.2
