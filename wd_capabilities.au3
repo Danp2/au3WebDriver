@@ -169,9 +169,12 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value1 = Default Then $value1 = 'default'
 	If $value2 = Default Then $value2 = 'default'
 	If StringInStr('alwaysMatch|firstMatch', $key) Then
-		$_WD_CAPS__CURRENTIDX = __WD_CapabilitiesInitialize($key, $value1)
+		Local $iResult = __WD_CapabilitiesInitialize($key, $value1)
+		If Not @error Then $_WD_CAPS__CURRENTIDX = $iResult
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
+	If $_WD_CAPS__CURRENTIDX = -1 Then Return SetError(1) ; must be properly initialized
+
 	#TODO use $value2 for "noProxy"  https://www.w3.org/TR/webdriver/#dfn-page-load-strategy
 	Local $s_Notation = ''
 	If $key = 'excludeSwitches' Then ; for adding "excludeSwitches" capability in specific/vendor capabilities : ........
@@ -271,30 +274,29 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; ===============================================================================================================================
 Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
 	#Region - parameters validation
-;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 	If Not StringInStr('alwaysMatch|firstMatch', $s_MatchType) Then _
 			Return SetError(1)
-;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 
-;~ 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "$s_BrowserName = " & $s_BrowserName & @CRLF & "$s_MatchType = " & $s_MatchType)
 	Local $s_SpecificOptions_KeyName = ''
 
 	If $s_BrowserName <> '' Then
 		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserName), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+		If @error Then
+			Return SetError(2) ; $_WD_ERROR_NotSupported
+		EndIf
 		$s_SpecificOptions_KeyName = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_OptionsKey]
 	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
-		Return SetError(2)
+		Return SetError(3)
 ;~ 	Else
-;~ 		Return SetError(3) ; this should be tested/reviewed later (@mLipok 23-02-2022)
+;~ 		Return SetError(4) ; this should be tested/reviewed later (@mLipok 23-02-2022)
 	EndIf
 	#EndRegion - parameters validation
 
 	#Region - reindexing API
 	Local $i_API_Recent_Size = UBound($_WD_CAPS__API), $i_API_New_Size = $i_API_Recent_Size + 1, $i_API_New_IDX = $i_API_New_Size - 1
 	ReDim $_WD_CAPS__API[$i_API_New_Size][$_WD_CAPS__COUNTER]
-	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 	#EndRegion - reindexing API
 
 	#Region - new "MATCH" Initialization
@@ -315,7 +317,6 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchTy
 	$_WD_CAPS__API[$i_API_New_IDX][$_WD_CAPS__SPECIFICVENDOR__EXCSWITCH] = -1 ; used for indexing ......  "excludeSwitches" : [JSON ARRRAY]
 	$_WD_CAPS__CURRENTIDX = $i_API_New_IDX ; set last API IDX as CURRENT API IDX
 	#EndRegion - new "MATCH" Initialization
-;~ 	__WD_ConsoleWrite("! @ScriptLineNumber = " & @ScriptLineNumber)
 	Return $_WD_CAPS__CURRENTIDX ; return current API IDX
 
 	#Region - FOR TESTING ONLY
@@ -423,15 +424,17 @@ EndFunc   ;==>__WD_CapabilitiesNotation
 ; ===============================================================================================================================
 Func _WD_CapabilitiesDump($s_Comment)
 	If @Compiled Then Return ; because of GDRP reason do not throw nothing to console when compiled script
-	__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
-	__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
-	__WD_ConsoleWrite("- $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2))
-	__WD_ConsoleWrite(_ArrayToString($_WD_CAPS__API))
-	__WD_ConsoleWrite('! _WD_Capabilities: API END: ' & $s_Comment)
+	If $_WD_DEBUG <> $_WD_DEBUG_None Then
+		__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
+		__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
+		__WD_ConsoleWrite("- $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2))
+		__WD_ConsoleWrite(_ArrayToString($_WD_CAPS__API))
+		__WD_ConsoleWrite('! _WD_Capabilities: API END: ' & $s_Comment)
 
-	__WD_ConsoleWrite('! _WD_Capabilities: JSON START: ' & $s_Comment)
-	__WD_ConsoleWrite(_WD_CapabilitiesGet())
-	__WD_ConsoleWrite('! _WD_Capabilities: JSON END: ' & $s_Comment)
+		__WD_ConsoleWrite('! _WD_Capabilities: JSON START: ' & $s_Comment)
+		__WD_ConsoleWrite(_WD_CapabilitiesGet())
+		__WD_ConsoleWrite('! _WD_Capabilities: JSON END: ' & $s_Comment)
+	EndIf
 EndFunc   ;==>_WD_CapabilitiesDump
 
 ; #FUNCTION# ====================================================================================================================

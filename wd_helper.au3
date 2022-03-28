@@ -88,8 +88,8 @@ Global Enum _
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: For list of $sFeatures take a look in the following link
-; Related .......: _WD_Window
+; Remarks .......: For list of $sFeatures take a look in the following link.
+; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
 ; ===============================================================================================================================
@@ -193,7 +193,7 @@ EndFunc   ;==>_WD_NewTab
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_Window
+; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -261,7 +261,7 @@ EndFunc   ;==>_WD_Attach
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -278,13 +278,13 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 		$iErr = @error
 
 		If $iErr <> $_WD_ERROR_Success Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), $_WD_HTTPRESULT)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
 		EndIf
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), $_WD_HTTPRESULT)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, "")
 	EndIf
 
-	Return SetError($_WD_ERROR_Success)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, "")
 EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
@@ -309,13 +309,14 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
+	$_WD_HTTPRESULT = 0
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -379,7 +380,6 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
-
 EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -392,7 +392,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ExecuteScript
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
 ; Link ..........: https://stackoverflow.com/questions/24538450/get-element-currently-under-mouse-without-using-mouse-events
 ; Example .......: No
 ; ===============================================================================================================================
@@ -402,11 +402,7 @@ Func _WD_GetMouseElement($sSession)
 	Local $sElement = _WD_ExecuteScript($sSession, $sScript, '', Default, $_WD_JSON_Element)
 	Local $iErr = @error
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sElement)
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sElement), 0, $sElement)
 EndFunc   ;==>_WD_GetMouseElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -421,7 +417,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
-; Related .......: _WD_ExecuteScript
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
@@ -465,23 +461,6 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_LastHTTPResult
-; Description ...: Return the result of the last WinHTTP request.
-; Syntax ........: _WD_LastHTTPResult()
-; Parameters ....: None
-; Return values .: Result of last WinHTTP request
-; Author ........: Danp2
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_LastHTTPResult()
-	Return $_WD_HTTPRESULT
-EndFunc   ;==>_WD_LastHTTPResult
-
-; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFrameCount
 ; Description ...: Returns the number of frames/iframes in the current document context.
 ; Syntax ........: _WD_GetFrameCount($sSession)
@@ -491,7 +470,7 @@ EndFunc   ;==>_WD_LastHTTPResult
 ; Author ........: Decibel, Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Nested frames are not included in the frame count
-; Related .......: _WD_ExecuteScript
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -513,7 +492,7 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ExecuteScript
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_top.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -534,16 +513,14 @@ EndFunc   ;==>_WD_IsWindowTop
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: mLipok
-; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters
-; Related .......: _WD_Window
+; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
+; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
-	Local $sOption
-	Local $sResponse, $oJSON
-	Local $sValue
+	Local $sOption, $sValue, $sResponse, $oJSON
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
 	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
@@ -583,19 +560,15 @@ EndFunc   ;==>_WD_FrameEnter
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
-; Related .......: _WD_Window
+; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
 	Local Const $sFuncName = "_WD_FrameLeave"
-	Local $sOption
-	Local $sResponse, $oJSON, $asJSON
-	Local $sValue
+	Local $sValue, $oJSON, $asJSON, $sOption = '{}'
 
-	$sOption = '{}'
-
-	$sResponse = _WD_Window($sSession, "parent", $sOption)
+	Local $sResponse = _WD_Window($sSession, "parent", $sOption)
 
 	If @error <> $_WD_ERROR_Success Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
@@ -647,7 +620,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
 ; Remarks .......: This function will be removed in a future release. Update your code to use _WD_HighlightElements instead.
-; Related .......: _WD_HighlightElements
+; Related .......: _WD_HighlightElements, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -657,11 +630,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
 	Local $iErr = @error
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $bResult)
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), 0, $bResult)
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -680,7 +649,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -694,6 +663,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
 			]
 	Local $sScript, $sResult, $iErr, $sElements
+	$_WD_HTTPRESULT = 0
 
 	If $iMethod = Default Then $iMethod = 1
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
@@ -716,11 +686,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResult)
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, ($iErr = $_WD_ERROR_Success))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
@@ -736,13 +702,14 @@ EndFunc   ;==>_WD_HighlightElements
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local $iErr, $sReadyState
+	$_WD_HTTPRESULT = 0
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -777,7 +744,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	WEnd
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, 0)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, 1)
@@ -803,7 +770,7 @@ EndFunc   ;==>_WD_LoadWait
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_Window, _WD_ElementAction
+; Related .......: _WD_Window, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -853,8 +820,8 @@ EndFunc   ;==>_WD_Screenshot
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517)
-; Related .......: _WD_Window
+; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517).
+; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#print-page
 ; Example .......: No
 ; ===============================================================================================================================
@@ -890,7 +857,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ExecuteScript
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
 ; Example .......: No
 ; ===============================================================================================================================
@@ -952,12 +919,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 
 	Local $iErr = @error
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $iErr)
-	EndIf
-
 	Return SetError(__WD_Error($sFuncName, $iErr))
-
 EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
@@ -977,11 +939,12 @@ EndFunc   ;==>_WD_jQuerify
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
+	Local Const $sFuncName = "_WD_ElementOptionSelect"
 	If $sStartElement = Default Then $sStartElement = ""
 
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
@@ -990,8 +953,7 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
 		_WD_ElementAction($sSession, $sElement, 'click')
 	EndIf
 
-	Return SetError(@error, @extended)
-
+	Return SetError(__WD_Error($sFuncName, @error))
 EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
@@ -1026,8 +988,9 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters = Default)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local $sNodeName, $vResult, $sScript
-	$sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
+	Local $vResult, $sScript
+
+	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1115,7 +1078,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 	EndIf
 
 	Local $sMessage = '$sCommand = ' & $sCommand & ' : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), $_WD_HTTPRESULT, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
@@ -1174,7 +1137,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1197,11 +1160,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResult)
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, $sResult)
 EndFunc   ;==>_WD_GetShadowRoot
 
 ; #FUNCTION# ====================================================================================================================
@@ -1218,14 +1177,13 @@ EndFunc   ;==>_WD_GetShadowRoot
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: If $sFilename is empty, then prior selection is cleared
-; Related .......: _WD_FindElement, _WD_ElementAction
+; Remarks .......: If $sFilename is empty, then prior selection is cleared.
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
-
 	Local $sResult = "0", $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
@@ -1253,11 +1211,8 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResult & " file(s) selected")
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResult)
+	Local $sMessage = $sResult & " file(s) selected"
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_SelectFiles
 
 ; #FUNCTION# ====================================================================================================================
@@ -1297,12 +1252,7 @@ Func _WD_IsLatestRelease()
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $bResult)
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $bResult)
-
+	Return SetError(__WD_Error($sFuncName, $iErr, String($bResult)), 0, $bResult)
 EndFunc   ;==>_WD_IsLatestRelease
 
 ; #FUNCTION# ====================================================================================================================
@@ -1356,9 +1306,10 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
-		Local $iIndex = @extended
+		$iExt = @extended
 
 		If $iErr = $_WD_ERROR_Success Then
+			Local $iIndex = @extended
 			; Match exe file name in list of supported browsers
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
@@ -1377,6 +1328,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			Local $aBrowser = _ArrayExtract($_WD_SupportedBrowsers, $iIndex, $iIndex)
 			Local $aDriverInfo = __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 			$iErr = @error
+			$iExt = @extended
 			$sDriverLatest = $aDriverInfo[1]
 			$sURLNewDriver = $aDriverInfo[0]
 
@@ -1392,15 +1344,16 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
 					If @error Then
 						$iErr = @error
+						$iExt = @extended
 					Else
 						; Close any instances of webdriver
 						__WD_CloseDriver($sDriverEXE)
 
 						; Extract
 						__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE)
-						If Not @error Then $bResult = True
 						$iErr = @error
 						$iExt = @extended
+						If Not @error Then $bResult = True
 					EndIf
 					FileDelete($sTempFile)
 				EndIf
@@ -1411,12 +1364,8 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$_WD_DEBUG = $WDDebugSave
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest)
-		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt & ' : Result = ' & $bResult)
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $bResult)
+	Local $sMessage = ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1491,10 +1440,6 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt)
-	EndIf
-
 	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt)
 EndFunc   ;==>__WD_UpdateExtractor
 
@@ -1526,13 +1471,13 @@ Func _WD_GetBrowserVersion($sBrowser)
 	If @error Then
 		; as registry checks fails, now checking if file exist
 		If FileExists($sBrowser) Then
-			; Reseting as we are now checking file instead registry entries
+			; Resetting as we are now checking file instead registry entries
 			$iErr = $_WD_ERROR_Success
 			$iExt = 0
 
 			; Extract filename and confirm match in list of supported browsers
-			$sBrowser = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
-			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowser, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			Local $sBrowserName = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 			If @error Then
 				$iErr = $_WD_ERROR_NotSupported
 			Else
@@ -1570,7 +1515,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: Browser names are defined in $_WD_SupportedBrowsers
 ; Related .......: _WD_GetBrowserVersion, _WD_UpdateDriver
 ; Link ..........:
 ; Example .......: MsgBox(0, "", _WD_GetBrowserPath('firefox'))
@@ -1720,10 +1665,6 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': Error = ' & $iErr & ' : Extended = ' & $iExt)
-	EndIf
-
 	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_DownloadFile
 
@@ -1744,13 +1685,14 @@ EndFunc   ;==>_WD_DownloadFile
 ; Modified ......:
 ; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
 ;                  When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
-; Related .......: _WD_Timeouts
+; Related .......: _WD_Timeouts, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#set-timeouts
 ; Example .......: _WD_SetTimeouts($sSession, 50000)
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
 	Local Const $sFuncName = "_WD_SetTimeouts"
 	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
+	$_WD_HTTPRESULT = 0
 
 	; Build string to pass to _WD_Timeouts
 	If $iPageLoad <> Default Then
@@ -1796,10 +1738,6 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $iErr)
-	EndIf
-
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_SetTimeouts
 
@@ -1816,7 +1754,7 @@ EndFunc   ;==>_WD_SetTimeouts
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement
+; Related .......: _WD_FindElement, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1843,7 +1781,7 @@ EndFunc   ;==>_WD_GetElementById
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement
+; Related .......: _WD_FindElement, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1876,7 +1814,7 @@ EndFunc   ;==>_WD_GetElementByName
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_ElementAction
+; Related .......: _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1933,14 +1871,15 @@ EndFunc   ;==>_WD_SetElementValue
 ; Author ........: Danp2
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
-;                  There are examples in DemoElements function in wd_demo
-; Related .......: _WD_ElementAction, _WD_Action
+;                  There are examples in DemoElements() function in wd_demo.au3
+; Related .......: _WD_ElementAction, _WD_Action, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
+	$_WD_HTTPRESULT = 0
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -1968,7 +1907,8 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	Switch $sCommand
 		Case 'hover'
-
+			; No additional actions required for hover functionality
+			
 		Case 'click'
 			$sPostHoverAction = _
 					',' & _WD_JsonActionPointer("pointerDown", $iButton) & _
@@ -2089,46 +2029,46 @@ EndFunc   ;==>_WD_ElementActionEx
 ; Author ........: danylarson
 ; Modified ......: water, danp2
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_GetTable($sSession, $sBaseElement)
 	Local Const $sFuncName = "_WD_GetTable"
-	Local $aElements, $iLines, $iColumns, $iRow, $iColumn
-	Local $sElement, $sHTML
+	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML
+	$_WD_HTTPRESULT = 0
 
 	; Determine if optional UDF is available
 	Call("_HtmlTableGetWriteToArray", "")
 
 	If @error = 0xDEAD And @extended = 0xBEEF Then
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		$iLines = UBound($aElements)
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/td", "", True) ; Retrieve the number of table columns by checking the first table row
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		$iColumns = UBound($aElements)
 		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/td", "", True) ; Retrieve all table cells
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		For $i = 0 To UBound($aElements) - 1
 			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
 			$iColumn = Mod($i, $iColumns)
 			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
-			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		Next
 	Else
 		; Get the table element
 		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		; Retrieve its HTML
 		$sHTML = _WD_ElementAction($sSession, $sElement, "Property", "outerHTML")
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		; Convert to array
 		$aTable = _HtmlTableGetWriteToArray($sHTML, 1, False, $_WD_IFILTER)
@@ -2147,7 +2087,7 @@ EndFunc   ;==>_WD_GetTable
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/?do=findComment&comment=1480527
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2168,7 +2108,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2193,7 +2133,7 @@ EndFunc   ;==>_WD_GetDevicePixelRatio
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_Action, _WD_Window
+; Related .......: _WD_Action, _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2265,12 +2205,7 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
 	Local $sJSON = Json_Encode($vData)
-
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON)
-	EndIf
-
-	Return $sJSON
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionKey
 
 ; #FUNCTION# ====================================================================================================================
@@ -2324,12 +2259,7 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 	EndSwitch
 
 	Local $sJSON = Json_Encode($vData)
-
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON)
-	EndIf
-
-	Return $sJSON
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionPointer
 
 ; #FUNCTION# ====================================================================================================================
@@ -2353,12 +2283,7 @@ Func _WD_JsonActionPause($iDuration)
 	Json_Put($vData, '.duration', $iDuration)
 
 	Local $sJSON = Json_Encode($vData)
-
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON)
-	EndIf
-
-	Return $sJSON
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionPause
 
 ; #FUNCTION# ====================================================================================================================
@@ -2400,12 +2325,7 @@ Func _WD_JsonCookie($sName, $sValue, $sPath = Default, $sDomain = Default, $bSec
 	If $sSameSite <> Default Then Json_Put($vData, '.cookie.sameSite', $sSameSite)
 
 	Local $sJSON = Json_Encode($vData)
-
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sJSON)
-	EndIf
-
-	Return $sJSON
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonCookie
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
@@ -2538,7 +2458,7 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 
 			If @error Then
 				$iErr = $_WD_ERROR_GeneralError
-				$iExt = 2
+				$iExt = 1
 			Else
 				$sDriverLatest = $aResults[0]
 			EndIf
@@ -2550,7 +2470,7 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_GeneralError
-		$iExt = 1
+		$iExt = 2
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $aInfo)
