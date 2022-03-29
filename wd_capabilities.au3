@@ -96,25 +96,25 @@ Global Enum _
 
 Global $_WD_CAPS__API[0][$_WD_CAPS__COUNTER]
 
-Global $_WD_CAPS__LISTOF_STANDARD = _ ; this should be RegExpPattern
+Global $_WD_CAPS_TYPES__STANDARD = _ ; this should be RegExpPattern
 		'(?i)\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
 
-Global $_WD_CAPS__LISTOF_STANDARD_OBJECT = _ ; this should be RegExpPattern
+Global $_WD_CAPS_TYPES__STANDARD_OBJECT = _ ; this should be RegExpPattern
 		'(?i)\A(proxy|timeouts)\Z'
 
-Global $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY = _ ; this should be RegExpPattern
+Global $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY = _ ; this should be RegExpPattern
 		'(?i)\A(noproxy)\Z'
 
-Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING = _ ; this should be RegExpPattern
+Global $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING = _ ; this should be RegExpPattern
 		'(?i)\A(binary|debuggerAddress|minidumpPath)\Z'
 
-Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN = _ ; this should be RegExpPattern
+Global $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN = _ ; this should be RegExpPattern
 		'(?i)\A(w3c|detach)\Z'
 
-Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY = _ ; this should be RegExpPattern
+Global $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY = _ ; this should be RegExpPattern
 		'(?i)\A(args|extensions|excludeSwitches|windowTypes)\Z'
 
-Global $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT = _ ; this should be RegExpPattern
+Global $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT = _ ; this should be RegExpPattern
 		'(?i)\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|localState)\Z'
 
 Global Const $_WD_CAPS__ARRAY_HEADER_NAMES = _
@@ -204,7 +204,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	Local $s_Notation = ''
 
 
-	If StringRegExp($key, $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+	If StringRegExp($key, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		If $value2 <> '' Then
 			If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
 			If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONERROR, "ERROR #" & @ScriptLineNumber, $s_Parameters_Info)
@@ -213,9 +213,9 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT) & '[' & $key & ']'
 
-	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT)
-		If Not StringRegExp($value1, $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if arrays ($value1) is child of the object ($key)
+		If Not StringRegExp($value1, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if arrays ($value1) is child of the object ($key)
 			$v_WatchPoint = @ScriptLineNumber
 			$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
 		Else
@@ -232,7 +232,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		EndIf
 		$value1 = $value2 ; switch
 
-	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']'
@@ -244,18 +244,18 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 			$value1 &= '=' & $value2
 		EndIf
 
-	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
+	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
 		$value1 = $value2 ; switch
 
-	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
 
-	ElseIf StringRegExp($key, $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
+	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding capability in specific/vendor capabilities for example: goog:chromeOptions
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
@@ -297,9 +297,9 @@ EndFunc   ;==>_WD_CapabilitiesGet
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CapabilitiesNew
-; Description ...: Suplement $_WD_CAPS__LISTOF_* by adding new capability type
+; Description ...: Suplement $_WD_CAPS_TYPES__* by adding new capability
 ; Syntax ........: _WD_CapabilitiesNew(Byref $sCapabilityType, $sNewCapability)
-; Parameters ....: $sCapabilityType       - refrence to $_WD_CAPS__LISTOF_* value that should be suplemented for supporting new capability
+; Parameters ....: $sCapabilityType       - refrence to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability
 ;                  $sNewCapability        - Name of new capbility that should be supported
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
@@ -322,24 +322,24 @@ Func _WD_CapabilitiesNew(ByRef $sCapabilityType, $sNewCapability)
 	ElseIf StringLen($sNewCapability) = 0 Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
 	ElseIf _
-			$sCapabilityType <> $_WD_CAPS__LISTOF_STANDARD And _
-			$sCapabilityType <> $_WD_CAPS__LISTOF_STANDARD_OBJECT And _
-			$sCapabilityType <> $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY And _
-			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING And _
-			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN And _
-			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY And _
-			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT _
+			$sCapabilityType <> $_WD_CAPS_TYPES__STANDARD And _
+			$sCapabilityType <> $_WD_CAPS_TYPES__STANDARD_OBJECT And _
+			$sCapabilityType <> $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY And _
+			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING And _
+			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN And _
+			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY And _
+			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT _
 			Then
 		$sMessage = 'Not supported type of capability: ' & $sCapabilityType
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
 	ElseIf _
-			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
 		$sMessage = 'Name of new capability is already supported: ' & $sNewCapability
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage))
