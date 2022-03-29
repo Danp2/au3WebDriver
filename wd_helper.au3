@@ -1364,7 +1364,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$_WD_DEBUG = $WDDebugSave
 	EndIf
 
-	Local $sMessage = ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest
+	Local $sMessage = 'DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
