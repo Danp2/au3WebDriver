@@ -322,8 +322,7 @@ Func _WD_CapabilitiesNewType(ByRef $s_LISTOF_CAPS, $sNewType)
 			Then
 		$sMessage = 'Name of new capbility is already supported: ' & $sNewType
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage, 0), 0)
-	EndIf
-	If _
+	ElseIf _
 			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD And _
 			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT And _
 			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY And _
