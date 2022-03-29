@@ -1206,6 +1206,8 @@ Func _WD_Startup()
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
+	ElseIf Not FileExists($_WD_DRIVER) Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_FileIssue, "Web Driver not exist in location: " & $_WD_DRIVER), 0, 0)
 	EndIf
 
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
