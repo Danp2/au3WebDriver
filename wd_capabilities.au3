@@ -310,7 +310,7 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; ===============================================================================================================================
 Func _WD_CapabilitiesNewType(ByRef $s_LISTOF_CAPS, $sNewType)
 	Local Const $sFuncName = "_WD_CapabilitiesNewType"
-	Local $sMessage == ''
+	Local $sMessage = ''
 	If _
 			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH) Or _
 			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
@@ -324,13 +324,13 @@ Func _WD_CapabilitiesNewType(ByRef $s_LISTOF_CAPS, $sNewType)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage, 0), 0)
 	EndIf
 	If _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT _
 			Then
 		$sMessage = 'Not supported type of capbility: ' & $s_LISTOF_CAPS
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage, 0), 0)
