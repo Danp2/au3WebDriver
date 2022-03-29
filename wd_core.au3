@@ -163,29 +163,28 @@ Global Const $WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver
 #EndRegion Global Constants
 
 #Region Global Variables
-Global $_WD_DRIVER = "" ; Path to web driver executable
-Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
-Global $_WD_PORT = 0 ; Port used for web driver communication
-Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
-Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
-Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
-Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
-Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching new one
-Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one already exists
-Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug output
-Global $_WD_ERROR_MSGBOX = False ; Shows in compiled scripts error messages in msgboxes
-Global $_WD_ERROR_OUTPUTDEBUG = False ; Log errors to "OutputDebugString"
-Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
 Global $_WD_CONSOLE = ConsoleWrite ; Destination for console output
 Global $_WD_CONSOLE_Suffix = @CRLF ; Suffix added to the end of Message in $_WD_CONSOLE function
-Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
-Global $_WD_Sleep = Sleep ; Default to calling standard Sleep function
+Global $_WD_DEBUG = ((@compiled) ? ($_WD_DEBUG_None) : ($_WD_DEBUG_Info)) ; Trace to console and show web driver app
 Global $_WD_DefaultTimeout = 10000 ; 10 seconds
-Global $_WD_WINHTTP_TIMEOUTS = True
-Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
+Global $_WD_DRIVER = "" ; Path to web driver executable
+Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
+Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching new one
+Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one already exists
+Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
+Global $_WD_ERROR_MSGBOX = False ; Shows in compiled scripts error messages in msgboxes
+Global $_WD_ERROR_OUTPUTDEBUG = False ; Log errors to "OutputDebugString"
 Global $_WD_HTTPContentType = "Content-Type: application/json"
+Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
+Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
+Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
+Global $_WD_PORT = 0 ; Port used for web driver communication
+Global $_WD_RESPONSE_TRIM = 100 ; Trim response string to given value for debug output
+Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
+Global $_WD_Sleep = Sleep ; Default to calling standard Sleep function
+Global $_WD_WINHTTP_TIMEOUTS = True
 
 Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 		[ _
