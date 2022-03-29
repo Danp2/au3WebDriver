@@ -69,7 +69,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.7.0"
+Global Const $__WDVERSION = "0.8.1"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -1193,6 +1193,7 @@ EndFunc   ;==>_WD_Option
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_FileIssue
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
