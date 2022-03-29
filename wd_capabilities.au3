@@ -70,6 +70,7 @@
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd()
 	_WD_CapabilitiesGet()
+	_WD_CapabilitiesNew()
 
 	Internal functions:
 	__WD_CapabilitiesInitialize()
@@ -284,23 +285,28 @@ EndFunc   ;==>_WD_CapabilitiesAdd
 ; ===============================================================================================================================
 Func _WD_CapabilitiesGet()
 	Local $Data1 = Json_Encode($_WD_CAPS__OBJECT)
-	
+
 	Local $Data2 = Json_Decode($Data1)
 	Local $Json2 = Json_Encode($Data2, $Json_UNQUOTED_STRING)
-	
+
 	Local $Data3 = Json_Decode($Json2)
 	Local $Json3 = Json_Encode($Data3, $Json_PRETTY_PRINT, "    ", ",\n", ",\n", ":")
-	
+
 	Return $Json3
 EndFunc   ;==>_WD_CapabilitiesGet
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_CapabilitiesNewType
+; Name ..........: _WD_CapabilitiesNew
 ; Description ...: Suplement $_WD_CAPS__LISTOF_* by adding new capability type
-; Syntax ........: _WD_CapabilitiesNewType(Byref $s_LISTOF_CAPS, $sNewType)
-; Parameters ....: $s_LISTOF_CAPS       - refrence to $_WD_CAPS__LISTOF_* value that should be suplemented by supporting new capability type
-;                  $sNewType            - Name of new capbility type that should be supported
-; Return values .: None
+; Syntax ........: _WD_CapabilitiesNew(Byref $sCapabilityType, $sNewCapability)
+; Parameters ....: $sCapabilityType       - refrence to $_WD_CAPS__LISTOF_* value that should be suplemented for supporting new capability
+;                  $sNewCapability        - Name of new capbility that should be supported
+; Return values .: Success - none.
+;                  Failure - none and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotSupported
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
@@ -308,34 +314,38 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CapabilitiesNewType(ByRef $s_LISTOF_CAPS, $sNewType)
-	Local Const $sFuncName = "_WD_CapabilitiesNewType"
+Func _WD_CapabilitiesNew(ByRef $sCapabilityType, $sNewCapability)
+	Local Const $sFuncName = "_WD_CapabilitiesNew"
 	Local $sMessage = ''
-	If _
-			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
-			Then
-		$sMessage = 'Name of new capbility is already supported: ' & $sNewType
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage, 0), 0)
+	If Not IsString($sNewCapability) Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sMessage))
+	ElseIf StringLen($sNewCapability) = 0 Then
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
 	ElseIf _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY And _
-			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT _
+			$sCapabilityType <> $_WD_CAPS__LISTOF_STANDARD And _
+			$sCapabilityType <> $_WD_CAPS__LISTOF_STANDARD_OBJECT And _
+			$sCapabilityType <> $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY And _
+			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING And _
+			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN And _
+			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY And _
+			$sCapabilityType <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT _
 			Then
-		$sMessage = 'Not supported type of capbility: ' & $s_LISTOF_CAPS
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage, 0), 0)
+		$sMessage = 'Not supported type of capability: ' & $sCapabilityType
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
+	ElseIf _
+			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewCapability, $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			Then
+		$sMessage = 'Name of new capability is already supported: ' & $sNewCapability
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage))
 	EndIf
-	$s_LISTOF_CAPS = StringTrimRight($s_LISTOF_CAPS, 3) & '|' & $sNewType & ')\Z'
-EndFunc   ;==>_WD_CapabilitiesNewType
+	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sNewCapability & ')\Z'
+EndFunc   ;==>_WD_CapabilitiesNew
 
 #EndRegion - wd_capabilities.au3 UDF - core functions
 
