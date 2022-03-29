@@ -298,7 +298,7 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Name ..........: _WD_CapabilitiesNewType
 ; Description ...: Suplement $_WD_CAPS__LISTOF_* by adding new capability type
 ; Syntax ........: _WD_CapabilitiesNewType(Byref $s_LISTOF_CAPS, $sNewType)
-; Parameters ....: $s_LISTOF_CAPS       - refrence to $_WD_CAPS__LISTOF_* value that should be suplemented by supproting new capability type
+; Parameters ....: $s_LISTOF_CAPS       - refrence to $_WD_CAPS__LISTOF_* value that should be suplemented by supporting new capability type
 ;                  $sNewType            - Name of new capbility type that should be supported
 ; Return values .: None
 ; Author ........: mLipok
@@ -309,6 +309,32 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CapabilitiesNewType(ByRef $s_LISTOF_CAPS, $sNewType)
+	Local Const $sFuncName = "_WD_CapabilitiesNewType"
+	Local $sMessage == ''
+	If _
+			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewType, $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sNewType, $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			Then
+		$sMessage = 'Name of new capbility is already supported: ' & $sNewType
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage, 0), 0)
+	EndIf
+	If _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD, $STR_REGEXPMATCH And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT, $STR_REGEXPMATCH And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_STRING, $STR_REGEXPMATCH And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH And _
+			$s_LISTOF_CAPS <> $_WD_CAPS__LISTOF_SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH _
+			Then
+		$sMessage = 'Not supported type of capbility: ' & $s_LISTOF_CAPS
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage, 0), 0)
+	EndIf
 	$s_LISTOF_CAPS = StringTrimRight($s_LISTOF_CAPS, 3) & '|' & $sNewType & ')\Z'
 EndFunc   ;==>_WD_CapabilitiesNewType
 
