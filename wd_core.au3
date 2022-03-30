@@ -167,7 +167,6 @@ Global $_WD_DRIVER = "" ; Path to web driver executable
 Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
 Global $_WD_PORT = 0 ; Port used for web driver communication
-Global $_WD_OHTTP = ObjCreate("winhttp.winhttprequest.5.1")
 Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
 Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
