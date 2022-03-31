@@ -88,8 +88,9 @@ Global Const $_WD_JSON_Error = "[value][error]"
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging to console
-		$_WD_DEBUG_Error, _    ; Error logging to console
-		$_WD_DEBUG_Info        ; Full logging to console
+		$_WD_DEBUG_Error, _    ; logging to console in case of Error
+		$_WD_DEBUG_Info, _     ; logging to console with additional information
+		$_WD_DEBUG_Full        ; logging to console with information for developers of WebDriver UDF
 
 Global Enum _
 		$_WD_ERROR_Success = 0, _ ; No error
@@ -219,7 +220,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Local $iErr = @error
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
+		__WD_ConsoleWrite($sFuncName, $sResponse)
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -327,7 +328,7 @@ Func _WD_GetSession($sSession)
 	EndIf
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
+		__WD_ConsoleWrite($sFuncName, $sResponse)
 	EndIf
 
 	If $iErr Then
@@ -1218,13 +1219,13 @@ Func _WD_Startup()
 	$iPID = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $iPID Then
-		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
+		__WD_ConsoleWrite($sFuncName, "Existing instance of " & $sFile & " detected!")
 	Else
-		$iPID = Run($sCommand, "", ($_WD_DEBUG = $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
+		$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Or ($iErr <> $_WD_ERROR_Success And $_WD_DEBUG = $_WD_DEBUG_Error) Then
+	If $_WD_DEBUG >= $_WD_DEBUG_Info Or ($iErr <> $_WD_ERROR_Success And $_WD_DEBUG = $_WD_DEBUG_Error) Then
 		$sFunction = "_WD_IsLatestRelease"
 		$bLatest = Call($sFunction)
 
@@ -1251,14 +1252,14 @@ Func _WD_Startup()
 		_WinAPI_GetBinaryType($_WD_DRIVER)
 		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
-		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
-		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
-		__WD_ConsoleWrite($sFuncName & ": Webdriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
-		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
-		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
-		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
-		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT)
-		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
+		__WD_ConsoleWrite($sFuncName, "OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
+		__WD_ConsoleWrite($sFuncName, "AutoIt:" & @TAB & @AutoItVersion)
+		__WD_ConsoleWrite($sFuncName, "Webdriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
+		__WD_ConsoleWrite($sFuncName, "WinHTTP:" & @TAB & $sWinHttpVer)
+		__WD_ConsoleWrite($sFuncName, "Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
+		__WD_ConsoleWrite($sFuncName, "Params:" & @TAB & $_WD_DRIVER_PARAMS)
+		__WD_ConsoleWrite($sFuncName, "Port:" & @TAB & $_WD_PORT)
+		__WD_ConsoleWrite($sFuncName, "Command:" & @TAB & $sCommand)
 	EndIf
 
 	If $iErr Then
@@ -1307,7 +1308,7 @@ Func __WD_Get($sURL)
 	$_WD_HTTPRESULT = 0
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
+		__WD_ConsoleWrite($sFuncName, 'URL=' & $sURL)
 	EndIf
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
@@ -1382,7 +1383,7 @@ Func __WD_Post($sURL, $sData)
 	$_WD_HTTPRESULT = 0
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL & "; $sData=" & $sData)
+		__WD_ConsoleWrite($sFuncName, 'URL=' & $sURL & "; $sData=" & $sData)
 	EndIf
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
@@ -1456,7 +1457,7 @@ Func __WD_Delete($sURL)
 	$_WD_HTTPRESULT = 0
 
 	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': URL=' & $sURL)
+		__WD_ConsoleWrite($sFuncName, 'URL=' & $sURL)
 	EndIf
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
@@ -1535,12 +1536,12 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 		Case $_WD_DEBUG_Error
 			If $iErr <> $_WD_ERROR_Success Then ContinueCase
 
-		Case $_WD_DEBUG_Info
+		Case $_WD_DEBUG_Info, $_WD_DEBUG_Full
 			Local $sExtended = (($iExt <> Default) ? (" / " & $iExt) : (""))
-			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " (" & $iErr & $sExtended & ")"
+			$sMsg = $aWD_ERROR_DESC[$iErr] & " (" & $iErr & $sExtended & ")"
 			If $iExt = Default Then $sMsg &= (($_WD_HTTPRESULT) ? (" HTTP status = " & $_WD_HTTPRESULT) : ("")) ; _WD_LastHTTPResult()
 			$sMsg &= (($sMessage) ? (" : " & $sMessage) : (""))
-			__WD_ConsoleWrite($sMsg)
+			__WD_ConsoleWrite($sWhere, $sMsg)
 
 			If $iErr <> $_WD_ERROR_Success Then
 				If $_WD_ERROR_MSGBOX Then
@@ -1548,7 +1549,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 					If $iAnswer = $IDCANCEL Then
 						$iErr = $_WD_ERROR_UserAbort ; change $iErr to give a way to stop further processing by user interaction
 						If $_WD_DEBUG = $_WD_DEBUG_Info Then
-							__WD_ConsoleWrite($sFuncName & " : User Abort")
+							__WD_ConsoleWrite($sFuncName, "User Abort")
 						EndIf
 					EndIf
 				EndIf
@@ -1718,13 +1719,16 @@ Func __WD_StripPath($sFilePath)
 	Return StringRegExpReplace($sFilePath, "^.*\\(.*)$", "$1")
 EndFunc   ;==>__WD_StripPath
 
-Func __WD_ConsoleWrite($sMsg, $iError = @error, $iExtended = @extended)
-	If IsFunc($_WD_CONSOLE) Then
-		Call($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
-	ElseIf $_WD_CONSOLE = Null Then
-		; do nothing
-	Else
-		FileWrite($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
+Func __WD_ConsoleWrite($sWhere, $sMsg, $iDebugLevel = Default, $iError = @error, $iExtended = @extended)
+	If $iDebugLevel = Default Or $_WD_DEBUG >= $iDebugLevel Then
+		Local $sMessage = $sWhere & " ==> " & $sMsg & $_WD_CONSOLE_Suffix
+		If IsFunc($_WD_CONSOLE) Then
+			Call($_WD_CONSOLE, $sMessage)
+		ElseIf $_WD_CONSOLE = Null Then
+			; do nothing
+		Else
+			FileWrite($_WD_CONSOLE, $sMessage)
+		EndIf
 	EndIf
 	Return SetError($iError, $iExtended)
 EndFunc   ;==>__WD_ConsoleWrite
