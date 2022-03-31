@@ -2415,7 +2415,7 @@ EndFunc   ;==>__WD_JsonElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
-	Local Const $sFuncName = "__WD_GetLatestWebdriverURL"
+	Local Const $sFuncName = "__WD_GetLatestWebdriverInfo"
 	Local $iStartPos, $iConversion, $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $aInfo[2] = ["", ""]
 	Local $sURL = $aBrowser[0][$_WD_BROWSER_LatestReleaseURL]
