@@ -299,8 +299,8 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Name ..........: _WD_CapabilitiesNew
 ; Description ...: Suplement $_WD_CAPS_TYPES__* by adding new capability
 ; Syntax ........: _WD_CapabilitiesNew(Byref $sCapabilityType, $sNewCapability)
-; Parameters ....: $sCapabilityType       - refrence to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability
-;                  $sNewCapability        - Name of new capbility that should be supported
+; Parameters ....: $sCapabilityType       - reference to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability
+;                  $sNewCapability        - Name of new capability that should be supported
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidDataType
@@ -330,7 +330,7 @@ Func _WD_CapabilitiesNew(ByRef $sCapabilityType, $sNewCapability)
 			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY And _
 			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT _
 			Then
-		$sMessage = 'Not supported type of capability: ' & $sCapabilityType
+		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
 	ElseIf _
 			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Or _
@@ -341,7 +341,7 @@ Func _WD_CapabilitiesNew(ByRef $sCapabilityType, $sNewCapability)
 			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
 			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
-		$sMessage = 'Name of new capability is already supported: ' & $sNewCapability
+		$sMessage = 'New capability already exists: ' & $sNewCapability
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage))
 	EndIf
 	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sNewCapability & ')\Z'
@@ -419,7 +419,7 @@ EndFunc   ;==>__WD_CapabilitiesInitialize
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_CapabilitiesNotation
-; Description ...: get desired notation prefix for specitfied JSON object
+; Description ...: get desired notation prefix for specified JSON object
 ; Syntax ........: __WD_CapabilitiesNotation($i_BUILDER_TYPE)
 ; Parameters ....: $i_BUILDER_TYPE      - an integer value. One of $_WD_CAPS__** enums
 ; Return values .: notation prefix in Json.au3 format
