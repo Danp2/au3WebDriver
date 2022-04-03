@@ -219,7 +219,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
 
-	__WD_ConsoleWrite($sFuncName & ': ' & $sResponse, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": " & $sResponse, $_WD_DEBUG_Info)
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
@@ -325,7 +325,7 @@ Func _WD_GetSession($sSession)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
-	__WD_ConsoleWrite($sFuncName & ': ' & $sResponse, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": " & $sResponse, $_WD_DEBUG_Info)
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResult)
@@ -1215,7 +1215,7 @@ Func _WD_Startup()
 	$iPID = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $iPID Then
-		__WD_ConsoleWrite($sFuncName & ': ' & "Existing instance of " & $sFile & " detected!")
+		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
 	Else
 		$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
@@ -1303,7 +1303,7 @@ Func __WD_Get($sURL)
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
 
-	__WD_ConsoleWrite($sFuncName & ': ' & 'URL=' & $sURL, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1376,7 +1376,7 @@ Func __WD_Post($sURL, $sData)
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
 
-	__WD_ConsoleWrite($sFuncName & ': ' & 'URL=' & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Info)
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1448,7 +1448,7 @@ Func __WD_Delete($sURL)
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
 
-	__WD_ConsoleWrite($sFuncName & ': ' & 'URL=' & $sURL, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1538,7 +1538,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WebDriver UDF Error:", $sMsg)
 					If $iAnswer = $IDCANCEL Then
 						$iErr = $_WD_ERROR_UserAbort ; change $iErr to give a way to stop further processing by user interaction
-						__WD_ConsoleWrite($sFuncName & ': ' & "User Abort", $_WD_DEBUG_Info)
+						__WD_ConsoleWrite($sFuncName & ": User Abort", $_WD_DEBUG_Info)
 					EndIf
 				EndIf
 				If $_WD_ERROR_OUTPUTDEBUG Then
