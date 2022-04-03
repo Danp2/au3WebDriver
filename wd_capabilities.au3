@@ -176,6 +176,10 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                  $value1              - [optional] a variant value. Default is ''.
 ;                  $value2              - [optional] a variant value. Default is ''.
 ; Return values .: None
+; Return values .: Success - none.
+;                  Failure - none and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_NotSupported
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......: Parameters $value1 and $value2 depend on the $key value, take a look on example link
@@ -184,31 +188,30 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Example .......: https://www.autoitscript.com/wiki/WebDriver#Advanced_Capabilities_example
 ; ===============================================================================================================================
 Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
+	Local Const $sFuncName = "_WD_CapabilitiesAdd"
+
 	If $value1 = Default Then $value1 = 'default'
 	If $value2 = Default Then $value2 = 'default'
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
 
 	If StringInStr('alwaysMatch|firstMatch', $key) Then
-		If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
+		If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
 		Local $iResult = __WD_CapabilitiesInitialize($key, $value1)
 		If Not @error Then $_WD_CAPS__CURRENTIDX = $iResult
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
-	If $_WD_CAPS__CURRENTIDX = -1 Then Return SetError(1) ; must be properly initialized
-
-;~ 	https://www.w3.org/TR/webdriver/#dfn-page-load-strategy
-;~ 	https://www.w3.org/TR/webdriver/#dfn-table-of-page-load-strategies
+	If $_WD_CAPS__CURRENTIDX = -1 Then _
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "must be properly initialized"))
 
 	Local $s_SpecificOptions_KeyName = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName]
 	Local $v_WatchPoint
 	Local $s_Notation = ''
 
-
 	If StringRegExp($key, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Then ; for string/boolean value type in standard capability : https://www.w3.org/TR/webdriver/#capabilities
 		If $value2 <> '' Then
-			If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
+			If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
 			If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONERROR, "ERROR #" & @ScriptLineNumber, $s_Parameters_Info)
-			Return SetError($_WD_ERROR_NotSupported)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported"))
 		EndIf
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT) & '[' & $key & ']'
@@ -226,8 +229,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 				SetError(0)
 				$s_Notation &= '[' & $iCurrent1 & ']' ; here is specified which one of JSON ARRAY element should be used
 			Else ; not supported option
-				If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
-				Return SetError($_WD_ERROR_NotSupported)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported"))
 			EndIf
 		EndIf
 		$value1 = $value2 ; switch
@@ -261,12 +263,12 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
 
 	Else ; not supported option
-		If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & @ScriptLineNumber & $s_Parameters_Info & @CRLF)
+		If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
 		If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONERROR, "ERROR #" & @ScriptLineNumber, $s_Parameters_Info)
-		Return SetError($_WD_ERROR_NotSupported)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported"))
 	EndIf
+	If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1 & "  :: DEBUG")
 	If @error Then Return SetError(@error, @extended, $s_Notation)
-	If Not @Compiled Then ConsoleWrite("! IFNC: TESTING NEW FEATURES #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1 & @CRLF)
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
 EndFunc   ;==>_WD_CapabilitiesAdd
 
@@ -299,8 +301,8 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Name ..........: _WD_CapabilitiesNew
 ; Description ...: Suplement $_WD_CAPS_TYPES__* by adding new capability
 ; Syntax ........: _WD_CapabilitiesNew(Byref $sCapabilityType, $sNewCapability)
-; Parameters ....: $sCapabilityType       - reference to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability
-;                  $sNewCapability        - Name of new capability that should be supported
+; Parameters ....: $sCapabilityType - reference to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability
+;                  $sNewCapability  - Name of new capability that should be supported
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidDataType
@@ -354,33 +356,36 @@ EndFunc   ;==>_WD_CapabilitiesNew
 ; Name ..........: __WD_CapabilitiesInitialize
 ; Description ...: Initialize $_WD_CAPS__API and presets for 'alwaysMatch' Or 'firstMatch'
 ; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_BrowserName = ''])
-; Parameters ....: $s_MatchType         - a string value. 'alwaysMatch' Or 'firstMatch'.
+; Parameters ....: $s_MatchType   - 'alwaysMatch' Or 'firstMatch'.
 ;                  $s_BrowserName - [optional] The browser name as defined in $_WD_SupportedBrowsers. Default is ''
-; Return values .: None, or set @error
+; Return values .: Success - None
+;                  Failure - None and sets @error to one of the following values:
+;                  - $_WD_ERROR_NotSupported
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: $s_BrowserName can be set to '' only when 'alwaysMatch' is used
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchType = 'alwaysMatch' Or 'firstMatch'
+Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
+	Local Const $sFuncName = "__WD_CapabilitiesInitialize"
 	#Region - parameters validation
 	If Not StringInStr('alwaysMatch|firstMatch', $s_MatchType) Then _
-			Return SetError($_WD_ERROR_NotSupported)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported MatchType: " & $s_MatchType))
 
 	Local $s_SpecificOptions_KeyName = ''
 
 	If $s_BrowserName <> '' Then
 		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserName), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 		If @error Then
-			Return SetError($_WD_ERROR_NotSupported) ; $_WD_ERROR_NotSupported
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported Browser Name: " & $s_BrowserName))
 		EndIf
 		$s_SpecificOptions_KeyName = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_OptionsKey]
 	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
-		Return SetError($_WD_ERROR_NotSupported)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported FirstMatch require defined BrowserName"))
 ;~ 	Else
 ;~ 		Return SetError(4) ; this should be tested/reviewed later (@mLipok 23-02-2022)
 	EndIf
@@ -404,17 +409,6 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '') ; $s_MatchTy
 	$_WD_CAPS__CURRENTIDX = $i_API_New_IDX ; set last API IDX as CURRENT API IDX
 	#EndRegion - new "MATCH" Initialization
 	Return $_WD_CAPS__CURRENTIDX ; return current API IDX
-
-	#Region - FOR TESTING ONLY
-	Local $s_Information = _
-			"$s_BrowserName = " & $s_BrowserName & @CRLF & _
-			"$s_MatchType = " & $s_MatchType & @CRLF & _
-			"$s_SpecificOptions_KeyName = " & $s_SpecificOptions_KeyName & @CRLF & _
-			"$i_FirstMatch_Counter = " & $i_FirstMatch_Counter & @CRLF & _
-			"$_WD_CAPS__CURRENTIDX = " & $_WD_CAPS__CURRENTIDX & @CRLF & _
-			''
-	If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, $s_Information)
-	#EndRegion - FOR TESTING ONLY
 EndFunc   ;==>__WD_CapabilitiesInitialize
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -469,18 +463,21 @@ EndFunc   ;==>__WD_CapabilitiesNotation
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CapabilitiesDump($s_Comment)
-	If @Compiled Then Return ; because of GDRP reason do not throw nothing to console when compiled script
+	Local Const $sFuncName = "_WD_CapabilitiesDump"
+	If @Compiled Then Return ; because of GDRP (law act) reason do not throw nothing to console when compiled script
 
 	If $_WD_DEBUG <> $_WD_DEBUG_None Then
-		__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
-		__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
-		__WD_ConsoleWrite("- $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2))
-		__WD_ConsoleWrite(_ArrayToString($_WD_CAPS__API))
-		__WD_ConsoleWrite('! _WD_Capabilities: API END: ' & $s_Comment)
+		__WD_ConsoleWrite($sFuncName & ": _WD_Capabilities: API START: " & $s_Comment)
+		__WD_ConsoleWrite($sFuncName & ": - $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
+		__WD_ConsoleWrite($sFuncName & ": - $_WD_CAPS__API: Cols= " & UBound($_WD_CAPS__API, 2))
 
-		__WD_ConsoleWrite('! _WD_Capabilities: JSON START: ' & $s_Comment)
-		__WD_ConsoleWrite(_WD_CapabilitiesGet())
-		__WD_ConsoleWrite('! _WD_Capabilities: JSON END: ' & $s_Comment)
+		__WD_ConsoleWrite('$_WD_CAPS__API' & ' : ' & _ArrayToString($_WD_CAPS__API))
+
+		__WD_ConsoleWrite($sFuncName & ": _WD_Capabilities: API END: " & $s_Comment)
+
+		__WD_ConsoleWrite($sFuncName & ": _WD_Capabilities: JSON START: " & $s_Comment)
+		__WD_ConsoleWrite($sFuncName & ": " & _WD_CapabilitiesGet())
+		__WD_ConsoleWrite($sFuncName & ": _WD_Capabilities: JSON END: " & $s_Comment)
 	EndIf
 EndFunc   ;==>_WD_CapabilitiesDump
 
