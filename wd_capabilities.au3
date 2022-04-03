@@ -201,7 +201,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
 	If $_WD_CAPS__CURRENTIDX = -1 Then _
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "must be properly initialized"))
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "Must be properly initialized"))
 
 	Local $s_SpecificOptions_KeyName = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName]
 	Local $v_WatchPoint
@@ -209,27 +209,25 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 
 	If StringRegExp($key, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Then ; for adding string/boolean value type in standard capability
 		If $value2 <> '' Then
-			If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
-			If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONERROR, "ERROR #" & @ScriptLineNumber, $s_Parameters_Info)
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported"))
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported: $value2 must be empty string. " & $s_Parameters_Info))
 		EndIf
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT) & '[' & $key & ']'
 
 	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; for adding JSON Object type in standard capability
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT)
-		If Not StringRegExp($value1, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if arrays ($value1) is child of the object ($key)
+		If Not StringRegExp($value1, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if $value1 (child of the $key JSON OBJECT) should be treated as String or Boolean
 			$v_WatchPoint = @ScriptLineNumber
 			$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
-		Else
-			If $value2 <> '' Then
+		Else ; if $value1 (child of the $key JSON OBJECT) should be treated as JSON ARRAY
+			If $value2 <> '' Then ; $value2 an element of $value1 JSON ARRAY must be defined
 				$v_WatchPoint = @ScriptLineNumber
 				$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
 				Local $iCurrent1 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
-				SetError(0)
+				SetError(0) ; for any case because UBound() can set @error
 				$s_Notation &= '[' & $iCurrent1 & ']' ; here is specified which one of JSON ARRAY element should be used
 			Else ; not supported option
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported"))
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported: $value2 must be set. " & $s_Parameters_Info))
 			EndIf
 		EndIf
 		$value1 = $value2 ; switch
@@ -239,7 +237,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']'
 		Local $iCurrent2 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
-		SetError(0)
+		SetError(0) ; for any case because UBound() can set @error
 		$s_Notation &= '[' & $iCurrent2 & ']' ; here is specified which one of JSON ARRAY element should be used
 		If $value2 Then
 			$v_WatchPoint = @ScriptLineNumber
@@ -263,13 +261,10 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
 
 	Else ; not supported option
-		$v_WatchPoint = @ScriptLineNumber
-		If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
-		If Not @Compiled Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONERROR, "ERROR #" & @ScriptLineNumber, $s_Parameters_Info)
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported"))
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported KEY parameter ( must be defined in $_WD_CAPS_TYPES__*** ). " & $s_Parameters_Info))
 	EndIf
 	If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1 & "  :: DEBUG")
-	If @error Then Return SetError(@error, @extended, $s_Notation)
+	If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "" & $s_Parameters_Info))
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
 EndFunc   ;==>_WD_CapabilitiesAdd
 
@@ -321,8 +316,10 @@ Func _WD_CapabilitiesNew(ByRef $sCapabilityType, $sNewCapability)
 	Local Const $sFuncName = "_WD_CapabilitiesNew"
 	Local $sMessage = ''
 	If Not IsString($sNewCapability) Then
+		$sMessage = 'NewCapability must be string'
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sMessage))
 	ElseIf StringLen($sNewCapability) = 0 Then
+		$sMessage = 'NewCapability must be non empty string'
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
 	ElseIf _
 			$sCapabilityType <> $_WD_CAPS_TYPES__STANDARD And _
