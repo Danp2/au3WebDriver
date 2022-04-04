@@ -299,9 +299,9 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CapabilitiesDefine
 ; Description ...: Define new capability type and name
-; Syntax ........: _WD_CapabilitiesDefine(Byref $sCapabilityType, $sNewCapability)
+; Syntax ........: _WD_CapabilitiesDefine(Byref $sCapabilityType, $sCapabilityName)
 ; Parameters ....: $sCapabilityType - reference to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability name
-;                  $sNewCapability  - Name of new capability that should be supported
+;                  $sCapabilityName  - Name of new capability that should be supported
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidDataType
@@ -315,13 +315,13 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sNewCapability)
+Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 	Local Const $sFuncName = "_WD_CapabilitiesDefine"
 	Local $sMessage = ''
-	If Not IsString($sNewCapability) Then
+	If Not IsString($sCapabilityName) Then
 		$sMessage = 'NewCapability must be string'
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sMessage))
-	ElseIf StringLen($sNewCapability) = 0 Then
+	ElseIf StringLen($sCapabilityName) = 0 Then
 		$sMessage = 'NewCapability must be non empty string'
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
 	ElseIf _
@@ -336,18 +336,18 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sNewCapability)
 		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
 	ElseIf _
-			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sNewCapability, $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
-		$sMessage = 'New capability already exists: ' & $sNewCapability
+		$sMessage = 'New capability already exists: ' & $sCapabilityName
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage))
 	EndIf
-	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sNewCapability & ')\Z'
+	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
 EndFunc   ;==>_WD_CapabilitiesDefine
 
 #EndRegion - wd_capabilities.au3 UDF - core functions
