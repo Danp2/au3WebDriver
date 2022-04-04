@@ -70,7 +70,7 @@
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd()
 	_WD_CapabilitiesGet()
-	_WD_CapabilitiesNew()
+	_WD_CapabilitiesDefine()
 
 	Internal functions:
 	__WD_CapabilitiesInitialize()
@@ -125,7 +125,7 @@ Global Const $_WD_CAPS__ARRAY_HEADER_NAMES = _
 		"SPECIFICVENDOR__OPTS" & "|" & _
 		""
 
-Global Const $_WD_CAPS_MATCHTYPE = _ ; this should be RegExpPattern
+Global Const $_WD_CAPS_MATCHTYPES = _ ; this should be RegExpPattern
 		'(?i)\A(alwaysMatch|firstMatch)\Z'
 
 Global $_WD_CAPS__OBJECT
@@ -197,9 +197,9 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value2 = Default Then $value2 = 'default'
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
 
-	If StringRegExp($key, $_WD_CAPS_MATCHTYPE) Then
-		If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
+	If StringRegExp($key, $_WD_CAPS_MATCHTYPES) Then ; check if alwaysMatch|firstMatch
 		Local $iResult = __WD_CapabilitiesInitialize($key, $value1)
+		If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
 		If Not @error Then $_WD_CAPS__CURRENTIDX = $iResult
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
@@ -297,10 +297,10 @@ Func _WD_CapabilitiesGet()
 EndFunc   ;==>_WD_CapabilitiesGet
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_CapabilitiesNew
-; Description ...: Suplement $_WD_CAPS_TYPES__* by adding new capability
-; Syntax ........: _WD_CapabilitiesNew(Byref $sCapabilityType, $sNewCapability)
-; Parameters ....: $sCapabilityType - reference to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability
+; Name ..........: _WD_CapabilitiesDefine
+; Description ...: Define new capability type and name
+; Syntax ........: _WD_CapabilitiesDefine(Byref $sCapabilityType, $sNewCapability)
+; Parameters ....: $sCapabilityType - reference to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability name
 ;                  $sNewCapability  - Name of new capability that should be supported
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
@@ -315,8 +315,8 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_CapabilitiesNew(ByRef $sCapabilityType, $sNewCapability)
-	Local Const $sFuncName = "_WD_CapabilitiesNew"
+Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sNewCapability)
+	Local Const $sFuncName = "_WD_CapabilitiesDefine"
 	Local $sMessage = ''
 	If Not IsString($sNewCapability) Then
 		$sMessage = 'NewCapability must be string'
@@ -348,7 +348,7 @@ Func _WD_CapabilitiesNew(ByRef $sCapabilityType, $sNewCapability)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage))
 	EndIf
 	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sNewCapability & ')\Z'
-EndFunc   ;==>_WD_CapabilitiesNew
+EndFunc   ;==>_WD_CapabilitiesDefine
 
 #EndRegion - wd_capabilities.au3 UDF - core functions
 
@@ -372,9 +372,6 @@ EndFunc   ;==>_WD_CapabilitiesNew
 Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 	Local Const $sFuncName = "__WD_CapabilitiesInitialize"
 	#Region - parameters validation
-	If Not StringRegExp($s_MatchType, $_WD_CAPS_MATCHTYPE) Then _
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported MatchType: " & $s_MatchType))
-
 	Local $s_SpecificOptions_KeyName = ''
 
 	If $s_BrowserName <> '' Then
