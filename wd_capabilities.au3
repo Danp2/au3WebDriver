@@ -125,6 +125,9 @@ Global Const $_WD_CAPS__ARRAY_HEADER_NAMES = _
 		"SPECIFICVENDOR__OPTS" & "|" & _
 		""
 
+Global Const $_WD_CAPS_MATCHTYPE = _ ; this should be RegExpPattern
+		'(?i)\A(alwaysMatch|firstMatch)\Z'
+
 Global $_WD_CAPS__OBJECT
 Global $_WD_CAPS__CURRENTIDX = -1
 #EndRegion - wd_capabilities.au3 UDF - Global's declarations
@@ -194,7 +197,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value2 = Default Then $value2 = 'default'
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
 
-	If StringInStr('alwaysMatch|firstMatch', $key) Then
+	If StringRegExp($key, $_WD_CAPS_MATCHTYPE) Then
 		If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
 		Local $iResult = __WD_CapabilitiesInitialize($key, $value1)
 		If Not @error Then $_WD_CAPS__CURRENTIDX = $iResult
@@ -369,7 +372,7 @@ EndFunc   ;==>_WD_CapabilitiesNew
 Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 	Local Const $sFuncName = "__WD_CapabilitiesInitialize"
 	#Region - parameters validation
-	If Not StringInStr('alwaysMatch|firstMatch', $s_MatchType) Then _
+	If Not StringRegExp($s_MatchType, $_WD_CAPS_MATCHTYPE) Then _
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported MatchType: " & $s_MatchType))
 
 	Local $s_SpecificOptions_KeyName = ''
