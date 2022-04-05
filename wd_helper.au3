@@ -1381,6 +1381,7 @@ EndFunc   ;==>_WD_UpdateDriver
 ;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_FileIssue
+;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
