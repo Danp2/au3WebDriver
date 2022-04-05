@@ -273,10 +273,10 @@ EndFunc   ;==>_WD_CapabilitiesAdd
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CapabilitiesGet
-; Description ...: Get the JSON string
+; Description ...: Get the Capabilites as JSON string from $_WD_CAPS__OBJECT
 ; Syntax ........: _WD_CapabilitiesGet()
 ; Parameters ....: None
-; Return values .: JSON string
+; Return values .: Capabilites as JSON string
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
