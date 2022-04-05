@@ -1377,6 +1377,10 @@ EndFunc   ;==>_WD_UpdateDriver
 ;                  $sDriverEXE          - Name of webdriver executable
 ;                  $sSubDir             - [optional] Directory containing files to extract.
 ; Return values .: None
+; Return values .: Success - None
+;                  Failure - None and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_FileIssue
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1419,12 +1423,15 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 				If $FileItem.IsFolder Then
 					; try to Extract subdir content
 					__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, '\' & $FileItem.Name)
+					If Not @error Then $bEXEWasFound = True
+					ExitLoop
 				Else
 					If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
 						$bEXEWasFound = True
 						; delete webdriver from disk before unpacking to avoid potential problems
 						FileDelete($sInstallDir & $sDriverEXE)
 						$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+						ExitLoop
 					EndIf
 				EndIf
 			Next
