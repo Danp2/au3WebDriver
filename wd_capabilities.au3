@@ -383,7 +383,7 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported FirstMatch require defined BrowserName"))
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "FirstMatch requires BrowserName to be defined"))
 ;~ 	Else
 ;~ 		Return SetError(4) ; this should be tested/reviewed later (@mLipok 23-02-2022)
 	EndIf
