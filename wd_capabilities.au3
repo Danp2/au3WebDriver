@@ -273,13 +273,13 @@ EndFunc   ;==>_WD_CapabilitiesAdd
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CapabilitiesGet
-; Description ...: Get the Capabilites as JSON string from $_WD_CAPS__OBJECT
+; Description ...: Get the Capabilities as string for use in session creation
 ; Syntax ........: _WD_CapabilitiesGet()
 ; Parameters ....: None
-; Return values .: Capabilites as JSON string
+; Return values .: JSON string
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: Internally the Capabilities are processed in AutoIt object variable $_WD_CAPS__OBJECT
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
