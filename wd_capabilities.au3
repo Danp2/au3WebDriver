@@ -411,7 +411,7 @@ Func __WD_CapabilitiesNotation($i_BUILDER_TYPE)
 	Local $s_SpecificOptions_KeyName = $_WD_CAPS__API[$_WD_CAPS__CURRENTIDX][$_WD_CAPS__SPECIFICVENDOR__ObjectName]
 	If $s_SpecificOptions_KeyName Then $s_SpecificOptions_KeyName = '["' & $s_SpecificOptions_KeyName & '"]'
 
-	#TODO check
+	#TODO error handling should be checked
 ;~ 	If $s_SpecificOptions_KeyName = '' And $i_BUILDER_TYPE >= $_WD_CAPS__SPECIFICVENDOR__ARGS Then _
 ;~ 			Return SetError(1, 0, '') ; ARGS, PREFS, LOG, ENV and any further are possible only when Specific/Vendor Capability was specified
 
