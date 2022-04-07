@@ -1364,7 +1364,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$_WD_DEBUG = $WDDebugSave
 	EndIf
 
-	Local $sMessage = ': DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest
+	Local $sMessage = 'DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
@@ -1377,6 +1377,11 @@ EndFunc   ;==>_WD_UpdateDriver
 ;                  $sDriverEXE          - Name of webdriver executable
 ;                  $sSubDir             - [optional] Directory containing files to extract.
 ; Return values .: None
+; Return values .: Success - None
+;                  Failure - None and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_FileIssue
+;                  - $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1419,12 +1424,15 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 				If $FileItem.IsFolder Then
 					; try to Extract subdir content
 					__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, '\' & $FileItem.Name)
+					If Not @error Then $bEXEWasFound = True
+					ExitLoop
 				Else
 					If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
 						$bEXEWasFound = True
 						; delete webdriver from disk before unpacking to avoid potential problems
 						FileDelete($sInstallDir & $sDriverEXE)
 						$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+						ExitLoop
 					EndIf
 				EndIf
 			Next
@@ -2415,7 +2423,7 @@ EndFunc   ;==>__WD_JsonElement
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
-	Local Const $sFuncName = "__WD_GetLatestWebdriverURL"
+	Local Const $sFuncName = "__WD_GetLatestWebdriverInfo"
 	Local $iStartPos, $iConversion, $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $aInfo[2] = ["", ""]
 	Local $sURL = $aBrowser[0][$_WD_BROWSER_LatestReleaseURL]

@@ -68,9 +68,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 		Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & '/goog/cdp/execute', $vData)
 		$iErr = @error
 
-		If $_WD_DEBUG = $_WD_DEBUG_Info Then
-			__WD_ConsoleWrite($sFuncName & ': ' & $sResponse)
-		EndIf
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse, $_WD_DEBUG_Info)
 
 		Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
 	EndIf
