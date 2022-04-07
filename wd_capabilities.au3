@@ -96,25 +96,28 @@ Global Enum _
 
 Global $_WD_CAPS__API[0][$_WD_CAPS__COUNTER]
 
-Global $_WD_CAPS_TYPES__STANDARD = _ ; this should be RegExpPattern
+Global Const $_WD_KEYS__MATCHTYPES = _ ; this should be RegExpPattern
+		'(?i)\A(alwaysMatch|firstMatch)\Z'
+
+Global $_WD_KEYS__STANDARD = _ ; this should be RegExpPattern
 		'(?i)\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
 
-Global $_WD_CAPS_TYPES__STANDARD_OBJECT = _ ; this should be RegExpPattern
+Global $_WD_KEYS__STANDARD_OBJECT = _ ; this should be RegExpPattern
 		'(?i)\A(proxy|timeouts)\Z'
 
-Global $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY = _ ; this should be RegExpPattern
+Global $_WD_KEYS__STANDARD_OBJECT_ARRAY = _ ; this should be RegExpPattern
 		'(?i)\A(noproxy)\Z'
 
-Global $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING = _ ; this should be RegExpPattern
+Global $_WD_KEYS__SPECIFICVENDOR_STRING = _ ; this should be RegExpPattern
 		'(?i)\A(binary|debuggerAddress|minidumpPath)\Z'
 
-Global $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN = _ ; this should be RegExpPattern
+Global $_WD_KEYS__SPECIFICVENDOR_BOOLEAN = _ ; this should be RegExpPattern
 		'(?i)\A(w3c|detach)\Z'
 
-Global $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY = _ ; this should be RegExpPattern
+Global $_WD_KEYS__SPECIFICVENDOR_ARRAY = _ ; this should be RegExpPattern
 		'(?i)\A(args|extensions|excludeSwitches|windowTypes)\Z'
 
-Global $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT = _ ; this should be RegExpPattern
+Global $_WD_KEYS__SPECIFICVENDOR_OBJECT = _ ; this should be RegExpPattern
 		'(?i)\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|localState)\Z'
 
 Global Const $_WD_CAPS__ARRAY_HEADER_NAMES = _
@@ -124,9 +127,6 @@ Global Const $_WD_CAPS__ARRAY_HEADER_NAMES = _
 		"SPECIFICVENDOR__ObjectName" & "|" & _
 		"SPECIFICVENDOR__OPTS" & "|" & _
 		""
-
-Global Const $_WD_CAPS_MATCHTYPES = _ ; this should be RegExpPattern
-		'(?i)\A(alwaysMatch|firstMatch)\Z'
 
 Global $_WD_CAPS__OBJECT
 Global $_WD_CAPS__CURRENTIDX = -1
@@ -155,27 +155,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Name ..........: _WD_CapabilitiesAdd
 ; Description ...: Add capablitities to JSON string
 ; Syntax ........: _WD_CapabilitiesAdd($key[, $value1 = ''[, $value2 = '']])
-; Parameters ....: $key                 - one of the following
-;                               | Standard:
-;                               | 'browserName'
-;                               | 'browserVersion'
-;                               | 'platformName'
-;                               | 'acceptInsecureCerts'
-;                               | 'pageLoadStrategy'
-;                               | 'setWindowRect'
-;                               | 'strictFileInteractability'
-;                               | 'unhandledPromptBehavior'
-;                               | 'proxy'
-;                               | 'timeouts'
-;                               |
-;                               | Additional:
-;                               | 'args'
-;                               | 'env'
-;                               | 'excludeSwitches'
-;                               | 'logs'
-;                               | 'prefs'
-;                               |
-;                               | '' an empty string
+; Parameters ....: $key            - Capability or Match type defined in $_WD_KEYS__*
 ;                  $value1              - [optional] a variant value. Default is ''.
 ;                  $value2              - [optional] a variant value. Default is ''.
 ; Return values .: None
@@ -197,9 +177,9 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	If $value2 = Default Then $value2 = 'default'
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
 
-	If StringRegExp($key, $_WD_CAPS_MATCHTYPES) Then ; check if alwaysMatch|firstMatch
+	If StringRegExp($key, $_WD_KEYS__MATCHTYPES, $STR_REGEXPMATCH) Then ; check if alwaysMatch|firstMatch
 		Local $iResult = __WD_CapabilitiesInitialize($key, $value1)
-		If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG")
+		__WD_ConsoleWrite($sFuncName & ": TESTING #" & @ScriptLineNumber & $s_Parameters_Info & "  :: DEBUG", $_WD_DEBUG_Full)
 		If Not @error Then $_WD_CAPS__CURRENTIDX = $iResult
 		Return SetError(@error, @extended, $_WD_CAPS__CURRENTIDX)
 	EndIf
@@ -210,16 +190,16 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	Local $v_WatchPoint
 	Local $s_Notation = ''
 
-	If StringRegExp($key, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Then ; for adding string/boolean value type in standard capability
+	If StringRegExp($key, $_WD_KEYS__STANDARD, $STR_REGEXPMATCH) Then ; for adding string/boolean value type in standard capability
 		If $value2 <> '' Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported: $value2 must be empty string. " & $s_Parameters_Info))
 		EndIf
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT) & '[' & $key & ']'
 
-	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; for adding JSON Object type in standard capability
+	ElseIf StringRegExp($key, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; for adding JSON Object type in standard capability
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT)
-		If Not StringRegExp($value1, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if $value1 (child of the $key JSON OBJECT) should be treated as String or Boolean
+		If Not StringRegExp($value1, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if $value1 (child of the $key JSON OBJECT) should be treated as String or Boolean
 			$v_WatchPoint = @ScriptLineNumber
 			$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
 		Else ; if $value1 (child of the $key JSON OBJECT) should be treated as JSON ARRAY
@@ -235,7 +215,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		EndIf
 		$value1 = $value2 ; switch
 
-	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; for adding JSON ARRAY type in specific/vendor capabilities
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; for adding JSON ARRAY type in specific/vendor capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']'
@@ -247,27 +227,27 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 			$value1 &= '=' & $value2
 		EndIf
 
-	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; for adding JSON OBJECT capability in specific/vendor capabilities
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; for adding JSON OBJECT capability in specific/vendor capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
 		$value1 = $value2 ; switch
 
-	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding string value type in specific/vendor capability
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding string value type in specific/vendor capability
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
 
-	ElseIf StringRegExp($key, $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding boolean value type in specific/vendor capability
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding boolean value type in specific/vendor capability
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
 
 	Else ; not supported option
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported KEY parameter ( must be defined in $_WD_CAPS_TYPES__*** ). " & $s_Parameters_Info))
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported KEY parameter ( must be defined in $_WD_KEYS__*** ). " & $s_Parameters_Info))
 	EndIf
-	If Not @Compiled Then __WD_ConsoleWrite($sFuncName & ": IFNC: TESTING #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1 & "  :: DEBUG")
-	If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "" & $s_Parameters_Info))
+	__WD_ConsoleWrite($sFuncName & ": TESTING #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1 & "  :: DEBUG", $_WD_DEBUG_Full)
+	If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, $s_Parameters_Info))
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
 EndFunc   ;==>_WD_CapabilitiesAdd
 
@@ -276,7 +256,7 @@ EndFunc   ;==>_WD_CapabilitiesAdd
 ; Description ...: Get the Capabilities as string for use in session creation
 ; Syntax ........: _WD_CapabilitiesGet()
 ; Parameters ....: None
-; Return values .: JSON string
+; Return values .: JSON as string
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......: Internally the Capabilities are processed in AutoIt object variable $_WD_CAPS__OBJECT
@@ -300,7 +280,7 @@ EndFunc   ;==>_WD_CapabilitiesGet
 ; Name ..........: _WD_CapabilitiesDefine
 ; Description ...: Define new capability type and name
 ; Syntax ........: _WD_CapabilitiesDefine(Byref $sCapabilityType, $sCapabilityName)
-; Parameters ....: $sCapabilityType - reference to $_WD_CAPS_TYPES__* value that should be suplemented for supporting new capability name
+; Parameters ....: $sCapabilityType - reference to $_WD_KEYS__* value that should be suplemented for supporting new capability name
 ;                  $sCapabilityName  - Name of new capability that should be supported
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
@@ -325,24 +305,24 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 		$sMessage = 'NewCapability must be non empty string'
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
 	ElseIf _
-			$sCapabilityType <> $_WD_CAPS_TYPES__STANDARD And _
-			$sCapabilityType <> $_WD_CAPS_TYPES__STANDARD_OBJECT And _
-			$sCapabilityType <> $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY And _
-			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING And _
-			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN And _
-			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY And _
-			$sCapabilityType <> $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT _
+			$sCapabilityType <> $_WD_KEYS__STANDARD And _
+			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT And _
+			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT_ARRAY And _
+			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_STRING And _
+			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_BOOLEAN And _
+			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_ARRAY And _
+			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_OBJECT _
 			Then
 		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
 	ElseIf _
-			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__STANDARD, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_CAPS_TYPES__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
 		$sMessage = 'New capability already exists: ' & $sCapabilityName
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidArgue, $sMessage))
@@ -384,8 +364,6 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "FirstMatch requires BrowserName to be defined"))
-;~ 	Else
-;~ 		Return SetError(4) ; this should be tested/reviewed later (@mLipok 23-02-2022)
 	EndIf
 	#EndRegion - parameters validation
 
