@@ -423,7 +423,6 @@ EndFunc   ;==>__WD_CapabilitiesNotation
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_CapabilitiesDump($s_Comment)
-	If @Compiled Then Return ; because of GDRP reason do not throw nothing to console when compiled script
 	If $_WD_DEBUG <> $_WD_DEBUG_None Then
 		__WD_ConsoleWrite('! _WD_Capabilities: API START: ' & $s_Comment)
 		__WD_ConsoleWrite("- $_WD_CAPS__API: Rows= " & UBound($_WD_CAPS__API, 1))
