@@ -155,9 +155,9 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Name ..........: _WD_CapabilitiesAdd
 ; Description ...: Add capablitities to JSON string
 ; Syntax ........: _WD_CapabilitiesAdd($key[, $value1 = ''[, $value2 = '']])
-; Parameters ....: $key            - Capability or Match type defined in $_WD_KEYS__*
-;                  $value1              - [optional] a variant value. Default is ''.
-;                  $value2              - [optional] a variant value. Default is ''.
+; Parameters ....: $key                 - Capability or Match type defined in $_WD_KEYS__*
+;                  $value1              - [optional] a variant value. Default is Default.
+;                  $value2              - [optional] a variant value. Default is Default.
 ; Return values .: None
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
@@ -171,11 +171,11 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Link ..........:
 ; Example .......: https://www.autoitscript.com/wiki/WebDriver#Advanced_Capabilities_example
 ; ===============================================================================================================================
-Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
+Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	Local Const $sFuncName = "_WD_CapabilitiesAdd"
 
-	If $value1 = Default Then $value1 = 'default'
-	If $value2 = Default Then $value2 = 'default'
+	If $value1 = Default Then $value1 = ''
+	If $value2 = Default Then $value2 = ''
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
 
 	If StringRegExp($key, $_WD_KEYS__MATCHTYPES, $STR_REGEXPMATCH) Then ; check if alwaysMatch|firstMatch
