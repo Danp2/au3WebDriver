@@ -161,6 +161,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Return values .: None
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotSupported
 ; Author ........: mLipok
@@ -342,6 +343,7 @@ EndFunc   ;==>_WD_CapabilitiesDefine
 ; Return values .: Success - None
 ;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotSupported
+;                  - $_WD_ERROR_InvalidValue
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......: $s_BrowserName can be set to '' only when 'alwaysMatch' is used
@@ -363,7 +365,7 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
 		$s_SpecificOptions_KeyName = ''
 	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "FirstMatch requires BrowserName to be defined"))
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "FirstMatch requires BrowserName to be defined"))
 	EndIf
 	#EndRegion - parameters validation
 
