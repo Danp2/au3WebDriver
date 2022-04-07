@@ -191,16 +191,16 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 	Local $v_WatchPoint
 	Local $s_Notation = ''
 
-	If StringRegExp($key, $_WD_KEYS__STANDARD, $STR_REGEXPMATCH) Then ; for adding string/boolean value type in standard capability
+	If StringRegExp($key, $_WD_KEYS__STANDARD, $STR_REGEXPMATCH) Then ; add JSON STRING/BOOLEAN value in standard capability
 		If $value2 <> '' Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported: $value2 must be empty string. " & $s_Parameters_Info))
 		EndIf
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT) & '[' & $key & ']'
 
-	ElseIf StringRegExp($key, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; for adding JSON Object type in standard capability
+	ElseIf StringRegExp($key, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; add JSON OBJECT in standard capability
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__STANDARD__CURRENT)
-		If Not StringRegExp($value1, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if $value1 (child of the $key JSON OBJECT) should be treated as String or Boolean
+		If Not StringRegExp($value1, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if $value1 (child of the $key JSON OBJECT) should be treated as JSON STRING value or JSON BOOLEAN value
 			$v_WatchPoint = @ScriptLineNumber
 			$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
 		Else ; if $value1 (child of the $key JSON OBJECT) should be treated as JSON ARRAY
@@ -216,7 +216,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 		EndIf
 		$value1 = $value2 ; switch
 
-	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; for adding JSON ARRAY type in specific/vendor capabilities
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Then ; add JSON ARRAY capability in specific/vendor capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']'
@@ -228,18 +228,18 @@ Func _WD_CapabilitiesAdd($key, $value1 = '', $value2 = '')
 			$value1 &= '=' & $value2
 		EndIf
 
-	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; for adding JSON OBJECT capability in specific/vendor capabilities
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) Then ; add JSON OBJECT capability in specific/vendor capabilities
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
 		$value1 = $value2 ; switch
 
-	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding string value type in specific/vendor capability
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_STRING, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; add JSON STRING value type in specific/vendor capability
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
 
-	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; for adding boolean value type in specific/vendor capability
+	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_BOOLEAN, $STR_REGEXPMATCH) And $s_SpecificOptions_KeyName <> '' Then ; add JSON BOOLEAN value type in specific/vendor capability
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = __WD_CapabilitiesNotation($_WD_CAPS__SPECIFICVENDOR__OPTS)
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
