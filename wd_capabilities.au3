@@ -15,9 +15,7 @@
 ; Description ...: A collection of functions used to dynamically build the Capabilities string required to create a WebDriver session
 ; Author ........: mLipok
 ; Modified ......: Danp2
-; URL ...........: https://github.com/Danp2/au3WebDriver/blob/master/wd_capabilities.au3
 ; URL ...........: https://w3c.github.io/webdriver/#capabilities
-; URL ...........: https://docs.yugabyte.com/preview/api/ysql/datatypes/type_json/primitive-and-compound-data-types
 ; Date ..........: 2022/04/08
 ; ================================================================================
 
