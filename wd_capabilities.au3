@@ -156,8 +156,8 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Description ...: Add capablitities to JSON string
 ; Syntax ........: _WD_CapabilitiesAdd($key[, $value1 = ''[, $value2 = '']])
 ; Parameters ....: $key                 - Capability or Match type defined in $_WD_KEYS__*
-;                  $value1              - [optional] a variant value. Default is Default.
-;                  $value2              - [optional] a variant value. Default is Default.
+;                  $value1              - [optional] a variant value. Default is ''.
+;                  $value2              - [optional] a variant value. Default is ''.
 ; Return values .: None
 ; Return values .: Success - none.
 ;                  Failure - none and sets @error to one of the following values:
