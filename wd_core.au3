@@ -147,7 +147,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Unknown Command", _
 		"User Aborted", _
 		"File issue", _
-		"Browser or feature not supported" _
+		"Browser or feature not supported", _
+		"Capability or value already defined" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
