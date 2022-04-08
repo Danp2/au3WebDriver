@@ -113,6 +113,7 @@ Global Enum _
 		$_WD_ERROR_UserAbort, _ ;
 		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_NotSupported, _ ;
+		$_WD_ERROR_AlreadyDefined, _ ;
 		$_WD_ERROR_COUNTER ;
 
 Global Enum _
