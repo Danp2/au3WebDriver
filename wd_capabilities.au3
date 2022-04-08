@@ -90,25 +90,38 @@ Global $_WD_CAPS__OBJECT
 Global $_WD_NOTATION__MATCHTYPE = '' ; $_WD_CAPS__STANDARD__Type
 Global $_WD_NOTATION__SPECIFICVENDOR = '' ; $s_SpecificOptions_KeyName
 
-Global Const $_WD_KEYS__MATCHTYPES = _ ; this should be RegExpPattern of possible "Match Types"
+; $_WD_KEYS__MATCHTYPES should be RegExpPattern of possible "Match Types"
+Global Const $_WD_KEYS__MATCHTYPES = _
 		'(?i)\A(alwaysMatch|firstMatch)\Z'
 
-Global $_WD_KEYS__STANDARD_PRIMITIVE = _ ; this should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that should be placed in STANDARD part of Capabilities JSON structure
+; $_WD_KEYS__STANDARD_PRIMITIVE should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that
+; should be placed in STANDARD part of Capabilities JSON structure
+Global $_WD_KEYS__STANDARD_PRIMITIVE = _
 		'(?i)\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
 
-Global $_WD_KEYS__STANDARD_OBJECT = _ ; this should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that should be placed in STANDARD part of Capabilities JSON structure
+; $_WD_KEYS__STANDARD_OBJECT should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that
+; should be placed in STANDARD part of Capabilities JSON structure
+Global $_WD_KEYS__STANDARD_OBJECT = _
 		'(?i)\A(proxy|timeouts)\Z'
 
-Global $_WD_KEYS__STANDARD_OBJECT_ARRAY = _ ; this should be RegExpPattern of "JSON_ARRAY" - "a list of primitive elements" that should be placed in $_WD_KEYS__STANDARD_OBJECT .... as an inner element of "JSON_OBJECT" - "a dictionary element" in STANDARD part of Capabilities JSON structure
+; $_WD_KEYS__STANDARD_OBJECT_ARRAY should be RegExpPattern of "JSON_ARRAY" - "a list of primitive elements" that
+; should be placed in $_WD_KEYS__STANDARD_OBJECT .... as an inner element of "JSON_OBJECT" - "a dictionary element" in STANDARD part of Capabilities JSON structure
+Global $_WD_KEYS__STANDARD_OBJECT_ARRAY = _
 		'(?i)\A(noproxy)\Z'
 
-Global $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE = _ ; this should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that should be placed in SPECIFICVENDOR part of Capabilities JSON structure
+; $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that
+; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
+Global $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE = _
 		'(?i)\A(binary|debuggerAddress|detach|minidumpPath|w3c)\Z'
 
-Global $_WD_KEYS__SPECIFICVENDOR_ARRAY = _ ; this should be RegExpPattern of "JSON_ARRAY" - "a list of primitive elements" that should be placed in SPECIFICVENDOR part of Capabilities JSON structure
+; $_WD_KEYS__SPECIFICVENDOR_ARRAY should be RegExpPattern of "JSON_ARRAY" - "a list of primitive elements" that
+; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
+Global $_WD_KEYS__SPECIFICVENDOR_ARRAY = _
 		'(?i)\A(args|extensions|excludeSwitches|windowTypes)\Z'
 
-Global $_WD_KEYS__SPECIFICVENDOR_OBJECT = _ ; this should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that should be placed in SPECIFICVENDOR part of Capabilities JSON structure
+; $_WD_KEYS__SPECIFICVENDOR_OBJECT should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that
+; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
+Global $_WD_KEYS__SPECIFICVENDOR_OBJECT = _
 		'(?i)\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|localState)\Z'
 
 #EndRegion - wd_capabilities.au3 UDF - Global's declarations
