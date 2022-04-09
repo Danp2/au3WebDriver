@@ -113,10 +113,11 @@ Global Enum _
 		$_WD_ERROR_UserAbort, _ ;
 		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_NotSupported, _ ;
-		$_WD_ERROR_AlreadyDefined, _ ;
+		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
+		$_WD_ERROR_CapabilityCaseSensivity, _ ; Used in _WD_CapabilitiesAdd
 		$_WD_ERROR_COUNTER ;
 
-Global Enum _
+Global Enum _ ; this Enums are related to $_WD_SupportedBrowsers
 		$_WD_BROWSER_Name, _
 		$_WD_BROWSER_ExeName, _
 		$_WD_BROWSER_DriverName, _
@@ -148,7 +149,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"User Aborted", _
 		"File issue", _
 		"Browser or feature not supported", _
-		"Capability or value already defined" _
+		"Capability or value already defined", _
+		"Capability name case sensitivity issue" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
@@ -1712,6 +1714,7 @@ EndFunc   ;==>__WD_StripPath
 Func __WD_ConsoleWrite($sMsg, $iDebugLevel = Default, $iError = @error, $iExtended = @extended)
 	If $iDebugLevel = Default Or $_WD_DEBUG >= $iDebugLevel Then
 		If IsFunc($_WD_CONSOLE) Then
+			If IsNumber($iDebugLevel) And $iDebugLevel = $_WD_DEBUG_Full Then $sMsg = ':WD_DEBUG (' & $iError & '/' & $iExtended & ') : ' & $sMsg
 			Call($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
 		ElseIf $_WD_CONSOLE = Null Then
 			; do nothing
