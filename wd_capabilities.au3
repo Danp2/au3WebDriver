@@ -12,10 +12,11 @@
 ; Title .........: wd_capabilities.au3
 ; AutoIt Version : v3.3.14.5
 ; Language ......: English
-; Description ...: A collection of functions used to dynamically build the Capabilities string required to create a WebDriver session
+; Description ...: A collection of functions used to dynamically build the Capabilities string (JSON formated) required to create a WebDriver session
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; URL ...........: https://w3c.github.io/webdriver/#capabilities
+; URL ...........: https://www.autoitscript.com/wiki/WebDriver_Capabilities
 ; Date ..........: 2022/04/08
 ; ================================================================================
 
@@ -48,21 +49,21 @@
 #CE
 #EndRegion - wd_capabilities.au3 - Copyright
 
-#Region - wd_capabilities.au3 - thanks, remarks, comments:
+#Region - wd_capabilities.au3 - thanks, remarks, comments
 #CS
 ; Author(s) .....: Michał Lipok - @mLipok
 ; AutoIt Version : v3.3.14.5
-	- Jonathan Bennett and the AutoIt Team
+	- Jonathan Bennett and the AutoIt Team https://www.autoitscript.com/forum/staff/
 	- Dan Pollak (@Danp2) for all his work on https://github.com/Danp2/WebDriver/
 	- @trancexx for https://github.com/dragana-r/autoit-winhttp and https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 	- @Ward for  https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 
 	wd_capabilities.au3 UDF was originally designed by Michał Lipok : https://www.autoitscript.com/forum/topic/206576-wd_capabilitiesau3-support-topic-early-beta-version-work-in-progress/
-	By mutual consent (mLipok + Danp2) for the sake of the entire project, it was decided that: first official release will be published on https://github.com/Danp2/au3WebDriver/
-	Future project management will remain in the hands of Danp2
-	mLipok will remain an active contributor to this project
+	By mutual consent (@mLipok + @Danp2) for the sake of the entire project, it was decided that: first official release will be published on https://github.com/Danp2/au3WebDriver/
+	Future project management will remain in the hands of @Danp2
+	@mLipok will remain an active contributor to this project
 #CE
-#EndRegion - wd_capabilities.au3 - thanks, remarks, comments:
+#EndRegion - wd_capabilities.au3 - thanks, remarks, comments
 
 #Region - wd_capabilities.au3 - function list
 #CS
@@ -85,8 +86,8 @@
 
 #Region - wd_capabilities.au3 UDF - Global's declarations
 Global $_WD_CAPS__OBJECT
-Global $_WD_NOTATION__MATCHTYPE = '' ; $_WD_CAPS__STANDARD__Type
-Global $_WD_NOTATION__SPECIFICVENDOR = '' ; $s_SpecificOptions_KeyName
+Global $_WD_NOTATION__MATCHTYPE = ''
+Global $_WD_NOTATION__SPECIFICVENDOR = ''
 
 ; $_WD_KEYS__MATCHTYPES should be RegExpPattern of possible "Match Types"
 Global Const $_WD_KEYS__MATCHTYPES = _
@@ -140,8 +141,11 @@ Global $_WD_KEYS__SPECIFICVENDOR_OBJECT = _
 ; ===============================================================================================================================
 Func _WD_CapabilitiesStartup()
 	Local Const $sFuncName = "_WD_CapabilitiesStartup"
-
+	; CleanUp
 	$_WD_CAPS__OBJECT = ''
+
+	; Create object with empty capabilites: {"capabilities":"{}"}
+	Json_Put($_WD_CAPS__OBJECT, '[capabilities]', '{}')
 	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber, $_WD_DEBUG_Full)
 EndFunc   ;==>_WD_CapabilitiesStartup
 
@@ -346,7 +350,7 @@ EndFunc   ;==>_WD_CapabilitiesDefine
 Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 	Local Const $sFuncName = "__WD_CapabilitiesInitialize"
 	#Region - parameters validation
-	Local $bAlwaysMatch_exist = (IsObj($_WD_CAPS__OBJECT) And Json_ObjExists($_WD_CAPS__OBJECT, 'capabilities.alwaysMatch'))
+	Local $bAlwaysMatch_exist = Json_ObjExists($_WD_CAPS__OBJECT, 'capabilities.alwaysMatch')
 	Local $iFirstMatch_count = UBound(Json_Get($_WD_CAPS__OBJECT, '[capabilities][firstMatch]'))
 	SetError(0) ; for any case because UBound() can set @error
 	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '   $bAlwaysMatch_exist = ' & $bAlwaysMatch_exist & '  $iFirstMatch_count = ' & $iFirstMatch_count, $_WD_DEBUG_Full)
