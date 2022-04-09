@@ -47,7 +47,8 @@ Global Const $aDebugLevel[][2] = _
 		[ _
 		["None", $_WD_DEBUG_None], _
 		["Error", $_WD_DEBUG_Error], _
-		["Full", $_WD_DEBUG_Info] _
+		["Info", $_WD_DEBUG_Info], _
+		["Full", $_WD_DEBUG_Full] _
 		]
 
 Global $sSession
@@ -275,7 +276,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		Case Else
 			ConsoleWrite("! Error = " & $iError & " occurred on: " & $sDemoName & @CRLF)
 			ConsoleWrite("! _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
-			ConsoleWrite("! _WD_GetSession = " &  _WD_GetSession($sSession) & @CRLF)
+			ConsoleWrite("! _WD_GetSession = " & _WD_GetSession($sSession) & @CRLF)
 			MsgBox($MB_ICONERROR + $MB_TOPMOST, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
 
@@ -426,7 +427,7 @@ Func DemoScript()
 	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}', Default, $_WD_JSON_Value)
-	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
+	ConsoleWrite("- #" & @ScriptLineNumber & " : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	; 2022-03-23 This website no longer exists
 	;$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'https://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
@@ -594,7 +595,7 @@ Func DemoDownload()
 
 	; Find the element
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@alt='Google']")
-	
+
 	If @error <> $_WD_ERROR_Success Then
 		; Try alternate element
 		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//div[@id='hplogo']//img")
