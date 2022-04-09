@@ -71,13 +71,13 @@
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd()
 	_WD_CapabilitiesGet()
-	_WD_CapabilitiesDefine()
 
 	Internal functions:
 	__WD_CapabilitiesNotation()
 
 	Helper Functions:
 	_WD_CapabilitiesDump()
+	_WD_CapabilitiesDefine()
 #CE
 
 #EndRegion - wd_capabilities.au3 - function list
@@ -265,60 +265,6 @@ Func _WD_CapabilitiesGet()
 
 	Return $Json3
 EndFunc   ;==>_WD_CapabilitiesGet
-
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_CapabilitiesDefine
-; Description ...: Define a new capability by selecting a type and specifying a name
-; Syntax ........: _WD_CapabilitiesDefine(Byref $sCapabilityType, $sCapabilityName)
-; Parameters ....: $sCapabilityType     - reference to $_WD_KEYS__* value that should be suplemented for supporting new capability name
-;                  $sCapabilityName     - Name of new capability that should be supported
-; Return values .: Success - none.
-;                  Failure - none and sets @error to one of the following values:
-;                  - $_WD_ERROR_InvalidDataType
-;                  - $_WD_ERROR_InvalidValue
-;                  - $_WD_ERROR_NotSupported
-;                  - $_WD_ERROR_AlreadyDefined
-; Author ........: mLipok
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
-	Local Const $sFuncName = "_WD_CapabilitiesDefine"
-	Local $sMessage = ''
-	If Not IsString($sCapabilityName) Then
-		$sMessage = 'New CapabilityName must be string'
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sMessage))
-	ElseIf StringLen($sCapabilityName) = 0 Then
-		$sMessage = 'New CapabilityName must be non empty string'
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
-	ElseIf _
-			$sCapabilityType <> $_WD_KEYS__STANDARD_PRIMITIVE And _
-			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT And _
-			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT_ARRAY And _
-			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE And _
-			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_ARRAY And _
-			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_OBJECT _
-			Then
-		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
-	ElseIf _
-			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
-			Then
-		$sMessage = 'New capability already defined: ' & $sCapabilityName
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
-	EndIf
-	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  :: DEBUG: Capbility: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType, $_WD_DEBUG_Full)
-EndFunc   ;==>_WD_CapabilitiesDefine
-
 #EndRegion - wd_capabilities.au3 UDF - core functions
 
 #Region - wd_capabilities.au3 UDF - internal functions
@@ -373,6 +319,59 @@ EndFunc   ;==>__WD_CapabilitiesNotation
 #EndRegion - wd_capabilities.au3 UDF - internal functions
 
 #Region - wd_capabilities.au3 UDF - helper functions
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_CapabilitiesDefine
+; Description ...: Define a new capability by selecting a type and specifying a name
+; Syntax ........: _WD_CapabilitiesDefine(Byref $sCapabilityType, $sCapabilityName)
+; Parameters ....: $sCapabilityType     - reference to $_WD_KEYS__* value that should be suplemented for supporting new capability name
+;                  $sCapabilityName     - Name of new capability that should be supported
+; Return values .: Success - none.
+;                  Failure - none and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_NotSupported
+;                  - $_WD_ERROR_AlreadyDefined
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
+	Local Const $sFuncName = "_WD_CapabilitiesDefine"
+	Local $sMessage = ''
+	If Not IsString($sCapabilityName) Then
+		$sMessage = 'New CapabilityName must be string'
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sMessage))
+	ElseIf StringLen($sCapabilityName) = 0 Then
+		$sMessage = 'New CapabilityName must be non empty string'
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
+	ElseIf _
+			$sCapabilityType <> $_WD_KEYS__STANDARD_PRIMITIVE And _
+			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT And _
+			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT_ARRAY And _
+			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE And _
+			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_ARRAY And _
+			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_OBJECT _
+			Then
+		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
+	ElseIf _
+			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			Then
+		$sMessage = 'New capability already defined: ' & $sCapabilityName
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
+	EndIf
+	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
+	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  :: DEBUG: Capbility: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType, $_WD_DEBUG_Full)
+EndFunc   ;==>_WD_CapabilitiesDefine
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CapabilitiesDump
 ; Description ...: Dump JSON $_WD_CAPS__OBJECT as string to console
