@@ -74,7 +74,7 @@
 	_WD_CapabilitiesDefine()
 
 	Internal functions:
-	__WD_CapabilitiesInitialize()
+	__WD_CapabilitiesNotation()
 
 	Helper Functions:
 	_WD_CapabilitiesDump()
@@ -144,8 +144,8 @@ Func _WD_CapabilitiesStartup()
 	; CleanUp
 	$_WD_CAPS__OBJECT = ''
 
-	; Create object with empty "alwaysMatch": {"capabilities":{"alwaysMatch":"{}"}}
-	Json_Put($_WD_CAPS__OBJECT, '[capabilities][alwaysMatch]', '{}')
+	; Create object with empty capabilites: {"capabilities":"{}"}
+	Json_Put($_WD_CAPS__OBJECT, '[capabilities]', '{}')
 	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' > ' & Json_Encode($_WD_CAPS__OBJECT) & ' > IsObj = ' & IsObj($_WD_CAPS__OBJECT), $_WD_DEBUG_Full)
 EndFunc   ;==>_WD_CapabilitiesStartup
 
@@ -165,7 +165,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......: Parameters $value1 and $value2 depend on the $key value, take a look on example link
-; Related .......:
+; Related .......: __WD_CapabilitiesNotation
 ; Link ..........:
 ; Example .......: https://www.autoitscript.com/wiki/WebDriver#Advanced_Capabilities_example
 ; ===============================================================================================================================
@@ -177,7 +177,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
 
 	If StringRegExp($key, $_WD_KEYS__MATCHTYPES, $STR_REGEXPMATCH) Then ; check if alwaysMatch|firstMatch
-		__WD_CapabilitiesInitialize($key, $value1)
+		__WD_CapabilitiesNotation($key, $value1)
 		__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & $s_Parameters_Info, $_WD_DEBUG_Full)
 		Return SetError(@error, @extended)
 	EndIf
@@ -323,9 +323,9 @@ EndFunc   ;==>_WD_CapabilitiesDefine
 
 #Region - wd_capabilities.au3 UDF - internal functions
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_CapabilitiesInitialize
-; Description ...: Initialize $_WD_CAPS__OBJECT
-; Syntax ........: __WD_CapabilitiesInitialize($s_MatchType[, $s_BrowserName = ''])
+; Name ..........: __WD_CapabilitiesNotation
+; Description ...: Change $_WD_NOTATION__MATCHTYPE and $_WD_NOTATION__SPECIFICVENDOR - localization in JSON structure used by _WD_CapabilitiesAdd()
+; Syntax ........: __WD_CapabilitiesNotation($s_MatchType[, $s_BrowserName = ''])
 ; Parameters ....: $s_MatchType         - 'alwaysMatch' Or 'firstMatch'.
 ;                  $s_BrowserName       - [optional] The browser name as defined in $_WD_SupportedBrowsers. Default is ''
 ; Return values .: Success - None
@@ -337,12 +337,12 @@ EndFunc   ;==>_WD_CapabilitiesDefine
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......: $s_BrowserName can be set to '' only when 'alwaysMatch' is used
-; Related .......:
+; Related .......: _WD_CapabilitiesAdd
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
-	Local Const $sFuncName = "__WD_CapabilitiesInitialize"
+Func __WD_CapabilitiesNotation($s_MatchType, $s_BrowserName = '')
+	Local Const $sFuncName = "__WD_CapabilitiesNotation"
 	#Region - parameters validation
 
 	If $s_BrowserName <> '' Then
@@ -366,11 +366,10 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 		Case 'firstMatch'
 			Local $iFirstMatch_count = UBound(Json_Get($_WD_CAPS__OBJECT, '[capabilities][firstMatch]'))
 			$_WD_NOTATION__MATCHTYPE &= '[' & $iFirstMatch_count & ']' ; here is specified which one of JSON ARRAY element should be used
-			Json_Put($_WD_CAPS__OBJECT, $_WD_NOTATION__MATCHTYPE, '{}')
 	EndSwitch
 
 	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE & ' $_WD_NOTATION__SPECIFICVENDOR = ' & $_WD_NOTATION__SPECIFICVENDOR, $_WD_DEBUG_Full)
-EndFunc   ;==>__WD_CapabilitiesInitialize
+EndFunc   ;==>__WD_CapabilitiesNotation
 #EndRegion - wd_capabilities.au3 UDF - internal functions
 
 #Region - wd_capabilities.au3 UDF - helper functions
