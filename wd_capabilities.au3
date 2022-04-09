@@ -12,7 +12,7 @@
 ; Title .........: wd_capabilities.au3
 ; AutoIt Version : v3.3.14.5
 ; Language ......: English
-; Description ...: A collection of functions used to dynamically build the Capabilities string (JSON formated) required to create a WebDriver session
+; Description ...: A collection of functions used to dynamically build the Capabilities string (JSON formatted) required to create a WebDriver session
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; URL ...........: https://w3c.github.io/webdriver/#capabilities
@@ -91,37 +91,37 @@ Global $_WD_NOTATION__SPECIFICVENDOR = ''
 
 ; $_WD_KEYS__MATCHTYPES should be RegExpPattern of possible "Match Types"
 Global Const $_WD_KEYS__MATCHTYPES = _
-		'(?i)\A(alwaysMatch|firstMatch)\Z'
+		'\A(alwaysMatch|firstMatch)\Z'
 
 ; $_WD_KEYS__STANDARD_PRIMITIVE should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that
 ; should be placed in STANDARD part of Capabilities JSON structure
 Global $_WD_KEYS__STANDARD_PRIMITIVE = _
-		'(?i)\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
+		'\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
 
 ; $_WD_KEYS__STANDARD_OBJECT should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that
 ; should be placed in STANDARD part of Capabilities JSON structure
 Global $_WD_KEYS__STANDARD_OBJECT = _
-		'(?i)\A(proxy|timeouts)\Z'
+		'\A(proxy|timeouts)\Z'
 
 ; $_WD_KEYS__STANDARD_OBJECT_ARRAY should be RegExpPattern of "JSON_ARRAY" - "a list of primitive elements" that
 ; should be placed in $_WD_KEYS__STANDARD_OBJECT .... as an inner element of "JSON_OBJECT" - "a dictionary element" in STANDARD part of Capabilities JSON structure
 Global $_WD_KEYS__STANDARD_OBJECT_ARRAY = _
-		'(?i)\A(noproxy)\Z'
+		'\A(noproxy)\Z'
 
 ; $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that
 ; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
 Global $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE = _
-		'(?i)\A(binary|debuggerAddress|detach|minidumpPath|w3c)\Z'
+		'\A(binary|debuggerAddress|detach|minidumpPath|w3c)\Z'
 
 ; $_WD_KEYS__SPECIFICVENDOR_ARRAY should be RegExpPattern of "JSON_ARRAY" - "a list of primitive elements" that
 ; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
 Global $_WD_KEYS__SPECIFICVENDOR_ARRAY = _
-		'(?i)\A(args|extensions|excludeSwitches|windowTypes)\Z'
+		'\A(args|extensions|excludeSwitches|windowTypes)\Z'
 
 ; $_WD_KEYS__SPECIFICVENDOR_OBJECT should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that
 ; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
 Global $_WD_KEYS__SPECIFICVENDOR_OBJECT = _
-		'(?i)\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|localState)\Z'
+		'\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|localState)\Z'
 
 #EndRegion - wd_capabilities.au3 UDF - Global's declarations
 
@@ -233,8 +233,21 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
 		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
 
-	Else ; not supported option
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported KEY parameter ( must be defined in $_WD_KEYS__*** ). " & $s_Parameters_Info))
+	ElseIf _
+			StringRegExp($key, '(?i)' & $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
+			StringRegExp($key, '(?i)' & $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($key, '(?i)' & $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($key, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, $STR_REGEXPMATCH) Or _
+			StringRegExp($key, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($key, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			Then
+		If $_WD_ERROR_MSGBOX Then MsgBox($MB_ICONERROR + $MB_OK + $MB_TOPMOST, @ScriptLineNumber, _
+				'Capability name are case sensitive.' & @CRLF & _
+				'Check proper case in $_WD_KEYS__*** for:' & @CRLF & _
+				'"' & $key & '"')
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_CapabilityCaseSensivity, 'Capability name are case sensitive ( check proper case in $_WD_KEYS__*** for "' & $key & '"). ' & $s_Parameters_Info))
+	Else
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, 'Not supported KEY parameter ( must be defined in $_WD_KEYS__*** ). ' & $s_Parameters_Info))
 	EndIf
 	__WD_ConsoleWrite($sFuncName & ": #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1, $_WD_DEBUG_Full)
 	If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, $s_Parameters_Info))
@@ -358,12 +371,12 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
 	ElseIf _
-			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
-			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
+			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
+			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
 		$sMessage = 'New capability already defined: ' & $sCapabilityName
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
