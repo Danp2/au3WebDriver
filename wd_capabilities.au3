@@ -144,9 +144,9 @@ Func _WD_CapabilitiesStartup()
 	; CleanUp
 	$_WD_CAPS__OBJECT = ''
 
-	; Create object with empty capabilites: {"capabilities":"{}"}
-	Json_Put($_WD_CAPS__OBJECT, '[capabilities]', '{}')
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber, $_WD_DEBUG_Full)
+	; Create object with empty "alwaysMatch": {"capabilities":{"alwaysMatch":"{}"}}
+	Json_Put($_WD_CAPS__OBJECT, '[capabilities][alwaysMatch]', '{}')
+	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' > ' & Json_Encode($_WD_CAPS__OBJECT) & ' > IsObj = ' & IsObj($_WD_CAPS__OBJECT), $_WD_DEBUG_Full)
 EndFunc   ;==>_WD_CapabilitiesStartup
 
 ; #FUNCTION# ====================================================================================================================
@@ -181,12 +181,6 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 		__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & $s_Parameters_Info, $_WD_DEBUG_Full)
 		Return SetError(@error, @extended)
 	EndIf
-
-	Local $bAlwaysMatch_exist = Json_ObjExists($_WD_CAPS__OBJECT, 'capabilities.alwaysMatch')
-	SetError(0) ; for any case because Json_ObjExists() can set @error
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '   $bAlwaysMatch_exist = ' & $bAlwaysMatch_exist, $_WD_DEBUG_Full)
-	If $bAlwaysMatch_exist = 0 Then _
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, 'Must be properly initialized'))
 
 	Local $v_WatchPoint
 	Local $s_Notation = ''
@@ -274,7 +268,7 @@ EndFunc   ;==>_WD_CapabilitiesGet
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_CapabilitiesDefine
-; Description ...: Define new capability type and name
+; Description ...: Define a new capability by selecting a type and specifying a name
 ; Syntax ........: _WD_CapabilitiesDefine(Byref $sCapabilityType, $sCapabilityName)
 ; Parameters ....: $sCapabilityType     - reference to $_WD_KEYS__* value that should be suplemented for supporting new capability name
 ;                  $sCapabilityName     - Name of new capability that should be supported
@@ -318,7 +312,7 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
 			StringRegExp($sCapabilityName, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
-		$sMessage = 'New capability already exists: ' & $sCapabilityName
+		$sMessage = 'New capability already defined: ' & $sCapabilityName
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
 	EndIf
 	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
@@ -350,16 +344,8 @@ EndFunc   ;==>_WD_CapabilitiesDefine
 Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 	Local Const $sFuncName = "__WD_CapabilitiesInitialize"
 	#Region - parameters validation
-	Local $bAlwaysMatch_exist = Json_ObjExists($_WD_CAPS__OBJECT, 'capabilities.alwaysMatch')
-	Local $iFirstMatch_count = UBound(Json_Get($_WD_CAPS__OBJECT, '[capabilities][firstMatch]'))
-	SetError(0) ; for any case because UBound() can set @error
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '   $bAlwaysMatch_exist = ' & $bAlwaysMatch_exist & '  $iFirstMatch_count = ' & $iFirstMatch_count, $_WD_DEBUG_Full)
 
-	If $s_MatchType <> 'alwaysMatch' And Not $bAlwaysMatch_exist Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, '"alwaysMatch" must be set at first place'))
-	ElseIf $s_MatchType = 'alwaysMatch' And $bAlwaysMatch_exist Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, '"alwaysMatch" must be set only once'))
-	ElseIf $s_BrowserName <> '' Then
+	If $s_BrowserName <> '' Then
 		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserName), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 		If @error Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, 'Not supported Browser Name: ' & $s_BrowserName))
@@ -372,20 +358,18 @@ Func __WD_CapabilitiesInitialize($s_MatchType, $s_BrowserName = '')
 	EndIf
 	#EndRegion - parameters validation
 
-	$_WD_NOTATION__MATCHTYPE = '[' & $s_MatchType & ']'
-	If $_WD_NOTATION__MATCHTYPE = '[firstMatch]' Then
-		$_WD_NOTATION__MATCHTYPE &= '[' & $iFirstMatch_count & ']' ; here is specified which one of JSON ARRAY element should be used
-	EndIf
+	$_WD_NOTATION__MATCHTYPE = '[capabilities][' & $s_MatchType & ']'
+	Switch $s_MatchType
+		Case 'alwaysMatch'
+			; Json_Put($_WD_CAPS__OBJECT, '[capabilities][alwaysMatch]', '{}')
+			; it is already added in _WD_CapabilitiesStartup()
+		Case 'firstMatch'
+			Local $iFirstMatch_count = UBound(Json_Get($_WD_CAPS__OBJECT, '[capabilities][firstMatch]'))
+			$_WD_NOTATION__MATCHTYPE &= '[' & $iFirstMatch_count & ']' ; here is specified which one of JSON ARRAY element should be used
+			Json_Put($_WD_CAPS__OBJECT, $_WD_NOTATION__MATCHTYPE, '{}')
+	EndSwitch
 
-	$_WD_NOTATION__MATCHTYPE = '[capabilities]' & $_WD_NOTATION__MATCHTYPE
-	Json_Put($_WD_CAPS__OBJECT, $_WD_NOTATION__MATCHTYPE, '{}')
-
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE, $_WD_DEBUG_Full)
-
-	Local $bAlwaysMatch_exist2 = Json_ObjExists($_WD_CAPS__OBJECT, 'capabilities.alwaysMatch')
-	Local $iFirstMatch_count2 = UBound(Json_Get($_WD_CAPS__OBJECT, '[capabilities][firstMatch]'))
-	SetError(0) ; for any case because UBound() can set @error
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '   $bAlwaysMatch_exist2 = ' & $bAlwaysMatch_exist2 & '  $iFirstMatch_count2 = ' & $iFirstMatch_count2, $_WD_DEBUG_Full)
+	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE & ' $_WD_NOTATION__SPECIFICVENDOR = ' & $_WD_NOTATION__SPECIFICVENDOR, $_WD_DEBUG_Full)
 EndFunc   ;==>__WD_CapabilitiesInitialize
 #EndRegion - wd_capabilities.au3 UDF - internal functions
 
