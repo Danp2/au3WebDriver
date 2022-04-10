@@ -114,7 +114,6 @@ Global Enum _
 		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_NotSupported, _ ;
 		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
-		$_WD_ERROR_CapabilityCaseSensivity, _ ; Used in _WD_CapabilitiesAdd
 		$_WD_ERROR_COUNTER ;
 
 Global Enum _ ; this Enums are related to $_WD_SupportedBrowsers
@@ -149,8 +148,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"User Aborted", _
 		"File issue", _
 		"Browser or feature not supported", _
-		"Capability or value already defined", _
-		"Capability name case sensitivity issue" _
+		"Capability or value already defined" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
