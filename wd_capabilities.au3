@@ -15,7 +15,6 @@
 ; Description ...: A collection of functions used to dynamically build the Capabilities string (JSON formatted) required to create a WebDriver session
 ; Author ........: mLipok
 ; Modified ......: Danp2
-; URL ...........: https://w3c.github.io/webdriver/#capabilities
 ; URL ...........: https://www.autoitscript.com/wiki/WebDriver_Capabilities
 ; Date ..........: 2022/04/08
 ; ================================================================================
