@@ -1506,10 +1506,9 @@ EndFunc   ;==>__WD_Delete
 ;                  $sMessage   - Message that will be passed to the console/output [optional]
 ;                  $iExt       - Extended information from the calling function [optional]
 ; Return values..: Success - $iErr
-;                  Failure - None
 ; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: $iErr can be forced to $_WD_ERROR_UserAbort
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
