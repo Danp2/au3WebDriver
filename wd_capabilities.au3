@@ -397,9 +397,9 @@ Func _WD_CapabilitiesDump($s_Comment = '')
 	Local Const $sFuncName = "_WD_CapabilitiesDump"
 
 	If $_WD_DEBUG <> $_WD_DEBUG_None Then
-		__WD_ConsoleWrite($sFuncName & ": _WD_Capabilities: JSON START: " & $s_Comment)
+		__WD_ConsoleWrite($sFuncName & ": JSON START (below): " & $s_Comment)
 		__WD_ConsoleWrite(_WD_CapabilitiesGet())
-		__WD_ConsoleWrite($sFuncName & ": _WD_Capabilities: JSON END: " & $s_Comment)
+		__WD_ConsoleWrite($sFuncName & ": JSON END (above): " & $s_Comment)
 	EndIf
 EndFunc   ;==>_WD_CapabilitiesDump
 #EndRegion - wd_capabilities.au3 UDF - helper functions
