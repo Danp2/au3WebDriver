@@ -260,9 +260,9 @@ Func _WD_DeleteSession($sSession)
 	Local $iErr = @error
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sResponse), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, 'Error occurs when trying to delete WebDriver session'), 0, 0)
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, 1)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, 'WebDriver session deleted'), 0, 1)
 EndFunc   ;==>_WD_DeleteSession
 
 ; #FUNCTION# ====================================================================================================================
@@ -1448,8 +1448,6 @@ Func __WD_Delete($sURL)
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
 
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
-
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
 	If @error Then
@@ -1493,8 +1491,9 @@ Func __WD_Delete($sURL)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	Local $sMessage = (($sResponseText) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
+	Local $sMessage = (($sResponseText) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
+	__WD_ConsoleWrite($sFuncName & $sMessage, $_WD_DEBUG_Info)
+	Return SetError(__WD_Error($sFuncName, $iResult, "Error occurs with URL=" & $sURL), 0, $sResponseText)
 EndFunc   ;==>__WD_Delete
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
