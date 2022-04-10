@@ -240,10 +240,6 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 			StringRegExp($key, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
 			StringRegExp($key, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
-		If $_WD_ERROR_MSGBOX Then MsgBox($MB_ICONERROR + $MB_OK + $MB_TOPMOST, @ScriptLineNumber, _
-				'Capability name are case sensitive.' & @CRLF & _
-				'Check proper case in $_WD_KEYS__*** for:' & @CRLF & _
-				'"' & $key & '"')
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_CapabilityCaseSensivity, 'Capability name are case sensitive ( check proper case in $_WD_KEYS__*** for "' & $key & '"). ' & $s_Parameters_Info))
 	Else
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, 'Not supported KEY parameter ( must be defined in $_WD_KEYS__*** ). ' & $s_Parameters_Info))
