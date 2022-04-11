@@ -248,7 +248,7 @@ EndFunc   ;==>_WD_CreateSession
 ; Return values .: Success - 1
 ;                  Failure - 0 and sets @error to $_WD_ERROR_Exception
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_CreateSession, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#delete-session
@@ -256,11 +256,11 @@ EndFunc   ;==>_WD_CreateSession
 ; ===============================================================================================================================
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
-	Local $sResponse = __WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
+	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, 'Error occurs when trying to delete WebDriver session'), 0, 0)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, 'Error occurs when trying to delete session'), 0, 0)
 	EndIf
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, 'WebDriver session deleted'), 0, 1)
 EndFunc   ;==>_WD_DeleteSession
@@ -1437,7 +1437,7 @@ EndFunc   ;==>__WD_Post
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_SocketError
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........:
