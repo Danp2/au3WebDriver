@@ -1499,7 +1499,7 @@ EndFunc   ;==>__WD_Delete
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
-; Description ...: Writes Error to the console, message-boxes, OutputDebugString
+; Description ...: Outputs error details to the configured destination(s)
 ; Syntax ........: __WD_Error($sWhere, $iErr[, $sMessage = Default[, $iExt = Default]])
 ; Parameters ....: $sWhere     - Name of calling routine
 ;                  $iErr       - The error number from the calling function
@@ -1508,7 +1508,7 @@ EndFunc   ;==>__WD_Delete
 ; Return values..: Success - $iErr
 ; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
-; Remarks .......: $iErr can be forced to $_WD_ERROR_UserAbort
+; Remarks .......:If user cancels via MsgBox dialog, then  $iErr is changed to $_WD_ERROR_UserAbort
 ; Related .......: __WD_ConsoleWrite
 ; Link ..........:
 ; Example .......: No
