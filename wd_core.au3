@@ -1499,18 +1499,17 @@ EndFunc   ;==>__WD_Delete
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
-; Description ...: Writes Error to the console and show message-boxes if the script is compiled.
+; Description ...: Outputs error details to the configured destination(s)
 ; Syntax ........: __WD_Error($sWhere, $iErr[, $sMessage = Default[, $iExt = Default]])
 ; Parameters ....: $sWhere     - Name of calling routine
 ;                  $iErr       - The error number from the calling function
 ;                  $sMessage   - Message that will be passed to the console/output [optional]
 ;                  $iExt       - Extended information from the calling function [optional]
 ; Return values..: Success - $iErr
-;                  Failure - None
 ; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
-; Remarks .......:
-; Related .......:
+; Remarks .......:If user cancels via MsgBox dialog, then  $iErr is changed to $_WD_ERROR_UserAbort
+; Related .......: __WD_ConsoleWrite
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
