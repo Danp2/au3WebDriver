@@ -174,7 +174,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	If $value1 = Default Then $value1 = ''
 	If $value2 = Default Then $value2 = ''
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
-	__WD_ConsoleWrite($sFuncName, @error, ': #' & @ScriptLineNumber & $s_Parameters_Info, $_WD_DEBUG_Full)
+	__WD_ConsoleWrite($sFuncName &': #' & @ScriptLineNumber & $s_Parameters_Info, $_WD_DEBUG_Full)
 
 	If StringRegExp($key, $_WD_KEYS__MATCHTYPES, $STR_REGEXPMATCH) Then ; check if alwaysMatch|firstMatch
 		Local $s_MatchType = $key
