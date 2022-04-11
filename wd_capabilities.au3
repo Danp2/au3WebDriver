@@ -16,7 +16,7 @@
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; URL ...........: https://www.autoitscript.com/wiki/WebDriver_Capabilities
-; Date ..........: 2022/04/08
+; Date ..........: 2022/04/11
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
@@ -177,8 +177,33 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	__WD_ConsoleWrite($sFuncName, @error, ': #' & @ScriptLineNumber & $s_Parameters_Info, $_WD_DEBUG_Full)
 
 	If StringRegExp($key, $_WD_KEYS__MATCHTYPES, $STR_REGEXPMATCH) Then ; check if alwaysMatch|firstMatch
-		__WD_CapabilitiesNotation($key, $value1)
-		Return SetError(@error, @extended) ; __WD_Error() is used internally in __WD_CapabilitiesNotation()
+		Local $s_MatchType = $key
+		Local $s_BrowserName = $value1
+		If $s_BrowserName <> '' Then
+			Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserName), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			If @error Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, 'Not supported Browser Name: ' & $s_BrowserName))
+			EndIf
+			$_WD_NOTATION__SPECIFICVENDOR = '["' & $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_OptionsKey] & '"]'
+		ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
+			$_WD_NOTATION__SPECIFICVENDOR = ''
+		ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "FirstMatch requires BrowserName to be defined"))
+		EndIf
+
+		$_WD_NOTATION__MATCHTYPE = '[capabilities][' & $s_MatchType & ']'
+		Switch $s_MatchType
+			Case 'alwaysMatch'
+				; Json_Put($_WD_CAPS__OBJECT, '[capabilities][alwaysMatch]', '{}')
+				; it is already added in _WD_CapabilitiesStartup()
+			Case 'firstMatch'
+				; new element in "JSON_ARRAY" list should be added thus $_WD_NOTATION__MATCHTYPE must have set "counter"
+				Local $iFirstMatch_count = UBound(Json_Get($_WD_CAPS__OBJECT, '[capabilities][firstMatch]'))
+				$_WD_NOTATION__MATCHTYPE &= '[' & $iFirstMatch_count & ']' ; here is specified which one of JSON ARRAY element should be used
+		EndSwitch
+
+		__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE & ' $_WD_NOTATION__SPECIFICVENDOR = ' & $_WD_NOTATION__SPECIFICVENDOR, $_WD_DEBUG_Full)
+		Return
 	EndIf
 
 	Local $v_WatchPoint
@@ -274,57 +299,6 @@ Func _WD_CapabilitiesGet()
 	Return $Json3
 EndFunc   ;==>_WD_CapabilitiesGet
 #EndRegion - wd_capabilities.au3 UDF - core functions
-
-#Region - wd_capabilities.au3 UDF - internal functions
-; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_CapabilitiesNotation
-; Description ...: Change $_WD_NOTATION__MATCHTYPE and $_WD_NOTATION__SPECIFICVENDOR - localization in JSON structure used by _WD_CapabilitiesAdd()
-; Syntax ........: __WD_CapabilitiesNotation($s_MatchType[, $s_BrowserName = ''])
-; Parameters ....: $s_MatchType         - 'alwaysMatch' Or 'firstMatch'.
-;                  $s_BrowserName       - [optional] The browser name as defined in $_WD_SupportedBrowsers. Default is ''
-; Return values .: Success - None
-;                  Failure - None and sets @error to one of the following values:
-;                  - $_WD_ERROR_GeneralError
-;                  - $_WD_ERROR_AlreadyDefined
-;                  - $_WD_ERROR_NotSupported
-;                  - $_WD_ERROR_InvalidValue
-; Author ........: mLipok
-; Modified ......:
-; Remarks .......: $s_BrowserName can be set to '' only when 'alwaysMatch' is used
-; Related .......: _WD_CapabilitiesAdd
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func __WD_CapabilitiesNotation($s_MatchType, $s_BrowserName = '')
-	Local Const $sFuncName = "__WD_CapabilitiesNotation"
-	#Region - parameters validation
-
-	If $s_BrowserName <> '' Then
-		Local $iIndex = _ArraySearch($_WD_SupportedBrowsers, StringLower($s_BrowserName), Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
-		If @error Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, 'Not supported Browser Name: ' & $s_BrowserName))
-		EndIf
-		$_WD_NOTATION__SPECIFICVENDOR = '["' & $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_OptionsKey] & '"]'
-	ElseIf $s_MatchType = 'alwaysMatch' And $s_BrowserName = '' Then
-		$_WD_NOTATION__SPECIFICVENDOR = ''
-	ElseIf $s_MatchType = 'firstMatch' And $s_BrowserName = '' Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "FirstMatch requires BrowserName to be defined"))
-	EndIf
-	#EndRegion - parameters validation
-
-	$_WD_NOTATION__MATCHTYPE = '[capabilities][' & $s_MatchType & ']'
-	Switch $s_MatchType
-		Case 'alwaysMatch'
-			; Json_Put($_WD_CAPS__OBJECT, '[capabilities][alwaysMatch]', '{}')
-			; it is already added in _WD_CapabilitiesStartup()
-		Case 'firstMatch'
-			Local $iFirstMatch_count = UBound(Json_Get($_WD_CAPS__OBJECT, '[capabilities][firstMatch]'))
-			$_WD_NOTATION__MATCHTYPE &= '[' & $iFirstMatch_count & ']' ; here is specified which one of JSON ARRAY element should be used
-	EndSwitch
-
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE & ' $_WD_NOTATION__SPECIFICVENDOR = ' & $_WD_NOTATION__SPECIFICVENDOR, $_WD_DEBUG_Full)
-EndFunc   ;==>__WD_CapabilitiesNotation
-#EndRegion - wd_capabilities.au3 UDF - internal functions
 
 #Region - wd_capabilities.au3 UDF - helper functions
 ; #FUNCTION# ====================================================================================================================
