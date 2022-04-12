@@ -341,7 +341,7 @@ Func DemoElements()
 	_WD_Navigate($sSession, "https://google.com")
 	_WD_LoadWait($sSession)
 
-	; Check if first DIV element is visible, as he can hide all sub elements in case when COOKIE aproval message is visible
+	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//body/div[1][@aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
 
 	; Locate a single element
