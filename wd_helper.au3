@@ -88,7 +88,8 @@ Global Enum _
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: For list of $sFeatures take a look in the following link.
+; Remarks .......: Specifying any features other than noopener or noreferrer, also has the effect of requesting a popup.
+;                  See the link below for further details and a list of available features. 
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
