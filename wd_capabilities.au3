@@ -145,7 +145,7 @@ Func _WD_CapabilitiesStartup()
 
 	; Create object with empty capabilites: {"capabilities":"{}"}
 	Json_Put($_WD_CAPS__OBJECT, '[capabilities]', '{}')
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' > ' & Json_Encode($_WD_CAPS__OBJECT) & ' > IsObj = ' & IsObj($_WD_CAPS__OBJECT), $_WD_DEBUG_Full)
+	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' : > ' & Json_Encode($_WD_CAPS__OBJECT) & ' > IsObj = ' & IsObj($_WD_CAPS__OBJECT), $_WD_DEBUG_Full)
 EndFunc   ;==>_WD_CapabilitiesStartup
 
 ; #FUNCTION# ====================================================================================================================
@@ -174,7 +174,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	If $value1 = Default Then $value1 = ''
 	If $value2 = Default Then $value2 = ''
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
-	__WD_ConsoleWrite($sFuncName &': #' & @ScriptLineNumber & $s_Parameters_Info, $_WD_DEBUG_Full)
+	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' : ' & $s_Parameters_Info, $_WD_DEBUG_Full)
 
 	If StringRegExp($key, $_WD_KEYS__MATCHTYPES, $STR_REGEXPMATCH) Then ; check if alwaysMatch|firstMatch
 		Local $s_MatchType = $key
@@ -202,7 +202,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 				$_WD_NOTATION__MATCHTYPE &= '[' & $iFirstMatch_count & ']' ; here is specified which one of JSON ARRAY element should be used
 		EndSwitch
 
-		__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE & ' $_WD_NOTATION__SPECIFICVENDOR = ' & $_WD_NOTATION__SPECIFICVENDOR, $_WD_DEBUG_Full)
+		__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' :  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE & ' $_WD_NOTATION__SPECIFICVENDOR = ' & $_WD_NOTATION__SPECIFICVENDOR, $_WD_DEBUG_Full)
 		Return
 	EndIf
 
@@ -269,7 +269,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	Else
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, 'Not supported KEY parameter ( must be defined in $_WD_KEYS__*** ). ' & $s_Parameters_Info))
 	EndIf
-	__WD_ConsoleWrite($sFuncName & ": #" & $v_WatchPoint & '/' & @ScriptLineNumber & ' ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1, $_WD_DEBUG_Full)
+	__WD_ConsoleWrite($sFuncName & ": #" & $v_WatchPoint & ' #' & @ScriptLineNumber & ' : ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1, $_WD_DEBUG_Full)
 	If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, $s_Parameters_Info))
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
 EndFunc   ;==>_WD_CapabilitiesAdd
@@ -351,7 +351,7 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
 	EndIf
 	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & '  :: DEBUG: Capbility: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType, $_WD_DEBUG_Full)
+	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' : Capability: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType, $_WD_DEBUG_Full)
 EndFunc   ;==>_WD_CapabilitiesDefine
 
 ; #FUNCTION# ====================================================================================================================
