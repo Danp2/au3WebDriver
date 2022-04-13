@@ -301,7 +301,8 @@ Func DemoTimeouts()
 	Local $oJSON = Json_Decode($sResponse)
 	Local $sTimouts = Json_Encode(Json_Get($oJSON, "[value]"))
 
-	_WD_Navigate($sSession, "https://google.com")
+	_Demo_NavigateToGoogle($sSession)
+	If @error Then Return SetError(@error, @extended)
 
 	; Set page load timeout
 	_WD_Timeouts($sSession, '{"pageLoad":2000}')
@@ -317,7 +318,9 @@ Func DemoTimeouts()
 EndFunc   ;==>DemoTimeouts
 
 Func DemoNavigation()
-	_WD_Navigate($sSession, "https://google.com")
+	_Demo_NavigateToGoogle($sSession)
+	If @error Then Return SetError(@error, @extended)
+
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_NewTab($sSession, Default, Default, "https://yahoo.com")
@@ -338,7 +341,7 @@ EndFunc   ;==>DemoNavigation
 Func DemoElements()
 	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $hFileOpen
 
-	__Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateToGoogle($sSession)
 	If @error Then Return SetError(@error, @extended)
 
 	; Locate a single element
@@ -437,7 +440,8 @@ EndFunc   ;==>DemoScript
 
 Func DemoCookies()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Navigating:" & @CRLF)
-	_WD_Navigate($sSession, "https://google.com")
+	_Demo_NavigateToGoogle($sSession)
+	If @error Then Return SetError(@error, @extended)
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
 	Local $sAllCookies = _WD_Cookies($sSession, 'getall')
@@ -555,7 +559,9 @@ EndFunc   ;==>DemoFrames
 Func DemoActions()
 	Local $sElement, $sAction
 
-	_WD_Navigate($sSession, "https://google.com")
+	_Demo_NavigateToGoogle($sSession)
+	If @error Then Return SetError(@error, @extended)
+
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sElement = " & $sElement & @CRLF)
 
@@ -589,7 +595,8 @@ Func DemoActions()
 EndFunc   ;==>DemoActions
 
 Func DemoDownload()
-	_WD_Navigate($sSession, "https://google.com")
+	_Demo_NavigateToGoogle($sSession)
+	If @error Then Return SetError(@error, @extended)
 
 	; Get the website's URL
 	Local $sUrl = _WD_Action($sSession, 'url')
@@ -619,8 +626,10 @@ EndFunc   ;==>DemoDownload
 Func DemoWindows()
 	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2, $bDecode, $oWRect
 
+	_Demo_NavigateToGoogle($sSession)
+	If @error Then Return SetError(@error, @extended)
+
 	$sHnd1 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
-	_WD_Navigate($sSession, "https://google.com")
 
 	_WD_NewTab($sSession)
 	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
@@ -756,7 +765,7 @@ Func _USER_WD_Sleep($iDelay)
 	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
 EndFunc   ;==>_USER_WD_Sleep
 
-Func __Demo_NavigateToGoogle($sSession)
+Func _Demo_NavigateToGoogle($sSession)
 	_WD_Navigate($sSession, "https://google.com")
 	_WD_LoadWait($sSession)
 
@@ -766,7 +775,7 @@ Func __Demo_NavigateToGoogle($sSession)
 		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : The page view is hidden - it is possible that the message about COOCKIE files was not accepted")
 		Return SetError(@error, @extended)
 	EndIf
-EndFunc   ;==>__Demo_NavigateToGoogle
+EndFunc   ;==>_Demo_NavigateToGoogle
 
 Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
