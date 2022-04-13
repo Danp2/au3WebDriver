@@ -276,7 +276,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		Case Else
 			ConsoleWrite("! Error = " & $iError & " occurred on: " & $sDemoName & @CRLF)
 			ConsoleWrite("! _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
-			ConsoleWrite("! _WD_GetSession = " &  _WD_GetSession($sSession) & @CRLF)
+			ConsoleWrite("! _WD_GetSession = " & _WD_GetSession($sSession) & @CRLF)
 			MsgBox($MB_ICONERROR + $MB_TOPMOST, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
 
@@ -338,16 +338,9 @@ EndFunc   ;==>DemoNavigation
 Func DemoElements()
 	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $hFileOpen
 
-	_WD_Navigate($sSession, "https://google.com")
-	_WD_LoadWait($sSession)
+	__Demo_NavigateToGoogle($sSession)
+	If @error Then Return SetError(@error, @extended)
 
-	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//body/div[1][@aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
-	If @error Then
-		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : The page view is hidden - it is possible that the message about COOKIE files was not accepted")
-		Return SetError(@error, @extended)
-	EndIf
-	
 	; Locate a single element
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 
@@ -435,7 +428,7 @@ Func DemoScript()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}', Default, $_WD_JSON_Value)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	; 2022-03-23 This website no longer exists
 	;$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'https://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
@@ -762,6 +755,18 @@ Func _USER_WD_Sleep($iDelay)
 		EndSwitch
 	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
 EndFunc   ;==>_USER_WD_Sleep
+
+Func __Demo_NavigateToGoogle($sSession)
+	_WD_Navigate($sSession, "https://google.com")
+	_WD_LoadWait($sSession)
+
+	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//body/div[1][@aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
+	If @error Then
+		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : The page view is hidden - it is possible that the message about COOCKIE files was not accepted")
+		Return SetError(@error, @extended)
+	EndIf
+EndFunc
 
 Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
