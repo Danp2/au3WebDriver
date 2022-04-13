@@ -401,6 +401,14 @@ Func DemoElements()
 	FileClose($hFileOpen)
 
 	_WD_Navigate($sSession, "https://demo.guru99.com/test/simple_context_menu.html")
+	_WD_LoadWait($sSession)
+
+	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//div[@id="gdpr-consent-tool-wrapper" and @aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
+	If @error Then
+		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "guru99.com" page view is hidden - it is possible that the message about COOCKIE files was not accepted')
+		Return SetError(@error, @extended)
+	EndIf
 
 	Sleep(2000)
 
@@ -769,10 +777,10 @@ Func _Demo_NavigateToGoogle($sSession)
 	_WD_Navigate($sSession, "https://google.com")
 	_WD_LoadWait($sSession)
 
-	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE approval message is visible
+	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//body/div[1][@aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
 	If @error Then
-		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : The page view is hidden - it is possible that the message about COOCKIE files was not accepted")
+		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "google.com" page view is hidden - it is possible that the message about COOCKIE files was not accepted')
 		Return SetError(@error, @extended)
 	EndIf
 EndFunc   ;==>_Demo_NavigateToGoogle
