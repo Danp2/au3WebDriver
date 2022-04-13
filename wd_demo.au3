@@ -339,7 +339,15 @@ Func DemoElements()
 	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $hFileOpen
 
 	_WD_Navigate($sSession, "https://google.com")
+	_WD_LoadWait($sSession)
 
+	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//body/div[1][@aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
+	If @error Then
+		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : The page view is hidden - it is possible that the message about COOKIE files was not accepted")
+		Return SetError(@error, @extended)
+	EndIf
+	
 	; Locate a single element
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 
