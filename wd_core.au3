@@ -1708,7 +1708,7 @@ EndFunc   ;==>__WD_StripPath
 
 Func __WD_ConsoleWrite($sMsg, $iDebugLevel = Default, $iError = @error, $iExtended = @extended)
 	If $iDebugLevel = Default Or $_WD_DEBUG >= $iDebugLevel Then
-		If $iDebugLevel = $_WD_DEBUG_Full Then $sMsg = ':$_WD_DEBUG_Full: (' & $iError & '/' & $iExtended & ') : ' & $sMsg
+		If $iDebugLevel = $_WD_DEBUG_Full Then $sMsg &= ' [' & $iError & '/' & $iExtended & ']
 		If IsFunc($_WD_CONSOLE) Then
 			Call($_WD_CONSOLE, $sMsg & $_WD_CONSOLE_Suffix)
 		ElseIf $_WD_CONSOLE = Null Then
