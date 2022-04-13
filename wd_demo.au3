@@ -83,7 +83,7 @@ Func _WD_Demo()
 	Local $idDebugging = GUICtrlCreateCombo("", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	$sData = _ArrayToString($aDebugLevel, Default, Default, Default, "|", 0, 0)
 	GUICtrlSetData($idDebugging, $sData)
-	GUICtrlSetData($idDebugging, "Full")
+	GUICtrlSetData($idDebugging, "Info")
 	#EndRegion - debug
 
 	#Region - update
@@ -769,7 +769,7 @@ Func _Demo_NavigateToGoogle($sSession)
 	_WD_Navigate($sSession, "https://google.com")
 	_WD_LoadWait($sSession)
 
-	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
+	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE approval message is visible
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//body/div[1][@aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
 	If @error Then
 		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : The page view is hidden - it is possible that the message about COOCKIE files was not accepted")
