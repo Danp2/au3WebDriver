@@ -766,7 +766,7 @@ Func __Demo_NavigateToGoogle($sSession)
 		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : The page view is hidden - it is possible that the message about COOCKIE files was not accepted")
 		Return SetError(@error, @extended)
 	EndIf
-EndFunc
+EndFunc   ;==>__Demo_NavigateToGoogle
 
 Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
