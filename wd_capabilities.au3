@@ -273,6 +273,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	__WD_ConsoleWrite($sFuncName & ": #" & $v_WatchPoint & ' #' & @ScriptLineNumber & ' : ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1, $_WD_DEBUG_Full)
 	If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, $s_Parameters_Info))
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, 'Successfully added capability'))
 EndFunc   ;==>_WD_CapabilitiesAdd
 
 ; #FUNCTION# ====================================================================================================================
@@ -352,7 +353,7 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
 	EndIf
 	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
-	
+
 	$sMessage = 'Capability: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage))
 EndFunc   ;==>_WD_CapabilitiesDefine
