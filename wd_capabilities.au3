@@ -203,7 +203,8 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 		EndSwitch
 
 		__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' :  $_WD_NOTATION__MATCHTYPE = ' & $_WD_NOTATION__MATCHTYPE & ' $_WD_NOTATION__SPECIFICVENDOR = ' & $_WD_NOTATION__SPECIFICVENDOR, $_WD_DEBUG_Full)
-		Return
+		Local $sMessage = 'Successfully used [' & $s_MatchType & '] ' & (($s_BrowserName) ? (' with specified browser: ' & $s_BrowserName) : (''))
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage))
 	EndIf
 
 	Local $v_WatchPoint
