@@ -352,7 +352,9 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
 	EndIf
 	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
-	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' : Capability: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType, $_WD_DEBUG_Full)
+	
+	$sMessage = 'Capability: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage))
 EndFunc   ;==>_WD_CapabilitiesDefine
 
 ; #FUNCTION# ====================================================================================================================
