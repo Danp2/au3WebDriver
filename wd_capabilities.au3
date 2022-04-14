@@ -16,7 +16,7 @@
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; URL ...........: https://www.autoitscript.com/wiki/WebDriver_Capabilities
-; Date ..........: 2022/04/11
+; Date ..........: 2022/04/15
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
