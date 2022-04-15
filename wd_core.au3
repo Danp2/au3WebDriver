@@ -261,7 +261,7 @@ Func _WD_DeleteSession($sSession)
 	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error
 	If $iErr Then $iErr = $_WD_ERROR_Exception
-	
+
 	Local $sMessage = (($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted'))
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, 0)
 EndFunc   ;==>_WD_DeleteSession
@@ -283,17 +283,14 @@ EndFunc   ;==>_WD_DeleteSession
 Func _WD_Status()
 	Local Const $sFuncName = "_WD_Status"
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
-	Local $iErr = @error, $oResult = Null
+	Local $iErr = @error, $oResult = ""
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$oResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $oResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $oResult)
 EndFunc   ;==>_WD_Status
 
 ; #FUNCTION# ====================================================================================================================
@@ -370,10 +367,8 @@ Func _WD_Timeouts($sSession, $sTimeouts = Default)
 
 	Local $iErr = @error
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, 0)
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResponse)
+	If $iErr Then $sResponse = 0
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
 EndFunc   ;==>_WD_Timeouts
 
 ; #FUNCTION# ====================================================================================================================
@@ -397,11 +392,10 @@ Func _WD_Navigate($sSession, $sURL)
 	Local Const $sFuncName = "_WD_Navigate"
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 	Local $iErr = @error
+	#forceref $sResponse
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, 0)
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, 1)
+	Local $iReturn = Number((($iErr) ? (0) : (1)))
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iReturn)
 EndFunc   ;==>_WD_Navigate
 
 ; #FUNCTION# ====================================================================================================================
@@ -468,10 +462,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 
 	EndSwitch
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, ""), 0, $sResult)
 EndFunc   ;==>_WD_Action
 
 ; #FUNCTION# ====================================================================================================================
@@ -596,11 +587,8 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 		EndIf
 	EndIf
 
-	Local $sMessage = (($sResponse) ? (" : Response=" & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...") : (""))
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, "")
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, $sResult)
+	Local $sMessage = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_Window
 
 ; #FUNCTION# ====================================================================================================================
@@ -628,7 +616,7 @@ EndFunc   ;==>_WD_Window
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
 	Local Const $sFuncName = "_WD_FindElement"
-	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr
+	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr = $_WD_ERROR_Success
 	Local $oJSON, $oValues, $sKey, $iRow, $aElements[0]
 	$_WD_HTTPRESULT = 0
 
@@ -685,10 +673,9 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 		EndIf
 	EndIf
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, ($bMultiple) ? $aElements : $sResult)
+	Local $vResult = ($bMultiple) ? $aElements : $sResult
+	If $iErr Then $vResult = ""
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
 EndFunc   ;==>_WD_FindElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -799,10 +786,9 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 		EndSwitch
 	EndIf
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResult)
+	If $iErr Then $sResult = ""
+	Local $sMessage = "Parameters:   Command=" & $sCommand & "   Option=" & $sOption
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_ElementAction
 
 ; #FUNCTION# ====================================================================================================================
@@ -858,7 +844,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		$sResponse = ""
 	EndIf
 
-	Local $sMessage = (($sResponse) ? (" : Response=" & StringLeft($sResponse, $_WD_RESPONSE_TRIM) & "...") : (""))
+	Local $sMessage = (($iErr) ? ("Error ocurred when trying to ExecuteScript") : (""))
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
@@ -924,7 +910,8 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Accept|Dismiss|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, $sResult)
+	Local $sMessage = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_Alert
 
 ; #FUNCTION# ====================================================================================================================
@@ -953,10 +940,8 @@ Func _WD_GetSource($sSession)
 		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 	EndIf
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResult)
+	If $iErr Then $sResult = ""
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_GetSource
 
 ; #FUNCTION# ====================================================================================================================
@@ -1024,10 +1009,9 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Add|Delete|DeleteAll|Get|GetAll) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sResponse), 0, "")
-	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sResponse), 0, $sResult)
+	If $iErr Then $sResult = ""
+	Local $sMessage = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_Cookies
 
 ; #FUNCTION# ====================================================================================================================
@@ -1178,7 +1162,8 @@ Func _WD_Option($sOption, $vValue = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
-	Return 1
+	Local $sMessage = 'Parameters:   Option=' & $sOption & '   Value=' & $vValue
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, 1)
 EndFunc   ;==>_WD_Option
 
 ; #FUNCTION# ====================================================================================================================
@@ -1259,10 +1244,8 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
 	EndIf
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, "Error launching WebDriver!"), 0, 0)
-	EndIf
-	Return SetError($_WD_ERROR_Success, 0, $iPID)
+	Local $sMessage = (($iErr) ? ("Error launching WebDriver!") : ($sUpdate))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $iPID)
 EndFunc   ;==>_WD_Startup
 
 ; #FUNCTION# ====================================================================================================================
@@ -1293,7 +1276,7 @@ EndFunc   ;==>_WD_Shutdown
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........:
@@ -1303,8 +1286,6 @@ Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
-
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1349,7 +1330,9 @@ Func __WD_Get($sURL)
 		$iResult = $_WD_ERROR_InvalidValue
 	EndIf
 
-	Local $sMessage = (($sResponseText) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
+	Local $sMessage = (($iResult And $_WD_DEBUG = $_WD_DEBUG_Info) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
+	$sMessage = (($_WD_DEBUG = $_WD_DEBUG_Full) ? ("ResponseText=" & $sResponseText) : (""))
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Get
 
@@ -1366,7 +1349,7 @@ EndFunc   ;==>__WD_Get
 ;                  - $_WD_ERROR_SocketError
 ;                  - $_WD_ERROR_InvalidValue
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........:
@@ -1376,8 +1359,6 @@ Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
-
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Info)
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1422,7 +1403,9 @@ Func __WD_Post($sURL, $sData)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	Local $sMessage = (($sResponseText) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Info)
+	Local $sMessage = (($iResult And $_WD_DEBUG = $_WD_DEBUG_Info) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
+	$sMessage = (($_WD_DEBUG = $_WD_DEBUG_Full) ? ("ResponseText=" & $sResponseText) : (""))
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Post
 
@@ -1492,9 +1475,10 @@ Func __WD_Delete($sURL)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	Local $sMessage = (($sResponseText) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	__WD_ConsoleWrite($sFuncName & $sMessage, $_WD_DEBUG_Info)
-	Return SetError(__WD_Error($sFuncName, $iResult, "Error occurs with URL=" & $sURL), 0, $sResponseText)
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
+	Local $sMessage = (($iResult And $_WD_DEBUG = $_WD_DEBUG_Info) ? ("ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
+	$sMessage = (($_WD_DEBUG = $_WD_DEBUG_Full) ? ("ResponseText=" & $sResponseText) : (""))
+	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Delete
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1508,7 +1492,7 @@ EndFunc   ;==>__WD_Delete
 ; Return values..: Success - $iErr
 ; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
-; Remarks .......:If user cancels via MsgBox dialog, then  $iErr is changed to $_WD_ERROR_UserAbort
+; Remarks .......: If user cancels via MsgBox dialog, then  $iErr is changed to $_WD_ERROR_UserAbort
 ; Related .......: __WD_ConsoleWrite
 ; Link ..........:
 ; Example .......: No
