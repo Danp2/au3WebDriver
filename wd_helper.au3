@@ -344,7 +344,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				$iErr = $_WD_ERROR_Success
 				ExitLoop
 
-			ElseIf $iErr = $_WD_ERROR_Success Then
+			ElseIf $iErr = $_WD_ERROR_Success And Not $bCheckNoMatch Then
 				If $bVisible Then
 					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 

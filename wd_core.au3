@@ -113,9 +113,10 @@ Global Enum _
 		$_WD_ERROR_UserAbort, _ ;
 		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_NotSupported, _ ;
+		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
 		$_WD_ERROR_COUNTER ;
 
-Global Enum _
+Global Enum _ ; Column positions of $_WD_SupportedBrowsers
 		$_WD_BROWSER_Name, _
 		$_WD_BROWSER_ExeName, _
 		$_WD_BROWSER_DriverName, _
@@ -146,7 +147,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Unknown Command", _
 		"User Aborted", _
 		"File issue", _
-		"Browser or feature not supported" _
+		"Browser or feature not supported", _
+		"Capability or value already defined" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
@@ -1497,18 +1499,17 @@ EndFunc   ;==>__WD_Delete
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
-; Description ...: Writes Error to the console and show message-boxes if the script is compiled.
+; Description ...: Outputs error details to the configured destination(s)
 ; Syntax ........: __WD_Error($sWhere, $iErr[, $sMessage = Default[, $iExt = Default]])
 ; Parameters ....: $sWhere     - Name of calling routine
 ;                  $iErr       - The error number from the calling function
 ;                  $sMessage   - Message that will be passed to the console/output [optional]
 ;                  $iExt       - Extended information from the calling function [optional]
 ; Return values..: Success - $iErr
-;                  Failure - None
 ; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
-; Remarks .......:
-; Related .......:
+; Remarks .......:If user cancels via MsgBox dialog, then  $iErr is changed to $_WD_ERROR_UserAbort
+; Related .......: __WD_ConsoleWrite
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1533,7 +1534,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 
 			If $iErr <> $_WD_ERROR_Success Then
 				If $_WD_ERROR_MSGBOX Then
-					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WebDriver UDF Error:", $sMsg)
+					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL + $MB_TOPMOST, "WebDriver UDF Error:", $sMsg)
 					If $iAnswer = $IDCANCEL Then
 						$iErr = $_WD_ERROR_UserAbort ; change $iErr to give a way to stop further processing by user interaction
 						__WD_ConsoleWrite($sFuncName & ": User Abort", $_WD_DEBUG_Info)
