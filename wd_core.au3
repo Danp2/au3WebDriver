@@ -259,8 +259,7 @@ EndFunc   ;==>_WD_CreateSession
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
 	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
-	Local $iErr = @error
-	If $iErr Then $iErr = $_WD_ERROR_Exception
+	Local $iErr = ((@error) ? ($_WD_ERROR_Exception) : ($_WD_ERROR_Success))
 
 	Local $sMessage = (($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted'))
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, 0)
