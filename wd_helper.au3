@@ -379,7 +379,8 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		WEnd
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sElement)
+	Local $sMessage = '   Options=' & $iOptions
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, 0), 0, $sElement)
 EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -1513,7 +1514,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; Description ...: Retrieve path to browser executable from registry
 ; Syntax ........: _WD_GetBrowserPath($sBrowser)
 ; Parameters ....: $sBrowser - Name of browser
-; Return values .: Success - Full path to browser executable
+; Return values .: Success - Full path to browser executable and sets @extended to index of $_WD_SupportedBrowsers
 ;                  Failure - "" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
 ;                  - $_WD_ERROR_NotSupported
