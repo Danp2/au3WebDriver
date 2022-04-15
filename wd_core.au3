@@ -116,7 +116,7 @@ Global Enum _
 		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
 		$_WD_ERROR_COUNTER ;
 
-Global Enum _ ; this Enums are related to $_WD_SupportedBrowsers
+Global Enum _ ; Column positions of $_WD_SupportedBrowsers
 		$_WD_BROWSER_Name, _
 		$_WD_BROWSER_ExeName, _
 		$_WD_BROWSER_DriverName, _
