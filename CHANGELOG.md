@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Added
+
+- _WD_CapabilitiesDefine
+
+### Fixed
+
+- _WD_WaitElement: Prevent premature exit when $_WD_OPTION_NoMatch is True
+- __WD_GetLatestWebdriverInfo: Log correct function name
+- __WD_UpdateExtractor: Correct detection of executable located in subfolder
+
+### Changed
+
+- _WD_Startup: Detect missing webdriver executable
+- __WD_ConsoleWrite: Added conditional logging via new optional $iDebugLevel parameter
+- Support additional debugging level ($_WD_DEBUG_Full)
+- _WD_CapabilitiesAdd
+	- Support browser specific / vendor capabilities
+	- Capability names are case sensitive
+
+### Project
+
+- Remove unused WinHTTP request object
+
 ## [0.8.1] - 2022-03-29
 
 ### Fixed
