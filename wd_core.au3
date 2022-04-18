@@ -262,7 +262,7 @@ Func _WD_DeleteSession($sSession)
 	Local $iErr = ((@error) ? ($_WD_ERROR_Exception) : ($_WD_ERROR_Success))
 
 	Local $sMessage = (($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted'))
-	Local $iReturn = Number((($iErr) ? (0) : (1)))
+	Local $iReturn = ($iErr) ? (0) : (1)
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $iReturn)
 EndFunc   ;==>_WD_DeleteSession
 
@@ -394,7 +394,7 @@ Func _WD_Navigate($sSession, $sURL)
 	Local $iErr = @error
 	#forceref $sResponse
 
-	Local $iReturn = Number((($iErr) ? (0) : (1)))
+	Local $iReturn = ($iErr) ? (0) : (1)
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iReturn)
 EndFunc   ;==>_WD_Navigate
 
