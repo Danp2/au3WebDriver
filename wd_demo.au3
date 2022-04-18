@@ -311,7 +311,7 @@ Func DemoTimeouts()
 	_WD_Timeouts($sSession)
 
 	; This should timeout
-	_WD_Navigate($sSession, "https://yahoo.com")
+ 	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 
 	; Restore initial settings
 	_WD_Timeouts($sSession, $sTimouts)
@@ -323,10 +323,10 @@ Func DemoNavigation()
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
-	_WD_NewTab($sSession, Default, Default, "https://yahoo.com")
+	_WD_NewTab($sSession, Default, Default, "")
+ 	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
-	;	_WD_Navigate($sSession, "https://yahoo.com")
 	_WD_NewTab($sSession, True, Default, 'https://bing.com', 'width=200,height=200')
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
@@ -441,7 +441,7 @@ EndFunc   ;==>DemoScript
 
 Func DemoCookies()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Navigating:" & @CRLF)
-	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')	
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
@@ -634,7 +634,7 @@ Func DemoWindows()
 
 	_WD_NewTab($sSession)
 	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
-	_WD_Navigate($sSession, "https://yahoo.com")
+ 	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 
 	; Get window coordinates
 	$oWRect = _WD_Window($sSession, 'rect')
