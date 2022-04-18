@@ -301,7 +301,7 @@ Func DemoTimeouts()
 	Local $oJSON = Json_Decode($sResponse)
 	Local $sTimouts = Json_Encode(Json_Get($oJSON, "[value]"))
 
-	_Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	; Set page load timeout
@@ -318,7 +318,7 @@ Func DemoTimeouts()
 EndFunc   ;==>DemoTimeouts
 
 Func DemoNavigation()
-	_Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
@@ -341,7 +341,7 @@ EndFunc   ;==>DemoNavigation
 Func DemoElements()
 	Local $sElement, $aElements, $sValue, $sButton, $sResponse, $bDecode, $hFileOpen
 
-	_Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	; Locate a single element
@@ -400,15 +400,8 @@ Func DemoElements()
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
 
-	_WD_Navigate($sSession, "https://demo.guru99.com/test/simple_context_menu.html")
-	_WD_LoadWait($sSession)
-
-	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//div[@id="gdpr-consent-tool-wrapper" and @aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
-	If @error Then
-		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "guru99.com" page view is hidden - it is possible that the message about COOCKIE files was not accepted')
-		Return SetError(@error, @extended)
-	EndIf
+	_Demo_NavigateCheckBanner($sSession, "hhttps://demo.guru99.com/test/simple_context_menu.html", '//div[@id="gdpr-consent-tool-wrapper" and @aria-hidden="true"]')
+	If @error Then Return SetError(@error, @extended)
 
 	Sleep(2000)
 
@@ -448,7 +441,7 @@ EndFunc   ;==>DemoScript
 
 Func DemoCookies()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Navigating:" & @CRLF)
-	_Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')	
 	If @error Then Return SetError(@error, @extended)
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
@@ -567,7 +560,7 @@ EndFunc   ;==>DemoFrames
 Func DemoActions()
 	Local $sElement, $sAction
 
-	_Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
@@ -603,7 +596,7 @@ Func DemoActions()
 EndFunc   ;==>DemoActions
 
 Func DemoDownload()
-	_Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	; Get the website's URL
@@ -634,7 +627,7 @@ EndFunc   ;==>DemoDownload
 Func DemoWindows()
 	Local $sResponse, $hFileOpen, $sHnd1, $sHnd2, $bDecode, $oWRect
 
-	_Demo_NavigateToGoogle($sSession)
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	$sHnd1 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
@@ -773,17 +766,17 @@ Func _USER_WD_Sleep($iDelay)
 	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
 EndFunc   ;==>_USER_WD_Sleep
 
-Func _Demo_NavigateToGoogle($sSession)
-	_WD_Navigate($sSession, "https://google.com")
+Func _Demo_NavigateCheckBanner($sSession, $sURL, $sXpath)
+	_WD_Navigate($sSession, $sURL)
 	_WD_LoadWait($sSession)
 
-	; Check if first DIV element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, '//body/div[1][@aria-hidden="true"]', 0, 1000 * 60, $_WD_OPTION_NoMatch)
+	; Check if designated element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath, 0, 1000 * 60, $_WD_OPTION_NoMatch)
 	If @error Then
-		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "google.com" page view is hidden - it is possible that the message about COOCKIE files was not accepted')
+		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
 		Return SetError(@error, @extended)
 	EndIf
-EndFunc   ;==>_Demo_NavigateToGoogle
+EndFunc   ;==>_Demo_NavigateCheckBanner
 
 Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
