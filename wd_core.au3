@@ -1490,8 +1490,8 @@ EndFunc   ;==>__WD_Delete
 ; Syntax ........: __WD_Error($sWhere, $iErr[, $sMessage = Default[, $iExt = Default]])
 ; Parameters ....: $sWhere     - Name of calling routine
 ;                  $iErr       - The error number from the calling function
-;                  $sMessage   - Message that will be passed to the console/output [optional]
-;                  $iExt       - Extended information from the calling function [optional]. Default is 0
+;                  $sMessage   - [optional] Message that will be passed to the console/output
+;                  $iExt       - [optional] Extended information from the calling function
 ; Return values..: Success - $iErr
 ; Author ........: Stilgar, Danp2
 ; Modified ......: mLipok
@@ -1505,7 +1505,6 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 	Local $sMsg
 
 	If $sMessage = Default Then $sMessage = ''
-	If $iExt = Default Then $iExt = 0
 
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_None
