@@ -115,13 +115,13 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 
 			If Not $bSwitch Then _WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
 		Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "", 0), 0, $sTabHandle)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 		EndIf
 	Else
 		Local $aHandles = _WD_Window($sSession, 'handles')
 
 		If @error <> $_WD_ERROR_Success Or Not IsArray($aHandles) Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "", 0), 0, $sTabHandle)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 		EndIf
 
 		Local $iTabCount = UBound($aHandles)
@@ -146,7 +146,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 
 		_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
 		If @error <> $_WD_ERROR_Success Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "", 0), 0, $sTabHandle)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
 		EndIf
 
 		$hWaitTimer = TimerInit()
@@ -159,10 +159,10 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 				ExitLoop
 			EndIf
 
-			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, "", 0), 0, $sTabHandle)
+			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
 
 			__WD_Sleep(10)
-			If @error Then Return SetError(__WD_Error($sFuncName, @error, "", 0), 0, $sTabHandle)
+			If @error Then Return SetError(__WD_Error($sFuncName, @error), 0, $sTabHandle)
 		WEnd
 
 		If $bSwitch Then
@@ -228,7 +228,7 @@ Func _WD_Attach($sSession, $sString, $sMode = Default)
 					EndIf
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sMode=>" & $sMode, 0), 0, $sTabHandle)
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Title|URL|HTML) $sMode=>" & $sMode), 0, $sTabHandle)
 			EndSwitch
 		Next
 
@@ -238,10 +238,10 @@ Func _WD_Attach($sSession, $sString, $sMode = Default)
 				_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
 			EndIf
 
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch, "", 0), 0, $sTabHandle)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, $sTabHandle)
 		EndIf
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, "", 0), 0, $sTabHandle)
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError), 0, $sTabHandle)
 	EndIf
 
 	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
@@ -278,13 +278,13 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 		$iErr = @error
 
 		If $iErr <> $_WD_ERROR_Success Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "", 0), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
 		EndIf
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch, "", 0), 0, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, "")
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, "", 0), 0, "")
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, "")
 EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
@@ -380,7 +380,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	EndIf
 
 	Local $sMessage = '   Options=' & $iOptions
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, 0), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sElement)
 EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -403,7 +403,7 @@ Func _WD_GetMouseElement($sSession)
 	Local $sElement = _WD_ExecuteScript($sSession, $sScript, '', Default, $_WD_JSON_Element)
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sElement, 0), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sElement), 0, $sElement)
 EndFunc   ;==>_WD_GetMouseElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -458,7 +458,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 		$iFrame = 1
 	WEnd
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), $iFrame, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr), $iFrame, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
@@ -480,7 +480,7 @@ Func _WD_GetFrameCount($sSession)
 	Local $iValue = _WD_ExecuteScript($sSession, "return window.frames.length", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
 	If @error Then $iValue = 0
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, Number($iValue))
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, Number($iValue))
 EndFunc   ;==>_WD_GetFrameCount
 
 ; #FUNCTION# ====================================================================================================================
@@ -501,7 +501,7 @@ Func _WD_IsWindowTop($sSession)
 	Local Const $sFuncName = "_WD_IsWindowTop"
 	Local $blnResult = _WD_ExecuteScript($sSession, "return window.top == window.self", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $blnResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $blnResult)
 EndFunc   ;==>_WD_IsWindowTop
 
 ; #FUNCTION# ====================================================================================================================
@@ -535,7 +535,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	$sResponse = _WD_Window($sSession, "frame", $sOption)
 
 	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "", 0), 0, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
 	EndIf
 
 	$oJSON = Json_Decode($sResponse)
@@ -548,7 +548,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		$sValue = True
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, "", 0), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sValue)
 EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
@@ -572,7 +572,7 @@ Func _WD_FrameLeave($sSession)
 	Local $sResponse = _WD_Window($sSession, "parent", $sOption)
 
 	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, "", 0), "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
 	EndIf
 
 	;Chrome--
@@ -631,7 +631,7 @@ Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
 	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $bResult, 0), 0, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), 0, $bResult)
 EndFunc   ;==>_WD_HighlightElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -687,7 +687,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sResult, 0), 0, ($iErr = $_WD_ERROR_Success))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
@@ -745,7 +745,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	WEnd
 
 	Local $iReturn = (($iErr) ? (0) : (1))
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $iReturn)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iReturn)
 EndFunc   ;==>_WD_LoadWait
 
 ; #FUNCTION# ====================================================================================================================
@@ -803,7 +803,7 @@ Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
 EndFunc   ;==>_WD_Screenshot
 
 ; #FUNCTION# ====================================================================================================================
@@ -838,7 +838,7 @@ Func _WD_PrintToPDF($sSession, $sOptions = Default)
 		$sResult = ''
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_PrintToPDF
 
 ; #FUNCTION# ====================================================================================================================
@@ -917,7 +917,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0)
 EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
@@ -951,7 +951,7 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
 		_WD_ElementAction($sSession, $sElement, 'click')
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, @error, "", 0), 0)
+	Return SetError(__WD_Error($sFuncName, @error), 0)
 EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
@@ -1066,7 +1066,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$iErr = @error
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|value) $sCommand=>" & $sCommand, 0), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
@@ -1158,7 +1158,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sResult, 0), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, $sResult)
 EndFunc   ;==>_WD_GetShadowRoot
 
 ; #FUNCTION# ====================================================================================================================
@@ -1210,7 +1210,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	EndIf
 
 	Local $sMessage = $sResult & (($iErr) ? ("") : (" file(s) selected"))
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, 0), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_SelectFiles
 
 ; #FUNCTION# ====================================================================================================================
@@ -1250,7 +1250,7 @@ Func _WD_IsLatestRelease()
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, String($bResult), 0), 0, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, String($bResult)), 0, $bResult)
 EndFunc   ;==>_WD_IsLatestRelease
 
 ; #FUNCTION# ====================================================================================================================
@@ -1703,7 +1703,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 	; Build string to pass to _WD_Timeouts
 	If $iPageLoad <> Default Then
 		If Not IsInt($iPageLoad) Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iPageLoad, 0), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iPageLoad), 0, 0)
 		EndIf
 
 		$sTimeouts &= '"pageLoad":' & $iPageLoad
@@ -1712,7 +1712,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 	If $iScript <> Default Then
 		$bIsNull = (IsKeyword($iScript) = $KEYWORD_NULL)
 		If Not IsInt($iScript) And Not $bIsNull Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iScript, 0), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iScript), 0, 0)
 		EndIf
 
 		If StringLen($sTimeouts) Then $sTimeouts &= ", "
@@ -1722,7 +1722,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 
 	If $iImplicitWait <> Default Then
 		If Not IsInt($iImplicitWait) Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iImplicitWait, 0), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iImplicitWait), 0, 0)
 		EndIf
 
 		If StringLen($sTimeouts) Then $sTimeouts &= ", "
@@ -1744,7 +1744,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_SetTimeouts
 
 ; #FUNCTION# ====================================================================================================================
@@ -1771,7 +1771,7 @@ Func _WD_GetElementById($sSession, $sID)
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
 EndFunc   ;==>_WD_GetElementById
 
 ; #FUNCTION# ====================================================================================================================
@@ -1798,7 +1798,7 @@ Func _WD_GetElementByName($sSession, $sName)
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
 EndFunc   ;==>_WD_GetElementByName
 
 ; #FUNCTION# ====================================================================================================================
@@ -1843,7 +1843,7 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 
 	EndSwitch
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_SetElementValue
 
 ; #FUNCTION# ====================================================================================================================
@@ -1894,19 +1894,19 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	If $sModifier = Default Then $sModifier = "\uE008" ; shift
 
 	If Not IsInt($iXOffset) Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iXOffset: " & $iXOffset, 0), 0, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iXOffset: " & $iXOffset), 0, "")
 	EndIf
 
 	If Not IsInt($iButton) Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iButton: " & $iButton, 0), 0, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iButton: " & $iButton), 0, "")
 	EndIf
 
 	If Not IsInt($iYOffset) Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iYOffset: " & $iYOffset, 0), 0, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iYOffset: " & $iYOffset), 0, "")
 	EndIf
 
 	If Not IsInt($iHoldDelay) Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iHoldDelay: " & $iHoldDelay, 0), 0, "")
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iHoldDelay: " & $iHoldDelay), 0, "")
 	EndIf
 
 	Local $sPreAction = '', $sPostAction = '', $sPostHoverAction = ''
@@ -1976,7 +1976,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand, 0), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -2023,7 +2023,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iErr = @error
 	EndSwitch
 
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
 EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
@@ -2053,32 +2053,32 @@ Func _WD_GetTable($sSession, $sBaseElement)
 
 	If @error = 0xDEAD And @extended = 0xBEEF Then
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "", 0), 0, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		$iLines = UBound($aElements)
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/td", "", True) ; Retrieve the number of table columns by checking the first table row
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "", 0), 0, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		$iColumns = UBound($aElements)
 		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
 		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/td", "", True) ; Retrieve all table cells
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "", 0), 0, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		For $i = 0 To UBound($aElements) - 1
 			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
 			$iColumn = Mod($i, $iColumns)
 			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
-			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "", 0), 0, "")
+			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		Next
 	Else
 		; Get the table element
 		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "", 0), 0, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		; Retrieve its HTML
 		$sHTML = _WD_ElementAction($sSession, $sElement, "Property", "outerHTML")
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error, "", 0), 0, "")
+		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
 
 		; Convert to array
 		$aTable = _HtmlTableGetWriteToArray($sHTML, 1, False, $_WD_IFILTER)
@@ -2105,7 +2105,7 @@ Func _WD_IsFullScreen($sSession)
 	Local Const $sFuncName = "_WD_IsFullScreen"
 	Local $bResult = _WD_ExecuteScript($sSession, 'return screen.width == window.innerWidth and screen.height == window.innerHeight;', Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
 EndFunc   ;==>_WD_IsFullScreen
 
 ; #FUNCTION# ====================================================================================================================
@@ -2126,7 +2126,7 @@ Func _WD_GetDevicePixelRatio($sSession)
 	Local Const $sFuncName = "_WD_GetDevicePixelRatio"
 	Local $sResponse = _WD_ExecuteScript($sSession, "return window.devicePixelRatio", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
-	Return SetError(__WD_Error($sFuncName, $iErr, "", 0), 0, $sResponse)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
 EndFunc   ;==>_WD_GetDevicePixelRatio
 
 ; #FUNCTION# ====================================================================================================================
@@ -2186,7 +2186,7 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception, "", 0), 0, $iResult)
+	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
 EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
@@ -2215,7 +2215,7 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
 	Local $sJSON = Json_Encode($vData)
-	Return SetError(__WD_Error($sFuncName, 0, $sJSON, 0), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionKey
 
 ; #FUNCTION# ====================================================================================================================
@@ -2269,7 +2269,7 @@ Func _WD_JsonActionPointer($sType, $iButton = Default, $sOrigin = Default, $iXOf
 	EndSwitch
 
 	Local $sJSON = Json_Encode($vData)
-	Return SetError(__WD_Error($sFuncName, 0, $sJSON, 0), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionPointer
 
 ; #FUNCTION# ====================================================================================================================
@@ -2293,7 +2293,7 @@ Func _WD_JsonActionPause($iDuration)
 	Json_Put($vData, '.duration', $iDuration)
 
 	Local $sJSON = Json_Encode($vData)
-	Return SetError(__WD_Error($sFuncName, 0, $sJSON, 0), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionPause
 
 ; #FUNCTION# ====================================================================================================================
@@ -2335,7 +2335,7 @@ Func _WD_JsonCookie($sName, $sValue, $sPath = Default, $sDomain = Default, $bSec
 	If $sSameSite <> Default Then Json_Put($vData, '.cookie.sameSite', $sSameSite)
 
 	Local $sJSON = Json_Encode($vData)
-	Return SetError(__WD_Error($sFuncName, 0, $sJSON, 0), 0, $sJSON)
+	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonCookie
 
 ; #INTERNAL_USE_ONLY# ====================================================================================================================
