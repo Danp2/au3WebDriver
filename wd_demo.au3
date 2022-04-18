@@ -524,7 +524,8 @@ EndFunc   ;==>DemoAlerts
 Func DemoFrames()
 	Local $sElement, $bIsWindowTop
 
-	_WD_Navigate($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe")
+ 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
+	If @error Then Return SetError(@error, @extended)
 
 	Local $iFrameCount = _WD_GetFrameCount($sSession)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Frames=" & $iFrameCount & @CRLF)
