@@ -312,6 +312,7 @@ Func DemoTimeouts()
 
 	; This should timeout
  	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
+	If @error Then Return SetError(@error, @extended)
 
 	; Restore initial settings
 	_WD_Timeouts($sSession, $sTimouts)
@@ -325,6 +326,7 @@ Func DemoNavigation()
 
 	_WD_NewTab($sSession, Default, Default, "")
  	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
+	If @error Then Return SetError(@error, @extended)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_NewTab($sSession, True, Default, 'https://bing.com', 'width=200,height=200')
@@ -635,6 +637,7 @@ Func DemoWindows()
 	_WD_NewTab($sSession)
 	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
  	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
+	If @error Then Return SetError(@error, @extended)
 
 	; Get window coordinates
 	$oWRect = _WD_Window($sSession, 'rect')
