@@ -89,7 +89,7 @@ Global Enum _
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: For list of $sFeatures take a look in the following link.
-; Related .......: _WD_Window, _WD_LastHTTPResult
+; Related .......: _WD_Window, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
 ; ===============================================================================================================================
@@ -193,7 +193,7 @@ EndFunc   ;==>_WD_NewTab
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_Window, _WD_LastHTTPResult
+; Related .......: _WD_Window, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -261,7 +261,7 @@ EndFunc   ;==>_WD_Attach
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -309,7 +309,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -393,7 +393,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://stackoverflow.com/questions/24538450/get-element-currently-under-mouse-without-using-mouse-events
 ; Example .......: No
 ; ===============================================================================================================================
@@ -418,7 +418,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
-; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://stackoverflow.com/questions/31910534/executing-javascript-elementfrompoint-through-selenium-driver/32574543#32574543
 ; Example .......: No
 ; ===============================================================================================================================
@@ -471,7 +471,7 @@ EndFunc   ;==>_WD_GetElementFromPoint
 ; Author ........: Decibel, Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Nested frames are not included in the frame count
-; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_length.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -493,7 +493,7 @@ EndFunc   ;==>_WD_GetFrameCount
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.w3schools.com/jsref/prop_win_top.asp
 ; Example .......: No
 ; ===============================================================================================================================
@@ -515,7 +515,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
-; Related .......: _WD_Window, _WD_LastHTTPResult
+; Related .......: _WD_Window, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -561,7 +561,7 @@ EndFunc   ;==>_WD_FrameEnter
 ; Author ........: Decibel
 ; Modified ......: 2018-04-27
 ; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
-; Related .......: _WD_Window, _WD_LastHTTPResult
+; Related .......: _WD_Window, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
 ; ===============================================================================================================================
@@ -621,7 +621,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
 ; Remarks .......: This function will be removed in a future release. Update your code to use _WD_HighlightElements instead.
-; Related .......: _WD_HighlightElements, _WD_LastHTTPResult
+; Related .......: _WD_HighlightElements, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -650,7 +650,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; Author ........: Danyfirex
 ; Modified ......: mLipok, Danp2
 ; Remarks .......:
-; Related .......: _WD_LastHTTPResult
+; Related .......: _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
 ; Example .......: No
 ; ===============================================================================================================================
@@ -704,7 +704,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_LastHTTPResult
+; Related .......: _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -773,7 +773,7 @@ EndFunc   ;==>_WD_LoadWait
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_Window, _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_Window, _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -824,7 +824,7 @@ EndFunc   ;==>_WD_Screenshot
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Chromedriver currently requires headless mode (https://bugs.chromium.org/p/chromedriver/issues/detail?id=3517).
-; Related .......: _WD_Window, _WD_LastHTTPResult
+; Related .......: _WD_Window, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.w3.org/TR/webdriver/#print-page
 ; Example .......: No
 ; ===============================================================================================================================
@@ -860,7 +860,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult
+; Related .......: _WD_ExecuteScript, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://sqa.stackexchange.com/questions/2921/webdriver-can-i-inject-a-jquery-script-for-a-page-that-isnt-using-jquery
 ; Example .......: No
 ; ===============================================================================================================================
@@ -942,7 +942,7 @@ EndFunc   ;==>_WD_jQuerify
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1140,7 +1140,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1181,7 +1181,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: If $sFilename is empty, then prior selection is cleared.
-; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1696,7 +1696,7 @@ EndFunc   ;==>_WD_DownloadFile
 ; Modified ......:
 ; Remarks .......: $iScript parameter can be null, implies that scripts should never be interrupted, but instead run indefinitely
 ;                  When setting page load timeout, WinHTTP receive timeout is automatically adjusted as well
-; Related .......: _WD_Timeouts, _WD_LastHTTPResult
+; Related .......: _WD_Timeouts, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.w3.org/TR/webdriver/#set-timeouts
 ; Example .......: _WD_SetTimeouts($sSession, 50000)
 ; ===============================================================================================================================
@@ -1766,7 +1766,7 @@ EndFunc   ;==>_WD_SetTimeouts
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1793,7 +1793,7 @@ EndFunc   ;==>_WD_GetElementById
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1826,7 +1826,7 @@ EndFunc   ;==>_WD_GetElementByName
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -1884,7 +1884,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; Modified ......: TheDcoder, mLipok
 ; Remarks .......: Moving the mouse pointer above the target element is the first thing to occur for every $sCommand before it gets executed.
 ;                  There are examples in DemoElements() function in wd_demo.au3
-; Related .......: _WD_ElementAction, _WD_Action, _WD_LastHTTPResult
+; Related .......: _WD_ElementAction, _WD_Action, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2042,7 +2042,7 @@ EndFunc   ;==>_WD_ElementActionEx
 ; Author ........: danylarson
 ; Modified ......: water, danp2
 ; Remarks .......:
-; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
+; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2101,7 +2101,7 @@ EndFunc   ;==>_WD_GetTable
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
-; Related .......: _WD_LastHTTPResult
+; Related .......: _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://www.autoitscript.com/forum/topic/205553-webdriver-udf-help-support-iii/?do=findComment&comment=1480527
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2122,7 +2122,7 @@ EndFunc   ;==>_WD_IsFullScreen
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_LastHTTPResult
+; Related .......: _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
 ; Example .......: No
 ; ===============================================================================================================================
@@ -2147,7 +2147,7 @@ EndFunc   ;==>_WD_GetDevicePixelRatio
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: _WD_Action, _WD_Window, _WD_LastHTTPResult
+; Related .......: _WD_Action, _WD_Window, _WD_LastHTTPResult, _WD_LastHTTPResponse
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
