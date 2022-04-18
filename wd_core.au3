@@ -1505,6 +1505,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 	Local $sMsg
 
 	If $sMessage = Default Then $sMessage = ''
+	If $iExt = Default Then $iExt = 0
 
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_None
@@ -1513,7 +1514,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 			If $iErr <> $_WD_ERROR_Success Then ContinueCase
 
 		Case $_WD_DEBUG_Info, $_WD_DEBUG_Full
-			Local $sExtended = (($iExt <> Default) ? (" / " & $iExt) : (""))
+			Local $sExtended = (($iExt) ? (" / " & $iExt) : (""))
 			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " (" & $iErr & $sExtended & ")"
 			$sMsg &= (($sMessage) ? (" : " & $sMessage) : (""))
 			__WD_ConsoleWrite($sMsg)
