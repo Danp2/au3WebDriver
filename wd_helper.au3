@@ -333,12 +333,16 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		__WD_Sleep($iDelay)
 		$iErr = @error
 
+		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 		Local $hWaitTimer = TimerInit()
 		While 1
 			If $iErr Then ExitLoop
 
+			; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+			If $_WD_DEBUG_Saved = $_WD_DEBUG_Info Then $_WD_DEBUG = $_WD_DEBUG_Error
 			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 			$iErr = @error
+			$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
 				$iErr = $_WD_ERROR_Success
