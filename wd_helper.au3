@@ -284,7 +284,8 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, "")
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, "")
+	Local $sMessage = 'Text = ' & $sText
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, "")
 EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
