@@ -171,6 +171,7 @@ Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
 Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
+Global $_WD_HTTPRESPONSE = '' ; Response of last WinHTTP request
 Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
 Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
@@ -1287,6 +1288,7 @@ Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1314,7 +1316,8 @@ Func __WD_Get($sURL)
 			EndSwitch
 
 			$iErr = @error
-			$_WD_HTTPRESULT = @extended ; _WD_LastHTTPResult()
+			$_WD_HTTPRESULT = @extended
+			$_WD_HTTPRESPONSE = $sResponseText
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
@@ -1361,6 +1364,7 @@ Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1390,7 +1394,8 @@ Func __WD_Post($sURL, $sData)
 			EndSwitch
 
 			$iErr = @error
-			$_WD_HTTPRESULT = @extended ; _WD_LastHTTPResult()
+			$_WD_HTTPRESULT = @extended
+			$_WD_HTTPRESPONSE = $sResponseText
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
@@ -1434,6 +1439,7 @@ Func __WD_Delete($sURL)
 	Local Const $sFuncName = "__WD_Delete"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	Local $aURL = _WinHttpCrackUrl($sURL)
 
@@ -1464,6 +1470,7 @@ Func __WD_Delete($sURL)
 
 			$iErr = @error
 			$_WD_HTTPRESULT = @extended
+			$_WD_HTTPRESPONSE = $sResponseText
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
@@ -1723,6 +1730,23 @@ EndFunc   ;==>__WD_ConsoleWrite
 Func _WD_LastHTTPResult()
 	Return $_WD_HTTPRESULT
 EndFunc   ;==>_WD_LastHTTPResult
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_LastHTTPResponse
+; Description ...: Return the response of the last WinHTTP request.
+; Syntax ........: _WD_LastHTTPResponse()
+; Parameters ....: None
+; Return values .: Response of last WinHTTP request
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_LastHTTPResponse()
+	Return $_WD_HTTPRESPONSE
+EndFunc   ;==>_WD_LastHTTPResponse
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Sleep
