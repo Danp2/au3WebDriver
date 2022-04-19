@@ -318,6 +318,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -665,6 +666,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 			]
 	Local $sScript, $sResult, $iErr, $sElements
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iMethod = Default Then $iMethod = 1
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
@@ -711,6 +713,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local $iErr, $sReadyState
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -1702,6 +1705,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 	Local Const $sFuncName = "_WD_SetTimeouts"
 	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	; Build string to pass to _WD_Timeouts
 	If $iPageLoad <> Default Then
@@ -1889,6 +1893,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	Local Const $sFuncName = "_WD_ElementActionEx"
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -2046,6 +2051,7 @@ Func _WD_GetTable($sSession, $sBaseElement)
 	Local Const $sFuncName = "_WD_GetTable"
 	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	; Determine if optional UDF is available
 	Call("_HtmlTableGetWriteToArray", "")
