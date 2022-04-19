@@ -324,7 +324,7 @@ Func DemoNavigation()
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
-	_WD_NewTab($sSession, Default, Default, "")
+	_WD_NewTab($sSession)
  	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 	If @error Then Return SetError(@error, @extended)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
