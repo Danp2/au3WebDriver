@@ -1216,7 +1216,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 		EndIf
 	EndIf
 
-	Local $sMessage = $sResult & (($iErr) ? ("") : (" file(s) selected"))
+	Local $sMessage = ($iErr) ? ("") : ($sResult & " file(s) selected")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_SelectFiles
 
