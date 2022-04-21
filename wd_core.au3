@@ -1334,7 +1334,7 @@ Func __WD_Get($sURL)
 		$iResult = $_WD_ERROR_InvalidValue
 	EndIf
 
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Full)
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
 	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
@@ -1410,7 +1410,7 @@ Func __WD_Post($sURL, $sData)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Full)
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
 	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
@@ -1485,7 +1485,7 @@ Func __WD_Delete($sURL)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
+	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Full)
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
 	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
