@@ -93,27 +93,27 @@ Global Enum _
 		$_WD_DEBUG_Full        ; logging to console with information for developers of WebDriver UDF
 
 Global Enum _
-		$_WD_ERROR_Success = 0, _ ; No error
-		$_WD_ERROR_GeneralError, _ ; General error
-		$_WD_ERROR_SocketError, _ ; No socket
-		$_WD_ERROR_InvalidDataType, _ ; Invalid data type (IP, URL, Port ...)
-		$_WD_ERROR_InvalidValue, _ ; Invalid value in function-call
-		$_WD_ERROR_InvalidArgue, _ ; Invalid argument in function-call
-		$_WD_ERROR_SendRecv, _ ; Send / Recv Error
-		$_WD_ERROR_Timeout, _ ; Connection / Send / Recv timeout
-		$_WD_ERROR_NoMatch, _ ; No match for _WDAction-find/search _WDGetElement...
-		$_WD_ERROR_RetValue, _ ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
-		$_WD_ERROR_Exception, _ ; Exception from web driver
-		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
-		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
-		$_WD_ERROR_NotFound, _ ;
-		$_WD_ERROR_ElementIssue, _ ;
-		$_WD_ERROR_SessionInvalid, _ ;
-		$_WD_ERROR_UnknownCommand, _ ;
-		$_WD_ERROR_UserAbort, _ ;
-		$_WD_ERROR_FileIssue, _ ;
-		$_WD_ERROR_NotSupported, _ ;
-		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
+		$_WD_ERROR_Success = 0, _ ; 0 = No error
+		$_WD_ERROR_GeneralError, _ ; 1 = General error
+		$_WD_ERROR_SocketError, _ ; 2 = No socket
+		$_WD_ERROR_InvalidDataType, _ ; 3 = Invalid data type (IP, URL, Port ...)
+		$_WD_ERROR_InvalidValue, _ ; 4 = Invalid value in function-call
+		$_WD_ERROR_InvalidArgue, _ ; 5 = Invalid argument in function-call
+		$_WD_ERROR_SendRecv, _ ; 6 = Send / Recv Error
+		$_WD_ERROR_Timeout, _ ; 7 = Connection / Send / Recv timeout
+		$_WD_ERROR_NoMatch, _ ; 8 = No match for _WDAction-find/search _WDGetElement...
+		$_WD_ERROR_RetValue, _ ; 9 = Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
+		$_WD_ERROR_Exception, _ ; 10 = Exception from web driver
+		$_WD_ERROR_InvalidExpression, _ ; 11 = Invalid expression in XPath query or RegEx
+		$_WD_ERROR_NoAlert, _ ; 12 = No alert present when calling _WD_Alert
+		$_WD_ERROR_NotFound, _ ; 13 =
+		$_WD_ERROR_ElementIssue, _ ; 14 =
+		$_WD_ERROR_SessionInvalid, _ ; 15 =
+		$_WD_ERROR_UnknownCommand, _ ; 16 =
+		$_WD_ERROR_UserAbort, _ ; 17 =
+		$_WD_ERROR_FileIssue, _ ; 18 =
+		$_WD_ERROR_NotSupported, _ ; 19 =
+		$_WD_ERROR_AlreadyDefined, _ ; 20 = Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
 		$_WD_ERROR_COUNTER ;
 
 Global Enum _ ; Column positions of $_WD_SupportedBrowsers
@@ -1336,8 +1336,8 @@ Func __WD_Get($sURL)
 
 	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
-	$sMessage &= (($iResult And $_WD_DEBUG = $_WD_DEBUG_Info) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	$sMessage &= (($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : (""))
+	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
+	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Get
 
@@ -1412,8 +1412,8 @@ Func __WD_Post($sURL, $sData)
 
 	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Info)
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
-	$sMessage &= (($iResult And $_WD_DEBUG = $_WD_DEBUG_Info) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	$sMessage &= (($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : (""))
+	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
+	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Post
 
@@ -1487,8 +1487,8 @@ Func __WD_Delete($sURL)
 
 	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
-	$sMessage &= (($iResult And $_WD_DEBUG = $_WD_DEBUG_Info) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : (""))
-	$sMessage &= (($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : (""))
+	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
+	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Delete
 
