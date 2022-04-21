@@ -311,7 +311,7 @@ Func DemoTimeouts()
 	_WD_Timeouts($sSession)
 
 	; This should timeout
- 	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
+	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 	If @error Then Return SetError(@error, @extended)
 
 	; Restore initial settings
@@ -325,7 +325,7 @@ Func DemoNavigation()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_NewTab($sSession)
- 	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
+	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 	If @error Then Return SetError(@error, @extended)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
@@ -402,7 +402,7 @@ Func DemoElements()
 	FileWrite($hFileOpen, $bDecode)
 	FileClose($hFileOpen)
 
-	_Demo_NavigateCheckBanner($sSession, "hhttps://demo.guru99.com/test/simple_context_menu.html", '//div[@id="gdpr-consent-tool-wrapper" and @aria-hidden="true"]')
+	_Demo_NavigateCheckBanner($sSession, "https://demo.guru99.com/test/simple_context_menu.html", '//div[@id="gdpr-consent-tool-wrapper" and @aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
 	Sleep(2000)
@@ -430,10 +430,20 @@ EndFunc   ;==>DemoElements
 Func DemoScript()
 	Local $sValue
 
+	; JavaScript example with arguments
 	$sValue = _WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}', Default, $_WD_JSON_Value)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
-	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", '{}', Default, $_WD_JSON_Value)
+	; JavaScript example that fires error because of unknown function
+	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", Default, Default, $_WD_JSON_Value)
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+
+	; JavaScript example that  writes to BrowserConsole
+	$sValue = _WD_ExecuteScript($sSession, "console.log('Hello world! (from DemoScript: Line #" & @ScriptLineNumber & ")');", Default, Default, $_WD_JSON_Value)
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+
+	; JavaScript example with SyntaxError: string literal contains an unescaped line break
+	$sValue = _WD_ExecuteScript($sSession, "console.log('Hello world", Default, Default, $_WD_JSON_Value)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	; 2022-03-23 This website no longer exists
@@ -524,7 +534,7 @@ EndFunc   ;==>DemoAlerts
 Func DemoFrames()
 	Local $sElement, $bIsWindowTop
 
- 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
+	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
 	If @error Then Return SetError(@error, @extended)
 
 	Local $iFrameCount = _WD_GetFrameCount($sSession)
@@ -637,7 +647,7 @@ Func DemoWindows()
 
 	_WD_NewTab($sSession)
 	$sHnd2 = '{"handle":"' & _WD_Window($sSession, "window") & '"}'
- 	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
+	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 	If @error Then Return SetError(@error, @extended)
 
 	; Get window coordinates
