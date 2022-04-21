@@ -958,7 +958,7 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
 		_WD_ElementAction($sSession, $sElement, 'click')
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, @error), 0)
+	Return SetError(__WD_Error($sFuncName, @error))
 EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
