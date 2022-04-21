@@ -89,7 +89,7 @@ Global Enum _
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: Specifying any features other than noopener or noreferrer, also has the effect of requesting a popup.
-;                  See the link below for further details and a list of available features. 
+;                  See the link below for further details and a list of available features.
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Window/open#window_features
 ; Example .......: No
@@ -751,7 +751,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 		$iErr = @error
 	WEnd
 
-	Local $iReturn = (($iErr) ? (0) : (1))
+	Local $iReturn = ($iErr) ? (0) : (1)
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iReturn)
 EndFunc   ;==>_WD_LoadWait
 
