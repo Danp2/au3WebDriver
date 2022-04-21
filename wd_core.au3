@@ -260,9 +260,9 @@ EndFunc   ;==>_WD_CreateSession
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
 	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
-	Local $iErr = ((@error) ? ($_WD_ERROR_Exception) : ($_WD_ERROR_Success))
+	Local $iErr = (@error) ? ($_WD_ERROR_Exception) : ($_WD_ERROR_Success)
 
-	Local $sMessage = (($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted'))
+	Local $sMessage = ($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted')
 	Local $iReturn = ($iErr) ? (0) : (1)
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $iReturn)
 EndFunc   ;==>_WD_DeleteSession
@@ -846,7 +846,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		$sResponse = ""
 	EndIf
 
-	Local $sMessage = (($iErr) ? ("Error ocurred when trying to ExecuteScript") : (""))
+	Local $sMessage = ($iErr) ? ("Error ocurred when trying to ExecuteScript") : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
@@ -1234,7 +1234,7 @@ Func _WD_Startup()
 		EndIf
 
 		_WinAPI_GetBinaryType($_WD_DRIVER)
-		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
+		Local $sDriverBitness = (@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)")
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
@@ -1246,7 +1246,7 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
 	EndIf
 
-	Local $sMessage = (($iErr) ? ("Error launching WebDriver!") : ($sUpdate))
+	Local $sMessage = ($iErr) ? ("Error launching WebDriver!") : ($sUpdate)
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $iPID)
 EndFunc   ;==>_WD_Startup
 
@@ -1522,9 +1522,9 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 			If $iErr <> $_WD_ERROR_Success Then ContinueCase
 
 		Case $_WD_DEBUG_Info, $_WD_DEBUG_Full
-			Local $sExtended = (($iExt) ? (" / " & $iExt) : (""))
+			Local $sExtended = ($iExt) ? (" / " & $iExt) : ("")
 			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " (" & $iErr & $sExtended & ")"
-			$sMsg &= (($sMessage) ? (" : " & $sMessage) : (""))
+			$sMsg &= ($sMessage) ? (" : " & $sMessage) : ("")
 			__WD_ConsoleWrite($sMsg)
 
 			If $iErr <> $_WD_ERROR_Success Then
