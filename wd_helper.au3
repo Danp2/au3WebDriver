@@ -924,7 +924,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0)
+	Return SetError(__WD_Error($sFuncName, $iErr))
 EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
