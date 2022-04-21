@@ -1523,7 +1523,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 
 		Case $_WD_DEBUG_Info, $_WD_DEBUG_Full
 			Local $sExtended = ($iExt) ? (" / " & $iExt) : ("")
-			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " (" & $iErr & $sExtended & ")"
+			$sMsg = $sWhere & " ==> " & $aWD_ERROR_DESC[$iErr] & " [" & $iErr & $sExtended & "]"
 			$sMsg &= ($sMessage) ? (" : " & $sMessage) : ("")
 			__WD_ConsoleWrite($sMsg)
 
