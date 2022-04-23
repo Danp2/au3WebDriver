@@ -1306,7 +1306,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Else
 		; Save current debug level and set to none
 		Local $WDDebugSave = $_WD_DEBUG
-		$_WD_DEBUG = $_WD_DEBUG_None
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
@@ -1428,8 +1428,10 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 				If $FileItem.IsFolder Then
 					; try to Extract subdir content
 					__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, '\' & $FileItem.Name)
-					If Not @error Then $bEXEWasFound = True
-					ExitLoop
+					If Not @error Then 
+						$bEXEWasFound = True
+						ExitLoop
+					EndIf
 				Else
 					If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
 						$bEXEWasFound = True
