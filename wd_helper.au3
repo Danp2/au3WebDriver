@@ -2197,6 +2197,41 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_FindElement_ByRegExp
+; Description ...: Find element by matching attributes with RegExp
+; Syntax ........: _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx[, $sRegExFlags = ""])
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
+;                  $sRegEx              - RegEx in JavaScript format
+;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
+; Return values .: Success - Desired Element identifier
+;                  Failure - Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
+; Author ........: TheDcoder
+; Modified ......:
+; Remarks .......: The RegEx matching is done by the browser's JavaScript engine so AutoIt's RegEx rules may not accurately work
+;                  in this function. You may refer to this cheatsheet for further information:
+;                  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
+; Related .......:
+; Link ..........:
+; Example .......: _WD_FindElement_ByRegExp($sSession, 'class', 'button-[0-9]', 'i')
+; ===============================================================================================================================
+Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx, $sRegExFlags = "")
+	Local Static $s_JavaScript = _
+			"return _WD_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2]) || "";" & @CRLF & _
+			"function _WD_FindElement_ByRegExp(mode, pattern, flags = "") {" & @CRLF & _
+			"   var regex = new RegExp(pattern, flags);" & @CRLF & _
+			"   var elements;" & @CRLF & _
+			"   elements = document.querySelectorAll(`[${mode}]`);" & @CRLF & _
+			"   return Array.prototype.find.call(elements, x => regex.test(x.getAttribute(mode)));" & @CRLF & _
+			"}" & @CRLF & _
+			""
+
+	Local $sArguments = StringFormat('"%s", "%s", "%s"', $sMode, $sRegEx, $sRegExFlags)
+	Local $sResult = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
+	Return SetError(@error, @extended, $sResult)
+EndFunc   ;==>_WD_FindElement_ByRegExp
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionKey
 ; Description ...: Formats keyboard "action" strings for use in _WD_Action
 ; Syntax ........: _WD_JsonActionKey($sType, $sKey[, $iSuffix = 1])
