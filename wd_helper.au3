@@ -285,7 +285,7 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, "")
 	EndIf
 
-	Local $sMessage = 'Text = ' & $sText
+	Local $sMessage = 'Parameters:   Text = ' & $sText
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, "")
 EndFunc   ;==>_WD_LinkClickByText
 
@@ -386,7 +386,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 	EndIf
 
-	Local $sMessage = '   Options=' & $iOptions
+	Local $sMessage = 'Parameters:   Options=' & $iOptions
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sElement)
 EndFunc   ;==>_WD_WaitElement
 

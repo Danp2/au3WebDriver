@@ -676,7 +676,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 
 	Local $vResult = ($bMultiple) ? $aElements : $sResult
 	If $iErr Then $vResult = ""
-	Local $sMessage = '   Strategy=' & $sStrategy & '   Selector=' & $sSelector
+	Local $sMessage = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $vResult)
 EndFunc   ;==>_WD_FindElement
 
