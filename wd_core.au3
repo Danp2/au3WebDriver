@@ -1164,7 +1164,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
-	Local $sMessage = 'Parameters:   Option=' & $sOption & '   Value=' & $vValue
+	Local $sMessage = 'Parameters:   Option=' & $sOption & '   Value=' & ((IsFunc($vValue)) ? (FuncName($vValue)) : ($vValue))
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, 1)
 EndFunc   ;==>_WD_Option
 
