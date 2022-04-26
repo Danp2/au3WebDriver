@@ -1334,10 +1334,14 @@ Func __WD_Get($sURL)
 		$iResult = $_WD_ERROR_InvalidValue
 	EndIf
 
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Full)
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
-	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
-	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
+	Switch $_WD_DEBUG
+		Case $_WD_DEBUG_Info ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
+			If $iResult Then $sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
+			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
+			$sMessage &= " ResponseText=" & $sResponseText
+	EndSwitch
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Get
 
