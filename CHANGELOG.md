@@ -13,6 +13,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- _WD_LastHTTPResponse
 - _WD_CapabilitiesDefine
 
 ### Fixed
@@ -29,6 +30,9 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_CapabilitiesAdd
 	- Support browser specific / vendor capabilities
 	- Capability names are case sensitive
+- wd_demo
+	- Detect / abort on failure to approve cookies
+	- Update DemoScript() examples + descriptions
 
 ### Project
 
