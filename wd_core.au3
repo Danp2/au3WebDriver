@@ -69,7 +69,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.8.1"
+Global Const $__WDVERSION = "0.9.0"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -695,7 +695,7 @@ EndFunc   ;==>_WD_FindElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementAction
-; Description ...: Perform action on desginated element.
+; Description ...: Perform action on designated element.
 ; Syntax ........: _WD_ElementAction($sSession, $sElement, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
