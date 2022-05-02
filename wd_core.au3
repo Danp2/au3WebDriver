@@ -113,9 +113,10 @@ Global Enum _
 		$_WD_ERROR_UserAbort, _ ;
 		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_NotSupported, _ ;
+		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
 		$_WD_ERROR_COUNTER ;
 
-Global Enum _
+Global Enum _ ; Column positions of $_WD_SupportedBrowsers
 		$_WD_BROWSER_Name, _
 		$_WD_BROWSER_ExeName, _
 		$_WD_BROWSER_DriverName, _
@@ -146,7 +147,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Unknown Command", _
 		"User Aborted", _
 		"File issue", _
-		"Browser or feature not supported" _
+		"Browser or feature not supported", _
+		"Capability or value already defined" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
@@ -169,6 +171,7 @@ Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
 Global $_WD_PORT = 0 ; Port used for web driver communication
 Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
+Global $_WD_HTTPRESPONSE = '' ; Response of last WinHTTP request
 Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
 Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
@@ -1200,6 +1203,7 @@ EndFunc   ;==>_WD_Option
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
 	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iErr = $_WD_ERROR_Success
+	Local $sDriverBitness = ""
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
@@ -1245,8 +1249,8 @@ Func _WD_Startup()
 			$sWinHttpVer &= " (Download latest source at <https://raw.githubusercontent.com/dragana-r/autoit-winhttp/master/WinHttp.au3>)"
 		EndIf
 
-		_WinAPI_GetBinaryType($_WD_DRIVER)
-		Local $sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
+		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
+			$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
@@ -1302,6 +1306,7 @@ Func __WD_Get($sURL)
 	Local Const $sFuncName = "__WD_Get"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
 
@@ -1332,6 +1337,7 @@ Func __WD_Get($sURL)
 
 			$iErr = @error
 			$_WD_HTTPRESULT = @extended
+			$_WD_HTTPRESPONSE = $sResponseText
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
@@ -1375,6 +1381,7 @@ Func __WD_Post($sURL, $sData)
 	Local Const $sFuncName = "__WD_Post"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Info)
 
@@ -1407,6 +1414,7 @@ Func __WD_Post($sURL, $sData)
 
 			$iErr = @error
 			$_WD_HTTPRESULT = @extended
+			$_WD_HTTPRESPONSE = $sResponseText
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
@@ -1447,6 +1455,7 @@ Func __WD_Delete($sURL)
 	Local Const $sFuncName = "__WD_Delete"
 	Local $iResult = $_WD_ERROR_Success, $sResponseText, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Info)
 
@@ -1479,6 +1488,7 @@ Func __WD_Delete($sURL)
 
 			$iErr = @error
 			$_WD_HTTPRESULT = @extended
+			$_WD_HTTPRESPONSE = $sResponseText
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
@@ -1534,7 +1544,7 @@ Func __WD_Error($sWhere, $iErr, $sMessage = Default, $iExt = Default)
 
 			If $iErr <> $_WD_ERROR_Success Then
 				If $_WD_ERROR_MSGBOX Then
-					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL, "WebDriver UDF Error:", $sMsg)
+					Local $iAnswer = MsgBox($MB_ICONERROR + $MB_OKCANCEL + $MB_TOPMOST, "WebDriver UDF Error:", $sMsg)
 					If $iAnswer = $IDCANCEL Then
 						$iErr = $_WD_ERROR_UserAbort ; change $iErr to give a way to stop further processing by user interaction
 						__WD_ConsoleWrite($sFuncName & ": User Abort", $_WD_DEBUG_Info)
@@ -1735,6 +1745,23 @@ EndFunc   ;==>__WD_ConsoleWrite
 Func _WD_LastHTTPResult()
 	Return $_WD_HTTPRESULT
 EndFunc   ;==>_WD_LastHTTPResult
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_LastHTTPResponse
+; Description ...: Return the response of the last WinHTTP request.
+; Syntax ........: _WD_LastHTTPResponse()
+; Parameters ....: None
+; Return values .: Response of last WinHTTP request
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_LastHTTPResponse()
+	Return $_WD_HTTPRESPONSE
+EndFunc   ;==>_WD_LastHTTPResponse
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Sleep
