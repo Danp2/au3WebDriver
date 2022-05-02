@@ -77,6 +77,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_GetMouseElement     | Retrieves reference to element below mouse pointer.                        |
 | _WD_GetElementFromPoint | Retrieves reference to element at specified point.                         |
 | _WD_LastHTTPResult      | Return the result of the last WinHTTP request.                             |
+| _WD_LastHTTPResponse    | Return the response of the last WinHTTP request.                           |
 | _WD_GetFrameCount       | Returns the number of frames/iframes in the current document context.      |
 | _WD_IsWindowTop         | Returns a boolean of the session being at the top level, or in a frame(s). |
 | _WD_FrameEnter          | Enter the specified frame.                                                 |
@@ -137,7 +138,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_CapabilitiesAdd     | Add capablitities to JSON string |
 | _WD_CapabilitiesGet     | Get the JSON string              |
 | _WD_CapabilitiesDump    | Dump to console                  |
-| _WD_CapabilitiesDisplay | Display the current content      |
+| _WD_CapabilitiesDefine  | Define a new capability by selecting a type and specifying a name      |
 
 <p>
 </details>
