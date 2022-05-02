@@ -695,7 +695,7 @@ EndFunc   ;==>_WD_FindElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementAction
-; Description ...: Perform action on desginated element.
+; Description ...: Perform action on designated element.
 ; Syntax ........: _WD_ElementAction($sSession, $sElement, $sCommand[, $sOption = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
