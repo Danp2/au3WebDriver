@@ -608,7 +608,7 @@ EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
 ; Name ..........: _WD_HighlightElement
-; Description ...: Highlights the specified element. <B>[Deprecated]</B>
+; Description ...: Highlights the specified element. [Deprecated]
 ; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
@@ -975,7 +975,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
 ;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array containing 4 columns (value, label, index and selected status)
 ;                  |VALUE          - Retrieves value of the first selected <option> element
-;                  $aParameters    - List of parameters (depending on chosen $sCommand)
+;                  $aParameters    - [optional] List of parameters (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
