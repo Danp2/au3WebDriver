@@ -52,7 +52,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_Action        | Perform various interactions with the web driver session. |
 | _WD_Window        | Perform interactions related to the current window.       |
 | _WD_FindElement   | Find element(s) by designated strategy.                   |
-| _WD_ElementAction | Perform action on desginated element.                     |
+| _WD_ElementAction | Perform action on designated element.                     |
 | _WD_ExecuteScript | Execute Javascipt commands.                               |
 | _WD_Alert         | Respond to user prompt.                                   |
 | _WD_GetSource     | Get page source.                                          |
@@ -89,7 +89,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_PrintToPDF          | Print the current tab in paginated PDF format.                             |
 | _WD_jQuerify            | Inject jQuery library into current session.                                |
 | _WD_ElementOptionSelect | Find and click on an option from a Select element.                         |
-| _WD_ElementSelectAction | Perform action on desginated Select element.                               |
+| _WD_ElementSelectAction | Perform action on designated Select element.                               |
 | _WD_ConsoleVisible      | Control visibility of the webdriver console app.                           |
 | _WD_GetShadowRoot       | Retrieves the shadow root of an element.                                   |
 | _WD_SelectFiles         | Select files for uploading to a website.                                   |
@@ -103,7 +103,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_GetElementById      | Locate element by id.                                                      |
 | _WD_GetElementByName    | Locate element by name.                                                    |
 | _WD_SetElementValue     | Set value of designated element.                                           |
-| _WD_ElementActionEx     | Perform advanced action on desginated element.                             |
+| _WD_ElementActionEx     | Perform advanced action on designated element.                             |
 | _WD_GetTable            | Return all elements of a table.                                            |
 | _WD_IsFullScreen        | Return a boolean indicating if the session is in full screen mode.         |
 | _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                        |

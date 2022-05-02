@@ -962,7 +962,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
-; Description ...: Perform action on desginated <select> element.
+; Description ...: Perform action on designated <select> element.
 ; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $aParameters = Default])
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
