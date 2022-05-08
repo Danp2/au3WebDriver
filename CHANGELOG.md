@@ -9,17 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [0.9.0]
 
 ### Added
 
+- _WD_LastHTTPResponse
 - _WD_CapabilitiesDefine
+
+### Removed
+
+_WD_CapabilitiesDisplay
 
 ### Fixed
 
 - _WD_WaitElement: Prevent premature exit when $_WD_OPTION_NoMatch is True
 - __WD_GetLatestWebdriverInfo: Log correct function name
 - __WD_UpdateExtractor: Correct detection of executable located in subfolder
+- _WD_Startup: Check result of _WinAPI_GetBinaryType
 
 ### Changed
 
@@ -29,6 +35,9 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_CapabilitiesAdd
 	- Support browser specific / vendor capabilities
 	- Capability names are case sensitive
+- wd_demo
+	- Detect / abort on failure to approve cookies
+	- Update DemoScript() examples + descriptions
 
 ### Project
 
@@ -918,7 +927,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - Initial release
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.8.1...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.9.0...HEAD
+[0.9.0]:      https://github.com/Danp2/au3WebDriver/compare/0.8.1...0.9.0
 [0.8.1]:      https://github.com/Danp2/au3WebDriver/compare/0.8.0...0.8.1
 [0.8.0]:      https://github.com/Danp2/au3WebDriver/compare/0.7.0...0.8.0
 [0.7.0]:      https://github.com/Danp2/au3WebDriver/compare/0.6.0...0.7.0

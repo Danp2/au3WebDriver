@@ -319,6 +319,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	Local Const $sFuncName = "_WD_WaitElement"
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -614,7 +615,7 @@ EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
 ; Name ..........: _WD_HighlightElement
-; Description ...: Highlights the specified element. <B>[Deprecated]</B>
+; Description ...: Highlights the specified element. [Deprecated]
 ; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
@@ -672,6 +673,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 			]
 	Local $sScript, $sResult, $iErr, $sElements
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iMethod = Default Then $iMethod = 1
 	If $iMethod < 0 Or $iMethod > 3 Then $iMethod = 1
@@ -718,6 +720,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local $iErr, $sReadyState
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -963,7 +966,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
-; Description ...: Perform action on desginated <select> element.
+; Description ...: Perform action on designated <select> element.
 ; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $aParameters = Default])
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
@@ -976,7 +979,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
 ;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array containing 4 columns (value, label, index and selected status)
 ;                  |VALUE          - Retrieves value of the first selected <option> element
-;                  $aParameters    - List of parameters (depending on chosen $sCommand)
+;                  $aParameters    - [optional] List of parameters (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1307,7 +1310,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	Else
 		; Save current debug level and set to none
 		Local $WDDebugSave = $_WD_DEBUG
-		$_WD_DEBUG = $_WD_DEBUG_None
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
@@ -1429,8 +1432,10 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 				If $FileItem.IsFolder Then
 					; try to Extract subdir content
 					__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, '\' & $FileItem.Name)
-					If Not @error Then $bEXEWasFound = True
-					ExitLoop
+					If Not @error Then 
+						$bEXEWasFound = True
+						ExitLoop
+					EndIf
 				Else
 					If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
 						$bEXEWasFound = True
@@ -1706,6 +1711,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 	Local Const $sFuncName = "_WD_SetTimeouts"
 	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	; Build string to pass to _WD_Timeouts
 	If $iPageLoad <> Default Then
@@ -1893,6 +1899,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	Local Const $sFuncName = "_WD_ElementActionEx"
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	If $iXOffset = Default Then $iXOffset = 0
 	If $iYOffset = Default Then $iYOffset = 0
@@ -2054,6 +2061,7 @@ Func _WD_GetTable($sSession, $sBaseElement)
 	Local Const $sFuncName = "_WD_GetTable"
 	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML
 	$_WD_HTTPRESULT = 0
+	$_WD_HTTPRESPONSE = ''
 
 	; Determine if optional UDF is available
 	Call("_HtmlTableGetWriteToArray", "")
