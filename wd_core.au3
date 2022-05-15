@@ -701,23 +701,23 @@ EndFunc   ;==>_WD_FindElement
 ;                  $sElement - Element ID from _WD_FindElement
 ;                  $sCommand - One of the following actions:
 ;                  |
-;                  |ACTIVE     - Get active element
-;                  |ATTRIBUTE  - Get element's attribute
-;                  |CLEAR      - Clear element's value
-;                  |CLICK      - Click element
-;                  |COMPLABEL  - Get element's computed label
-;                  |COMPROLE   - Get element's computed role
-;                  |CSS        - Get element's CSS value
-;                  |DISPLAYED  - Get element's visibility
-;                  |ENABLED    - Get element's enabled status
-;                  |NAME       - Get element's tag name
-;                  |PROPERTY   - Get element's property
-;                  |RECT       - Get element's dimensions / coordinates
-;                  |SCREENSHOT - Take element screenshot
-;                  |SELECTED   - Get element's selected status
-;                  |SHADOW     - Get element's shadow root
-;                  |TEXT       - Get element's rendered text
-;                  |VALUE      - Get or set element's value. If $sOption = "" the value of the element is returned, else set
+;                  |ACTIVE        - Get active element
+;                  |ATTRIBUTE     - Get element's attribute
+;                  |CLEAR         - Clear element's value
+;                  |CLICK         - Click element
+;                  |COMPUTEDLABEL - Get element's computed label
+;                  |COMPUTEDROLE  - Get element's computed role
+;                  |CSS           - Get element's CSS value
+;                  |DISPLAYED     - Get element's visibility
+;                  |ENABLED       - Get element's enabled status
+;                  |NAME          - Get element's tag name
+;                  |PROPERTY      - Get element's property
+;                  |RECT          - Get element's dimensions / coordinates
+;                  |SCREENSHOT    - Take element screenshot
+;                  |SELECTED      - Get element's selected status
+;                  |SHADOW        - Get element's shadow root
+;                  |TEXT          - Get element's rendered text
+;                  |VALUE         - Get or set element's value. If $sOption = "" the value of the element is returned, else set
 ;                  $sOption  - [optional] a string value. Default is ""
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -746,7 +746,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 
 	Local $sURLElement = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/"
 	Switch $sCommand
-		Case 'complabel', 'comprole', 'displayed', 'enabled', 'name', 'rect', 'selected', 'shadow', 'screenshot', 'text'
+		Case 'computedlabel', 'computedrole', 'displayed', 'enabled', 'name', 'rect', 'selected', 'shadow', 'screenshot', 'text'
 			$sResponse = __WD_Get($sURLElement & $sElement & "/" & $sCommand)
 			$iErr = @error
 
@@ -772,7 +772,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Active|Attribute|CompRole|CompLabel|Clear|Click|CSS|Displayed|Enabled|Name|Property|Rect|Selected|Shadow|Screenshot|Text|Value) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Active|Attribute|ComputedRole|ComputedLabel|Clear|Click|CSS|Displayed|Enabled|Name|Property|Rect|Selected|Shadow|Screenshot|Text|Value) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
