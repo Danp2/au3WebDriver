@@ -1094,7 +1094,7 @@ EndFunc   ;==>_WD_ElementSelectAction
 ;                  $sPropertyName - style property name which should be set, when is not defined (Default) then all properties are taken (array of properties will be returned)
 ;                  $sValue - new value of the property to be set, when is not defined (Default) then properties are not get instead of set
 ; Return values .: Success - Response from web driver in JSON format ...... #TODO
-;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript() or $_WD_ERROR_NotSupported
+;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript() or $_WD_ERROR_NotSupported or $_WD_ERROR_NoMatch
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
@@ -1104,25 +1104,43 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; ===============================================================================================================================
 Func _WD_ElementStyle($sSession, $sElement, $sPropertyName = Default, $sValue = Default)
 	Local $vResult, $iErr = $_WD_ERROR_Success
+	Local $sJavaScript = ''
 
 	If IsString($sPropertyName) And $sValue <> Default Then ; set property value
 		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sPropertyName & " = '" & $sValue & "'", __WD_JsonElement($sElement), Default, Default)
 		$iErr = @error
 	ElseIf IsString($sPropertyName) And $sValue = Default Then ; get specific property value
-		#TODO
-		$iErr = @error
-	ElseIf $sPropertyName = Default And $sValue = Default Then ; get list of properties and they values
-		Local $sJavaScript = _
+		$sJavaScript = _
 				"var element = arguments[0];" & _
-				"var result ='';" & _
-				"var property ='';" & _
-				"for (let i = 0; i < element.style.length; i++)" & _
-				"	{" & _
-				"	property = element.style.item(i)" & _
-				"	result += property + ':' + element.style.getPropertyValue(property) + ';'" & _
-				"}" & _
-				"return result;" & _
-				""
+				"var search = '" & $sPropertyName & "';" & _
+				"GetPropertyValue(element, search) {" & _
+				"function GetPropertyValue(element, search) {" & _
+				"	var result ='';" & _
+				"	var property ='';" & _
+				"	for (let i = 0; i < element.style.length; i++)" & _
+				"		{" & _
+				"		property = element.style.item(i)" & _
+				"		if (property == search) {result = element.style.getPropertyValue(property); return result;}" & _
+				"	}" & _
+				"	return result;" & _
+				"}"
+		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+		$iErr = @error
+		If $iErr = $_WD_ERROR_Success And $vResult = '' Then $iErr = $_WD_ERROR_NoMatch
+	ElseIf $sPropertyName = Default And $sValue = Default Then ; get list of properties and they values
+		$sJavaScript = _
+				"var element = arguments[0];" & _
+				"GetProperties(element)" & _
+				"function GetProperties(element) {" & _
+				"	var result ='';" & _
+				"	var property ='';" & _
+				"	for (let i = 0; i < element.style.length; i++)" & _
+				"		{" & _
+				"		property = element.style.item(i)" & _
+				"		result += property + ':' + element.style.getPropertyValue(property) + ';'" & _
+				"	}" & _
+				"	return result;" & _
+				"}"
 		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
 
