@@ -1337,11 +1337,15 @@ Func __WD_Get($sURL)
 
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	Switch $_WD_DEBUG
-		Case $_WD_DEBUG_Info ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
-			If $iResult Then $sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+		Case $_WD_DEBUG_Info
+			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
 		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
 			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
-			$sMessage &= " ResponseText=" & $sResponseText
+			If $_WD_RESPONSE_TRIM <> -1 Then
+				$sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+			Else
+				$sMessage &= " ResponseText=" & $sResponseText
+			EndIf
 	EndSwitch
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Get
