@@ -1086,6 +1086,58 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_ElementStyle
+; Description ...: Set/Get element style property
+; Syntax ........: _WD_ElementStyle($sSession, $sElement, $sPropertyName, $sValue)
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sElement - Element ID from _WD_FindElement
+;                  $sPropertyName - style property name which should be set, when is not defined (Default) then all properties are taken (array of properties will be returned)
+;                  $sValue - new value of the property to be set, when is not defined (Default) then properties are not get instead of set
+; Return values .: Success - Response from web driver in JSON format ...... #TODO
+;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript() or $_WD_ERROR_NotSupported
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_ElementStyle($sSession, $sElement, $sPropertyName = Default, $sValue = Default)
+	Local $vResult, $iErr = $_WD_ERROR_Success
+
+	If IsString($sPropertyName) And $sValue <> Default Then ; set property value
+		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sPropertyName & " = '" & $sValue & "'", __WD_JsonElement($sElement), Default, Default)
+		$iErr = @error
+	ElseIf IsString($sPropertyName) And $sValue = Default Then ; get specific property value
+		#TODO
+		$iErr = @error
+	ElseIf $sPropertyName = Default And $sValue = Default Then ; get list of properties and they values
+		Local $sJavaScript = _
+				"var element = arguments[0];" & _
+				"var result ='';" & _
+				"var property ='';" & _
+				"for (let i = 0; i < element.style.length; i++)" & _
+				"	{" & _
+				"	property = element.style.item(i)" & _
+				"	result += property + ':' + element.style.getPropertyValue(property) + ';'" & _
+				"}" & _
+				"return result;" & _
+				""
+		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+		$iErr = @error
+
+		If $iErr = $_WD_ERROR_Success Then
+			Local $aProperties[0][2]
+			_ArrayAdd($aProperties, StringStripWS($vResult, $STR_STRIPTRAILING), 0, ':', ';', $ARRAYFILL_FORCE_SINGLEITEM)
+			$vResult = $aProperties
+		EndIf
+	Else
+		$iErr = $_WD_ERROR_NotSupported
+	EndIf
+	Return SetError($iErr, 0, $vResult)
+EndFunc   ;==>_WD_ElementStyle
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ConsoleVisible
 ; Description ...: Control visibility of the webdriver console app.
 ; Syntax ........: _WD_ConsoleVisible([$bVisible = Default])
