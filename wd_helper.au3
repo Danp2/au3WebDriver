@@ -1087,12 +1087,12 @@ EndFunc   ;==>_WD_ElementSelectAction
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementStyle
-; Description ...: Set/Get element style property
-; Syntax ........: _WD_ElementStyle($sSession, $sElement, $sPropertyName, $sValue)
+; Description ...: Set/Get element style CSSProperty
+; Syntax ........: _WD_ElementStyle($sSession, $sElement, $sCSSProperty, $sValue)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
-;                  $sPropertyName - style/CSS property name which should be set. When it is undefined (Default) then all properties are taken (array of properties will be returned)
-;                  $sValue - new property value to be set. When it is undefined (default), properties are retrieved instead of setting them
+;                  $sCSSProperty - style property name which should be set, when is not defined (Default) then all properties are taken (array of properties will be returned)
+;                  $sValue - new value to be set; current value will be retrieved when not supplied (Default)
 ; Return values .: Success - Response from web driver in JSON format ...... #TODO
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript() or $_WD_ERROR_NotSupported or $_WD_ERROR_NoMatch
 ; Author ........: mLipok
@@ -1102,17 +1102,17 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementStyle($sSession, $sElement, $sPropertyName = Default, $sValue = Default)
+Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = Default)
 	Local $vResult, $iErr = $_WD_ERROR_Success
 	Local $sJavaScript = ''
 
-	If IsString($sPropertyName) And $sValue <> Default Then ; set property value
-		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sPropertyName & " = '" & $sValue & "'", __WD_JsonElement($sElement), Default, Default)
+	If IsString($sCSSProperty) And $sValue <> Default Then ; set property value
+		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sCSSProperty & " = '" & $sValue & "'", __WD_JsonElement($sElement), Default, Default)
 		$iErr = @error
-	ElseIf IsString($sPropertyName) And $sValue = Default Then ; get specific property value
+	ElseIf IsString($sCSSProperty) And $sValue = Default Then ; get specific property value
 		$sJavaScript = _
 				"var element = arguments[0];" & _
-				"var search = '" & $sPropertyName & "';" & _
+				"var search = '" & $sCSSProperty & "';" & _
 				"GetPropertyValue(element, search) {" & _
 				"function GetPropertyValue(element, search) {" & _
 				"	var result ='';" & _
@@ -1127,7 +1127,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sPropertyName = Default, $sValue = 
 		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
 		If $iErr = $_WD_ERROR_Success And $vResult = '' Then $iErr = $_WD_ERROR_NoMatch
-	ElseIf $sPropertyName = Default And $sValue = Default Then ; get list of properties and they values
+	ElseIf $sCSSProperty = Default And $sValue = Default Then ; get list of properties and they values
 		$sJavaScript = _
 				"var element = arguments[0];" & _
 				"GetProperties(element)" & _
@@ -1143,8 +1143,9 @@ Func _WD_ElementStyle($sSession, $sElement, $sPropertyName = Default, $sValue = 
 				"}"
 		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
-
-		If $iErr = $_WD_ERROR_Success Then
+		If $iErr = $_WD_ERROR_Success And $vResult = '' Then
+			$iErr = $_WD_ERROR_NoMatch
+		ElseIf $iErr = $_WD_ERROR_Success Then
 			Local $aProperties[0][2]
 			_ArrayAdd($aProperties, StringStripWS($vResult, $STR_STRIPTRAILING), 0, ':', ';', $ARRAYFILL_FORCE_SINGLEITEM)
 			$vResult = $aProperties
