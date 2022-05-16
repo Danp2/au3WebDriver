@@ -1091,8 +1091,8 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Syntax ........: _WD_ElementStyle($sSession, $sElement, $sPropertyName, $sValue)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
-;                  $sPropertyName - style property name which should be set, when is not defined (Default) then all properties are taken (array of properties will be returned)
-;                  $sValue - new value of the property to be set, when is not defined (Default) then properties are not instead of set
+;                  $sPropertyName - style/CSS property name which should be set. When it is undefined (Default) then all properties are taken (array of properties will be returned)
+;                  $sValue - new property value to be set. When it is undefined (default), properties are retrieved instead of setting them
 ; Return values .: Success - Response from web driver in JSON format ...... #TODO
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript() or $_WD_ERROR_NotSupported or $_WD_ERROR_NoMatch
 ; Author ........: mLipok
