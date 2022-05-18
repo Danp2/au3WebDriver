@@ -2198,7 +2198,7 @@ EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FindElement_ByRegExp
-; Description ...: Find element by matching attributes with RegExp
+; Description ...: Find element identifier by matching attributes with RegExp
 ; Syntax ........: _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx[, $sRegExFlags = ""[, $bAll = False]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
