@@ -2212,7 +2212,7 @@ EndFunc   ;==>_WD_CheckContext
 ; Remarks .......: The RegEx matching is done by the browser's JavaScript engine so AutoIt's RegEx rules may not accurately work
 ;                  in this function. You may refer to this cheatsheet for further information:
 ;                  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
-;                  The returned matched elements are in the same format like result form _WD_FindElement and _WD_WaitElement
+;                  The matching elements are returned in the same format as the results from _WD_FindElement
 ; Related .......:
 ; Link ..........:
 ; Example .......: _WD_FindElement_ByRegExp($sSession, 'class', 'button-[0-9]', 'i', True)
