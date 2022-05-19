@@ -2205,7 +2205,7 @@ EndFunc   ;==>_WD_CheckContext
 ;                  $sRegEx              - RegEx in JavaScript format
 ;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
 ;                  $bAll                - [optional] Fetch a list of all elements that fits to the RegEx pattern ? Default is False - return only first element
-; Return values .: Success - matched element
+; Return values .: Success - Matched element
 ;                  Failure - Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
 ; Author ........: TheDcoder
 ; Modified ......: mLipok
