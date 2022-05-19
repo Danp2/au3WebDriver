@@ -1107,19 +1107,19 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 	Local $sJavaScript = ''
 
 	If IsString($sCSSProperty) And $sValue <> Default Then ; set property value
-		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sCSSProperty & " = '" & $sValue & "'", __WD_JsonElement($sElement), Default, Default)
+		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sCSSProperty & " = '" & $sValue & "';", __WD_JsonElement($sElement), Default, Default)
 		$iErr = @error
 	ElseIf IsString($sCSSProperty) And $sValue = Default Then ; get specific property value
 		$sJavaScript = _
 				"var element = arguments[0];" & _
 				"var search = '" & $sCSSProperty & "';" & _
-				"GetPropertyValue(element, search) {" & _
+				"return GetPropertyValue(element, search);" & _
+				"" & _
 				"function GetPropertyValue(element, search) {" & _
 				"	var result ='';" & _
 				"	var property ='';" & _
-				"	for (let i = 0; i < element.style.length; i++)" & _
-				"		{" & _
-				"		property = element.style.item(i)" & _
+				"	for (let i = 0; i < element.style.length; i++) {" & _
+				"		property = element.style.item(i);" & _
 				"		if (property == search) {result = element.style.getPropertyValue(property); return result;}" & _
 				"	}" & _
 				"	return result;" & _
@@ -1130,13 +1130,13 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 	ElseIf $sCSSProperty = Default And $sValue = Default Then ; get list of properties and they values
 		$sJavaScript = _
 				"var element = arguments[0];" & _
-				"GetProperties(element)" & _
+				"return GetProperties(element);" & _
+				"" & _
 				"function GetProperties(element) {" & _
 				"	var result ='';" & _
 				"	var property ='';" & _
-				"	for (let i = 0; i < element.style.length; i++)" & _
-				"		{" & _
-				"		property = element.style.item(i)" & _
+				"	for (let i = 0; i < element.style.length; i++) {" & _
+				"		property = element.style.item(i);" & _
 				"		result += property + ':' + element.style.getPropertyValue(property) + ';'" & _
 				"	}" & _
 				"	return result;" & _
