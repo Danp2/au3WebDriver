@@ -2198,20 +2198,21 @@ EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FindElement_ByRegExp
-; Description ...: Find element identifier by matching attributes values using regular expression
+; Description ...: Find element by matching attributes values using regular expression
 ; Syntax ........: _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx[, $sRegExFlags = ""[, $bAll = False]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
 ;                  $sRegEx              - RegEx in JavaScript format
 ;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
 ;                  $bAll                - [optional] Fetch a list of all elements that fits to the RegEx pattern ? Default is False - return only first element
-; Return values .: Success - matched attribute value
+; Return values .: Success - matched element
 ;                  Failure - Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
 ; Author ........: TheDcoder
 ; Modified ......: mLipok
 ; Remarks .......: The RegEx matching is done by the browser's JavaScript engine so AutoIt's RegEx rules may not accurately work
 ;                  in this function. You may refer to this cheatsheet for further information:
 ;                  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
+;                  The returned matched elements are in the same format like result form _WD_FindElement and _WD_WaitElement
 ; Related .......:
 ; Link ..........:
 ; Example .......: _WD_FindElement_ByRegExp($sSession, 'class', 'button-[0-9]', 'i', True)
