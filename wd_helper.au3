@@ -2213,6 +2213,7 @@ EndFunc   ;==>_WD_CheckContext
 ;                  in this function. You may refer to this cheatsheet for further information:
 ;                  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
 ;                  The matching elements are returned in the same format as the results from _WD_FindElement
+;                  As JavaScript's RegEx engine differs from AutoIt's PCRE engine you can use https://regex101.com with FLAVOR set to: ECMAScript (JavaScript) to validate your RegEx
 ; Related .......:
 ; Link ..........:
 ; Example .......: _WD_FindElement_ByRegExp($sSession, 'class', 'button-[0-9]', 'i', True)
