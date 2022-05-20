@@ -2220,7 +2220,7 @@ EndFunc   ;==>_WD_CheckContext
 ; ===============================================================================================================================
 Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx, $sRegExFlags = "", $bAll = False)
 	Local Static $s_JavaScript = _
-			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2], arguments[3]) || '';" & _
+			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2] , arguments[3]) || '';" & _
 			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '', all = false) {" & _
 			"   var regex = new RegExp(pattern, flags);" & _
 			"   var elements;" & _
@@ -2230,8 +2230,16 @@ Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx, $sRegExFlags = "", $bA
 			""
 
 	Local $sArguments = StringFormat('"%s", "%s", "%s", "%s"', $sMode, $sRegEx, $sRegExFlags, StringLower($bAll))
-	Local $sResult = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
-	Return SetError(@error, @extended, $sResult)
+	Local $oValues = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
+	If @error Then Return SetError(@error, @extended, $oValues)
+
+	Local $sKey = "[" & $_WD_ELEMENT_ID & "]", $iRow =0
+	Local $aElements[UBound($oValues)]
+	For $oValue In $oValues
+		$aElements[$iRow] = Json_Get($oValue, $sKey)
+		$iRow += 1
+	Next
+	Return SetError(@error, @extended, $aElements)
 EndFunc   ;==>_WD_FindElement_ByRegExp
 
 ; #FUNCTION# ====================================================================================================================
