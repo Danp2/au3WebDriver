@@ -2228,7 +2228,7 @@ Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = 
 			"}" & _
 			""
 
-	Local $sArguments = StringFormat('"%s", "%s", "%s", "%s"', $sMode, $sRegExPattern, $sRegExFlags, $bAll)
+	Local $sArguments = StringFormat('"%s", "%s", "%s"', $sMode, $sRegExPattern, $sRegExFlags)
 	Local $oValues = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
 	If @error Then Return SetError(@error, @extended, $oValues)
 
