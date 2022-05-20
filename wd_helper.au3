@@ -1103,6 +1103,7 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = Default)
+	Local Const $sFuncName = "_WD_ElementStyle"
 	Local $vResult, $iErr = $_WD_ERROR_Success
 
 	If IsString($sCSSProperty) And $sValue <> Default Then ; set property value
@@ -1151,7 +1152,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 	Else
 		$iErr = $_WD_ERROR_NotSupported
 	EndIf
-	Return SetError($iErr, 0, $vResult)
+Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
 EndFunc   ;==>_WD_ElementStyle
 
 ; #FUNCTION# ====================================================================================================================
