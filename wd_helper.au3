@@ -2199,10 +2199,10 @@ EndFunc   ;==>_WD_CheckContext
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FindElement_ByRegExp
 ; Description ...: Find element by matching attributes values using regular expression
-; Syntax ........: _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx[, $sRegExFlags = ""[, $bAll = False]])
+; Syntax ........: _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern[, $sRegExFlags = ""[, $bAll = False]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
-;                  $sRegEx              - RegEx in JavaScript format
+;                  $sRegExPattern       - RegEx in JavaScript format
 ;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
 ;                  $bAll                - [optional] Fetch a list of all elements that fits to the RegEx pattern ? Default is False - return only first element
 ; Return values .: Success - Matched element
@@ -2218,18 +2218,17 @@ EndFunc   ;==>_WD_CheckContext
 ; Link ..........:
 ; Example .......: _WD_FindElement_ByRegExp($sSession, 'class', 'button-[0-9]', 'i', True)
 ; ===============================================================================================================================
-Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx, $sRegExFlags = "", $bAll = False)
+Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = "", $bAll = False)
 	Local Static $s_JavaScript = _
-			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2] , arguments[3]) || '';" & _
-			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '', all = false) {" & _
+			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2]) || '';" & _
+			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '') {" & _
 			"   var regex = new RegExp(pattern, flags);" & _
-			"   var elements;" & _
-			"   elements = document.querySelectorAll(`[${mode}]`);" & _
-			"   return Array.prototype[all ? 'filter' : 'find'].call(elements, x => regex.test(x.getAttribute(mode)));" & _
+			"   var elements = document.querySelectorAll(`[${mode}]`);" & _
+			"   return Array.prototype['filter'].call(elements, x => regex.test(x.getAttribute(mode)));" & _
 			"}" & _
 			""
 
-	Local $sArguments = StringFormat('"%s", "%s", "%s", "%s"', $sMode, $sRegEx, $sRegExFlags, StringLower($bAll))
+	Local $sArguments = StringFormat('"%s", "%s", "%s", "%s"', $sMode, $sRegExPattern, $sRegExFlags, $bAll)
 	Local $oValues = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
 	If @error Then Return SetError(@error, @extended, $oValues)
 
@@ -2239,7 +2238,12 @@ Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx, $sRegExFlags = "", $bA
 		$aElements[$iRow] = Json_Get($oValue, $sKey)
 		$iRow += 1
 	Next
-	Return SetError(@error, @extended, $aElements)
+
+	If $bAll Then
+		Return SetError(0, UBound($aElements), $aElements)
+	Else
+		Return SetError(0, UBound($aElements), $aElements[0])
+	EndIf
 EndFunc   ;==>_WD_FindElement_ByRegExp
 
 ; #FUNCTION# ====================================================================================================================
