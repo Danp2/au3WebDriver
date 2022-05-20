@@ -1104,44 +1104,42 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; ===============================================================================================================================
 Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = Default)
 	Local $vResult, $iErr = $_WD_ERROR_Success
-	Local $sJavaScript = ''
 
 	If IsString($sCSSProperty) And $sValue <> Default Then ; set property value
 		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sCSSProperty & " = '" & $sValue & "';", __WD_JsonElement($sElement), Default, Default)
 		$iErr = @error
 	ElseIf IsString($sCSSProperty) And $sValue = Default Then ; get specific property value
-		$sJavaScript = _
+		Local Static $sJavaScript2 = _
 				"var element = arguments[0];" & _
-				"var search = '" & $sCSSProperty & "';" & _
+				"var search = '*';" & _
 				"return GetPropertyValue(element, search);" & _
 				"" & _
 				"function GetPropertyValue(element, search) {" & _
-				"	var result ='';" & _
-				"	var property ='';" & _
+				"	var propertyname ='';" & _
 				"	for (let i = 0; i < element.style.length; i++) {" & _
-				"		property = element.style.item(i);" & _
-				"		if (property == search) {result = element.style.getPropertyValue(property); return result;}" & _
+				"		propertyname = element.style.item(i);" & _
+				"		if (propertyname == search) {return element.style.getPropertyValue(propertyname);}" & _
 				"	}" & _
-				"	return result;" & _
+				"	return '';" & _
 				"}"
-		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+		$vResult = _WD_ExecuteScript($sSession, StringReplace($sJavaScript2, '*', $sCSSProperty), __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
 		If $iErr = $_WD_ERROR_Success And $vResult = '' Then $iErr = $_WD_ERROR_NoMatch
 	ElseIf $sCSSProperty = Default And $sValue = Default Then ; get list of properties and they values
-		$sJavaScript = _
+		Local Static $sJavaScript3 = _
 				"var element = arguments[0];" & _
 				"return GetProperties(element);" & _
 				"" & _
 				"function GetProperties(element) {" & _
 				"	var result ='';" & _
-				"	var property ='';" & _
+				"	var propertyname ='';" & _
 				"	for (let i = 0; i < element.style.length; i++) {" & _
-				"		property = element.style.item(i);" & _
-				"		result += property + ':' + element.style.getPropertyValue(property) + ';'" & _
+				"		propertyname = element.style.item(i);" & _
+				"		result += propertyname + ':' + element.style.getPropertyValue(propertyname) + ';'" & _
 				"	}" & _
 				"	return result;" & _
 				"}"
-		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+		$vResult = _WD_ExecuteScript($sSession, $sJavaScript3, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
 		If $iErr = $_WD_ERROR_Success And $vResult = '' Then
 			$iErr = $_WD_ERROR_NoMatch
