@@ -2220,13 +2220,13 @@ EndFunc   ;==>_WD_CheckContext
 ; ===============================================================================================================================
 Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegEx, $sRegExFlags = "", $bAll = False)
 	Local Static $s_JavaScript = _
-			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2], arguments[3]) || '';" & @CRLF & _
-			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '', all = false) {" & @CRLF & _
-			"   var regex = new RegExp(pattern, flags);" & @CRLF & _
-			"   var elements;" & @CRLF & _
-			"   elements = document.querySelectorAll(`[${mode}]`);" & @CRLF & _
-			"   return Array.prototype[all ? 'filter' : 'find'].call(elements, x => regex.test(x.getAttribute(mode)));" & @CRLF & _
-			"}" & @CRLF & _
+			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2], arguments[3]) || '';" & _
+			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '', all = false) {" & _
+			"   var regex = new RegExp(pattern, flags);" & _
+			"   var elements;" & _
+			"   elements = document.querySelectorAll(`[${mode}]`);" & _
+			"   return Array.prototype[all ? 'filter' : 'find'].call(elements, x => regex.test(x.getAttribute(mode)));" & _
+			"}" & _
 			""
 
 	Local $sArguments = StringFormat('"%s", "%s", "%s", "%s"', $sMode, $sRegEx, $sRegExFlags, StringLower($bAll))
