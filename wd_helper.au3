@@ -2219,6 +2219,8 @@ EndFunc   ;==>_WD_CheckContext
 ; Example .......: _WD_FindElement_ByRegExp($sSession, 'class', 'button-[0-9]', 'i', True)
 ; ===============================================================================================================================
 Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = "", $bAll = False)
+	Local Const $sFuncName = "_WD_FindElement_ByRegExp"
+	Local $iRow = 0, $iErr = 0, $vResult = ''
 	Local Static $s_JavaScript = _
 			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2]) || '';" & _
 			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '') {" & _
@@ -2230,20 +2232,27 @@ Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = 
 
 	Local $sArguments = StringFormat('"%s", "%s", "%s"', $sMode, $sRegExPattern, $sRegExFlags)
 	Local $oValues = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
-	If @error Then Return SetError(@error, @extended, $oValues)
+	$iErr = @error
+	If Not @error Then
+		Local $sKey = "[" & $_WD_ELEMENT_ID & "]"
+		Local $aElements[UBound($oValues)]
+		If UBound($aElements) < 1 Then
+			$iErr = $_WD_ERROR_NoMatch
+		Else
+			For $oValue In $oValues
+				$aElements[$iRow] = Json_Get($oValue, $sKey)
+				$iRow += 1
+			Next
 
-	Local $sKey = "[" & $_WD_ELEMENT_ID & "]", $iRow =0
-	Local $aElements[UBound($oValues)]
-	For $oValue In $oValues
-		$aElements[$iRow] = Json_Get($oValue, $sKey)
-		$iRow += 1
-	Next
-
-	If $bAll Then
-		Return SetError(0, UBound($aElements), $aElements)
-	Else
-		Return SetError(0, UBound($aElements), $aElements[0])
+			If $bAll Then
+				$vResult = $aElements
+			Else
+				$vResult = $aElements[0]
+			EndIf
+		EndIf
 	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iRow, $vResult)
 EndFunc   ;==>_WD_FindElement_ByRegExp
 
 ; #FUNCTION# ====================================================================================================================
