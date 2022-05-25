@@ -2222,33 +2222,36 @@ Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = 
 	Local Const $sFuncName = "_WD_FindElement_ByRegExp"
 	Local $iRow = 0, $iErr = 0, $vResult = ''
 	Local Static $s_JavaScript = _
-			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2]) || '';" & _
-			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '') {" & _
+			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2] , arguments[3]) || '';" & _
+			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '', all = false) {" & _
 			"   var regex = new RegExp(pattern, flags);" & _
-			"   var elements = document.querySelectorAll(`[${mode}]`);" & _
-			"   return Array.prototype['filter'].call(elements, x => regex.test(x.getAttribute(mode)));" & _
+			"   var elements;" & _
+			"   elements = document.querySelectorAll(`[${mode}]`);" & _
+			"   return Array.prototype[all ? 'filter' : 'find'].call(elements, x => regex.test(x.getAttribute(mode)));" & _
 			"}" & _
 			""
 
-	Local $sArguments = StringFormat('"%s", "%s", "%s"', $sMode, $sRegExPattern, $sRegExFlags)
+ 	Local $sArguments = StringFormat('"%s", "%s", "%s", %s', $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
 	Local $oValues = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
 	$iErr = @error
 	If Not @error Then
 		Local $sKey = "[" & $_WD_ELEMENT_ID & "]"
-		Local $aElements[UBound($oValues)]
-		If UBound($aElements) < 1 Then
-			$iErr = $_WD_ERROR_NoMatch
-		Else
-			For $oValue In $oValues
-				$aElements[$iRow] = Json_Get($oValue, $sKey)
-				$iRow += 1
-			Next
 
-			If $bAll Then
-				$vResult = $aElements
+		If $bAll Then
+			Local $aElements[UBound($oValues)]
+			If UBound($aElements) < 1 Then
+				$iErr = $_WD_ERROR_NoMatch
 			Else
-				$vResult = $aElements[0]
+				For $oValue In $oValues
+					$aElements[$iRow] = Json_Get($oValue, $sKey)
+					$iRow += 1
+				Next
+
+				$vResult = $aElements
 			EndIf
+		Else
+			$vResult = Json_Get($oValues, $sKey)
+			$iRow = 1
 		EndIf
 	EndIf
 
