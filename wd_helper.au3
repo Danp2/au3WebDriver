@@ -2197,9 +2197,9 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_FindElement_ByRegExp
+; Name ..........: _WD_GetElementByRegEx
 ; Description ...: Find element by matching attributes values using regular expression
-; Syntax ........: _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern[, $sRegExFlags = ""[, $bAll = False]])
+; Syntax ........: _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern[, $sRegExFlags = ""[, $bAll = False]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
 ;                  $sRegExPattern       - RegEx in JavaScript format
@@ -2216,10 +2216,10 @@ EndFunc   ;==>_WD_CheckContext
 ;                  As JavaScript's RegEx engine differs from AutoIt's PCRE engine you can use https://regex101.com with FLAVOR set to: ECMAScript (JavaScript) to validate your RegEx
 ; Related .......:
 ; Link ..........:
-; Example .......: _WD_FindElement_ByRegExp($sSession, 'class', 'button-[0-9]', 'i', True)
+; Example .......: _WD_GetElementByRegEx($sSession, 'class', 'button-[0-9]', 'i', True)
 ; ===============================================================================================================================
-Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = "", $bAll = False)
-	Local Const $sFuncName = "_WD_FindElement_ByRegExp"
+Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "", $bAll = False)
+	Local Const $sFuncName = "_WD_GetElementByRegEx"
 	Local $iRow = 0, $iErr = 0, $vResult = ''
 	Local Static $sJS_Static = _
 			"return _JS_FindElementByRegExp('%s', '%s', '%s', %s) || '';" & _
@@ -2257,7 +2257,7 @@ Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = 
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $iRow, $vResult)
-EndFunc   ;==>_WD_FindElement_ByRegExp
+EndFunc   ;==>_WD_GetElementByRegEx
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionKey
