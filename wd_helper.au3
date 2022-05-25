@@ -2221,9 +2221,10 @@ EndFunc   ;==>_WD_CheckContext
 Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = "", $bAll = False)
 	Local Const $sFuncName = "_WD_FindElement_ByRegExp"
 	Local $iRow = 0, $iErr = 0, $vResult = ''
-	Local Static $s_JavaScript = _
-			"return _JS_FindElement_ByRegExp(arguments[0], arguments[1], arguments[2] , arguments[3]) || '';" & _
-			"function _JS_FindElement_ByRegExp(mode, pattern, flags = '', all = false) {" & _
+	Local Static $sJS_Static = _
+			"return _JS_FindElementByRegExp('%s', '%s', '%s', %s) || '';" & _
+			"" & _
+			"function _JS_FindElementByRegExp(mode, pattern, flags = '', all = false) {" & _
 			"   var regex = new RegExp(pattern, flags);" & _
 			"   var elements;" & _
 			"   elements = document.querySelectorAll(`[${mode}]`);" & _
@@ -2231,8 +2232,8 @@ Func _WD_FindElement_ByRegExp($sSession, $sMode, $sRegExPattern, $sRegExFlags = 
 			"}" & _
 			""
 
- 	Local $sArguments = StringFormat('"%s", "%s", "%s", %s', $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
-	Local $oValues = _WD_ExecuteScript($sSession, $s_JavaScript, $sArguments, False, $_WD_JSON_Value)
+ 	Local $sJavaScript = StringFormat($sJS_Static, $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
+	Local $oValues = _WD_ExecuteScript($sSession, $sJavaScript, Default, False, $_WD_JSON_Value)
 	$iErr = @error
 	If Not @error Then
 		Local $sKey = "[" & $_WD_ELEMENT_ID & "]"
