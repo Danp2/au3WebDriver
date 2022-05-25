@@ -1105,42 +1105,46 @@ EndFunc   ;==>_WD_ElementSelectAction
 Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = Default)
 	Local Const $sFuncName = "_WD_ElementStyle"
 	Local $vResult, $iErr = $_WD_ERROR_Success
+	Local $sJavaScript = ''
 
 	If IsString($sCSSProperty) And $sValue <> Default Then ; set property value
-		$vResult = _WD_ExecuteScript($sSession, "var element = arguments[0]; element.style." & $sCSSProperty & " = '" & $sValue & "';", __WD_JsonElement($sElement), Default, Default)
+		$sJavaScript = _
+				"var element = arguments[0];" & _
+				"element.style." & $sCSSProperty & " = '" & $sValue & "';"
+		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, Default)
 		$iErr = @error
 	ElseIf IsString($sCSSProperty) And $sValue = Default Then ; get specific property value
-		Local Static $sJavaScript2 = _
-				"var element = arguments[0];" & _
-				"var search = '*';" & _
-				"return GetPropertyValue(element, search);" & _
+		$sJavaScript = _
+				"var myelement = arguments[0];" & _
+				"return GetPropertyValue(myelement);" & _
 				"" & _
-				"function GetPropertyValue(element, search) {" & _
-				"	var propertyname ='';" & _
-				"	for (let i = 0; i < element.style.length; i++) {" & _
-				"		propertyname = element.style.item(i);" & _
-				"		if (propertyname == search) {return element.style.getPropertyValue(propertyname);}" & _
-				"	}" & _
-				"	return '';" & _
+				"function GetPropertyValue(element) {" & _
+				"   var search = '" & $sCSSProperty & "';" & _
+				"   var propertyname = '';" & _
+				"   for (let i = 0; i < element.style.length; i++) {" & _
+				"      propertyname = element.style.item(i);" & _
+				"      if (propertyname == search) {return element.style.getPropertyValue(propertyname);}" & _
+				"   }" & _
+				"   return '';" & _
 				"}"
-		$vResult = _WD_ExecuteScript($sSession, StringReplace($sJavaScript2, '*', $sCSSProperty), __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
-		If $iErr = $_WD_ERROR_Success And $vResult = '' Then $iErr = $_WD_ERROR_NoMatch
 	ElseIf $sCSSProperty = Default And $sValue = Default Then ; get list of properties and they values
-		Local Static $sJavaScript3 = _
-				"var element = arguments[0];" & _
-				"return GetProperties(element);" & _
+		$sJavaScript = _
+				"var myelement = arguments[0];" & _
+				"return GetProperties(myelement);" & _
 				"" & _
 				"function GetProperties(element) {" & _
-				"	var result ='';" & _
-				"	var propertyname ='';" & _
-				"	for (let i = 0; i < element.style.length; i++) {" & _
-				"		propertyname = element.style.item(i);" & _
-				"		result += propertyname + ':' + element.style.getPropertyValue(propertyname) + ';'" & _
-				"	}" & _
-				"	return result;" & _
+				"   var result = '';" & _
+				"   var propertyname = '';" & _
+				"   for (let i = 0; i < element.style.length; i++) {" & _
+				"      propertyname = element.style.item(i);" & _
+				"      result += propertyname + ':' + element.style.getPropertyValue(propertyname) + ';'" & _
+				"   }" & _
+				"   return result;" & _
 				"}"
-		$vResult = _WD_ExecuteScript($sSession, $sJavaScript3, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+		$sJavaScript = StringReplace($sJavaScript, @TAB, '')
+		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
 		If $iErr = $_WD_ERROR_Success And $vResult = '' Then
 			$iErr = $_WD_ERROR_NoMatch
@@ -1152,7 +1156,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 	Else
 		$iErr = $_WD_ERROR_NotSupported
 	EndIf
-Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
 EndFunc   ;==>_WD_ElementStyle
 
 ; #FUNCTION# ====================================================================================================================
