@@ -2231,6 +2231,7 @@ Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "",
 			"}" & _
 			""
 
+ 	$sRegExPattern = StringReplace($sRegExPattern, '\', '\\')
  	Local $sJavaScript = StringFormat($sJS_Static, $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
 	Local $oValues = _WD_ExecuteScript($sSession, $sJavaScript, Default, False, $_WD_JSON_Value)
 	$iErr = @error
