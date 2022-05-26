@@ -2221,9 +2221,9 @@ Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "",
 	Local Const $sFuncName = "_WD_GetElementByRegEx"
 	Local $iRow = 0, $iErr = 0, $vResult = ''
 	Local Static $sJS_Static = _
-			"return _JS_FindElementByRegExp('%s', '%s', '%s', %s) || '';" & _
+			"return _JS_GetElementByRegEx('%s', '%s', '%s', %s) || '';" & _
 			"" & _
-			"function _JS_FindElementByRegExp(mode, pattern, flags = '', all = false) {" & _
+			"function _JS_GetElementByRegEx(mode, pattern, flags = '', all = false) {" & _
 			"   var regex = new RegExp(pattern, flags);" & _
 			"   var elements;" & _
 			"   elements = document.querySelectorAll(`[${mode}]`);" & _
