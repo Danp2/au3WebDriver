@@ -1989,7 +1989,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	#Region - JSON builder
 	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintenance
 	; StringFormat() usage is significantly faster than building JSON string each time from scratch
-	; StringReplace() removes all possible @TAB's because they was used only for indentation and are not needed in JSON string
+	; StringReplace() removes all possible @TAB's because they are used only for indentation and are not needed in JSON string
 	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
 	Local Static $sActionTemplate = StringReplace( _
 			'{' & _
@@ -2198,22 +2198,21 @@ EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetElementByRegEx
-; Description ...: Find element by matching attributes values using regular expression
+; Description ...: Find element by matching attributes values using Javascript regular expression
 ; Syntax ........: _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern[, $sRegExFlags = ""[, $bAll = False]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
-;                  $sRegExPattern       - RegEx in JavaScript format
+;                  $sRegExPattern       - JavaScript compatible regular expression 
 ;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
-;                  $bAll                - [optional] Fetch a list of all elements that fits to the RegEx pattern ? Default is False - return only first element
-; Return values .: Success - Matched element
+;                  $bAll                - [optional] Return multiple matching elements? Default is False
+; Return values .: Success - Matched element(s) in the same format as the results from _WD_FindElement
 ;                  Failure - Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
 ; Author ........: TheDcoder
 ; Modified ......: mLipok
 ; Remarks .......: The RegEx matching is done by the browser's JavaScript engine so AutoIt's RegEx rules may not accurately work
-;                  in this function. You may refer to this cheatsheet for further information:
+;                  in this function. You may refer to the following resources for further information:
 ;                  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
-;                  The matching elements are returned in the same format as the results from _WD_FindElement
-;                  As JavaScript's RegEx engine differs from AutoIt's PCRE engine you can use https://regex101.com with FLAVOR set to: ECMAScript (JavaScript) to validate your RegEx
+;                  https://regex101.com with FLAVOR set to: ECMAScript (JavaScript) to validate your RegEx
 ; Related .......:
 ; Link ..........:
 ; Example .......: _WD_GetElementByRegEx($sSession, 'class', 'button-[0-9]', 'i', True)
