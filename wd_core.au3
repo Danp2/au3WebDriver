@@ -114,6 +114,7 @@ Global Enum _
 		$_WD_ERROR_FileIssue, _ ;
 		$_WD_ERROR_NotSupported, _ ;
 		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
+		$_WD_ERROR_Javascript, _ ; Javascript error
 		$_WD_ERROR_COUNTER ;
 
 Global Enum _ ; Column positions of $_WD_SupportedBrowsers
@@ -148,12 +149,14 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"User Aborted", _
 		"File issue", _
 		"Browser or feature not supported", _
-		"Capability or value already defined" _
+		"Capability or value already defined", _
+		"Javascript Exception" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
 Global Const $WD_ErrorUnknownCommand = "unknown command"
 Global Const $WD_ErrorTimeout = "timeout"
+Global Const $WD_ErrorJavascript = "javascript error"
 Global Const $WD_NoSuchAlert = "no such alert"
 
 Global Const $WD_Element_NotFound = "no such element"
@@ -1704,6 +1707,13 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 			Case $WD_NoSuchAlert
 				$iErr = $_WD_ERROR_NoAlert
+
+			Case $WD_ErrorJavascript
+				If StringInStr($vResult.item('message'), 'expression') Then
+					$iErr = $_WD_ERROR_InvalidExpression
+				Else
+					$iErr = $_WD_ERROR_Javascript
+				EndIf
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception
