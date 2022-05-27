@@ -2206,7 +2206,8 @@ EndFunc   ;==>_WD_CheckContext
 ;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
 ;                  $bAll                - [optional] Return multiple matching elements? Default is False
 ; Return values .: Success - Matched element(s) in the same format as the results from _WD_FindElement
-;                  Failure - Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
+;                  Failure - @error set to $_WD_ERROR_NoMatch if there are no matches OR
+;                            Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
 ; Author ........: TheDcoder
 ; Modified ......: mLipok
 ; Remarks .......: The RegEx matching is done by the browser's JavaScript engine so AutoIt's RegEx rules may not accurately work
