@@ -2252,7 +2252,12 @@ Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "",
 			EndIf
 		Else
 			$vResult = Json_Get($oValues, $sKey)
-			$iRow = 1
+
+			If @error Then
+				$iErr = $_WD_ERROR_NoMatch
+			Else
+				$iRow = 1
+			EndIf
 		EndIf
 	EndIf
 
