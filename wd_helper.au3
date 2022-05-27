@@ -2209,7 +2209,7 @@ EndFunc   ;==>_WD_CheckContext
 ;                  Failure - @error set to $_WD_ERROR_NoMatch if there are no matches OR
 ;                            Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
 ; Author ........: TheDcoder
-; Modified ......: mLipok
+; Modified ......: mLipok, Danp2
 ; Remarks .......: The RegEx matching is done by the browser's JavaScript engine so AutoIt's RegEx rules may not accurately work
 ;                  in this function. You may refer to the following resources for further information:
 ;                  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
