@@ -114,6 +114,7 @@ Global Enum _
 		$_WD_ERROR_FileIssue, _ ; Errors related to WebDriver EXE File
 		$_WD_ERROR_NotSupported, _ ; When user try to use unsupported browser or capability
 		$_WD_ERROR_AlreadyDefined, _ ; Capability previously defined
+		$_WD_ERROR_Javascript, _ ; Javascript error
 		$_WD_ERROR_COUNTER ; Defines row count for $aWD_ERROR_DESC
 
 Global Enum _ ; Column positions of $_WD_SupportedBrowsers
@@ -148,12 +149,14 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"User Aborted", _
 		"File issue", _
 		"Browser or feature not supported", _
-		"Capability or value already defined" _
+		"Capability or value already defined", _
+		"Javascript Exception" _
 		]
 
 Global Const $WD_ErrorInvalidSession = "invalid session id"
 Global Const $WD_ErrorUnknownCommand = "unknown command"
 Global Const $WD_ErrorTimeout = "timeout"
+Global Const $WD_ErrorJavascript = "javascript error"
 Global Const $WD_NoSuchAlert = "no such alert"
 
 Global Const $WD_Element_NotFound = "no such element"
@@ -688,23 +691,23 @@ EndFunc   ;==>_WD_FindElement
 ;                  $sElement - Element ID from _WD_FindElement
 ;                  $sCommand - One of the following actions:
 ;                  |
-;                  |ACTIVE     - Get active element
-;                  |ATTRIBUTE  - Get element's attribute
-;                  |CLEAR      - Clear element's value
-;                  |CLICK      - Click element
-;                  |COMPLABEL  - Get element's computed label
-;                  |COMPROLE   - Get element's computed role
-;                  |CSS        - Get element's CSS value
-;                  |DISPLAYED  - Get element's visibility
-;                  |ENABLED    - Get element's enabled status
-;                  |NAME       - Get element's tag name
-;                  |PROPERTY   - Get element's property
-;                  |RECT       - Get element's dimensions / coordinates
-;                  |SCREENSHOT - Take element screenshot
-;                  |SELECTED   - Get element's selected status
-;                  |SHADOW     - Get element's shadow root
-;                  |TEXT       - Get element's rendered text
-;                  |VALUE      - Get or set element's value. If $sOption = "" the value of the element is returned, else set
+;                  |ACTIVE        - Get active element
+;                  |ATTRIBUTE     - Get element's attribute
+;                  |CLEAR         - Clear element's value
+;                  |CLICK         - Click element
+;                  |COMPUTEDLABEL - Get element's computed label
+;                  |COMPUTEDROLE  - Get element's computed role
+;                  |CSS           - Get element's CSS value
+;                  |DISPLAYED     - Get element's visibility
+;                  |ENABLED       - Get element's enabled status
+;                  |NAME          - Get element's tag name
+;                  |PROPERTY      - Get element's property
+;                  |RECT          - Get element's dimensions / coordinates
+;                  |SCREENSHOT    - Take element screenshot
+;                  |SELECTED      - Get element's selected status
+;                  |SHADOW        - Get element's shadow root
+;                  |TEXT          - Get element's rendered text
+;                  |VALUE         - Get or set element's value. If $sOption = "" the value of the element is returned, else set
 ;                  $sOption  - [optional] a string value. Default is ""
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -733,7 +736,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 
 	Local $sURLElement = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/element/"
 	Switch $sCommand
-		Case 'complabel', 'comprole', 'displayed', 'enabled', 'name', 'rect', 'selected', 'shadow', 'screenshot', 'text'
+		Case 'computedlabel', 'computedrole', 'displayed', 'enabled', 'name', 'rect', 'selected', 'shadow', 'screenshot', 'text'
 			$sResponse = __WD_Get($sURLElement & $sElement & "/" & $sCommand)
 			$iErr = @error
 
@@ -759,7 +762,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Active|Attribute|CompRole|CompLabel|Clear|Click|CSS|Displayed|Enabled|Name|Property|Rect|Selected|Shadow|Screenshot|Text|Value) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Active|Attribute|ComputedRole|ComputedLabel|Clear|Click|CSS|Displayed|Enabled|Name|Property|Rect|Selected|Shadow|Screenshot|Text|Value) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -1697,6 +1700,13 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 			Case $WD_NoSuchAlert
 				$iErr = $_WD_ERROR_NoAlert
+
+			Case $WD_ErrorJavascript
+				If StringInStr($vResult.item('message'), 'expression') Then
+					$iErr = $_WD_ERROR_InvalidExpression
+				Else
+					$iErr = $_WD_ERROR_Javascript
+				EndIf
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception

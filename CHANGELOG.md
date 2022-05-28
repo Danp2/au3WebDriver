@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Fixed
+
+- _WD_ElementAction: Correct action names (CompRole >> ComputedRole & CompLabel >> ComputedLabel)
+
 ## [0.9.0]
 
 ### Added

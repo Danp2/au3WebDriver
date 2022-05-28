@@ -1997,7 +1997,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	#Region - JSON builder
 	; $sActionTemplate declaration is outside the switch to not pollute simplicity of the >Switch ... EndSwitch< - for better code maintenance
 	; StringFormat() usage is significantly faster than building JSON string each time from scratch
-	; StringReplace() removes all possible @TAB's because they was used only for indentation and are not needed in JSON string
+	; StringReplace() removes all possible @TAB's because they are used only for indentation and are not needed in JSON string
 	; This line in compilation process will be linearized, and will be processed once, thus next usage will be significantly faster
 	Local Static $sActionTemplate = StringReplace( _
 			'{' & _
@@ -2203,6 +2203,75 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
 EndFunc   ;==>_WD_CheckContext
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetElementByRegEx
+; Description ...: Find element by matching attributes values using Javascript regular expression
+; Syntax ........: _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern[, $sRegExFlags = ""[, $bAll = False]])
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
+;                  $sRegExPattern       - JavaScript compatible regular expression 
+;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
+;                  $bAll                - [optional] Return multiple matching elements? Default is False
+; Return values .: Success - Matched element(s) in the same format as the results from _WD_FindElement
+;                  Failure - @error set to $_WD_ERROR_NoMatch if there are no matches OR
+;                            Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
+; Author ........: TheDcoder
+; Modified ......: mLipok, Danp2
+; Remarks .......: The RegEx matching is done by the browser's JavaScript engine so AutoIt's RegEx rules may not accurately work
+;                  in this function. You may refer to the following resources for further information:
+;                  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet
+;                  https://regex101.com with FLAVOR set to: ECMAScript (JavaScript) to validate your RegEx
+; Related .......:
+; Link ..........:
+; Example .......: _WD_GetElementByRegEx($sSession, 'class', 'button-[0-9]', 'i', True)
+; ===============================================================================================================================
+Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "", $bAll = False)
+	Local Const $sFuncName = "_WD_GetElementByRegEx"
+	Local $iRow = 0, $iErr = 0, $vResult = ''
+	Local Static $sJS_Static = _
+			"return _JS_GetElementByRegEx('%s', '%s', '%s', %s) || '';" & _
+			"" & _
+			"function _JS_GetElementByRegEx(mode, pattern, flags = '', all = false) {" & _
+			"   var regex = new RegExp(pattern, flags);" & _
+			"   var elements;" & _
+			"   elements = document.querySelectorAll(`[${mode}]`);" & _
+			"   return Array.prototype[all ? 'filter' : 'find'].call(elements, x => regex.test(x.getAttribute(mode)));" & _
+			"}" & _
+			""
+
+ 	$sRegExPattern = StringReplace($sRegExPattern, '\', '\\')
+ 	Local $sJavaScript = StringFormat($sJS_Static, $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
+	Local $oValues = _WD_ExecuteScript($sSession, $sJavaScript, Default, False, $_WD_JSON_Value)
+	$iErr = @error
+	If Not @error Then
+		Local $sKey = "[" & $_WD_ELEMENT_ID & "]"
+
+		If $bAll Then
+			Local $aElements[UBound($oValues)]
+			If UBound($aElements) < 1 Then
+				$iErr = $_WD_ERROR_NoMatch
+			Else
+				For $oValue In $oValues
+					$aElements[$iRow] = Json_Get($oValue, $sKey)
+					$iRow += 1
+				Next
+
+				$vResult = $aElements
+			EndIf
+		Else
+			$vResult = Json_Get($oValues, $sKey)
+
+			If @error Then
+				$iErr = $_WD_ERROR_NoMatch
+			Else
+				$iRow = 1
+			EndIf
+		EndIf
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr), $iRow, $vResult)
+EndFunc   ;==>_WD_GetElementByRegEx
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionKey
