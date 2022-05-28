@@ -40,7 +40,8 @@ Global $aDemoSuite[][3] = _
 		["DemoWindows", False, False], _
 		["DemoUpload", False, False], _
 		["DemoPrint", False, True], _
-		["DemoSleep", False, False] _
+		["DemoSleep", False, False], _
+		["UserTesting", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -438,7 +439,7 @@ Func DemoScript()
 	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", Default, Default, $_WD_JSON_Value)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
-	; JavaScript example that  writes to BrowserConsole
+	; JavaScript example that writes to BrowserConsole
 	$sValue = _WD_ExecuteScript($sSession, "console.log('Hello world! (from DemoScript: Line #" & @ScriptLineNumber & ")');", Default, Default, $_WD_JSON_Value)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
@@ -448,7 +449,7 @@ Func DemoScript()
 
 	; 2022-03-23 This website no longer exists
 	;$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'https://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
-	;ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " &  _WD_LastHTTPResult() & @CRLF)
+	;ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()
@@ -613,7 +614,7 @@ Func DemoDownload()
 	If @error Then Return SetError(@error, @extended)
 
 	; Get the website's URL
-	Local $sUrl = _WD_Action($sSession, 'url')
+	Local $sURL = _WD_Action($sSession, 'url')
 
 	; Find the element
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//img[@alt='Google']")
@@ -624,14 +625,14 @@ Func DemoDownload()
 	EndIf
 
 	If @error = $_WD_ERROR_Success Then
-		;  Retrieve it's source attribute
+		; Retrieve it's source attribute
 		Local $sSource = _WD_ElementAction($sSession, $sElement, "Attribute", "src")
 
 		; Combine the URL and element link
-		$sUrl = _WinAPI_UrlCombine($sUrl, $sSource)
+		$sURL = _WinAPI_UrlCombine($sURL, $sSource)
 
 		; Download the file
-		_WD_DownloadFile($sUrl, @ScriptDir & "\testimage.png")
+		_WD_DownloadFile($sURL, @ScriptDir & "\testimage.png")
 
 		_WD_DownloadFile("https://www.google.com/notexisting.jpg", @ScriptDir & "\testimage2.jpg")
 	EndIf
@@ -765,6 +766,14 @@ Func DemoSleep()
 
 	Return SetError($iError)
 EndFunc   ;==>DemoSleep
+
+Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
+;~ 	_WD_Navigate($sSession, 'https://www.google.com')
+;~ 	_WD_LoadWait($sSession)
+;~ 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
+;~ 	_WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '')
+;~ 	Exit
+EndFunc   ;==>UserTesting
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
