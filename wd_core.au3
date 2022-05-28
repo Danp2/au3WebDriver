@@ -106,13 +106,13 @@ Global Enum _
 		$_WD_ERROR_Exception, _ ; Exception from web driver
 		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
 		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
-		$_WD_ERROR_NotFound, _ ;
-		$_WD_ERROR_ElementIssue, _ ;
-		$_WD_ERROR_SessionInvalid, _ ;
-		$_WD_ERROR_UnknownCommand, _ ;
-		$_WD_ERROR_UserAbort, _ ;
-		$_WD_ERROR_FileIssue, _ ;
-		$_WD_ERROR_NotSupported, _ ;
+		$_WD_ERROR_NotFound, _ ; The desired data (file, url, element ...) was not found
+		$_WD_ERROR_ElementIssue, _ ; Requested action related to the element was not possible to be done
+		$_WD_ERROR_SessionInvalid, _ ; Session that was used is invalid
+		$_WD_ERROR_UnknownCommand, _ ; Unknown command was used
+		$_WD_ERROR_UserAbort, _ ; In case when user abort when @error occurs and $_WD_ERROR_MSGBOX was set
+		$_WD_ERROR_FileIssue, _ ; Errors related to WebDriver EXE File or other files
+		$_WD_ERROR_NotSupported, _ ; When user try to use unsupported browser or capability
 		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
 		$_WD_ERROR_Javascript, _ ; Javascript error
 		$_WD_ERROR_COUNTER ;
