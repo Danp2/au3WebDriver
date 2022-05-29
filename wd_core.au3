@@ -104,7 +104,7 @@ Global Enum _
 		$_WD_ERROR_NoMatch, _ ; No match for _WDAction-find/search _WDGetElement...
 		$_WD_ERROR_RetValue, _ ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
 		$_WD_ERROR_Exception, _ ; Exception from web driver
-		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
+		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query, CSSSelector query or RegEx
 		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
 		$_WD_ERROR_NotFound, _ ;
 		$_WD_ERROR_ElementIssue, _ ;
@@ -161,6 +161,7 @@ Global Const $_WD_ErrorNoSuchAlert = "no such alert"
 Global Const $_WD_ErrorElementNotFound = "no such element"
 Global Const $_WD_ErrorElementStale = "stale element reference"
 Global Const $_WD_ErrorElementInvalid = "invalid argument"
+Global Const $_WD_ErrorSelectorInvalid = "invalid selector"
 Global Const $_WD_ErrorElementIntercept = "element click intercepted"
 Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 
@@ -1252,7 +1253,7 @@ Func _WD_Startup()
 		EndIf
 
 		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
-			$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
+				$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
@@ -1654,7 +1655,7 @@ EndFunc   ;==>__WD_TranslateQuotes
 ;                  $vResult - Result from webdriver
 ; Return values .: None
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -1694,10 +1695,13 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 			Case $_WD_ErrorTimeout
 				$iErr = $_WD_ERROR_Timeout
+
 			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale
 				$iErr = $_WD_ERROR_NoMatch
+
 			Case $_WD_ErrorElementInvalid
 				$iErr = $_WD_ERROR_InvalidArgue
+
 			Case $_WD_ErrorElementIntercept, $_WD_ErrorElementNotInteract
 				$iErr = $_WD_ERROR_ElementIssue
 
@@ -1710,6 +1714,9 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 				Else
 					$iErr = $_WD_ERROR_Javascript
 				EndIf
+
+			Case $_WD_ErrorSelectorInvalid
+				$iErr = $_WD_ERROR_InvalidExpression
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception
