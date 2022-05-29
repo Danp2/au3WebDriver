@@ -1096,7 +1096,7 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Return values .: Success - Response from web driver in JSON format ...... #TODO
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript() or $_WD_ERROR_NotSupported or $_WD_ERROR_NoMatch
 ; Author ........: mLipok
-; Modified ......:
+; Modified ......: Danp2
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
