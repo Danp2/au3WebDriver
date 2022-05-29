@@ -1238,7 +1238,7 @@ Func _WD_Startup()
 		EndIf
 
 		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
-			$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
+				$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
@@ -1338,18 +1338,7 @@ Func __WD_Get($sURL)
 		$iResult = $_WD_ERROR_InvalidValue
 	EndIf
 
-	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
-	Switch $_WD_DEBUG
-		Case $_WD_DEBUG_Info
-			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
-		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
-			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
-			If $_WD_RESPONSE_TRIM <> -1 Then
-				$sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
-			Else
-				$sMessage &= " ResponseText=" & $sResponseText
-			EndIf
-	EndSwitch
+	Local $sMessage = __WD_MessageCreator($sFuncName, $sURL, $sResponseText)
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Get
 
@@ -1423,9 +1412,7 @@ Func __WD_Post($sURL, $sData)
 	EndIf
 
 	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Full)
-	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
-	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
-	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
+	Local $sMessage = __WD_MessageCreator($sFuncName, $sURL, $sResponseText)
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Post
 
@@ -1497,12 +1484,40 @@ Func __WD_Delete($sURL)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL, $_WD_DEBUG_Full)
-	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
-	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Info And $iResult) ? (" ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "...") : ("") ; in case of $_WD_DEBUG_Info  >  trimmed $sResponseText but only when @error is set
-	$sMessage &= ($_WD_DEBUG = $_WD_DEBUG_Full) ? (" ResponseText=" & $sResponseText) : ("") ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
+	Local $sMessage = __WD_MessageCreator($sFuncName, $sURL, $sResponseText)
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Delete
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_MessageCreator
+; Description ...: Creates message for _WD_Post, _WD_Get, _WD_Delete
+; Syntax ........: __WD_MessageCreator($sFuncName, $sURL, Byref $sResponseText)
+; Parameters ....: $sFuncName           - Calling function name.
+;                  $sURL                - used URL
+;                  $sResponseText       - Reference to ResposneText
+; Return values .: $sMessage
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_Post, _WD_Get, _WD_Delete
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_MessageCreator($sFuncName, $sURL, ByRef $sResponseText)
+	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
+	Switch $_WD_DEBUG
+		Case $_WD_DEBUG_Info
+			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
+		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
+			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
+			If $_WD_RESPONSE_TRIM <> -1 Then
+				$sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
+			Else
+				$sMessage &= " ResponseText=" & $sResponseText
+			EndIf
+	EndSwitch
+	Return $sMessage
+EndFunc   ;==>__WD_MessageCreator
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_Error
