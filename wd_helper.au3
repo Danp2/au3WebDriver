@@ -1432,7 +1432,7 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 				If $FileItem.IsFolder Then
 					; try to Extract subdir content
 					__WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, '\' & $FileItem.Name)
-					If Not @error Then 
+					If Not @error Then
 						$bEXEWasFound = True
 						ExitLoop
 					EndIf
@@ -2210,7 +2210,7 @@ EndFunc   ;==>_WD_CheckContext
 ; Syntax ........: _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern[, $sRegExFlags = ""[, $bAll = False]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sMode               - Attribute of the element which should be matched, e.g. `id`, `style`, `class` etc.
-;                  $sRegExPattern       - JavaScript compatible regular expression 
+;                  $sRegExPattern       - JavaScript compatible regular expression
 ;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
 ;                  $bAll                - [optional] Return multiple matching elements? Default is False
 ; Return values .: Success - Matched element(s) in the same format as the results from _WD_FindElement
@@ -2240,8 +2240,8 @@ Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "",
 			"}" & _
 			""
 
- 	$sRegExPattern = StringReplace($sRegExPattern, '\', '\\')
- 	Local $sJavaScript = StringFormat($sJS_Static, $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
+	$sRegExPattern = StringReplace($sRegExPattern, '\', '\\')
+	Local $sJavaScript = StringFormat($sJS_Static, $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
 	Local $oValues = _WD_ExecuteScript($sSession, $sJavaScript, Default, False, $_WD_JSON_Value)
 	$iErr = @error
 	If Not @error Then
@@ -2261,7 +2261,6 @@ Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "",
 			EndIf
 		Else
 			$vResult = Json_Get($oValues, $sKey)
-
 			If @error Then
 				$iErr = $_WD_ERROR_NoMatch
 			Else
