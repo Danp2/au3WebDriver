@@ -64,7 +64,7 @@ Func _WD_Demo()
 	Local $iSpacing = 25
 	Local $iPos
 	Local $iCount = UBound($aDemoSuite)
-	Local $aCheckboxes[$iCount]
+	Local $aButtons[$iCount]
 
 	Local $hGUI = GUICreate("Webdriver Demo", 200, 100, 100, 200, BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX))
 	GUISetBkColor($CLR_SILVER)
@@ -113,8 +113,8 @@ Func _WD_Demo()
 	GUICtrlCreateLabel("Demos", 15, $iPos + $iSpacing + 2)
 	For $i = 0 To $iCount - 1
 		$iPos += $iSpacing
-		$aCheckboxes[$i] = GUICtrlCreateCheckbox($aDemoSuite[$i][0], 75, $iPos, 100, 20, BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_PUSHLIKE))
-		If $aDemoSuite[$i][1] Then GUICtrlSetState($aCheckboxes[$i], $GUI_CHECKED)
+		$aButtons[$i] = GUICtrlCreateButton($aDemoSuite[$i][0], 75, $iPos, 100, 20)
+		If $aDemoSuite[$i][1] Then GUICtrlSetBkColor($aButtons[$i], $COLOR_AQUA)
 	Next
 	#EndRegion - demos
 
@@ -142,14 +142,15 @@ Func _WD_Demo()
 			Case $idDebugging
 
 			Case $idButton_Run
-				_RunDemo_GUISwitcher($GUI_DISABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idOutput, $idButton_Run, $aCheckboxes)
+				_RunDemo_GUISwitcher($GUI_DISABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idOutput, $idButton_Run, $aButtons)
 				RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
-				_RunDemo_GUISwitcher($GUI_ENABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idOutput, $idButton_Run, $aCheckboxes)
+				_RunDemo_GUISwitcher($GUI_ENABLE, $idBrowsers, $idDebugging, $idUpdate, $idHeadless, $idOutput, $idButton_Run, $aButtons)
 
 			Case Else
 				For $i = 0 To $iCount - 1
-					If $aCheckboxes[$i] = $nMsg Then
+					If $aButtons[$i] = $nMsg Then
 						$aDemoSuite[$i][1] = Not $aDemoSuite[$i][1]
+						GUICtrlSetBkColor($aButtons[$i], $aDemoSuite[$i][1] ? $COLOR_AQUA : $COLOR_WHITE)
 						_ArraySearch($aDemoSuite, True, Default, Default, Default, Default, Default, 1)
 						GUICtrlSetState($idButton_Run, @error ? $GUI_DISABLE : $GUI_ENABLE)
 					EndIf
