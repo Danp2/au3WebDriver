@@ -104,7 +104,7 @@ Global Enum _
 		$_WD_ERROR_NoMatch, _ ; No match for _WDAction-find/search _WDGetElement...
 		$_WD_ERROR_RetValue, _ ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
 		$_WD_ERROR_Exception, _ ; Exception from web driver
-		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
+		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query, CSSSelector query or RegEx
 		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
 		$_WD_ERROR_NotFound, _ ; File or registry key not found
 		$_WD_ERROR_ElementIssue, _ ; Problem interacting with element (click intercepted, etc)
@@ -153,19 +153,19 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Javascript Exception" _
 		]
 
-Global Const $WD_ErrorInvalidSession = "invalid session id"
-Global Const $WD_ErrorUnknownCommand = "unknown command"
-Global Const $WD_ErrorTimeout = "timeout"
-Global Const $WD_ErrorJavascript = "javascript error"
-Global Const $WD_NoSuchAlert = "no such alert"
+Global Const $_WD_ErrorInvalidSession = "invalid session id"
+Global Const $_WD_ErrorUnknownCommand = "unknown command"
+Global Const $_WD_ErrorTimeout = "timeout"
+Global Const $_WD_ErrorJavascript = "javascript error"
+Global Const $_WD_ErrorNoSuchAlert = "no such alert"
+Global Const $_WD_ErrorInvalidSelector = "invalid selector"
+Global Const $_WD_ErrorElementNotFound = "no such element"
+Global Const $_WD_ErrorElementStale = "stale element reference"
+Global Const $_WD_ErrorElementInvalid = "invalid argument"
+Global Const $_WD_ErrorElementIntercept = "element click intercepted"
+Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 
-Global Const $WD_Element_NotFound = "no such element"
-Global Const $WD_Element_Stale = "stale element reference"
-Global Const $WD_Element_Invalid = "invalid argument"
-Global Const $WD_Element_Intercept = "element click intercepted"
-Global Const $WD_Element_NotInteract = "element not interactable"
-
-Global Const $WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
+Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 #EndRegion Global Constants
 
 #Region Global Variables
@@ -1325,7 +1325,7 @@ Func __WD_Get($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $WD_WinHTTPTimeoutMsg
+				$sResponseText = $_WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
 				$iResult = $iErr
@@ -1400,7 +1400,7 @@ Func __WD_Post($sURL, $sData)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $WD_WinHTTPTimeoutMsg
+				$sResponseText = $_WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
 				$iResult = $iErr
@@ -1473,7 +1473,7 @@ Func __WD_Delete($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $WD_WinHTTPTimeoutMsg
+				$sResponseText = $_WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
 				$iResult = $iErr
@@ -1663,7 +1663,7 @@ EndFunc   ;==>__WD_TranslateQuotes
 ;                  $vResult - Result from webdriver
 ; Return values .: None
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -1695,33 +1695,36 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		Switch $vResult.item('error')
 			Case ""
 
-			Case $WD_ErrorInvalidSession
+			Case $_WD_ErrorInvalidSession
 				$iErr = $_WD_ERROR_SessionInvalid
 
-			Case $WD_ErrorUnknownCommand
+			Case $_WD_ErrorUnknownCommand
 				$iErr = $_WD_ERROR_UnknownCommand
 
-			Case $WD_ErrorTimeout
+			Case $_WD_ErrorTimeout
 				$iErr = $_WD_ERROR_Timeout
 
-			Case $WD_Element_NotFound, $WD_Element_Stale
+			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale
 				$iErr = $_WD_ERROR_NoMatch
 
-			Case $WD_Element_Invalid
+			Case $_WD_ErrorElementInvalid
 				$iErr = $_WD_ERROR_InvalidArgue
 
-			Case $WD_Element_Intercept, $WD_Element_NotInteract
+			Case $_WD_ErrorElementIntercept, $_WD_ErrorElementNotInteract
 				$iErr = $_WD_ERROR_ElementIssue
 
-			Case $WD_NoSuchAlert
+			Case $_WD_ErrorNoSuchAlert
 				$iErr = $_WD_ERROR_NoAlert
 
-			Case $WD_ErrorJavascript
+			Case $_WD_ErrorJavascript
 				If StringInStr($vResult.item('message'), 'expression') Then
 					$iErr = $_WD_ERROR_InvalidExpression
 				Else
 					$iErr = $_WD_ERROR_Javascript
 				EndIf
+
+			Case $_WD_ErrorInvalidSelector
+				$iErr = $_WD_ERROR_InvalidExpression
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception
