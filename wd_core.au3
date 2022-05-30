@@ -1505,8 +1505,6 @@ EndFunc   ;==>__WD_Delete
 Func __WD_MessageCreator($sFuncName, $sURL, ByRef $sResponseText, $sData = '')
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	Switch $_WD_DEBUG
-		Case $_WD_DEBUG_Info
-			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
 		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
 			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData)
 			If $_WD_RESPONSE_TRIM <> -1 Then
