@@ -771,8 +771,12 @@ EndFunc   ;==>DemoSleep
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
 	_WD_LoadWait($sSession)
+
+	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
-	_WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '')
+
+	ConsoleWrite("- Test 2:" & @CRLF)
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 ;~ 	Exit
 EndFunc   ;==>UserTesting
 
