@@ -1100,7 +1100,7 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Remarks .......: An array of current styles and their values will be returned when $sCSSProperty is not defined (Default)
 ; Related .......:
 ; Link ..........:
-; Example .......: No
+; Example .......: _WD_ElementStyle($sSession, $sElement, 'fontFamily', '"Lucida Console", "Courier New", monospace')
 ; ===============================================================================================================================
 Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = Default)
 	Local Const $sFuncName = "_WD_ElementStyle"
