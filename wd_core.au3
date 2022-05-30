@@ -158,10 +158,10 @@ Global Const $_WD_ErrorUnknownCommand = "unknown command"
 Global Const $_WD_ErrorTimeout = "timeout"
 Global Const $_WD_ErrorJavascript = "javascript error"
 Global Const $_WD_ErrorNoSuchAlert = "no such alert"
+Global Const $_WD_ErrorInvalidSelector = "invalid selector"
 Global Const $_WD_ErrorElementNotFound = "no such element"
 Global Const $_WD_ErrorElementStale = "stale element reference"
 Global Const $_WD_ErrorElementInvalid = "invalid argument"
-Global Const $_WD_ErrorSelectorInvalid = "invalid selector"
 Global Const $_WD_ErrorElementIntercept = "element click intercepted"
 Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 
@@ -1253,7 +1253,7 @@ Func _WD_Startup()
 		EndIf
 
 		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
-				$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
+			$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
@@ -1715,7 +1715,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 					$iErr = $_WD_ERROR_Javascript
 				EndIf
 
-			Case $_WD_ErrorSelectorInvalid
+			Case $_WD_ErrorInvalidSelector
 				$iErr = $_WD_ERROR_InvalidExpression
 
 			Case Else
