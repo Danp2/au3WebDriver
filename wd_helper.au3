@@ -1091,13 +1091,13 @@ EndFunc   ;==>_WD_ElementSelectAction
 ; Syntax ........: _WD_ElementStyle($sSession, $sElement, $sCSSProperty, $sValue)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sElement - Element ID from _WD_FindElement
-;                  $sCSSProperty - style property name which should be set, when is not defined (Default) then all properties are taken (array of properties will be returned)
-;                  $sValue - new value to be set; current value will be retrieved when not supplied (Default)
-; Return values .: Success - Response from web driver in JSON format ...... #TODO
+;                  $sCSSProperty - Style property name to be set or retrieved
+;                  $sValue - New value to be set; current value will be retrieved when not supplied (Default)
+; Return values .: Success - Requested style value(s) returned by the webdriver
 ;                  Failure - Response from webdriver and sets @error returned from _WD_ExecuteScript() or $_WD_ERROR_NotSupported or $_WD_ERROR_NoMatch
 ; Author ........: mLipok
 ; Modified ......: Danp2
-; Remarks .......:
+; Remarks .......: An array of current styles and their values will be returned when $sCSSProperty is not defined (Default)
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
@@ -1129,7 +1129,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 				"}"
 		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
-	ElseIf $sCSSProperty = Default And $sValue = Default Then ; get list of properties and they values
+	ElseIf $sCSSProperty = Default And $sValue = Default Then ; get list of properties and their values
 		$sJavaScript = _
 				"var myelement = arguments[0];" & _
 				"return GetProperties(myelement);" & _
