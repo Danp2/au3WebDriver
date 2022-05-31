@@ -235,7 +235,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 		EndIf
 
 		$sMessage = $sSession
-		
+
 		; Save response details for future use
 		$_WD_SESSION_DETAILS = $sResponse
 	Else
@@ -1489,7 +1489,7 @@ EndFunc   ;==>__WD_Delete
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_MessageCreator
 ; Description ...: Creates message for _WD_Post, _WD_Get, _WD_Delete
-; Syntax ........: __WD_MessageCreator($sFuncName, $sURL, Byref $sResponseText)
+; Syntax ........: __WD_MessageCreator($sFuncName, $sURL, Byref Const $sResponseText)
 ; Parameters ....: $sFuncName           - Calling function name.
 ;                  $sURL                - used URL
 ;                  $sResponseText       - Reference to ResposneText
@@ -1501,7 +1501,7 @@ EndFunc   ;==>__WD_Delete
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_MessageCreator($sFuncName, $sURL, ByRef $sResponseText, $sData = '')
+Func __WD_MessageCreator($sFuncName, $sURL, ByRef Const $sResponseText, $sData = '')
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
