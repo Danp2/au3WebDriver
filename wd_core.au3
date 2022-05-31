@@ -218,32 +218,31 @@ Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 ; ===============================================================================================================================
 Func _WD_CreateSession($sCapabilities = Default)
 	Local Const $sFuncName = "_WD_CreateSession"
-	Local $sSession = ""
+	Local $sSession = "", $sMessage = ''
 
 	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyDict
 
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
 
-	__WD_ConsoleWrite($sFuncName & ": " & $sResponse, $_WD_DEBUG_Info)
-
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
 		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
-			Local $sMessage = Json_Get($oJSON, "[value][message]")
-
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sMessage), 0, "")
+			$sMessage = Json_Get($oJSON, "[value][message]")
+			$iErr = $_WD_ERROR_Exception
 		EndIf
+
+		$sMessage = $sSession
+		
+		; Save response details for future use
+		$_WD_SESSION_DETAILS = $sResponse
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
-	; Save response details for future use
-	$_WD_SESSION_DETAILS = $sResponse
-
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sSession)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sSession)
 EndFunc   ;==>_WD_CreateSession
 
 ; #FUNCTION# ====================================================================================================================
