@@ -1510,7 +1510,7 @@ Func __WD_MessageCreator($sFuncName, $sURL, ByRef $sResponseText)
 			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
 		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
 			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
-			If $_WD_RESPONSE_TRIM <> -1 Then
+			If $_WD_RESPONSE_TRIM <> -1 And StringLen(sResponseText) > $_WD_RESPONSE_TRIM Then
 				$sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
 			Else
 				$sMessage &= " ResponseText=" & $sResponseText
