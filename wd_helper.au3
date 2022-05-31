@@ -96,6 +96,7 @@ Global Enum _
 ; ===============================================================================================================================
 Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Default, $sFeatures = Default)
 	Local Const $sFuncName = "_WD_NewTab"
+	Local Const $sParameters = 'Parameters:    Switch=' & $bSwitch & '    Timeout=' & $iTimeout & '    URL=' & $sURL & '    Features=' & $sFeatures
 	Local $sTabHandle = '', $sLastTabHandle, $hWaitTimer, $iTabIndex, $aTemp
 
 	If $bSwitch = Default Then $bSwitch = True
@@ -116,13 +117,13 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 
 			If Not $bSwitch Then _WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTabHandle & '"}')
 		Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sParameters), 0, $sTabHandle)
 		EndIf
 	Else
 		Local $aHandles = _WD_Window($sSession, 'handles')
 
 		If @error <> $_WD_ERROR_Success Or Not IsArray($aHandles) Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sParameters), 0, $sTabHandle)
 		EndIf
 
 		Local $iTabCount = UBound($aHandles)
@@ -147,7 +148,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 
 		_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
 		If @error <> $_WD_ERROR_Success Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sTabHandle)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sParameters), 0, $sTabHandle)
 		EndIf
 
 		$hWaitTimer = TimerInit()
@@ -160,10 +161,10 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 				ExitLoop
 			EndIf
 
-			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout), 0, $sTabHandle)
+			If TimerDiff($hWaitTimer) > $iTimeout Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Timeout, $sParameters), 0, $sTabHandle)
 
 			__WD_Sleep(10)
-			If @error Then Return SetError(__WD_Error($sFuncName, @error), 0, $sTabHandle)
+			If @error Then Return SetError(__WD_Error($sFuncName, @error, $sParameters), 0, $sTabHandle)
 		WEnd
 
 		If $bSwitch Then
@@ -173,7 +174,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 		EndIf
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sParameters), 0, $sTabHandle)
 EndFunc   ;==>_WD_NewTab
 
 ; #FUNCTION# ====================================================================================================================
@@ -268,6 +269,7 @@ EndFunc   ;==>_WD_Attach
 ; ===============================================================================================================================
 Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
+	Local Const $sParameters = 'Parameters:   Text=' & $sText& '   Partial=' & $bPartial
 
 	If $bPartial = Default Then $bPartial = True
 
@@ -285,8 +287,7 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, "")
 	EndIf
 
-	Local $sMessage = 'Parameters:   Text = ' & $sText
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, "")
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sParameters), 0, "")
 EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
@@ -317,6 +318,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
+	Local Const $sParameters = 'Parameters:   Delay=' & $iDelay & '   Timeout=' & $iTimeout & '   Options=' & $iOptions
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -338,7 +340,6 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 		; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
 		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
-		If $_WD_DEBUG_Saved = $_WD_DEBUG_Info Then $_WD_DEBUG = $_WD_DEBUG_Error
 
 		Local $hWaitTimer = TimerInit()
 		While 1
@@ -346,6 +347,8 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 			$iErr = @error
+
+			If $_WD_DEBUG_Saved < $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; show only once
 
 			If $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
 				$iErr = $_WD_ERROR_Success
@@ -387,8 +390,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 	EndIf
 
-	Local $sMessage = 'Parameters:   Options=' & $iOptions
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sElement)
 EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================

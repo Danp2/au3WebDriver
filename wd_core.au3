@@ -104,7 +104,7 @@ Global Enum _
 		$_WD_ERROR_NoMatch, _ ; No match for _WDAction-find/search _WDGetElement...
 		$_WD_ERROR_RetValue, _ ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
 		$_WD_ERROR_Exception, _ ; Exception from web driver
-		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query or RegEx
+		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query, CSSSelector query or RegEx
 		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
 		$_WD_ERROR_NotFound, _ ; File or registry key not found
 		$_WD_ERROR_ElementIssue, _ ; Problem interacting with element (click intercepted, etc)
@@ -153,19 +153,19 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Javascript Exception" _
 		]
 
-Global Const $WD_ErrorInvalidSession = "invalid session id"
-Global Const $WD_ErrorUnknownCommand = "unknown command"
-Global Const $WD_ErrorTimeout = "timeout"
-Global Const $WD_ErrorJavascript = "javascript error"
-Global Const $WD_NoSuchAlert = "no such alert"
+Global Const $_WD_ErrorInvalidSession = "invalid session id"
+Global Const $_WD_ErrorUnknownCommand = "unknown command"
+Global Const $_WD_ErrorTimeout = "timeout"
+Global Const $_WD_ErrorJavascript = "javascript error"
+Global Const $_WD_ErrorNoSuchAlert = "no such alert"
+Global Const $_WD_ErrorInvalidSelector = "invalid selector"
+Global Const $_WD_ErrorElementNotFound = "no such element"
+Global Const $_WD_ErrorElementStale = "stale element reference"
+Global Const $_WD_ErrorElementInvalid = "invalid argument"
+Global Const $_WD_ErrorElementIntercept = "element click intercepted"
+Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 
-Global Const $WD_Element_NotFound = "no such element"
-Global Const $WD_Element_Stale = "stale element reference"
-Global Const $WD_Element_Invalid = "invalid argument"
-Global Const $WD_Element_Intercept = "element click intercepted"
-Global Const $WD_Element_NotInteract = "element not interactable"
-
-Global Const $WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
+Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 #EndRegion Global Constants
 
 #Region Global Variables
@@ -620,6 +620,7 @@ EndFunc   ;==>_WD_Window
 ; ===============================================================================================================================
 Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default, $bMultiple = Default, $bShadowRoot = Default)
 	Local Const $sFuncName = "_WD_FindElement"
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   StartNodeID=' & $sStartNodeID & '   Multiple=' & $bMultiple & '   ShadowRoot=' & $bShadowRoot
 	Local $sCmd, $sBaseCmd = '', $sResponse, $sResult, $iErr = $_WD_ERROR_Success
 	Local $oJSON, $oValues, $sKey, $iRow, $aElements[0]
 	$_WD_HTTPRESULT = 0
@@ -679,8 +680,7 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 
 	Local $vResult = ($bMultiple) ? $aElements : $sResult
 	If $iErr Then $vResult = ""
-	Local $sMessage = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
 EndFunc   ;==>_WD_FindElement
 
 ; #FUNCTION# ====================================================================================================================
@@ -727,6 +727,7 @@ EndFunc   ;==>_WD_FindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_ElementAction"
+	Local Const $sParameters = "Parameters:   Command=" & $sCommand & "   Option=" & $sOption
 	Local $sResponse, $sResult = '', $iErr, $oJSON
 	$_WD_HTTPRESULT = 0
 
@@ -792,8 +793,7 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	EndIf
 
 	If $iErr Then $sResult = ""
-	Local $sMessage = "Parameters:   Command=" & $sCommand & "   Option=" & $sOption
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_ElementAction
 
 ; #FUNCTION# ====================================================================================================================
@@ -879,6 +879,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ; ===============================================================================================================================
 Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Alert"
+	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
 	Local $sResponse, $iErr, $oJSON, $sResult = ''
 	$_WD_HTTPRESULT = 0
 
@@ -915,8 +916,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Accept|Dismiss|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
 	EndSwitch
 
-	Local $sMessage = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_Alert
 
 ; #FUNCTION# ====================================================================================================================
@@ -976,6 +976,7 @@ EndFunc   ;==>_WD_GetSource
 ; ===============================================================================================================================
 Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Cookies"
+	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
 	Local $sResult, $sResponse, $iErr = $_WD_ERROR_Success
 	If $sOption = Default Then $sOption = ''
 	$_WD_HTTPRESULT = 0
@@ -1015,8 +1016,7 @@ Func _WD_Cookies($sSession, $sCommand, $sOption = Default)
 	EndSwitch
 
 	If $iErr Then $sResult = ""
-	Local $sMessage = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_Cookies
 
 ; #FUNCTION# ====================================================================================================================
@@ -1053,6 +1053,7 @@ EndFunc   ;==>_WD_Cookies
 ; ===============================================================================================================================
 Func _WD_Option($sOption, $vValue = Default)
 	Local Const $sFuncName = "_WD_Option"
+	Local Const $sParameters = 'Parameters:   Option=' & $sOption & '   Value=' & ((IsFunc($vValue)) ? (FuncName($vValue)) : ($vValue))
 
 	If $vValue = Default Then $vValue = ''
 
@@ -1060,21 +1061,21 @@ Func _WD_Option($sOption, $vValue = Default)
 		Case "baseurl"
 			If $vValue == "" Then Return $_WD_BASE_URL
 			If Not IsString($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: string)"), 0, 0)
 			EndIf
 			$_WD_BASE_URL = $vValue
 
 		Case "binaryformat"
 			If $vValue == "" Then Return $_WD_BFORMAT
 			If Not IsInt($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: int)"), 0, 0)
 			EndIf
 			$_WD_BFORMAT = $vValue
 
 		Case "console"
 			If $vValue == "" Then Return $_WD_CONSOLE
 			If Not (IsString($vValue) Or IsInt($vValue) Or IsFunc($vValue) Or $vValue = Null) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(func/int/null/string) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: func/int/null/string)"), 0, 0)
 			EndIf
 			$_WD_CONSOLE = $vValue
 
@@ -1085,90 +1086,89 @@ Func _WD_Option($sOption, $vValue = Default)
 		Case "debugtrim"
 			If $vValue == "" Then Return $_WD_RESPONSE_TRIM
 			If Not IsInt($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: int)"), 0, 0)
 			EndIf
 			$_WD_RESPONSE_TRIM = $vValue
 
 		Case "DefaultTimeout"
 			If $vValue == "" Then Return $_WD_DefaultTimeout
 			If Not IsInt($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: int)"), 0, 0)
 			EndIf
 			$_WD_DefaultTimeout = $vValue
 
 		Case "driver"
 			If $vValue == "" Then Return $_WD_DRIVER
 			If Not IsString($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: string)"), 0, 0)
 			EndIf
 			$_WD_DRIVER = $vValue
 
 		Case "driverclose"
 			If $vValue == "" Then Return $_WD_DRIVER_CLOSE
 			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: bool)"), 0, 0)
 			EndIf
 			$_WD_DRIVER_CLOSE = $vValue
 
 		Case "driverdetect"
 			If $vValue == "" Then Return $_WD_DRIVER_DETECT
 			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: bool)"), 0, 0)
 			EndIf
 			$_WD_DRIVER_DETECT = $vValue
 
 		Case "driverparams"
 			If $vValue == "" Then Return $_WD_DRIVER_PARAMS
 			If Not IsString($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(string) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: string)"), 0, 0)
 			EndIf
 			$_WD_DRIVER_PARAMS = $vValue
 
 		Case "httptimeouts"
 			If $vValue == "" Then Return $_WD_WINHTTP_TIMEOUTS
 			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: bool)"), 0, 0)
 			EndIf
 			$_WD_WINHTTP_TIMEOUTS = $vValue
 
 		Case "errormsgbox"
 			If $vValue == "" Then Return $_WD_ERROR_MSGBOX
 			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: bool)"), 0, 0)
 			EndIf
 			$_WD_ERROR_MSGBOX = $vValue
 
 		Case "OutputDebug"
 			If $vValue == "" Then Return $_WD_ERROR_OUTPUTDEBUG
 			If Not IsBool($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(bool) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: bool)"), 0, 0)
 			EndIf
 			$_WD_ERROR_OUTPUTDEBUG = $vValue
 
 		Case "port"
 			If $vValue == "" Then Return $_WD_PORT
 			If Not IsInt($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: int)"), 0, 0)
 			EndIf
 			$_WD_PORT = $vValue
 
 		Case "Sleep"
 			If $vValue == "" Then Return $_WD_Sleep
 			If Not IsFunc($vValue) Then
-				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(func) $vValue: " & $vValue), 0, 0)
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: func)"), 0, 0)
 			EndIf
 			$_WD_Sleep = $vValue
 
 		Case "version"
 			If $vValue == "" Then Return $__WDVERSION
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(none) $vValue: " & $vValue), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required type: none)"), 0, 0)
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version) $sOption=>" & $sOption), 0, 0)
 	EndSwitch
 
-	Local $sMessage = 'Parameters:   Option=' & $sOption & '   Value=' & ((IsFunc($vValue)) ? (FuncName($vValue)) : ($vValue))
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, 1)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sParameters), 0, 1)
 EndFunc   ;==>_WD_Option
 
 ; #FUNCTION# ====================================================================================================================
@@ -1325,7 +1325,7 @@ Func __WD_Get($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $WD_WinHTTPTimeoutMsg
+				$sResponseText = $_WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
 				$iResult = $iErr
@@ -1400,7 +1400,7 @@ Func __WD_Post($sURL, $sData)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $WD_WinHTTPTimeoutMsg
+				$sResponseText = $_WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
 				$iResult = $iErr
@@ -1411,8 +1411,7 @@ Func __WD_Post($sURL, $sData)
 		_WinHttpCloseHandle($hOpen)
 	EndIf
 
-	__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData, $_WD_DEBUG_Full)
-	Local $sMessage = __WD_MessageCreator($sFuncName, $sURL, $sResponseText)
+	Local $sMessage = __WD_MessageCreator($sFuncName, $sURL, $sResponseText, $sData)
 	Return SetError(__WD_Error($sFuncName, $iResult, $sMessage), 0, $sResponseText)
 EndFunc   ;==>__WD_Post
 
@@ -1473,7 +1472,7 @@ Func __WD_Delete($sURL)
 
 			If $iErr Then
 				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $WD_WinHTTPTimeoutMsg
+				$sResponseText = $_WD_WinHTTPTimeoutMsg
 			Else
 				__WD_DetectError($iErr, $sResponseText)
 				$iResult = $iErr
@@ -1503,14 +1502,12 @@ EndFunc   ;==>__WD_Delete
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_MessageCreator($sFuncName, $sURL, ByRef $sResponseText)
+Func __WD_MessageCreator($sFuncName, $sURL, ByRef $sResponseText, $sData = '')
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	Switch $_WD_DEBUG
-		Case $_WD_DEBUG_Info
-			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
 		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
-			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL)
-			If $_WD_RESPONSE_TRIM <> -1 And StringLen(sResponseText) > $_WD_RESPONSE_TRIM Then
+			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData)
+			If $_WD_RESPONSE_TRIM <> -1 And StringLen($sResponseText) > $_WD_RESPONSE_TRIM Then
 				$sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
 			Else
 				$sMessage &= " ResponseText=" & $sResponseText
@@ -1663,7 +1660,7 @@ EndFunc   ;==>__WD_TranslateQuotes
 ;                  $vResult - Result from webdriver
 ; Return values .: None
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -1695,33 +1692,36 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		Switch $vResult.item('error')
 			Case ""
 
-			Case $WD_ErrorInvalidSession
+			Case $_WD_ErrorInvalidSession
 				$iErr = $_WD_ERROR_SessionInvalid
 
-			Case $WD_ErrorUnknownCommand
+			Case $_WD_ErrorUnknownCommand
 				$iErr = $_WD_ERROR_UnknownCommand
 
-			Case $WD_ErrorTimeout
+			Case $_WD_ErrorTimeout
 				$iErr = $_WD_ERROR_Timeout
 
-			Case $WD_Element_NotFound, $WD_Element_Stale
+			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale
 				$iErr = $_WD_ERROR_NoMatch
 
-			Case $WD_Element_Invalid
+			Case $_WD_ErrorElementInvalid
 				$iErr = $_WD_ERROR_InvalidArgue
 
-			Case $WD_Element_Intercept, $WD_Element_NotInteract
+			Case $_WD_ErrorElementIntercept, $_WD_ErrorElementNotInteract
 				$iErr = $_WD_ERROR_ElementIssue
 
-			Case $WD_NoSuchAlert
+			Case $_WD_ErrorNoSuchAlert
 				$iErr = $_WD_ERROR_NoAlert
 
-			Case $WD_ErrorJavascript
+			Case $_WD_ErrorJavascript
 				If StringInStr($vResult.item('message'), 'expression') Then
 					$iErr = $_WD_ERROR_InvalidExpression
 				Else
 					$iErr = $_WD_ERROR_Javascript
 				EndIf
+
+			Case $_WD_ErrorInvalidSelector
+				$iErr = $_WD_ERROR_InvalidExpression
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception
