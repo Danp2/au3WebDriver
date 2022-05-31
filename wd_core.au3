@@ -1505,7 +1505,7 @@ Func __WD_MessageCreator($sFuncName, $sURL, ByRef Const $sResponseText, $sData =
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
-			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData)
+			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & (($sData) ? ("; Data=" & $sData) : ("")))
 			If $_WD_RESPONSE_TRIM <> -1 And StringLen($sResponseText) > $_WD_RESPONSE_TRIM Then
 				$sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
 			Else
