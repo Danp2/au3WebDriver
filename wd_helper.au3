@@ -606,35 +606,6 @@ Func _WD_FrameLeave($sSession)
 	Return SetError($_WD_ERROR_Success, 0, $sValue)
 EndFunc   ;==>_WD_FrameLeave
 
-; #FUNCTION# ===========================================================================================================
-; Name ..........: _WD_HighlightElement
-; Description ...: Highlights the specified element. [Deprecated]
-; Syntax ........: _WD_HighlightElement($sSession, $sElement[, $iMethod = Default])
-; Parameters ....: $sSession - Session ID from _WD_CreateSession
-;                  $sElement - Element ID from _WD_FindElement
-;                  $iMethod  - [optional] an integer value to set the style (default = 1)
-;                  0 - Remove highlight
-;                  1 - Highlight border dotted red
-;                  2 - Highlight yellow rounded box
-;                  3 - Highlight yellow rounded box + border  dotted red
-; Return values .: Success - True.
-;                  Failure - False and sets @error returned from _WD_ExecuteScript()
-; Author ........: Danyfirex
-; Modified ......: mLipok, Danp2
-; Remarks .......: This function will be removed in a future release. Update your code to use _WD_HighlightElements instead.
-; Related .......: _WD_HighlightElements, _WD_LastHTTPResult
-; Link ..........: https://www.autoitscript.com/forum/topic/192730-webdriver-udf-help-support/?do=findComment&comment=1396643
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_HighlightElement($sSession, $sElement, $iMethod = Default)
-	Local Const $sFuncName = "_WD_HighlightElement"
-
-	Local $bResult = _WD_HighlightElements($sSession, $sElement, $iMethod)
-	Local $iErr = @error
-
-	Return SetError(__WD_Error($sFuncName, $iErr, $bResult), 0, $bResult)
-EndFunc   ;==>_WD_HighlightElement
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_HighlightElements
 ; Description ...: Highlights the specified elements.
