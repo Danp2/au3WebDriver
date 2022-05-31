@@ -1250,7 +1250,7 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
 	EndIf
 
-	Local $sMessage = ($iErr) ? ("Error launching WebDriver!") : ($sUpdate)
+	Local $sMessage = ($iErr) ? ("Error launching WebDriver!") : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $iPID)
 EndFunc   ;==>_WD_Startup
 
