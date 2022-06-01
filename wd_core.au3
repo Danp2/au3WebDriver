@@ -232,12 +232,12 @@ Func _WD_CreateSession($sCapabilities = Default)
 		If @error Then
 			$sMessage = Json_Get($oJSON, "[value][message]")
 			$iErr = $_WD_ERROR_Exception
+		Else
+			$sMessage = $sSession
+
+			; Save response details for future use
+			$_WD_SESSION_DETAILS = $sResponse			
 		EndIf
-
-		$sMessage = $sSession
-
-		; Save response details for future use
-		$_WD_SESSION_DETAILS = $sResponse
 	Else
 		$iErr = $_WD_ERROR_Exception
 	EndIf
