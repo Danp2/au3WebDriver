@@ -115,6 +115,7 @@ Global Enum _
 		$_WD_ERROR_NotSupported, _ ;
 		$_WD_ERROR_AlreadyDefined, _ ; Used in _WD_CapabilitiesDefine and __WD_CapabilitiesInitialize
 		$_WD_ERROR_Javascript, _ ; Javascript error
+		$_WD_ERROR_JSON, _ ; Failed to decode request as JSON
 		$_WD_ERROR_COUNTER ;
 
 Global Enum _ ; Column positions of $_WD_SupportedBrowsers
@@ -150,7 +151,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"File issue", _
 		"Browser or feature not supported", _
 		"Capability or value already defined", _
-		"Javascript Exception" _
+		"Javascript Exception", _
+		"Failed to decode request as JSON" _
 		]
 
 Global Const $_WD_ErrorInvalidSession = "invalid session id"
@@ -233,17 +235,14 @@ Func _WD_CreateSession($sCapabilities = Default)
 
 		If @error Then
 			Local $sMessage = Json_Get($oJSON, "[value][message]")
-
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sMessage), 0, "")
+			$iErr = $_WD_ERROR_JSON
 		EndIf
-	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
 	EndIf
 
 	; Save response details for future use
 	$_WD_SESSION_DETAILS = $sResponse
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sSession)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sSession)
 EndFunc   ;==>_WD_CreateSession
 
 ; #FUNCTION# ====================================================================================================================
@@ -1253,7 +1252,7 @@ Func _WD_Startup()
 		EndIf
 
 		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
-			$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
+				$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
 		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
@@ -1662,6 +1661,8 @@ EndFunc   ;==>__WD_TranslateQuotes
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_DetectError(ByRef $iErr, $vResult)
+	Local Const $sFuncName = "__WD_DetectError"
+
 	; Don't perform any action if error condition is
 	; already set or the webdriver result equals null
 	If $iErr Or $vResult == Null Then Return
@@ -1700,7 +1701,12 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 				$iErr = $_WD_ERROR_NoMatch
 
 			Case $_WD_ErrorElementInvalid
-				$iErr = $_WD_ERROR_InvalidArgue
+				If StringInStr($vResult.item('message'), 'Failed to decode request as JSON') Then
+					$iErr = $_WD_ERROR_JSON
+				Else
+					$iErr = $_WD_ERROR_InvalidArgue
+				EndIf
+
 
 			Case $_WD_ErrorElementIntercept, $_WD_ErrorElementNotInteract
 				$iErr = $_WD_ERROR_ElementIssue
@@ -1719,6 +1725,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 				$iErr = $_WD_ERROR_InvalidExpression
 
 			Case Else
+				__WD_ConsoleWrite($sFuncName & ": Not identified type of message: " & $vResult.item('message'), $_WD_DEBUG_Full)
 				$iErr = $_WD_ERROR_Exception
 
 		EndSwitch
