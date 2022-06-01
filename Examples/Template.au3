@@ -2,10 +2,10 @@
 #include "..\wd_helper.au3"
 #include "StartUp.au3"
 
-Example(False)
+Example()
 
-Func Example($b_Headless)
-	Local $sSession = _WDEx_SetupWrapper('firefox', $_WD_DEBUG_Info, $b_Headless)
+Func Example()
+	Local $sSession = _WDEx_SetupWrapper('firefox')
 	If @error Then Return SetError(@error, @extended, $sSession)
 
 	Local $sURL = "https://google.com"
