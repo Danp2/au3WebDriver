@@ -2434,6 +2434,19 @@ Func __WD_Base64Decode($input_string)
 
 EndFunc   ;==>__WD_Base64Decode
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_ErrHnd
+; Description ...: Dummy error handler
+; Syntax ........: __WD_ErrHnd()
+; Parameters ....: None
+; Return values .: None
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func __WD_ErrHnd()
 
 EndFunc   ;==>__WD_ErrHnd
