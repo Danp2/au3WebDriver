@@ -1725,10 +1725,40 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 	EndIf
 EndFunc   ;==>__WD_DetectError
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_StripPath
+; Description ...: Remove path from supplied filename
+; Syntax ........: __WD_StripPath($sFilePath)
+; Parameters ....: $sFilePath                - Full path to target file
+; Return values .: File name without path
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func __WD_StripPath($sFilePath)
 	Return StringRegExpReplace($sFilePath, "^.*\\(.*)$", "$1")
 EndFunc   ;==>__WD_StripPath
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_ConsoleWrite
+; Description ...: Internal logging routine
+; Syntax ........: __WD_ConsoleWrite($sMsg[,  $iDebugLevel = Default[,  $iError = @error[,  $iExtended = @extended]]])
+; Parameters ....: $sMsg                - Message to write to log
+;                  $iDebugLevel         - [optional] Minimum debug level for logging
+;                  $iError              - [optional] Defaults to @error
+;                  $iExtended           - [optional] Defaults to @extended
+; Return values .: None
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......: The value of @error and @extended is preserved via the $iError and $iExended parameters. Therefore, the
+;                  calling routine should *not* supply a value for these parameters.
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
 Func __WD_ConsoleWrite($sMsg, $iDebugLevel = Default, $iError = @error, $iExtended = @extended)
 	If $iDebugLevel = Default Or $_WD_DEBUG >= $iDebugLevel Then
 		If IsFunc($_WD_CONSOLE) Then
