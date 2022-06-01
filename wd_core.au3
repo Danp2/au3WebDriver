@@ -152,7 +152,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
 		"Browser or feature not supported", _
 		"Capability or value already defined", _
 		"Javascript Exception", _
-		"Failed to decode request as JSON" _
+		"JSON Exception" _
 		]
 
 Global Const $_WD_ErrorInvalidSession = "invalid session id"
