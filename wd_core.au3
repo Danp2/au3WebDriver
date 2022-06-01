@@ -220,7 +220,7 @@ Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 ; ===============================================================================================================================
 Func _WD_CreateSession($sCapabilities = Default)
 	Local Const $sFuncName = "_WD_CreateSession"
-	Local $sSession = ""
+	Local $sSession = "", $sMessage = ''
 
 	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyDict
 
@@ -234,15 +234,15 @@ Func _WD_CreateSession($sCapabilities = Default)
 		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
-			Local $sMessage = Json_Get($oJSON, "[value][message]")
-			$iErr = $_WD_ERROR_JSON
+			$sMessage = Json_Get($oJSON, "[value][message]")
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
 
 	; Save response details for future use
 	$_WD_SESSION_DETAILS = $sResponse
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sSession)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sSession)
 EndFunc   ;==>_WD_CreateSession
 
 ; #FUNCTION# ====================================================================================================================
