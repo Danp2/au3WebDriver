@@ -1489,7 +1489,7 @@ EndFunc   ;==>__WD_Delete
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_MessageCreator
 ; Description ...: Creates message for _WD_Post, _WD_Get, _WD_Delete
-; Syntax ........: __WD_MessageCreator($sFuncName, $sURL, Byref Const $sResponseText)
+; Syntax ........: __WD_MessageCreator($sFuncName, $sURL, ByRef Const $sResponseText)
 ; Parameters ....: $sFuncName           - Calling function name.
 ;                  $sURL                - used URL
 ;                  $sResponseText       - Reference to ResposneText
@@ -1505,7 +1505,7 @@ Func __WD_MessageCreator($sFuncName, $sURL, ByRef Const $sResponseText, $sData =
 	Local $sMessage = "HTTP status = " & $_WD_HTTPRESULT
 	Switch $_WD_DEBUG
 		Case $_WD_DEBUG_Full ; in case of $_WD_DEBUG_Full  >  Full $sResponseText
-			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & "; $sData=" & $sData)
+			__WD_ConsoleWrite($sFuncName & ": URL=" & $sURL & (($sData) ? ("; Data=" & $sData) : ("")))
 			If $_WD_RESPONSE_TRIM <> -1 And StringLen($sResponseText) > $_WD_RESPONSE_TRIM Then
 				$sMessage &= " ResponseText=" & StringLeft($sResponseText, $_WD_RESPONSE_TRIM) & "..."
 			Else
@@ -1654,7 +1654,7 @@ EndFunc   ;==>__WD_TranslateQuotes
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_DetectError
 ; Description ...: Evaluate results from webdriver to identify errors.
-; Syntax ........: __WD_DetectError(Byref $iErr, $vResult)
+; Syntax ........: __WD_DetectError(ByRef $iErr, $vResult)
 ; Parameters ....: $iErr    - [in/out] Error code
 ;                  $vResult - Result from webdriver
 ; Return values .: None
