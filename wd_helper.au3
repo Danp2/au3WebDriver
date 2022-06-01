@@ -1150,7 +1150,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 			$iErr = $_WD_ERROR_NoMatch
 		ElseIf $iErr = $_WD_ERROR_Success Then
 			Local $aProperties[0][2]
-			_ArrayAdd($aProperties, StringStripWS($vResult, $STR_STRIPTRAILING), 0, ':', ';', $ARRAYFILL_FORCE_SINGLEITEM)
+			_ArrayAdd($aProperties, StringRegExpReplace(StringStripWS($vResult, $STR_STRIPTRAILING), "\;$", ""), 0, ':', ';', $ARRAYFILL_FORCE_SINGLEITEM)
 			$vResult = $aProperties
 		EndIf
 	Else
