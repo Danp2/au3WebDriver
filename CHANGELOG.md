@@ -14,6 +14,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Added
 
 - _WD_GetElementByRegEx (@TheDcoder)
+- _WD_ElementStyle 		(@mLipok)
 
 ### Fixed
 
