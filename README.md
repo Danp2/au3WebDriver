@@ -90,13 +90,14 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_jQuerify            | Inject jQuery library into current session.                                |
 | _WD_ElementOptionSelect | Find and click on an option from a Select element.                         |
 | _WD_ElementSelectAction | Perform action on designated Select element.                               |
+| _WD_ElementStyle        | Set/Get element style property.                                            |
 | _WD_ConsoleVisible      | Control visibility of the webdriver console app.                           |
 | _WD_GetShadowRoot       | Retrieves the shadow root of an element.                                   |
 | _WD_SelectFiles         | Select files for uploading to a website.                                   |
 | _WD_IsLatestRelease     | Compares local UDF version to latest release on Github.                    |
 | _WD_UpdateDriver        | Replace web driver with newer version, if available.                       |
 | _WD_GetBrowserVersion   | Get version number of specified browser.                                   |
-| _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                                   |
+| _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                         |
 | _WD_GetWebDriverVersion | Get version number of specifed webdriver.                                  |
 | _WD_DownloadFile        | Download file and save to disk.                                            |
 | _WD_SetTimeouts         | User friendly function to set webdriver session timeouts.                  |
