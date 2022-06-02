@@ -11,9 +11,26 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
+### Added
+
+- _WD_GetElementByRegEx (@TheDcoder)
+- _WD_ElementStyle 		(@mLipok)
+
 ### Fixed
 
 - _WD_ElementAction: Correct action names (CompRole >> ComputedRole & CompLabel >> ComputedLabel)
+- Help file search functionality
+
+### Changed
+
+- __WD_DetectError - Detect Javascript and Invalid Selector errors
+- wd_demo
+	- Added UserTesting()
+	- Improved demo selection
+
+### Removed
+
+- _WD_HighlightElement
 
 ## [0.9.0]
 
