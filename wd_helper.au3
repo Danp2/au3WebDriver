@@ -1141,7 +1141,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 				"      propertyname = element.style.item(i);" & _
 				"      result += propertyname + ':' + element.style.getPropertyValue(propertyname) + ';'" & _
 				"   }" & _
-				"   return result;" & _
+				"   return result.slice(0, result.length -1);" & _
 				"}"
 		$sJavaScript = StringReplace($sJavaScript, @TAB, '')
 		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
@@ -1150,7 +1150,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 			$iErr = $_WD_ERROR_NoMatch
 		ElseIf $iErr = $_WD_ERROR_Success Then
 			Local $aProperties[0][2]
-			_ArrayAdd($aProperties, StringRegExpReplace(StringStripWS($vResult, $STR_STRIPTRAILING), "\;$", ""), 0, ':', ';', $ARRAYFILL_FORCE_SINGLEITEM)
+			_ArrayAdd($aProperties, StringStripWS($vResult, $STR_STRIPTRAILING), 0, ':', ';', $ARRAYFILL_FORCE_SINGLEITEM)
 			$vResult = $aProperties
 		EndIf
 	Else
