@@ -1701,12 +1701,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 				$iErr = $_WD_ERROR_NoMatch
 
 			Case $_WD_ErrorElementInvalid
-				If StringInStr($vResult.item('message'), 'Failed to decode request as JSON') Then
-					$iErr = $_WD_ERROR_JSON
-				Else
-					$iErr = $_WD_ERROR_InvalidArgue
-				EndIf
-
+				$iErr = $_WD_ERROR_InvalidArgue
 
 			Case $_WD_ErrorElementIntercept, $_WD_ErrorElementNotInteract
 				$iErr = $_WD_ERROR_ElementIssue
@@ -1725,8 +1720,12 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 				$iErr = $_WD_ERROR_InvalidExpression
 
 			Case Else
-				__WD_ConsoleWrite($sFuncName & ": Not identified type of message: " & $vResult.item('message'), $_WD_DEBUG_Full)
-				$iErr = $_WD_ERROR_Exception
+				If StringInStr($vResult.item('message'), 'Failed to decode request as JSON') Then
+					$iErr = $_WD_ERROR_JSON
+				Else
+					__WD_ConsoleWrite($sFuncName & ": Not identified type of message: " & $vResult.item('message'), $_WD_DEBUG_Full)
+					$iErr = $_WD_ERROR_Exception
+				EndIf
 
 		EndSwitch
 	EndIf
