@@ -1611,6 +1611,65 @@ Func _WD_GetBrowserPath($sBrowser)
 EndFunc   ;==>_WD_GetBrowserPath
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetBrowserPID
+; Description ...: Get browser PID
+; Syntax ........: _WD_GetBrowserPID($iPID_WebDriver, $sBrowserName)
+; Parameters ....: $iPID_WebDriver                - WebDriver PID returned by _WD_Startup()
+;                  $sBrowserName        - [optional] Browser name from the list of supported browsers ($_WD_SupportedBrowsers)
+; Return values .: Success - Browser PID
+;                  Failure - 0 and sets @error to one of the following values:
+;                  - $_WD_ERROR_NotSupported
+;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_NoMatch
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetBrowserPID($iPID_WebDriver, $sBrowserName = '')
+	Local Const $sFuncName = "_WD_GetBrowserPID"
+	Local $iErr = $_WD_ERROR_Success, $iIndex = 0, $sBrowserExe = '', $aProcessList, $iPID = 0
+	If $sBrowserName Then
+		$iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+	EndIf
+	If @error Then
+		$iErr = $_WD_ERROR_NotSupported
+	Else
+		$sBrowserExe = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
+		$aProcessList = _WinAPI_EnumChildProcess($iPID_WebDriver)
+		If @error Then
+			$iErr = $_WD_ERROR_NotFound
+			_ArrayDisplay($aProcessList, '$aProcessList')
+
+			; all not supported EXE file names should be removed from $aProcessList, for example "conhost.exe" can be used by WebDriver exe file
+			For $iCheck = $aProcessList[0][0] To 1 Step -1
+				_ArraySearch($_WD_SupportedBrowsers, $aProcessList[$iCheck][1], Default, Default, Default, Default, Default, $_WD_BROWSER_ExeName)
+				If @error Then _ArrayDelete($aProcessList, $iCheck)
+			Next
+			If $iCheck = 0 Then $iErr = $_WD_ERROR_NotFound
+		EndIf
+	EndIf
+
+	If $iErr = $_WD_ERROR_Success Then
+		If $sBrowserName = '' Then
+			$iPID = $aProcessList[1][0]
+		Else
+			For $i = 1 To $aProcessList[0][0]
+				If $aProcessList[$i][1] = $sBrowserExe Then
+					$iPID = $aProcessList[$i][0]
+					__WD_ConsoleWrite($sFuncName & ": Browser - " & $aProcessList[$i][1] & " - PID = " & $iPID, $_WD_DEBUG_Info)
+					ExitLoop
+				EndIf
+				$iErr = $_WD_ERROR_NoMatch
+			Next
+		EndIf
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iPID)
+EndFunc   ;==>_WD_GetBrowserPID
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetWebDriverVersion
 ; Description ...: Get version number of specifed webdriver.
 ; Syntax ........: _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
