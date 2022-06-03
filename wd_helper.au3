@@ -1647,7 +1647,7 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 		If $iPID Then
 			ProcessWaitClose($iPID)
 			Local $sOutput = StdoutRead($iPID)
-			Local $aMatches = StringRegExp($sOutput, "\s+([^\s]+)", 1)
+			Local $aMatches = StringRegExp($sOutput, "\d+(\.\d+){2,}", 1)
 			If @error Then
 				$iErr = $_WD_ERROR_GeneralError
 				$iExt = 2
