@@ -14,12 +14,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Added
 
 - _WD_GetElementByRegEx (@TheDcoder)
-- _WD_ElementStyle 		(@mLipok)
-
-### Fixed
-
-- _WD_ElementAction: Correct action names (CompRole >> ComputedRole & CompLabel >> ComputedLabel)
-- Help file search functionality
+- _WD_ElementStyle 	(@mLipok)
 
 ### Changed
 
@@ -31,6 +26,14 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Removed
 
 - _WD_HighlightElement
+
+## [0.9.1]
+
+### Fixed
+
+- _WD_ElementAction: Correct action names (CompRole >> ComputedRole & CompLabel >> ComputedLabel)
+- _WD_GetWebDriverVersion: Update regex for extracting version number
+- Help file search functionality
 
 ## [0.9.0]
 
@@ -950,7 +953,9 @@ _WD_CapabilitiesDisplay
 
 - Initial release
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.9.0...HEAD
+
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.9.1...HEAD
+[0.9.1]:      https://github.com/Danp2/au3WebDriver/compare/0.9.0...0.9.1
 [0.9.0]:      https://github.com/Danp2/au3WebDriver/compare/0.8.1...0.9.0
 [0.8.1]:      https://github.com/Danp2/au3WebDriver/compare/0.8.0...0.8.1
 [0.8.0]:      https://github.com/Danp2/au3WebDriver/compare/0.7.0...0.8.0
