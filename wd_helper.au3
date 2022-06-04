@@ -1631,25 +1631,33 @@ EndFunc   ;==>_WD_GetBrowserPath
 Func _WD_GetBrowserPID($iPID_WebDriver, $sBrowserName = '')
 	Local Const $sFuncName = "_WD_GetBrowserPID"
 	Local $iErr = $_WD_ERROR_Success, $iIndex = 0, $sBrowserExe = '', $aProcessList, $iPID = 0
-	If $sBrowserName Then
-		$iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
-	EndIf
-	If @error Then
-		$iErr = $_WD_ERROR_NotSupported
-	Else
-		$sBrowserExe = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
-		$aProcessList = _WinAPI_EnumChildProcess($iPID_WebDriver)
-		If @error Then
-			$iErr = $_WD_ERROR_NotFound
-			_ArrayDisplay($aProcessList, '$aProcessList')
+	Local $sProcessName = _WinAPI_GetProcessName($iPID_WebDriver)
 
-			; all not supported EXE file names should be removed from $aProcessList, for example "conhost.exe" can be used by WebDriver exe file
-			For $iCheck = $aProcessList[0][0] To 1 Step -1
-				_ArraySearch($_WD_SupportedBrowsers, $aProcessList[$iCheck][1], Default, Default, Default, Default, Default, $_WD_BROWSER_ExeName)
-				If @error Then _ArrayDelete($aProcessList, $iCheck)
-			Next
-			If $iCheck = 0 Then $iErr = $_WD_ERROR_NotFound
+	If Not @error And _ArraySearch($_WD_SupportedBrowsers, $sProcessName, Default, Default, Default, Default, Default, $_WD_BROWSER_DriverName) <> -1 Then
+		If $sBrowserName Then
+			$iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 		EndIf
+		If @error Then
+			$iErr = $_WD_ERROR_NotSupported
+		Else
+			$sBrowserExe = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
+			$aProcessList = _WinAPI_EnumChildProcess($iPID_WebDriver)
+			If Not @error Then
+				; all not supported EXE file names should be removed from $aProcessList, for example "conhost.exe" can be used by WebDriver exe file
+				For $iCheck = $aProcessList[0][0] To 1 Step -1
+					_ArraySearch($_WD_SupportedBrowsers, $aProcessList[$iCheck][1], Default, Default, Default, Default, Default, $_WD_BROWSER_ExeName)
+					If @error Then
+						_ArrayDelete($aProcessList, $iCheck)
+						$aProcessList[0][0] -= 1
+					EndIf
+				Next
+				If $aProcessList[0][0] = 0 Then $iErr = $_WD_ERROR_NotFound
+			Else
+				$iErr = $_WD_ERROR_NotSupported
+			EndIf
+		EndIf
+	Else
+		$iErr = $_WD_ERROR_NotSupported
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
