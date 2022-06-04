@@ -1618,8 +1618,11 @@ EndFunc   ;==>_WD_GetBrowserPath
 ;                  $sBrowserName        - [optional] Browser name from the list of supported browsers ($_WD_SupportedBrowsers)
 ; Return values .: Success - Browser PID
 ;                  Failure - 0 and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_NotSupported
 ;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: mLipok
 ; Modified ......:
@@ -1631,18 +1634,23 @@ EndFunc   ;==>_WD_GetBrowserPath
 Func _WD_GetBrowserPID($iPID_WebDriver, $sBrowserName = '')
 	Local Const $sFuncName = "_WD_GetBrowserPID"
 	Local $iErr = $_WD_ERROR_Success, $iIndex = 0, $sBrowserExe = '', $aProcessList, $iPID = 0
-	Local $sProcessName = _WinAPI_GetProcessName($iPID_WebDriver)
+	Local $sDriverProcessName = _WinAPI_GetProcessName($iPID_WebDriver)
 
-	If Not @error And _ArraySearch($_WD_SupportedBrowsers, $sProcessName, Default, Default, Default, Default, Default, $_WD_BROWSER_DriverName) <> -1 Then
+	If @error Then
+		$iErr = $_WD_ERROR_InvalidArgue ; $iPID_WebDriver argument is invalid
+	ElseIf _ArraySearch($_WD_SupportedBrowsers, $sDriverProcessName, Default, Default, Default, Default, Default, $_WD_BROWSER_DriverName) = -1 Then
+		$iErr = $_WD_ERROR_NotSupported ; $iPID_WebDriver is related to not supported WebDriver EXE name
+	Else
 		If $sBrowserName Then
 			$iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 		EndIf
 		If @error Then
-			$iErr = $_WD_ERROR_NotSupported
+			$iErr = $_WD_ERROR_NotFound ; $sBrowserName can not be found on supported browsers names list
 		Else
-			$sBrowserExe = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
 			$aProcessList = _WinAPI_EnumChildProcess($iPID_WebDriver)
-			If Not @error Then
+			If @error Then
+				$iErr = $_WD_ERROR_GeneralError ; Session was not created properly ?
+			Else
 				; all not supported EXE file names should be removed from $aProcessList, for example "conhost.exe" can be used by WebDriver exe file
 				For $iCheck = $aProcessList[0][0] To 1 Step -1
 					_ArraySearch($_WD_SupportedBrowsers, $aProcessList[$iCheck][1], Default, Default, Default, Default, Default, $_WD_BROWSER_ExeName)
@@ -1651,19 +1659,16 @@ Func _WD_GetBrowserPID($iPID_WebDriver, $sBrowserName = '')
 						$aProcessList[0][0] -= 1
 					EndIf
 				Next
-				If $aProcessList[0][0] = 0 Then $iErr = $_WD_ERROR_NotFound
-			Else
-				$iErr = $_WD_ERROR_NotSupported
+				If $aProcessList[0][0] = 0 Then $iErr = $_WD_ERROR_FileIssue ; all child process (file names) are not listed on supported browsers exe
 			EndIf
 		EndIf
-	Else
-		$iErr = $_WD_ERROR_NotSupported
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $sBrowserName = '' Then
 			$iPID = $aProcessList[1][0]
 		Else
+			$sBrowserExe = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_ExeName]
 			For $i = 1 To $aProcessList[0][0]
 				If $aProcessList[$i][1] = $sBrowserExe Then
 					$iPID = $aProcessList[$i][0]
