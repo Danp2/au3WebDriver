@@ -348,15 +348,12 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 			$iErr = @error
 
-			If $bCheckNoMatch Then
-				If $iErr = $_WD_ERROR_NoMatch Then
-					$iErr = $_WD_ERROR_Success
-					ExitLoop
+			If $iErr <> $_WD_ERROR_Success And $iErr <> $_WD_ERROR_NoMatch Then
+				ExitLoop
 
-				ElseIf $iErr <> $_WD_ERROR_NoMatch Then
-					ExitLoop
-
-				EndIf
+			ElseIf $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
+				$iErr = $_WD_ERROR_Success
+				ExitLoop
 
 			ElseIf $iErr = $_WD_ERROR_Success And Not $bCheckNoMatch Then
 				If $bVisible Then
