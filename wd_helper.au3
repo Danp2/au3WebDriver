@@ -1675,8 +1675,8 @@ Func _WD_GetBrowserPID($iPID_WebDriver, $sBrowserName = '')
 					__WD_ConsoleWrite($sFuncName & ": Browser - " & $aProcessList[$i][1] & " - PID = " & $iPID, $_WD_DEBUG_Info)
 					ExitLoop
 				EndIf
-				$iErr = $_WD_ERROR_NoMatch ; BrowserExe related to requested BrowserName was not matched in the webdriver child process list
 			Next
+			If Not $iPID Then $iErr = $_WD_ERROR_NoMatch ; BrowserExe related to requested BrowserName was not matched in the webdriver child process list
 		EndIf
 	EndIf
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iPID)
