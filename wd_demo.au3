@@ -41,6 +41,7 @@ Global $aDemoSuite[][3] = _
 		["DemoUpload", False, False], _
 		["DemoPrint", False, True], _
 		["DemoSleep", False, False], _
+		["DemoSelectOptions", False, False], _
 		["UserTesting", False, False] _
 		]
 
@@ -767,6 +768,51 @@ Func DemoSleep()
 
 	Return SetError($iError)
 EndFunc   ;==>DemoSleep
+
+Func DemoSelectOptions()
+	_WD_Navigate($sSession, 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#advanced_select_with_multiple_features')
+	If @error Then Return SetError(@error, @extended, '')
+
+	_WD_LoadWait($sSession)
+	If @error Then Return SetError(@error, @extended, '')
+
+	Local $sFrame = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#frame_advanced_select_with_multiple_features')
+	If @error Then Return SetError(@error, @extended, '')
+
+	Local $sJavaScript = _
+			"var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
+	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sFrame), Default, Default)
+	If @error Then Return SetError(@error, @extended, '')
+
+	_WD_FrameEnter($sSession, $sFrame)
+	If @error Then Return SetError(@error, @extended, '')
+
+	Local $sSelectElement = _WD_GetElementByName($sSession, 'pets')
+	If @error Then Return SetError(@error, @extended, '')
+
+	$sJavaScript = _
+			"var element = arguments[0];element.setAttribute('size', '10')"
+	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
+
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'SELECTALL')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SELECTALL")
+
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'DESELECTALL')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
+
+	Local $aOptions[] = ['Cat', 'Parrot', 'Albatross']
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptions)
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
+
+	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS', $aOptions)
+	If @error Then Return SetError(@error, @extended, '')
+
+	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
+
+EndFunc   ;==>DemoSelectOptions
 
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
