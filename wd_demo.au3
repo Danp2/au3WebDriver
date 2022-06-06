@@ -188,7 +188,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	ConsoleWrite("> wd_demo.au3: _WD_Startup" & @CRLF)
 	Local $iWebDriver_PID = _WD_Startup()
 	If _RunDemo_ErrorHander((@error <> $_WD_ERROR_Success), @error, @extended, $iWebDriver_PID, $sSession) Then Return
-	ConsoleWrite("> wd_demo.au3: WedDriver PID=" & $iWebDriver_PID & @CRLF)
+	ConsoleWrite("> wd_demo.au3: WebDriver PID=" & $iWebDriver_PID & @CRLF)
 
 	ConsoleWrite("> wd_demo.au3: _WD_CreateSession" & @CRLF)
 	$sSession = _WD_CreateSession($sCapabilities)
