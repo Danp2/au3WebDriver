@@ -30,7 +30,7 @@ Func _WDEx_SetupWrapper($sBrowserName, $sCapabilities = '')
 
 EndFunc   ;==>_WDEx_SetupWrapper
 
-Func __WDEx_SetupGecko($sCapabilities)
+Func __WDEx_SetupGecko(ByRef $sCapabilities)
 	_WD_Option('Driver', 'geckodriver.exe')
 	_WD_Option('DriverParams', '--log trace')
 	_WD_Option('Port', 4444)
