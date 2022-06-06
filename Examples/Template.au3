@@ -1,5 +1,4 @@
 ; this is template for creating examples
-#include "..\wd_helper.au3"
 #include "StartUp.au3"
 
 Example()
