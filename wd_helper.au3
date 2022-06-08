@@ -1618,8 +1618,8 @@ EndFunc   ;==>_WD_GetBrowserPath
 ;                  $sBrowserName        - [optional] Browser name from the list of supported browsers ($_WD_SupportedBrowsers)
 ; Return values .: Success - Browser PID
 ;                  Failure - 0 and sets @error to one of the following values:
-;                  - $_WD_ERROR_NotSupported
 ;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_NotSupported
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: mLipok
 ; Modified ......: Danp2
@@ -1630,26 +1630,31 @@ EndFunc   ;==>_WD_GetBrowserPath
 ; ===============================================================================================================================
 Func _WD_GetBrowserPID($iWebDriverPID, $sBrowserName = '')
 	Local Const $sFuncName = "_WD_GetBrowserPID"
-	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $iIndex = 0, $sBrowserExe = '', $aProcessList, $iBrowserPID = 0
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $iIndex = 0, $sBrowserExe = '', $aProcessList, $iBrowserPID = 0, $sMessage = ''
 	Local $sDriverProcessName = _WinAPI_GetProcessName($iWebDriverPID)
 
 	If @error Then
-		$iErr = $_WD_ERROR_GeneralError ; Unable to retrieve process name
+		$iErr = $_WD_ERROR_GeneralError
 		$iExt = 1
+		$sMessage = 'Unable to retrieve WebDriver process name'
 	ElseIf _ArraySearch($_WD_SupportedBrowsers, $sDriverProcessName, Default, Default, Default, Default, Default, $_WD_BROWSER_DriverName) = -1 Then
-		$iErr = $_WD_ERROR_NotSupported ; $iWebDriverPID is related to not supported WebDriver exe name
+		$iErr = $_WD_ERROR_NotSupported
+		$iExt = 2
+		$sMessage = 'WebDriverPID is related to not supported WebDriver exe name'
 	Else
 		If $sBrowserName Then
 			$iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
 		EndIf
 		If @error Then
-			$iErr = $_WD_ERROR_GeneralError ; $sBrowserName can not be found on supported browsers names list
-			$iExt = 2
+			$iErr = $_WD_ERROR_GeneralError
+			$iExt = 3
+			$sMessage = 'BrowserName can not be found on supported browsers names list'
 		Else
 			$aProcessList = _WinAPI_EnumChildProcess($iWebDriverPID)
 			If @error Then
-				$iErr = $_WD_ERROR_GeneralError ; Session was not created properly ?
-				$iExt = 3
+				$iErr = $_WD_ERROR_GeneralError
+				$iExt = 4
+				$sMessage = 'Session was not created properly'
 			Else
 				; all not supported EXE file names should be removed from $aProcessList, for example "conhost.exe" can be used by WebDriver exe file
 				For $iCheck = $aProcessList[0][0] To 1 Step -1
@@ -1659,9 +1664,10 @@ Func _WD_GetBrowserPID($iWebDriverPID, $sBrowserName = '')
 						$aProcessList[0][0] -= 1
 					EndIf
 				Next
-				If $aProcessList[0][0] = 0 Then 
-					$iErr = $_WD_ERROR_GeneralError ; all child process (file names) are not listed on supported browsers exe
-					$iExt = 4
+				If $aProcessList[0][0] = 0 Then
+					$iErr = $_WD_ERROR_GeneralError
+					$iExt = 5
+					$sMessage = 'All child process (file names) are not listed on supported browsers exe'
 				EndIf
 			EndIf
 		EndIf
@@ -1675,14 +1681,18 @@ Func _WD_GetBrowserPID($iWebDriverPID, $sBrowserName = '')
 			For $i = 1 To $aProcessList[0][0]
 				If $aProcessList[$i][1] = $sBrowserExe Then
 					$iBrowserPID = $aProcessList[$i][0]
-					__WD_ConsoleWrite($sFuncName & ": Browser - " & $aProcessList[$i][1] & " - PID = " & $iBrowserPID, $_WD_DEBUG_Info)
+					$sMessage = "Browser - " & $aProcessList[$i][1] & " - PID = " & $iBrowserPID
 					ExitLoop
 				EndIf
 			Next
-			If Not $iBrowserPID Then $iErr = $_WD_ERROR_NoMatch ; BrowserExe related to requested BrowserName was not matched in the webdriver child process list
+			If Not $iBrowserPID Then
+				$iErr = $_WD_ERROR_NoMatch
+				$iExt = 6
+				$sMessage = 'BrowserExe related to requested BrowserName was not matched in the webdriver child process list'
+			EndIf
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr, $iExt), $iExt, $iBrowserPID)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $iBrowserPID)
 EndFunc   ;==>_WD_GetBrowserPID
 
 ; #FUNCTION# ====================================================================================================================
