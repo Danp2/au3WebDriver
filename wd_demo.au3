@@ -42,6 +42,7 @@ Global $aDemoSuite[][3] = _
 		["DemoPrint", False, True], _
 		["DemoSleep", False, False], _
 		["DemoSelectOptions", False, False], _
+		["DemoStyles", False, False], _
 		["UserTesting", False, False] _
 		]
 
@@ -820,6 +821,47 @@ Func DemoSelectOptions()
 	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
 
 EndFunc   ;==>DemoSelectOptions
+
+Func DemoStyles()
+	_WD_Navigate($sSession, 'https://github.com/Danp2/au3WebDriver/pull/310')
+	_WD_LoadWait($sSession)
+
+	; get element
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#repository-container-header')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", 'Focus on header (currently not changed)')
+
+	; add new fontFamily style
+	_WD_ElementStyle($sSession, $sElement, 'fontFamily', '"Lucida Console", "Courier New", monospace')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+
+	; check list of styles
+	Local $aListof_CSSProperties_v1 = _WD_ElementStyle($sSession, $sElement)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	_ArrayDisplay($aListof_CSSProperties_v1, '$aListof_CSSProperties_v1')
+
+	; check out a single specific style
+	Local $sFontFamily = _WD_ElementStyle($sSession, $sElement, "font-family")
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", $sFontFamily)
+
+	; remove 'fontFamily' style
+	_WD_ElementStyle($sSession, $sElement, 'fontFamily', '')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+
+	; remove 'backgroundColor' style
+	_WD_ElementStyle($sSession, $sElement, 'backgroundColor', '')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+
+	; again - check list of styles
+	Local $aListof_CSSProperties_v2 = _WD_ElementStyle($sSession, $sElement)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	_ArrayDisplay($aListof_CSSProperties_v2, '$aListof_CSSProperties_v2')
+
+	; additional check
+	If Not UBound($aListof_CSSProperties_v2) Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", 'All styles has been removed.')
+
+EndFunc   ;==>DemoStyles
 
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
