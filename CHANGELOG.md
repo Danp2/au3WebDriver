@@ -19,6 +19,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Changed
 
 - __WD_DetectError - Detect Javascript and Invalid Selector errors
+- _WD_Startup - Improve logging when existing webdriver instance is reused
 - wd_demo
 	- Added UserTesting()
 	- Improved demo selection
