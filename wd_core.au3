@@ -1222,7 +1222,7 @@ Func _WD_Startup()
 	$iPID = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $iPID Then
-		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
+		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " ( PID=" & $iPID & " ) detected!")
 	Else
 		$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
