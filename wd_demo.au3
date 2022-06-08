@@ -779,34 +779,41 @@ Func DemoSelectOptions()
 	Local $sFrame = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#frame_advanced_select_with_multiple_features')
 	If @error Then Return SetError(@error, @extended, '')
 
-	Local $sJavaScript = _
-			"var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
+	; change the attributes of the frame to improve the visibility of the <select> element, on which the options will be indicated
+	Local $sJavaScript = "var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sFrame), Default, Default)
 	If @error Then Return SetError(@error, @extended, '')
 
+	; entering to the frame
 	_WD_FrameEnter($sSession, $sFrame)
 	If @error Then Return SetError(@error, @extended, '')
 
+	; get <select> element by it's name
 	Local $sSelectElement = _WD_GetElementByName($sSession, 'pets')
 	If @error Then Return SetError(@error, @extended, '')
 
+	; change <select> element size, to see all <option> at once
 	$sJavaScript = _
 			"var element = arguments[0];element.setAttribute('size', '10')"
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
 
+	; select ALL options
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'SELECTALL')
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SELECTALL")
 
+	; deselect ALL options
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'DESELECTALL')
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
 
+	; select desired options
 	Local $aOptions[] = ['Cat', 'Parrot', 'Albatross']
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptions)
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
 
+	; retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
 	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS', $aOptions)
 	If @error Then Return SetError(@error, @extended, '')
 
