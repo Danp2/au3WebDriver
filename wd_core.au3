@@ -1206,7 +1206,7 @@ EndFunc   ;==>_WD_Option
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
 	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iErr = $_WD_ERROR_Success
-	Local $sDriverBitness = ""
+	Local $sDriverBitness = "", $sExistingDriver = ""
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
@@ -1222,7 +1222,7 @@ Func _WD_Startup()
 	$iPID = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $iPID Then
-		__WD_ConsoleWrite($sFuncName & ": Existing instance of " & $sFile & " detected!")
+		 $sExistingDriver = "Existing instance of " & $sFile & " detected! (PID=" & $iPID & ")"
 	Else
 		$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
@@ -1262,7 +1262,7 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
 		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
 		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT)
-		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & $sCommand)
+		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & (($sExistingDriver) ? $sExistingDriver : $sCommand))
 	EndIf
 
 	If $iErr Then
