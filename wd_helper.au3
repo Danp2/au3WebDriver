@@ -1633,13 +1633,14 @@ Func _WD_GetBrowserPID($iWebDriverPID, $sBrowserName = '')
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $iIndex = 0, $sBrowserExe = '', $aProcessList, $iBrowserPID = 0, $sMessage = ''
 	Local $sDriverProcessName = _WinAPI_GetProcessName($iWebDriverPID)
 
-	If @error Then
+	If @error Or Not ProcessExists($iWebDriverPID) Then
+		#REMARK ProcessExists($iWebDriverPID) is required because of ; https://www.autoitscript.com/trac/autoit/ticket/3894
+		$sDriverProcessName = ''
 		$iErr = $_WD_ERROR_GeneralError
 		$iExt = 1
-		$sMessage = 'Unable to retrieve WebDriver process name'
+		$sMessage = 'Unable to retrieve WebDriver process name for given PID'
 	ElseIf _ArraySearch($_WD_SupportedBrowsers, $sDriverProcessName, Default, Default, Default, Default, Default, $_WD_BROWSER_DriverName) = -1 Then
 		$iErr = $_WD_ERROR_NotSupported
-		$iExt = 2
 		$sMessage = 'WebDriverPID is related to not supported WebDriver exe name'
 	Else
 		If $sBrowserName Then
@@ -1647,13 +1648,13 @@ Func _WD_GetBrowserPID($iWebDriverPID, $sBrowserName = '')
 		EndIf
 		If @error Then
 			$iErr = $_WD_ERROR_GeneralError
-			$iExt = 3
+			$iExt = 2
 			$sMessage = 'BrowserName can not be found on supported browsers names list'
 		Else
 			$aProcessList = _WinAPI_EnumChildProcess($iWebDriverPID)
 			If @error Then
 				$iErr = $_WD_ERROR_GeneralError
-				$iExt = 4
+				$iExt = 3
 				$sMessage = 'Session was not created properly'
 			Else
 				; all not supported EXE file names should be removed from $aProcessList, for example "conhost.exe" can be used by WebDriver exe file
@@ -1666,7 +1667,7 @@ Func _WD_GetBrowserPID($iWebDriverPID, $sBrowserName = '')
 				Next
 				If $aProcessList[0][0] = 0 Then
 					$iErr = $_WD_ERROR_GeneralError
-					$iExt = 5
+					$iExt = 4
 					$sMessage = 'All child process (file names) are not listed on supported browsers exe'
 				EndIf
 			EndIf
@@ -1687,7 +1688,6 @@ Func _WD_GetBrowserPID($iWebDriverPID, $sBrowserName = '')
 			Next
 			If Not $iBrowserPID Then
 				$iErr = $_WD_ERROR_NoMatch
-				$iExt = 6
 				$sMessage = 'BrowserExe related to requested BrowserName was not matched in the webdriver child process list'
 			EndIf
 		EndIf
