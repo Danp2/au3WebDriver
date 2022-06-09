@@ -318,7 +318,7 @@ EndFunc   ;==>_WD_LinkClickByText
 ; ===============================================================================================================================
 Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTimeout = Default, $iOptions = Default)
 	Local Const $sFuncName = "_WD_WaitElement"
-	Local Const $sParameters = 'Parameters:   Delay=' & $iDelay & '   Timeout=' & $iTimeout & '   Options=' & $iOptions
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   Delay=' & $iDelay & '   Timeout=' & $iTimeout & '   Options=' & $iOptions
 	Local $iErr, $sElement, $bIsVisible = True, $bIsEnabled = True
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -340,7 +340,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 		; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
 		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
-		$_WD_DEBUG = $_WD_DEBUG_None ; till waiting on _WD_WaitElement() should be prevented for multiple errors from _WD_FindElement()
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; till waiting on _WD_WaitElement() should be prevented for multiple errors from _WD_FindElement()
 
 		Local $hWaitTimer = TimerInit()
 		While 1
