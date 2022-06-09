@@ -297,6 +297,8 @@ Func _WD_CapabilitiesGet()
 
 	Local $Data3 = Json_Decode($Json2)
 	Local $Json3 = Json_Encode($Data3, $Json_PRETTY_PRINT, "    ", ",\n", ",\n", ":")
+	
+	If $Json3 = '' Or $Json3 = '""' Or Not IsString($Json3) Then $Json3 = $_WD_EmptyDict
 
 	Return $Json3
 EndFunc   ;==>_WD_CapabilitiesGet
