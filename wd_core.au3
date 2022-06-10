@@ -715,7 +715,7 @@ EndFunc   ;==>_WD_FindElement
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#state
@@ -726,7 +726,9 @@ EndFunc   ;==>_WD_FindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_ElementAction"
-	Local Const $sParameters = "Parameters:   Command=" & $sCommand & "   Option=" & $sOption
+	; because $sOption can contain sensitive data, do not pass untill $_WD_DEBUG_Full is used (refers to the case when VALUE will be set)
+	Local $bParameters_Option = ($_WD_DEBUG = $_WD_DEBUG_Full Or Not ($sCommand = 'VALUE' And $sOption))
+	Local Const $sParameters = "Parameters:   Command=" & $sCommand & (($bParameters_Option) ? ("   Option=" & $sOption) : (""))
 	Local $sResponse, $sResult = '', $iErr, $oJSON
 	$_WD_HTTPRESULT = 0
 
