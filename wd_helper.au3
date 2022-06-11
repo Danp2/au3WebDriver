@@ -306,8 +306,9 @@ EndFunc   ;==>_WD_LinkClickByText
 ;                  |$_WD_OPTION_NoMatch (8) = Confirm element not found
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
-;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidArgue
+;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2
 ; Modified ......: mLipok
@@ -340,7 +341,9 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 		; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
 		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
-		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; till waiting on _WD_WaitElement() should be prevented for multiple errors from _WD_FindElement()
+
+		; Prevent logging from _WD_FindElement if not in Full debug mode
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None 
 
 		Local $hWaitTimer = TimerInit()
 		While 1
@@ -349,14 +352,18 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 			$iErr = @error
 
-			If $iErr <> $_WD_ERROR_Success And $iErr <> $_WD_ERROR_NoMatch Then ; unexpected @error (is different then $_WD_ERROR_NoMatch) - there is no reason to wait any more
+			; Exit loop if unexpected error occurs
+			If $iErr <> $_WD_ERROR_Success And $iErr <> $_WD_ERROR_NoMatch Then
 				ExitLoop
 
-			ElseIf $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then ; @error = $_WD_ERROR_NoMatch was expected as $bCheckNoMatch = True was checked
+			; Check if element wasn't found and exit loop indicating success
+			; when "no match" option is active
+			ElseIf $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
 				$iErr = $_WD_ERROR_Success
 				ExitLoop
 
-			ElseIf $iErr = $_WD_ERROR_Success And Not $bCheckNoMatch Then ; @error = 0 element is found, and this was expected as (Not $bCheckNoMatch) was checked
+			; Check if element was found and "no match" option isn't active
+			ElseIf $iErr = $_WD_ERROR_Success And Not $bCheckNoMatch Then
 				If $bVisible Then
 					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 
