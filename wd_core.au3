@@ -393,9 +393,8 @@ EndFunc   ;==>_WD_Timeouts
 ; ===============================================================================================================================
 Func _WD_Navigate($sSession, $sURL)
 	Local Const $sFuncName = "_WD_Navigate"
-	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
+	__WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 	Local $iErr = @error
-	#forceref $sResponse
 
 	Local $iReturn = ($iErr) ? (0) : (1)
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iReturn)
