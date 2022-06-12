@@ -343,7 +343,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 
 		; Prevent logging from _WD_FindElement if not in Full debug mode
-		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None 
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 		Local $hWaitTimer = TimerInit()
 		While 1
@@ -352,18 +352,19 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 			$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 			$iErr = @error
 
-			; Exit loop if unexpected error occurs
 			If $iErr <> $_WD_ERROR_Success And $iErr <> $_WD_ERROR_NoMatch Then
+				; Exit loop if unexpected error occurs
 				ExitLoop
 
-			; Check if element wasn't found and exit loop indicating success
-			; when "no match" option is active
 			ElseIf $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
+				; if element wasn't found and "no match" option is active
+				; exit loop indicating success
 				$iErr = $_WD_ERROR_Success
 				ExitLoop
 
-			; Check if element was found and "no match" option isn't active
 			ElseIf $iErr = $_WD_ERROR_Success And Not $bCheckNoMatch Then
+				; if element was found and "no match" option isn't active
+				; check $bVisible and $bEnabled options
 				If $bVisible Then
 					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 
