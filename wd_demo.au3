@@ -41,6 +41,8 @@ Global $aDemoSuite[][3] = _
 		["DemoUpload", False, False], _
 		["DemoPrint", False, True], _
 		["DemoSleep", False, False], _
+		["DemoSelectOptions", False, False], _
+		["DemoStyles", False, False], _
 		["UserTesting", False, False] _
 		]
 
@@ -767,6 +769,99 @@ Func DemoSleep()
 
 	Return SetError($iError)
 EndFunc   ;==>DemoSleep
+
+Func DemoSelectOptions()
+	_WD_Navigate($sSession, 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#advanced_select_with_multiple_features')
+	If @error Then Return SetError(@error, @extended, '')
+
+	_WD_LoadWait($sSession)
+	If @error Then Return SetError(@error, @extended, '')
+
+	Local $sFrame = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#frame_advanced_select_with_multiple_features')
+	If @error Then Return SetError(@error, @extended, '')
+
+	; change the attributes of the frame to improve the visibility of the <select> element, on which the options will be indicated
+	Local $sJavaScript = "var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
+	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sFrame), Default, Default)
+	If @error Then Return SetError(@error, @extended, '')
+
+	; entering to the frame
+	_WD_FrameEnter($sSession, $sFrame)
+	If @error Then Return SetError(@error, @extended, '')
+
+	; get <select> element by it's name
+	Local $sSelectElement = _WD_GetElementByName($sSession, 'pets')
+	If @error Then Return SetError(@error, @extended, '')
+
+	; change <select> element size, to see all <option> at once
+	$sJavaScript = _
+			"var element = arguments[0];element.setAttribute('size', '10')"
+	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
+
+	; select ALL options
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'SELECTALL')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SELECTALL")
+
+	; deselect ALL options
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'DESELECTALL')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
+
+	; select desired options
+	Local $aOptions[] = ['Cat', 'Parrot', 'Albatross']
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptions)
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
+
+	; retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
+	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS', $aOptions)
+	If @error Then Return SetError(@error, @extended, '')
+
+	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
+
+EndFunc   ;==>DemoSelectOptions
+
+Func DemoStyles()
+	_WD_Navigate($sSession, 'https://github.com/Danp2/au3WebDriver/pull/310')
+	_WD_LoadWait($sSession)
+
+	; get element
+	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#repository-container-header')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", 'Focus on header (currently not changed)')
+
+	; add new fontFamily style
+	_WD_ElementStyle($sSession, $sElement, 'fontFamily', '"Lucida Console", "Courier New", monospace')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+
+	; check list of styles
+	Local $aListof_CSSProperties_v1 = _WD_ElementStyle($sSession, $sElement)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	_ArrayDisplay($aListof_CSSProperties_v1, '$aListof_CSSProperties_v1')
+
+	; check out a single specific style
+	Local $sFontFamily = _WD_ElementStyle($sSession, $sElement, "font-family")
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", $sFontFamily)
+
+	; remove 'fontFamily' style
+	_WD_ElementStyle($sSession, $sElement, 'fontFamily', '')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+
+	; remove 'backgroundColor' style
+	_WD_ElementStyle($sSession, $sElement, 'backgroundColor', '')
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+
+	; again - check list of styles
+	Local $aListof_CSSProperties_v2 = _WD_ElementStyle($sSession, $sElement)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	_ArrayDisplay($aListof_CSSProperties_v2, '$aListof_CSSProperties_v2')
+
+	; additional check
+	If Not UBound($aListof_CSSProperties_v2) Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", 'All styles has been removed.')
+
+EndFunc   ;==>DemoStyles
 
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
