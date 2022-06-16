@@ -940,7 +940,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |DESELECTALL    - Clear all selections
 ;                  |MULTISELECT    - Select <option> elements given in 1D array of labels
-;                  |OPTIONS        - Retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
+;                  |OPTIONS        - Retrieves all <option> elements as 2D array containing 5 columns (value, label, index, selected status, disabled status)
 ;                  |SELECTALL      - Select all <option> elements
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
@@ -986,7 +986,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 								"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
 								"{" & _
 								"  o = arguments[0].options[i];" & _
-								"  if ( LabelsToSelect.indexOf( o.label ) != -1 )" & _
+								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && ( o.disabled==false ) ) " & _
 								"  {" & _
 								"    o.selected = true;" & _
 								"  }" & _
@@ -995,18 +995,27 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 						$iErr = @error
 					EndIf
 				Case 'options'
-					$sScript = "var result ='' ; var options = arguments[0].options; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'} return result;"
+					$sScript = _
+							"var result ='';" & _
+							"var options = arguments[0].options;" & _
+							"for ( let i = 0; i < options.length; i++ )" & _
+							"  {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected  + '|' + options[i].disabled + '\n'};" & _
+							"return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
-						Local $aAllOptions[0][4]
+						Local $aAllOptions[0][5]
 						_ArrayAdd($aAllOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
 						$vResult = $aAllOptions
 					EndIf
 
 				Case 'selectAll'
-					$sScript = "var options = arguments[0].options; for ( i=0; i<options.length; i++) {options[i].selected = 'true';}; return true;"
+					$sScript = _
+							"var options = arguments[0].options;" & _
+							"for ( i=0; i<options.length; i++)" & _
+							"  {if (options[i].disabled==false) {options[i].selected = true}};" & _
+							"return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
@@ -1016,7 +1025,12 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$iErr = @error
 
 				Case 'selectedLabels'
-					$sScript = "var result =''; var options = arguments[0].selectedOptions; for (let i = 0; i < options.length; i++) {result += options[i].label + '\n'} return result;"
+					$sScript = _
+							"var result ='';" & _
+							"var options = arguments[0].selectedOptions;" & _
+							"for (let i = 0; i < options.length; i++)" & _
+							" {result += options[i].label + '\n'};" & _
+							"return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
@@ -1027,7 +1041,12 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					EndIf
 
 				Case 'selectedOptions'
-					$sScript = "var result =''; var options = arguments[0].selectedOptions; for (let i = 0; i < options.length; i++) {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'} return result;"
+					$sScript = _
+							"var result ='';" & _
+							"var options = arguments[0].selectedOptions;" & _
+							"for (let i = 0; i < options.length; i++)" & _
+							" {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'};" & _
+							"return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
