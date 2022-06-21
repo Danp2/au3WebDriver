@@ -972,7 +972,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 		If $sNodeName = 'select' Then ; check if designated element is <select> element
 			Switch $sCommand
 				Case 'deselectAll'
-					$sScript = "return arguments[0].selectedIndex = -1"
+					$sScript = "arguments[0].selectedIndex = -1; return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
