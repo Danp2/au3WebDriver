@@ -997,9 +997,9 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 				Case 'options'
 					$sScript = _
 							"var result ='';" & _
-							"var options = arguments[0].options;" & _
-							"for ( let i = 0; i < options.length; i++ )" & _
-							"  {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected  + '|' + options[i].disabled + '\n'};" & _
+							"var o = arguments[0].options;" & _
+							"for ( let i = 0; i < o.length; i++ )" & _
+							"  {result += o[i].value + '|' + o[i].label + '|' + o[i].index + '|' + o[i].selected  + '|' + (o[i].disabled || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.disabled)) + '\n'};" & _
 							"return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
