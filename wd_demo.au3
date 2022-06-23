@@ -809,16 +809,71 @@ Func DemoSelectOptions()
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
 
 	; select desired options
-	Local $aOptions[] = ['Cat', 'Parrot', 'Albatross']
+	Local $aOptions[] = ['Cat', 'Hamster', 'Parrot', 'Albatross']
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptions)
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
 
 	; retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
-	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS', $aOptions)
+	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
 	If @error Then Return SetError(@error, @extended, '')
 
 	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
+
+	; now will test enabled/disabled OPTGROUP
+	_WD_Navigate($sSession, 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup#examples')
+	If @error Then Return SetError(@error, @extended, '')
+
+	_WD_LoadWait($sSession)
+	If @error Then Return SetError(@error, @extended, '')
+
+	Local $sFrame2 = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#frame_examples')
+	If @error Then Return SetError(@error, @extended, '')
+
+	; change the attributes of the frame to improve the visibility of the <select> element, on which the options will be indicated
+	Local $sJavaScript2 = "var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
+	_WD_ExecuteScript($sSession, $sJavaScript2, __WD_JsonElement($sFrame2), Default, Default)
+	If @error Then Return SetError(@error, @extended, '')
+
+	; entering to the frame
+	_WD_FrameEnter($sSession, $sFrame2)
+	If @error Then Return SetError(@error, @extended, '')
+
+	; get <select> element by it's name
+	Local $sSelectElement2 = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector,"body > select")
+	If @error Then Return SetError(@error, @extended, '')
+
+	; change <select> element size, to see all <option> at once
+	$sJavaScript2 = _
+			"var element = arguments[0];element.setAttribute('size', '9')"
+	_WD_ExecuteScript($sSession, $sJavaScript2, __WD_JsonElement($sSelectElement2), Default, Default)
+
+	$sJavaScript2 = _
+			"var element = arguments[0];element.setAttribute('multiple','')"
+	_WD_ExecuteScript($sSession, $sJavaScript2, __WD_JsonElement($sSelectElement2), Default, Default)
+
+	; select ALL options
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'SELECTALL')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SELECTALL")
+
+	; deselect ALL options
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'DESELECTALL')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
+
+	; select desired options
+	Local $aOptions2[] = ['Option 1.1', 'Option 2.1', 'Option 3.1']
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
+
+	; retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
+	Local $aSelectedOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
+	If @error Then Return SetError(@error, @extended, '')
+
+	_ArrayDisplay($aSelectedOptions2, '$aSelectedOptions2')
+
 
 EndFunc   ;==>DemoSelectOptions
 
