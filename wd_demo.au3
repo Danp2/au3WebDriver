@@ -814,7 +814,7 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
 
-	; retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
+	; retrieves all <option> elements as 2D array containing 5 columns (value, label, index, selected status, disabled status)
 	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
 	If @error Then Return SetError(@error, @extended, '')
 
@@ -868,7 +868,7 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
 
-	; retrieves all <option> elements as 2D array containing 4 columns (value, label, index and selected status)
+	; retrieves all <option> elements as 2D array containing 5 columns (value, label, index, selected status, disabled status)
 	Local $aSelectedOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
 	If @error Then Return SetError(@error, @extended, '')
 
