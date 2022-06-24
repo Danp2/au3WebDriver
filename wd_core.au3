@@ -726,9 +726,9 @@ EndFunc   ;==>_WD_FindElement
 ; ===============================================================================================================================
 Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_ElementAction"
-	; because $sOption can contain sensitive data, do not pass untill $_WD_DEBUG_Full is used (refers to the case when VALUE will be set)
+	; because $sOption can contain sensitive data, mask value unless $_WD_DEBUG_Full is used (refers to the case when VALUE will be set)
 	Local $bParameters_Option = ($_WD_DEBUG = $_WD_DEBUG_Full Or Not ($sCommand = 'VALUE' And $sOption))
-	Local Const $sParameters = "Parameters:   Command=" & $sCommand & (($bParameters_Option) ? ("   Option=" & $sOption) : (""))
+	Local Const $sParameters = "Parameters:   Command=" & $sCommand & "   Option=" & (($bParameters_Option Or Not $sOption) ? ($sOption) : ("<masked>"))
 	Local $sResponse, $sResult = '', $iErr, $oJSON
 	$_WD_HTTPRESULT = 0
 
