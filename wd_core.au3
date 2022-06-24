@@ -428,6 +428,7 @@ EndFunc   ;==>_WD_Navigate
 ; ===============================================================================================================================
 Func _WD_Action($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Action"
+	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
 	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand
 	$_WD_HTTPRESULT = 0
 
@@ -464,7 +465,7 @@ Func _WD_Action($sSession, $sCommand, $sOption = Default)
 
 	EndSwitch
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_Action
 
 ; #FUNCTION# ====================================================================================================================
@@ -501,6 +502,7 @@ EndFunc   ;==>_WD_Action
 ; ===============================================================================================================================
 Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Window"
+	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
 	Local $sResponse, $oJSON, $sResult = "", $iErr
 	$_WD_HTTPRESULT = 0
 
@@ -589,8 +591,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 		EndIf
 	EndIf
 
-	Local $sMessage = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_Window
 
 ; #FUNCTION# ====================================================================================================================
@@ -849,7 +850,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 		$sResponse = ""
 	EndIf
 
-	Local $sMessage = ($iErr) ? ("Error ocurred when trying to ExecuteScript") : ("")
+	Local $sMessage = ($iErr) ? ("Error occurred when trying to ExecuteScript") : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
