@@ -283,13 +283,13 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
 		$iErr = @error
 
 		If $iErr <> $_WD_ERROR_Success Then
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, "")
+		$iErr = $_WD_ERROR_NoMatch
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sParameters), 0, "")
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, "")
 EndFunc   ;==>_WD_LinkClickByText
 
 ; #FUNCTION# ====================================================================================================================
@@ -446,6 +446,7 @@ EndFunc   ;==>_WD_GetMouseElement
 ; ===============================================================================================================================
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local Const $sFuncName = "_WD_GetElementFromPoint"
+	Local Const $sParameters = 'Parameters:    X=' & $iX & '    Y=' & $iY
 	Local $sElement, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
@@ -480,7 +481,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 		$iFrame = 1
 	WEnd
 
-	Return SetError(__WD_Error($sFuncName, $iErr), $iFrame, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), $iFrame, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
@@ -543,7 +544,9 @@ EndFunc   ;==>_WD_IsWindowTop
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
+	Local Const $sParameters = 'Parameters:    Identifier=' & $vIdentifier
 	Local $sOption, $sValue, $sResponse, $oJSON
+	Local $iErr = $_WD_ERROR_Success
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
 	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
@@ -557,20 +560,20 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	$sResponse = _WD_Window($sSession, "frame", $sOption)
 
 	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, "")
-	EndIf
-
-	$oJSON = Json_Decode($sResponse)
-	$sValue = Json_Get($oJSON, $_WD_JSON_Value)
-
-	;*** Evaluate the response
-	If $sValue <> Null Then
-		$sValue = Json_Get($oJSON, $_WD_JSON_Error)
+		$iErr = $_WD_ERROR_Exception
 	Else
-		$sValue = True
+		$oJSON = Json_Decode($sResponse)
+		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
+
+		;*** Evaluate the response
+		If $sValue <> Null Then
+			$sValue = Json_Get($oJSON, $_WD_JSON_Error)
+		Else
+			$sValue = True
+		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sValue)
 EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
@@ -624,7 +627,7 @@ Func _WD_FrameLeave($sSession)
 		$sValue = True
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sValue)
 EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ===========================================================================================================
@@ -678,6 +681,7 @@ EndFunc   ;==>_WD_HighlightElement
 ; ===============================================================================================================================
 Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 	Local Const $sFuncName = "_WD_HighlightElements"
+	Local Const $sParameters = 'Parameters:    Element=' & (IsArray($vElements) ? "<array>" : $vElements) & '    Method=' & $iMethod
 	Local Const $aMethod[] = _
 			[ _
 			"border: 0px;", _
@@ -685,7 +689,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 			"background: #FFFF66; border-radius: 5px; padding-left: 3px;", _
 			"border: 2px dotted red; background: #FFFF66; border-radius: 5px; padding-left: 3px;" _
 			]
-	Local $sScript, $sResult, $iErr, $sElements
+	Local $sScript, $iErr, $sElements
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
@@ -694,7 +698,7 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 
 	If IsString($vElements) Then
 		$sScript = "arguments[0].style='" & $aMethod[$iMethod] & "'; return true;"
-		$sResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
+		_WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($vElements), Default, $_WD_JSON_Value)
 		$iErr = @error
 
 	ElseIf IsArray($vElements) And UBound($vElements) > 0 Then
@@ -704,13 +708,13 @@ Func _WD_HighlightElements($sSession, $vElements, $iMethod = Default)
 
 		$sElements = "[" & _ArrayToString($vElements, ",") & "]"
 		$sScript = "for (var i = 0, max = arguments[0].length; i < max; i++) { arguments[0][i].style = '" & $aMethod[$iMethod] & "'; }; return true;"
-		$sResult = _WD_ExecuteScript($sSession, $sScript, $sElements, Default, $_WD_JSON_Value)
+		_WD_ExecuteScript($sSession, $sScript, $sElements, Default, $_WD_JSON_Value)
 		$iErr = @error
 	Else
 		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, ($iErr = $_WD_ERROR_Success))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, ($iErr = $_WD_ERROR_Success))
 EndFunc   ;==>_WD_HighlightElements
 
 ; #FUNCTION# ====================================================================================================================
@@ -732,6 +736,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; ===============================================================================================================================
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
+	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement
 	Local $iErr, $sReadyState
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -769,7 +774,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	WEnd
 
 	Local $iReturn = ($iErr) ? (0) : (1)
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $iReturn)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $iReturn)
 EndFunc   ;==>_WD_LoadWait
 
 ; #FUNCTION# ====================================================================================================================
@@ -798,6 +803,7 @@ EndFunc   ;==>_WD_LoadWait
 ; ===============================================================================================================================
 Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 	Local Const $sFuncName = "_WD_Screenshot"
+	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    OutputType=' & $iOutputType
 	Local $sResponse, $vResult = "", $iErr, $dBinary
 
 	If $sElement = Default Then $sElement = ""
@@ -827,7 +833,7 @@ Func _WD_Screenshot($sSession, $sElement = Default, $iOutputType = Default)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
 EndFunc   ;==>_WD_Screenshot
 
 ; #FUNCTION# ====================================================================================================================
@@ -849,6 +855,7 @@ EndFunc   ;==>_WD_Screenshot
 ; ===============================================================================================================================
 Func _WD_PrintToPDF($sSession, $sOptions = Default)
 	Local Const $sFuncName = "_WD_PrintToPDF"
+	Local Const $sParameters = 'Parameters:    Options=' & $sOptions
 	Local $sResponse, $sResult, $iErr
 
 	If $sOptions = Default Then $sOptions = $_WD_EmptyDict
@@ -862,7 +869,7 @@ Func _WD_PrintToPDF($sSession, $sOptions = Default)
 		$sResult = ''
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_PrintToPDF
 
 ; #FUNCTION# ====================================================================================================================
@@ -885,6 +892,7 @@ EndFunc   ;==>_WD_PrintToPDF
 ; ===============================================================================================================================
 Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 	Local Const $sFuncName = "_WD_jQuerify"
+	Local Const $sParameters = 'Parameters:    File=' & $sjQueryFile & '    Timeout=' & $iTimeout
 
 	If $sjQueryFile = Default Then
 		$sjQueryFile = ""
@@ -941,7 +949,7 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr))
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters))
 EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
@@ -967,6 +975,7 @@ EndFunc   ;==>_WD_jQuerify
 ; ===============================================================================================================================
 Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_ElementOptionSelect"
+	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartElement
 	If $sStartElement = Default Then $sStartElement = ""
 
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
@@ -975,7 +984,7 @@ Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement =
 		_WD_ElementAction($sSession, $sElement, 'click')
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, @error))
+	Return SetError(__WD_Error($sFuncName, @error, $sParameters))
 EndFunc   ;==>_WD_ElementOptionSelect
 
 ; #FUNCTION# ====================================================================================================================
@@ -1165,6 +1174,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; ===============================================================================================================================
 Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_GetShadowRoot"
+	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartElement
 	Local $sResponse, $sResult = "", $oJSON
 
 	If $sStartElement = Default Then $sStartElement = ""
@@ -1182,7 +1192,7 @@ Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Defau
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sResult), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_GetShadowRoot
 
 ; #FUNCTION# ====================================================================================================================
@@ -1206,6 +1216,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 ; ===============================================================================================================================
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
+	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    Filename=' & $sFilename
 	Local $sResult = "0", $sSavedEscape
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
@@ -1233,8 +1244,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 		EndIf
 	EndIf
 
-	Local $sMessage = ($iErr) ? ("") : ($sResult & " file(s) selected")
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_SelectFiles
 
 ; #FUNCTION# ====================================================================================================================
@@ -1494,6 +1504,7 @@ EndFunc   ;==>__WD_UpdateExtractor
 ; ===============================================================================================================================
 Func _WD_GetBrowserVersion($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserVersion"
+	Local Const $sParameters = 'Parameters:    Browser=' & $sBrowser
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sBrowserVersion = "0"
 
@@ -1532,7 +1543,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $sBrowserVersion)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $sBrowserVersion)
 EndFunc   ;==>_WD_GetBrowserVersion
 
 ; #FUNCTION# ====================================================================================================================
@@ -1554,6 +1565,7 @@ EndFunc   ;==>_WD_GetBrowserVersion
 ; ===============================================================================================================================
 Func _WD_GetBrowserPath($sBrowser)
 	Local Const $sFuncName = "_WD_GetBrowserPath"
+	Local Const $sParameters = 'Parameters:    Browser=' & $sBrowser
 	Local Const $sRegKeyCommon = '\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\'
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sEXE, $sPath = ""
@@ -1580,7 +1592,7 @@ Func _WD_GetBrowserPath($sBrowser)
 			$iExt = $iIndex
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $sPath)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $sPath)
 EndFunc   ;==>_WD_GetBrowserPath
 
 ; #FUNCTION# ====================================================================================================================
@@ -1602,6 +1614,7 @@ EndFunc   ;==>_WD_GetBrowserPath
 ; ===============================================================================================================================
 Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 	Local Const $sFuncName = "_WD_GetWebDriverVersion"
+	Local Const $sParameters = 'Parameters:    Dir=' & $sInstallDir & '    EXE=' & $sDriverEXE
 	Local $sDriverVersion = "0"
 	Local $iErr = $_WD_ERROR_Success
 	Local $iExt = 0
@@ -1630,7 +1643,7 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $sDriverVersion)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $sDriverVersion)
 EndFunc   ;==>_WD_GetWebDriverVersion
 
 ; #FUNCTION# ====================================================================================================================
@@ -1656,6 +1669,7 @@ EndFunc   ;==>_WD_GetWebDriverVersion
 ; ===============================================================================================================================
 Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	Local Const $sFuncName = "_WD_DownloadFile"
+	Local Const $sParameters = 'Parameters:    URL=' & $sURL & '    Dest=' & $sDest & '    Options=' & $iOptions
 	Local $bResult = False, $hWaitTimer
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 
@@ -1697,7 +1711,7 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $bResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_DownloadFile
 
 ; #FUNCTION# ====================================================================================================================
@@ -1723,6 +1737,7 @@ EndFunc   ;==>_WD_DownloadFile
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
 	Local Const $sFuncName = "_WD_SetTimeouts"
+	Local Const $sParameters = 'Parameters:    PageLoad=' & $iPageLoad & '    Script=' & $iScript & '    Implicit=' & $iImplicitWait
 	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -1771,7 +1786,7 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 		$iErr = $_WD_ERROR_InvalidArgue
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_SetTimeouts
 
 ; #FUNCTION# ====================================================================================================================
@@ -1793,12 +1808,13 @@ EndFunc   ;==>_WD_SetTimeouts
 ; ===============================================================================================================================
 Func _WD_GetElementById($sSession, $sID)
 	Local Const $sFuncName = "_WD_GetElementById"
+	Local Const $sParameters = 'Parameters:    ID=' & $sID
 
 	Local $sXpath = '//*[@id="' & $sID & '"]'
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sElement)
 EndFunc   ;==>_WD_GetElementById
 
 ; #FUNCTION# ====================================================================================================================
@@ -1820,12 +1836,13 @@ EndFunc   ;==>_WD_GetElementById
 ; ===============================================================================================================================
 Func _WD_GetElementByName($sSession, $sName)
 	Local Const $sFuncName = "_WD_GetElementByName"
+	Local Const $sParameters = 'Parameters:    Name=' & $sName
 
 	Local $sXpath = '//*[@name="' & $sName & '"]'
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath)
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sElement)
 EndFunc   ;==>_WD_GetElementByName
 
 ; #FUNCTION# ====================================================================================================================
@@ -1853,6 +1870,7 @@ EndFunc   ;==>_WD_GetElementByName
 ; ===============================================================================================================================
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 	Local Const $sFuncName = "_WD_SetElementValue"
+	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Value=' & $sValue & '    Style=' & $iStyle
 	Local $sResult, $iErr, $sScript
 
 	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
@@ -1870,7 +1888,7 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 
 	EndSwitch
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_SetElementValue
 
 ; #FUNCTION# ====================================================================================================================
@@ -1911,6 +1929,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; ===============================================================================================================================
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
+	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Command=' & $sCommand & '    XOffset=' & $iXOffset & '    YOffset=' & $iYOffset & '    Button=' & $iButton & '    HoldDelay=' & $iHoldDelay & '    Modifier=' & $sModifier
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -2051,7 +2070,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iErr = @error
 	EndSwitch
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
