@@ -180,9 +180,9 @@ EndFunc   ;==>_WD_NewTab
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Attach
 ; Description ...: Attach to existing browser tab.
-; Syntax ........: _WD_Attach($sSession, $sString[, $sMode = Default])
+; Syntax ........: _WD_Attach($sSession, $sSearch[, $sMode = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
-;                  $sString  - String to search for
+;                  $sSearch  - String to search for
 ;                  $sMode    - [optional] One of the following search modes:
 ;                  |Title (default)
 ;                  |URL
@@ -199,9 +199,11 @@ EndFunc   ;==>_WD_NewTab
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Attach($sSession, $sString, $sMode = Default)
+Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 	Local Const $sFuncName = "_WD_Attach"
+	Local Const $sParameters = 'Parameters:    Search=' & $sSearch & '    Mode=' & $sMode 
 	Local $sTabHandle = '', $bFound = False, $sCurrentTab = '', $aHandles
+	Local $iErr = $_WD_ERROR_Success
 
 	If $sMode = Default Then $sMode = 'title'
 
@@ -216,14 +218,14 @@ Func _WD_Attach($sSession, $sString, $sMode = Default)
 
 			Switch $sMode
 				Case "title", "url"
-					If StringInStr(_WD_Action($sSession, $sMode), $sString) > 0 Then
+					If StringInStr(_WD_Action($sSession, $sMode), $sSearch) > 0 Then
 						$bFound = True
 						$sTabHandle = $sHandle
 						ExitLoop
 					EndIf
 
 				Case 'html'
-					If StringInStr(_WD_GetSource($sSession), $sString) > 0 Then
+					If StringInStr(_WD_GetSource($sSession), $sSearch) > 0 Then
 						$bFound = True
 						$sTabHandle = $sHandle
 						ExitLoop
@@ -240,13 +242,13 @@ Func _WD_Attach($sSession, $sString, $sMode = Default)
 				_WD_Window($sSession, 'Switch', '{"handle":"' & $sCurrentTab & '"}')
 			EndIf
 
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NoMatch), 0, $sTabHandle)
+			$iErr = $_WD_ERROR_NoMatch
 		EndIf
 	Else
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError), 0, $sTabHandle)
+		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, 0, $sTabHandle)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sTabHandle)
 EndFunc   ;==>_WD_Attach
 
 ; #FUNCTION# ====================================================================================================================
