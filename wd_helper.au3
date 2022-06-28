@@ -715,7 +715,10 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 		EndIf
 
 		__WD_Sleep(10)
-		$iErr = @error
+		If @error Then 
+			$iErr = @error
+			ExitLoop
+		EndIf
 	WEnd
 
 	If $iErr Then
