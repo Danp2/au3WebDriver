@@ -754,6 +754,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 
 		If $sElement <> '' Then
 			_WD_ElementAction($sSession, $sElement, 'name')
+			$iErr = @error
 
 			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
 		Else
