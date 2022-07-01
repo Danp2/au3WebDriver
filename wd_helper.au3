@@ -1910,7 +1910,17 @@ Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 			$iErr = @error
 
 		Case $_WD_OPTION_Advanced
-			$sScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'value').set.call(arguments[0], arguments[1]);arguments[0].dispatchEvent(new Event('input', { bubbles: true }));"
+			$sScript = _
+					"arguments[0].value = arguments[1];" & _
+					"var event;" & _
+					"if (typeof(Event) === 'function') {" & _
+					" event = new Event('change');" & _
+					"} else {" & _
+					" event = document.createEvent('Event');" & _
+					" event.initEvent('change', true, true);" & _
+					"};" & _
+					"arguments[0].dispatchEvent(event);" & _
+					""
 			$sResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sElement) & ',"' & $sValue & '"')
 			$iErr = @error
 
