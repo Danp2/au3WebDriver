@@ -749,14 +749,16 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	$iErr = @error
 
 	Local $hLoadWaitTimer = TimerInit()
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level to prevent multiple errors
 	While True
 		If $iErr Then ExitLoop
 
 		If $sElement <> '' Then
+			; Prevent logging from _WD_ElementAction if not in Full debug mode
+			If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 			_WD_ElementAction($sSession, $sElement, 'name')
-			$iErr = @error
-
 			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
+			$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 		Else
 			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
