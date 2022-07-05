@@ -28,7 +28,6 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - wd_demo
 	- Added DemoStyles(), DemoSelectOptions(), UserTesting()
 	- Improved demo selection
-	- Disabled groups (DemoSelectOptions)
 
 ### Removed
 
