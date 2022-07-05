@@ -75,7 +75,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 
 	; Websocket version
 	Local $hOpen = 0, $hConnect = 0, $hRequest = 0, $hWebSocket = 0
-	Local $aURL, $fStatus, $sErrText
+	Local $aURL, $fStatus, $sErrText, $sMessage = ""
 	Local $iBufferLen = 1024, $tBuffer = 0, $bRecv = Binary(""), $sRecv
 	Local $iBytesRead = 0, $iBufferType = 0
 	Local $iStatus = 0, $iReasonLengthConsumed = 0
@@ -226,7 +226,14 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, $sErrText), 0, "")
 	EndIf
-	Local $sMessage = (($sRecv) ? (" : " & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "...") : (""))
+
+	If ($sRecv) Then
+		If $_WD_RESPONSE_TRIM <> -1 And StringLen(sRecv) > $_WD_RESPONSE_TRIM Then
+			$sMessage &= " ResponseText=" & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "..."
+		Else
+			$sMessage &= " ResponseText=" & $sRecv
+		EndIf
+	EndIf
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, $sRecv)		
 EndFunc   ;==>_WD_CDPExecuteCommand
 
