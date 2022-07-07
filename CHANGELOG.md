@@ -18,9 +18,15 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Changed
 
-- __WD_DetectError - Detect Javascript and Invalid Selector errors
+- __WD_DetectError: Detect Javascript and Invalid Selector errors
+- _WD_SetElementValue: Advanced mode now triggers Change event
+- _WD_Startup: Improve logging when existing webdriver instance is reused
+- _WD_ElementSelectAction: Disabled option detection
+- Logging
+	- Reduced detail of messages associated with $_WD_DEBUG_Info
+	- Webdriver responses are now only shown with $__WD_DEBUG_Full and they are no longer trimmed by default
 - wd_demo
-	- Added UserTesting()
+	- Added DemoStyles(), DemoSelectOptions(), UserTesting()
 	- Improved demo selection
 
 ### Removed
