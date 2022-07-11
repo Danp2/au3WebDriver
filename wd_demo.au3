@@ -43,6 +43,7 @@ Global $aDemoSuite[][3] = _
 		["DemoSleep", False, False], _
 		["DemoSelectOptions", False, False], _
 		["DemoStyles", False, False], _
+		["DemoStorage", False, False], _
 		["UserTesting", False, False] _
 		]
 
@@ -917,6 +918,27 @@ Func DemoStyles()
 	If Not UBound($aListof_CSSProperties_v2) Then MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", 'All styles has been removed.')
 
 EndFunc   ;==>DemoStyles
+
+Func DemoStorage()
+	_WD_Navigate($sSession, 'https://www.google.com')
+	_WD_LoadWait($sSession)
+
+	Local $sResult = _WD_Storage($sSession, 'testing', '123')
+	;### Debug CONSOLE ↓↓↓
+	ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $sResult = ' & IsKeyword($sResult) & @CRLF & '>Error code: ' & @error & @CRLF)
+	$sResult = _WD_Storage($sSession, 0)
+	;### Debug CONSOLE ↓↓↓
+	ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $sResult = ' & $sResult & @CRLF & '>Error code: ' & @error & @CRLF)
+	$sResult = _WD_Storage($sSession, 'testing')
+	;### Debug CONSOLE ↓↓↓
+	ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $sResult = ' & $sResult & @CRLF & '>Error code: ' & @error & @CRLF)
+
+	_WD_ExecuteScript($sSession, "console.log(''.concat('Check: ', ' ',window.localStorage.getItem('testing')));")
+
+;~ $sResult = _WD_Storage($sSession, 'testing', Null)
+;~ $sResult = _WD_Storage($sSession, 'testing')
+;~ $sResult = _WD_Storage($sSession, Null)
+EndFunc   ;==>DemoStorage
 
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
