@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [0.10.0]
 
 ### Added
 
@@ -29,6 +29,10 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - wd_demo
 	- Added DemoStyles(), DemoSelectOptions(), UserTesting()
 	- Improved demo selection
+
+### Fixed
+
+- _WD_UpdateDriver: Revise URL used to determine latest matching version of Edgedriver
 
 ### Removed
 
@@ -961,7 +965,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.9.1...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.10.0...HEAD
+[0.10.0]:      https://github.com/Danp2/au3WebDriver/compare/0.9.1...0.10.0
 [0.9.1]:      https://github.com/Danp2/au3WebDriver/compare/0.9.0...0.9.1
 [0.9.0]:      https://github.com/Danp2/au3WebDriver/compare/0.8.1...0.9.0
 [0.8.1]:      https://github.com/Danp2/au3WebDriver/compare/0.8.0...0.8.1
