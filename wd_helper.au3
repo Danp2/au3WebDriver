@@ -71,6 +71,11 @@ Global Enum _
 		$_WD_BUTTON_Left = 0, _
 		$_WD_BUTTON_Middle = 1, _
 		$_WD_BUTTON_Right = 2
+
+Global Enum _
+		$_WD_STORAGE_Local = 0, _
+		$_WD_STORAGE_Session = 1
+		
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
@@ -147,6 +152,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 		EndIf
 
 		_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
+		
 		If @error <> $_WD_ERROR_Success Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sParameters), 0, $sTabHandle)
 		EndIf
@@ -2375,6 +2381,77 @@ Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "",
 
 	Return SetError(__WD_Error($sFuncName, $iErr), $iRow, $vResult)
 EndFunc   ;==>_WD_GetElementByRegEx
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_Storage
+; Description ...:
+; Syntax ........: _WD_Storage($sSession,  $sKey[,  $vValue = Default[,  $nType = Default]])
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $vKey                - Key to manipulate.
+;                  $vValue              - [optional] Value to store.
+;                  $nType               - [optional] Storage type. Default is $_WD_STORAGE_Local
+; Return values .: Success - Response from _WD_ExecuteScript() and sets @error to $_WD_ERROR_Success
+;                  Failure - @error set to $_WD_ERROR_InvalidArgue if there are no matches OR
+;                            Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:	See below for special conditions --
+;
+;					| Parameter | Condition | Action                     |
+;					|-----------|-----------|----------------------------|
+;					| $vKey     | Numeric   | Return name of the Nth key |
+;					| $vKey     | Null      | Clear storage              |
+;					| $vValue   | Null      | Remove key from storage    |
+;
+; Related .......:
+; Link ..........: https://developer.mozilla.org/en-US/docs/Web/API/Storage
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_Storage($sSession, $vKey, $vValue = Default, $nType = Default)
+	Local Const $sFuncName = "_WD_Storage"
+	Local $sParams, $vResult = '', $iErr = $_WD_ERROR_Success
+	Local $bIsKeyNull = (IsKeyword($vKey) = $KEYWORD_NULL), $bIsValueNull = (IsKeyword($vValue) = $KEYWORD_NULL)
+	Local Const $sParameters = 'Parameters:   Key=' & ($bIsKeyNull ? "Null" : $vKey) & '   Value=' & ($bIsValueNull ? "Null" : $vValue) & '   Type=' & $nType
+	
+	If $nType = Default Or $nType < $_WD_STORAGE_Local Or $nType > $_WD_STORAGE_Session Then $nType = $_WD_STORAGE_Local
+
+	Local $sTarget = ($nType = $_WD_STORAGE_Local) ? "window.localStorage" : "window.sessionStorage"
+	Local $sJavaScript = 'return ' & $sTarget 
+
+	Select
+	Case $bIsKeyNull ; Empty storage
+		If $vValue = Default Then
+			$sJavaScript &= '.clear()' 
+			$sParams = $_WD_EmptyDict
+		Else
+			$iErr = $_WD_ERROR_InvalidArgue			
+		EndIf
+
+	Case $vValue = Default ; Retrieve key
+		If IsNumber($vKey) Then
+			$sJavaScript &= '.key(arguments[0])'
+			$sParams = String($vKey)
+		Else
+			$sJavaScript &= '.getItem(arguments[0])'
+			$sParams = '"' & $vKey & '"'
+		EndIf
+
+	Case $bIsValueNull ; Remove key
+		$sJavaScript &= '.removeItem(arguments[0])' 
+		$sParams = '"' & $vKey & '"'
+
+	Case $vKey And $vValue ; Set key
+		$sJavaScript &=  '.setItem(arguments[0], arguments[1])'
+		$sParams = '"' & $vKey & '","' & $vValue & '"'
+	EndSelect
+
+	If $iErr = $_WD_ERROR_Success Then
+		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, $sParams, Default, $_WD_JSON_Value)
+		$iErr = @error
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionKey
