@@ -68,51 +68,52 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 <summary><i>Helper Functions</i></summary>
 <p>
 
-| Name                    | Description                                                                |
-| :---                    | :---                                                                       |
-| _WD_NewTab              | Create new tab in current browser session.                                 |
-| _WD_Attach              | Attach to existing browser tab.                                            |
-| _WD_LinkClickByText     | Simulate a mouse click on a link with text matching the provided string.   |
-| _WD_WaitElement         | Wait for an element in the current tab before returning.                   |
-| _WD_GetMouseElement     | Retrieves reference to element below mouse pointer.                        |
-| _WD_GetElementFromPoint | Retrieves reference to element at specified point.                         |
-| _WD_LastHTTPResult      | Return the result of the last WinHTTP request.                             |
-| _WD_LastHTTPResponse    | Return the response of the last WinHTTP request.                           |
-| _WD_GetFrameCount       | Returns the number of frames/iframes in the current document context.      |
-| _WD_IsWindowTop         | Returns a boolean of the session being at the top level, or in a frame(s). |
-| _WD_FrameEnter          | Enter the specified frame.                                                 |
-| _WD_FrameLeave          | Leave the current frame, to its parent.                                    |
-| _WD_HighlightElement    | Highlights the specified element.                                          |
-| _WD_HighlightElements   | Highlights the specified elements.                                         |
-| _WD_LoadWait            | Wait for a browser page load to complete before returning.                 |
-| _WD_Screenshot          | Takes a screenshot of the Window or Element.                               |
-| _WD_PrintToPDF          | Print the current tab in paginated PDF format.                             |
-| _WD_jQuerify            | Inject jQuery library into current session.                                |
-| _WD_ElementOptionSelect | Find and click on an option from a Select element.                         |
-| _WD_ElementSelectAction | Perform action on designated Select element.                               |
-| _WD_ElementStyle        | Set/Get element style property.                                            |
-| _WD_ConsoleVisible      | Control visibility of the webdriver console app.                           |
-| _WD_GetShadowRoot       | Retrieves the shadow root of an element.                                   |
-| _WD_SelectFiles         | Select files for uploading to a website.                                   |
-| _WD_IsLatestRelease     | Compares local UDF version to latest release on Github.                    |
-| _WD_UpdateDriver        | Replace web driver with newer version, if available.                       |
-| _WD_GetBrowserVersion   | Get version number of specified browser.                                   |
-| _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                         |
-| _WD_GetWebDriverVersion | Get version number of specifed webdriver.                                  |
-| _WD_DownloadFile        | Download file and save to disk.                                            |
-| _WD_SetTimeouts         | User friendly function to set webdriver session timeouts.                  |
-| _WD_GetElementById      | Locate element by id.                                                      |
-| _WD_GetElementByName    | Locate element by name.                                                    |
-| _WD_SetElementValue     | Set value of designated element.                                           |
-| _WD_ElementActionEx     | Perform advanced action on designated element.                             |
-| _WD_GetTable            | Return all elements of a table.                                            |
-| _WD_IsFullScreen        | Return a boolean indicating if the session is in full screen mode.         |
-| _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                        |
-| _WD_CheckContext        | Check if browser context is still valid.                                   |
-| _WD_JsonActionKey       | Formats keyboard "action" strings for use in _WD_Action                    |
-| _WD_JsonActionPointer   | Formats pointer "action" strings for use in _WD_Action                     |
-| _WD_JsonActionPause     | Formats pause "action" strings for use in _WD_Action                       |
-| _WD_JsonCookie          | Formats "cookie" JSON strings for use in _WD_Cookies.                      |
+| Name                    | Description                                                                     |
+|-------------------------|---------------------------------------------------------------------------------|
+| _WD_Attach              | Attach to existing browser tab.                                                 |
+| _WD_CheckContext        | Check if browser context is still valid.                                        |
+| _WD_ConsoleVisible      | Control visibility of the webdriver console app.                                |
+| _WD_DownloadFile        | Download file and save to disk.                                                 |
+| _WD_ElementActionEx     | Perform advanced action on designated element.                                  |
+| _WD_ElementOptionSelect | Find and click on an option from a Select element.                              |
+| _WD_ElementSelectAction | Perform action on designated Select element.                                    |
+| _WD_ElementStyle        | Set/Get element style property.                                                 |
+| _WD_FrameEnter          | Enter the specified frame.                                                      |
+| _WD_FrameLeave          | Leave the current frame, to its parent.                                         |
+| _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                              |
+| _WD_GetBrowserVersion   | Get version number of specified browser.                                        |
+| _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                             |
+| _WD_GetElementById      | Locate element by id.                                                           |
+| _WD_GetElementByName    | Locate element by name.                                                         |
+| _WD_GetElementByRegEx   | Find element by matching attributes values using Javascript regular expression. |
+| _WD_GetElementFromPoint | Retrieves reference to element at specified point.                              |
+| _WD_GetFrameCount       | Returns the number of frames/iframes in the current document context.           |
+| _WD_GetMouseElement     | Retrieves reference to element below mouse pointer.                             |
+| _WD_GetShadowRoot       | Retrieves the shadow root of an element.                                        |
+| _WD_GetTable            | Return all elements of a table.                                                 |
+| _WD_GetWebDriverVersion | Get version number of specifed webdriver.                                       |
+| _WD_HighlightElements   | Highlights the specified elements.                                              |
+| _WD_IsFullScreen        | Return a boolean indicating if the session is in full screen mode.              |
+| _WD_IsLatestRelease     | Compares local UDF version to latest release on Github.                         |
+| _WD_IsWindowTop         | Returns a boolean of the session being at the top level, or in a frame(s).      |
+| _WD_JsonActionKey       | Formats keyboard "action" strings for use in _WD_Action                         |
+| _WD_JsonActionPause     | Formats pause "action" strings for use in _WD_Action                            |
+| _WD_JsonActionPointer   | Formats pointer "action" strings for use in _WD_Action                          |
+| _WD_JsonCookie          | Formats "cookie" JSON strings for use in _WD_Cookies.                           |
+| _WD_LastHTTPResponse    | Return the response of the last WinHTTP request.                                |
+| _WD_LastHTTPResult      | Return the result of the last WinHTTP request.                                  |
+| _WD_LinkClickByText     | Simulate a mouse click on a link with text matching the provided string.        |
+| _WD_LoadWait            | Wait for a browser page load to complete before returning.                      |
+| _WD_NewTab              | Create new tab in current browser session.                                      |
+| _WD_PrintToPDF          | Print the current tab in paginated PDF format.                                  |
+| _WD_Screenshot          | Takes a screenshot of the Window or Element.                                    |
+| _WD_SelectFiles         | Select files for uploading to a website.                                        |
+| _WD_SetElementValue     | Set value of designated element.                                                |
+| _WD_SetTimeouts         | User friendly function to set webdriver session timeouts.                       |
+| _WD_Storage             | Provide access to the broswer's localStorage and sessionStorage objects.        |
+| _WD_UpdateDriver        | Replace web driver with newer version, if available.                            |
+| _WD_WaitElement         | Wait for an element in the current tab before returning.                        |
+| _WD_jQuerify            | Inject jQuery library into current session.                                     |
 
 <p>
 </details>
