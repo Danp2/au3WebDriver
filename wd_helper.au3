@@ -2384,7 +2384,7 @@ EndFunc   ;==>_WD_GetElementByRegEx
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Storage
-; Description ...:
+; Description ...: Provide access to the broswer's localStorage and sessionStorage objects
 ; Syntax ........: _WD_Storage($sSession,  $sKey[,  $vValue = Default[,  $nType = Default]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $vKey                - Key to manipulate.
