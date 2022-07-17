@@ -110,7 +110,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_SelectFiles         | Select files for uploading to a website.                                        |
 | _WD_SetElementValue     | Set value of designated element.                                                |
 | _WD_SetTimeouts         | User friendly function to set webdriver session timeouts.                       |
-| _WD_Storage             | Provide access to the broswer's localStorage and sessionStorage objects.        |
+| _WD_Storage             | Provide access to the browser's localStorage and sessionStorage objects.        |
 | _WD_UpdateDriver        | Replace web driver with newer version, if available.                            |
 | _WD_WaitElement         | Wait for an element in the current tab before returning.                        |
 | _WD_jQuerify            | Inject jQuery library into current session.                                     |
