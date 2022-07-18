@@ -1720,6 +1720,38 @@ Func _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 EndFunc   ;==>_WD_GetWebDriverVersion
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DebugSwitch
+; Description ...: Switch to new debug level or switch back to saved debug level
+; Syntax ........: _WD_DebugSwitch([$vMode = Default])
+; Parameters ....: $vMode               - [optional] Set new $_WD_DEBUG level. When not specified restore saved debug level.
+; Return values .: None
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......: Function saves debug level at first call, or when Null is passed as $vMode
+; Related .......:
+; Link ..........:
+; Example .......: _WD_DebugSwitch($_WD_DEBUG_Full)
+; ===============================================================================================================================
+Func _WD_DebugSwitch($vMode = Default)
+	Local Const $sFuncName = "_WD_DebugSwitch"
+	Local Static $_WD_DEBUG_Saved = $_WD_DEBUG ; at first run save currently used debug level, and treat them as "DEFAULT USER CHOICE"
+	Local $iErr = $_WD_ERROR_Success
+
+	If $vMode = Default Then ; restore saved debug level
+		$_WD_DEBUG = $_WD_DEBUG_Saved
+	ElseIf $vMode = Null Then ; reset saved debug level
+		$_WD_DEBUG_Saved = $_WD_DEBUG
+	ElseIf Not IsInt($vMode) Then
+		$iErr = $_WD_ERROR_InvalidDataType
+	ElseIf $vMode < $_WD_DEBUG_None Or $vMode > $_WD_DEBUG_Full Then
+		$iErr = $_WD_ERROR_InvalidValue
+	Else ; set new debug level
+		$_WD_DEBUG = $vMode
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, '')
+EndFunc   ;==>_WD_DebugSwitch
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DownloadFile
 ; Description ...: Download file and save to disk.
 ; Syntax ........: _WD_DownloadFile($sURL, $sDest[, $iOptions = Default])
