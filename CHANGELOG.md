@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Fixed
+
+_WD_CDPExecuteCommand: Missing $ prefix in variable name
 ## [0.10.0]
 
 ### Added
