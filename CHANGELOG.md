@@ -14,6 +14,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 ### Fixed
 
 _WD_CDPExecuteCommand: Missing $ prefix in variable name
+_WD_CapabilitiesAdd: Support keys containing colons 
 
 ## [0.10.0]
 
