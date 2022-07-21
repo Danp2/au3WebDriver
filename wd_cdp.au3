@@ -228,7 +228,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 	EndIf
 
 	If ($sRecv) Then
-		If $_WD_RESPONSE_TRIM <> -1 And StringLen(sRecv) > $_WD_RESPONSE_TRIM Then
+		If $_WD_RESPONSE_TRIM <> -1 And StringLen($sRecv) > $_WD_RESPONSE_TRIM Then
 			$sMessage &= " ResponseText=" & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "..."
 		Else
 			$sMessage &= " ResponseText=" & $sRecv
