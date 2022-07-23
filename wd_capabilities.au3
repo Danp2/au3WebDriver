@@ -95,7 +95,7 @@ Global Const $_WD_KEYS__MATCHTYPES = _
 ; $_WD_KEYS__STANDARD_PRIMITIVE should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that
 ; should be placed in STANDARD part of Capabilities JSON structure
 Global $_WD_KEYS__STANDARD_PRIMITIVE = _
-		'\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
+		'\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior|webSocketUrl)\Z'
 
 ; $_WD_KEYS__STANDARD_OBJECT should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that
 ; should be placed in STANDARD part of Capabilities JSON structure
