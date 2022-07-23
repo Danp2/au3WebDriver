@@ -11,6 +11,10 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
+### Added
+
+- `webSocketUrl` to preexisting capability definitions
+
 ### Fixed
 
 _WD_CDPExecuteCommand: Missing $ prefix in variable name
