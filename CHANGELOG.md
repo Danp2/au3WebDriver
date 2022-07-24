@@ -13,7 +13,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
-- `webSocketUrl` to preexisting capability definitions
+- _WD_CapabilitiesAdd: Support `webSocketUrl` capability
 
 ### Fixed
 
