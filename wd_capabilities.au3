@@ -162,7 +162,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotSupported
 ; Author ........: mLipok
-; Modified ......:
+; Modified ......: Danp2
 ; Remarks .......: Parameters $value1 and $value2 depend on the $key value, take a look on example link
 ; Related .......: __WD_CapabilitiesNotation
 ; Link ..........:
