@@ -1008,7 +1008,10 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 		If $sNodeName = 'select' Then ; check if designated element is <select> element
 			Switch $sCommand
 				Case 'deselectAll'
-					$sScript = "arguments[0].selectedIndex = -1; return true;"
+					$sScript = _
+							"arguments[0].selectedIndex = -1;" & _
+							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
+							"return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
@@ -1026,7 +1029,9 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 								"  {" & _
 								"    o.selected = true;" & _
 								"  }" & _
-								"}; return true;"
+								"};" & _
+								"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
+								"return true;"
 						$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 						$iErr = @error
 					EndIf
@@ -1051,6 +1056,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"var options = arguments[0].options;" & _
 							"for ( i=0; i<options.length; i++)" & _
 							"  {if (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) {options[i].selected = true}};" & _
+							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
 							"return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
