@@ -11,9 +11,14 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
+### Added
+
+- _WD_CapabilitiesAdd: Support `webSocketUrl` capability
+
 ### Fixed
 
 _WD_CDPExecuteCommand: Missing $ prefix in variable name
+_WD_CapabilitiesAdd: Support keys containing colons 
 
 ## [0.10.0]
 

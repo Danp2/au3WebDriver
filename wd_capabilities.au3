@@ -95,7 +95,7 @@ Global Const $_WD_KEYS__MATCHTYPES = _
 ; $_WD_KEYS__STANDARD_PRIMITIVE should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that
 ; should be placed in STANDARD part of Capabilities JSON structure
 Global $_WD_KEYS__STANDARD_PRIMITIVE = _
-		'\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior)\Z'
+		'\A(acceptInsecureCerts|browserName|browserVersion|platformName|pageLoadStrategy|setWindowRect|strictFileInteractability|unhandledPromptBehavior|webSocketUrl)\Z'
 
 ; $_WD_KEYS__STANDARD_OBJECT should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that
 ; should be placed in STANDARD part of Capabilities JSON structure
@@ -162,7 +162,7 @@ EndFunc   ;==>_WD_CapabilitiesStartup
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NotSupported
 ; Author ........: mLipok
-; Modified ......:
+; Modified ......: Danp2
 ; Remarks .......: Parameters $value1 and $value2 depend on the $key value, take a look on example link
 ; Related .......: __WD_CapabilitiesNotation
 ; Link ..........:
@@ -215,17 +215,17 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, "Not supported: $value2 must be empty string. " & $s_Parameters_Info))
 		EndIf
 		$v_WatchPoint = @ScriptLineNumber
-		$s_Notation = $_WD_NOTATION__MATCHTYPE & '[' & $key & ']'
+		$s_Notation = $_WD_NOTATION__MATCHTYPE & '["' & $key & '"]'
 
 	ElseIf StringRegExp($key, $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Then ; add "JSON_OBJECT" in STANDARD part of Capabilities JSON Structure
 		$s_Notation = $_WD_NOTATION__MATCHTYPE
 		If Not StringRegExp($value1, $_WD_KEYS__STANDARD_OBJECT_ARRAY, $STR_REGEXPMATCH) Then ; if $value1 (child of the $key "JSON_OBJECT") should be treated as "JSON_STRING" value or "JSON_BOOLEAN" value
 			$v_WatchPoint = @ScriptLineNumber
-			$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
+			$s_Notation &= '["' & $key & '"]' & '[' & $value1 & ']'
 		Else ; if $value1 (child of the $key "JSON_OBJECT") should be treated as "JSON_ARRAY"
 			If $value2 <> '' Then ; $value2 an element of $value1 "JSON_ARRAY" must be defined
 				$v_WatchPoint = @ScriptLineNumber
-				$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
+				$s_Notation &= '["' & $key & '"]' & '[' & $value1 & ']'
 				Local $iCurrent1 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
 				SetError(0) ; for any case because UBound() can set @error
 				$s_Notation &= '[' & $iCurrent1 & ']' ; here is specified which one of "JSON ARRAY" element should be used
@@ -238,7 +238,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) And $_WD_NOTATION__SPECIFICVENDOR <> '' Then ; add "JSON_ARRAY" capability in SPECIFIC/VENDOR part of Capabilities JSON Structure
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
-		$s_Notation &= '[' & $key & ']'
+		$s_Notation &= '["' & $key & '"]'
 		Local $iCurrent2 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
 		SetError(0) ; for any case because UBound() can set @error
 		$s_Notation &= '[' & $iCurrent2 & ']' ; here is specified which one of "JSON_ARRAY" element should be used
@@ -250,13 +250,13 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) And $_WD_NOTATION__SPECIFICVENDOR <> '' Then ; add "JSON_OBJECT" capability in SPECIFIC/VENDOR part of Capabilities JSON Structure
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
-		$s_Notation &= '[' & $key & ']' & '[' & $value1 & ']'
+		$s_Notation &= '["' & $key & '"]' & '[' & $value1 & ']'
 		$value1 = $value2 ; switch
 
 	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, $STR_REGEXPMATCH) And $_WD_NOTATION__SPECIFICVENDOR <> '' Then ; add "JSON_BOOLEAN" value type in SPECIFIC/VENDOR part of Capabilities JSON Structure
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
-		If $value1 <> '' Then $s_Notation &= '[' & $key & ']'
+		If $value1 <> '' Then $s_Notation &= '["' & $key & '"]'
 
 	ElseIf _
 			StringRegExp($key, '(?i)' & $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
