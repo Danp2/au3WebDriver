@@ -976,11 +976,11 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |DESELECTALL    - Clear all selections
 ;                  |MULTISELECT    - Select <option> elements given in 1D array of labels
-;                  |OPTIONS        - Retrieves all <option> elements as 2D array containing 5 columns (value, label, index, selected status, disabled status)
+;                  |OPTIONS        - Retrieves all <option> elements as 2D array
 ;                  |SELECTALL      - Select all <option> elements
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
-;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array containing 4 columns (value, label, index and selected status)
+;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array
 ;                  |VALUE          - Retrieves value of the first selected <option> element
 ;                  $aParameters    - [optional] List of parameters (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
@@ -1025,7 +1025,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 								"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
 								"{" & _
 								"  o = arguments[0].options[i];" & _
-								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && ( o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) ) " & _
+								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) ) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
 								"  {" & _
 								"    o.selected = true;" & _
 								"  }" & _
@@ -1035,18 +1035,18 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 						$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 						$iErr = @error
 					EndIf
-				Case 'options'
+				Case 'options' ; 6 columns (value, label, index, selected status, disabled status, and hidden status)
 					$sScript = _
 							"var result ='';" & _
 							"var o = arguments[0].options;" & _
 							"for ( let i = 0; i < o.length; i++ )" & _
-							"  {result += o[i].value + '|' + o[i].label + '|' + o[i].index + '|' + o[i].selected  + '|' + (o[i].disabled || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.disabled)) + '\n'};" & _
+							"  {result += o[i].value + '|' + o[i].label + '|' + o[i].index + '|' + o[i].selected  + '|' + (o[i].disabled || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.disabled)) + '|' + (o[i].hidden || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.hidden))  + '\n'};" & _
 							"return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
-						Local $aAllOptions[0][5]
+						Local $aAllOptions[0][6]
 						_ArrayAdd($aAllOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
 						$vResult = $aAllOptions
 					EndIf
@@ -1055,7 +1055,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$sScript = _
 							"var options = arguments[0].options;" & _
 							"for ( i=0; i<options.length; i++)" & _
-							"  {if (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) {options[i].selected = true}};" & _
+							"  {if (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) && (options[i].hidden==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.hidden))) {options[i].selected = true}};" & _
 							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
 							"return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
@@ -1082,7 +1082,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 						$vResult = $aSelectedLabels
 					EndIf
 
-				Case 'selectedOptions'
+				Case 'selectedOptions' ; 4 columns (value, label, index and selected status)
 					$sScript = _
 							"var result ='';" & _
 							"var options = arguments[0].selectedOptions;" & _
