@@ -19,6 +19,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 _WD_CDPExecuteCommand: Missing $ prefix in variable name
 _WD_CapabilitiesAdd: Support keys containing colons 
+_WD_ElementSelectAction: Altering selection now triggers Change event
 
 ## [0.10.0]
 
