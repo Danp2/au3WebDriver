@@ -1025,7 +1025,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 								"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
 								"{" & _
 								"  o = arguments[0].options[i];" & _
-								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) ) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
+								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
 								"  {" & _
 								"    o.selected = true;" & _
 								"  }" & _
@@ -1055,7 +1055,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$sScript = _
 							"var options = arguments[0].options;" & _
 							"for ( i=0; i<options.length; i++)" & _
-							"  {if (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) && (options[i].hidden==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.hidden))) {options[i].selected = true}};" & _
+							"  {if ( (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) && (options[i].hidden==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.hidden))) ) {options[i].selected = true}};" & _
 							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
 							"return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
