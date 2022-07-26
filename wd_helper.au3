@@ -1022,9 +1022,10 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					Else
 						$sScript = _
 								"var LabelsToSelect = ['" & _ArrayToString($aParameters, "', '") & "'];" & _
-								"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
+								"var options = arguments[0].options;" & _
+								"for ( var i = 0, o; i < options.length; i++ )" & _
 								"{" & _
-								"  o = arguments[0].options[i];" & _
+								"  o = options[i];" & _
 								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
 								"  {" & _
 								"    o.selected = true;" & _
@@ -1038,10 +1039,14 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 				Case 'options' ; 6 columns (value, label, index, selected status, disabled status, and hidden status)
 					$sScript = _
 							"var result ='';" & _
-							"var o = arguments[0].options;" & _
-							"for ( let i = 0; i < o.length; i++ )" & _
-							"  {result += o[i].value + '|' + o[i].label + '|' + o[i].index + '|' + o[i].selected  + '|' + (o[i].disabled || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.disabled)) + '|' + (o[i].hidden || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.hidden))  + '\n'};" & _
+							"var options = arguments[0].options;" & _
+							"for (let i = 0, o; i < options.length; i++)" & _
+							" {" & _
+							"  o = options[i];" & _
+							"  result += o.value + '|' + o.label + '|' + o.index + '|' + o.selected  + '|' + (o.disabled || (o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)) + '|' + (o.hidden || (o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))  + '\n'" & _
+							" }" & _
 							"return result;"
+
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
@@ -1054,8 +1059,12 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 				Case 'selectAll'
 					$sScript = _
 							"var options = arguments[0].options;" & _
-							"for ( i=0; i<options.length; i++)" & _
-							"  {if ( (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) && (options[i].hidden==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.hidden))) ) {options[i].selected = true}};" & _
+							"for (let i=0, o; i < options.length; i++)" & _
+							" {" & _
+							"  o = options[i];" & _
+							"  if ( (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
+							"    {o.selected = true}" & _
+							" }" & _
 							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
 							"return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
@@ -1070,8 +1079,11 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$sScript = _
 							"var result ='';" & _
 							"var options = arguments[0].selectedOptions;" & _
-							"for (let i = 0; i < options.length; i++)" & _
-							" {result += options[i].label + '\n'};" & _
+							"for (let i = 0, o; i < options.length; i++)" & _
+							" {" & _
+							"  o = options[i];" & _
+							"  result += o.label + '\n'" & _
+							" }" & _
 							"return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
@@ -1086,8 +1098,11 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$sScript = _
 							"var result ='';" & _
 							"var options = arguments[0].selectedOptions;" & _
-							"for (let i = 0; i < options.length; i++)" & _
-							" {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'};" & _
+							"for (let i = 0, o; i < options.length; i++)" & _
+							" {" & _
+							"  o = options[i];" & _
+							"  result += o.value + '|' + o.label + '|' + o.index + '|' + o.selected + '\n';" & _
+							" };" & _
 							"return result;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
