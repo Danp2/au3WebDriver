@@ -16,7 +16,7 @@
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; URL ...........: https://www.autoitscript.com/wiki/WebDriver_Capabilities
-; Date ..........: 2022/04/15
+; Date ..........: 2022/07/27
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
@@ -238,6 +238,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) And $_WD_NOTATION__SPECIFICVENDOR <> '' Then ; add "JSON_ARRAY" capability in SPECIFIC/VENDOR part of Capabilities JSON Structure
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
+		$key = StringReplace($key, '>', '"]' & '["')
 		$s_Notation &= '["' & $key & '"]'
 		Local $iCurrent2 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
 		SetError(0) ; for any case because UBound() can set @error
