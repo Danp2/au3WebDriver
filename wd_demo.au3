@@ -781,7 +781,11 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 
 	; change the attributes of the frame to improve the visibility of the <select> element, on which the options will be indicated
-	Local $sJavaScript = "var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
+	Local $sJavaScript = _
+			"var element = arguments[0];" & _
+			"element.setAttribute('height', '500');" & _
+			"element.setAttribute('padding', '0');" & _
+			""
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sFrame), Default, Default)
 	If @error Then Return SetError(@error, @extended, '')
 
@@ -793,9 +797,12 @@ Func DemoSelectOptions()
 	Local $sSelectElement = _WD_GetElementByName($sSession, 'pets')
 	If @error Then Return SetError(@error, @extended, '')
 
-	; change <select> element size, to see all <option> at once
+	; change <select> element size, to see all <option> at once, and sets hidden status for one element: <option value="dog" hidden="">Dog</option>
 	$sJavaScript = _
-			"var element = arguments[0];element.setAttribute('size', '10')"
+			"var element = arguments[0];" & _
+			"element.setAttribute('size', '10');" & _
+			"element.options[0].hidden =true;" & _
+			""
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
 
 	; select ALL options
@@ -840,7 +847,7 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 
 	; get <select> element by it's name
-	Local $sSelectElement2 = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector,"body > select")
+	Local $sSelectElement2 = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "body > select")
 	If @error Then Return SetError(@error, @extended, '')
 
 	; change <select> element size, to see all <option> at once
@@ -873,7 +880,6 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 
 	_ArrayDisplay($aSelectedOptions2, '$aSelectedOptions2')
-
 
 EndFunc   ;==>DemoSelectOptions
 
