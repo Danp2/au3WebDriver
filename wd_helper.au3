@@ -1029,7 +1029,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
 								"  {" & _
 								"    o.selected = true;" & _
-								"};" & _
+								"  };" & _
 								"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
 								"return true;"
 						$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
