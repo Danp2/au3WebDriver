@@ -15,6 +15,10 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 - _WD_CapabilitiesAdd: Support `webSocketUrl` capability
 
+### Changed
+
+- _WD_ElementSelectAction: Hidden option detection
+
 ### Fixed
 
 _WD_CDPExecuteCommand: Missing $ prefix in variable name

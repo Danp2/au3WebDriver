@@ -1787,7 +1787,7 @@ EndFunc   ;==>__WD_ConsoleWrite
 ; Return values .: Result of last WinHTTP request
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This is the HTTP result from the webdriver, which is different than the browser's HTTP status
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
