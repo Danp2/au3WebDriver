@@ -9,17 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [0.10.1]
 
 ### Added
 
 - _WD_CapabilitiesAdd: Support `webSocketUrl` capability
 
+### Changed
+
+- _WD_ElementSelectAction: Hidden option detection
+
 ### Fixed
 
-_WD_CDPExecuteCommand: Missing $ prefix in variable name
-_WD_CapabilitiesAdd: Support keys containing colons 
-_WD_ElementSelectAction: Altering selection now triggers Change event
+- _WD_CDPExecuteCommand: Missing $ prefix in variable name
+- _WD_CapabilitiesAdd: Support keys containing colons
+- _WD_ElementSelectAction: Altering selection now triggers Change event
 
 ## [0.10.0]
 
@@ -977,8 +981,9 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.10.0...HEAD
-[0.10.0]:      https://github.com/Danp2/au3WebDriver/compare/0.9.1...0.10.0
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.10.1...HEAD
+[0.10.1]:     https://github.com/Danp2/au3WebDriver/compare/0.10.0...0.10.1
+[0.10.0]:     https://github.com/Danp2/au3WebDriver/compare/0.9.1...0.10.0
 [0.9.1]:      https://github.com/Danp2/au3WebDriver/compare/0.9.0...0.9.1
 [0.9.0]:      https://github.com/Danp2/au3WebDriver/compare/0.8.1...0.9.0
 [0.8.1]:      https://github.com/Danp2/au3WebDriver/compare/0.8.0...0.8.1
