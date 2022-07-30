@@ -302,9 +302,9 @@ EndFunc   ;==>_WD_Status
 ; Syntax ........: _WD_GetSession($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - Dictionary object with "sessionId" and "capabilities" items.
-;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_SessionInvalid
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......: The Get Session functionality was added and then removed from the W3C draft spec, so the code is commented
 ;                  until they determine how this should function. See w3c/webdriver@35df53a for details. Meanwhile, I temporarily
 ;                  changed the code to return the information that is available
@@ -314,8 +314,7 @@ EndFunc   ;==>_WD_Status
 ; ===============================================================================================================================
 Func _WD_GetSession($sSession)
 	Local Const $sFuncName = "_WD_GetSession"
-	Local $sResult
-	#forceref $sSession, $sFuncName
+	Local $iErr = $_WD_ERROR_Success, $sResult
 
 	#cs See remarks in header
 	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
@@ -333,9 +332,15 @@ Func _WD_GetSession($sSession)
 	EndIf
 	#ce See remarks in header
 
-	$sResult = $_WD_SESSION_DETAILS
+	_WD_ExecuteScript($sSession, 'window') ; even empty page like a about:blank has a window
+	If @error Then ; if there is no window then something is wrong with session
+		$iErr = $_WD_ERROR_SessionInvalid
+	Else
+		$sResult = $_WD_SESSION_DETAILS
+	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sResult)
+	Local $sMessage = ($iErr) ? ("Check your session.") : ("")
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResult)
 EndFunc   ;==>_WD_GetSession
 
 ; #FUNCTION# ====================================================================================================================
