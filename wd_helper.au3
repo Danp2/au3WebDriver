@@ -275,21 +275,34 @@ EndFunc   ;==>_WD_Attach
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
+Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
 	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial
+	Local $bIsVisible = False, $bIsEnabled = False
 
 	If $bPartial = Default Then $bPartial = True
 
-	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
+	Local $aElements = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText, $sStartElement, True)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		_WD_ElementAction($sSession, $sElement, 'click')
-		$iErr = @error
+		For $sElement In $aElements
+			$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
+			If Not $bIsVisible Then ContinueLoop
 
-		If $iErr <> $_WD_ERROR_Success Then
-			$iErr = $_WD_ERROR_Exception
+			$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
+			If $bIsEnabled Then ExitLoop
+		Next
+
+		If $bIsVisible and $bIsEnabled Then
+			_WD_ElementAction($sSession, $sElement, 'click')
+			$iErr = @error
+
+			If $iErr <> $_WD_ERROR_Success Then
+				$iErr = $_WD_ERROR_Exception
+			EndIf
+		Else
+			$iErr = $_WD_ERROR_NoMatch
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_NoMatch
