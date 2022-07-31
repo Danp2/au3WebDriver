@@ -109,7 +109,8 @@ EndFunc
 ;                  |SEND        - Send Bidi command via websocket
 ;                  $vData               - [optional] 
 ;                  $oParams             - [optional] 
-; Return values .: None
+; Return values .: Success - result of requested command
+;                  Failure - "" and sets @error
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -151,6 +152,8 @@ Func __WD_BidiCommands($sCommand, $vData = Default, $oParams = Default)
 				If @error Or ($fStatus And $fStatus <> $ERROR_INVALID_OPERATION) Then
 					$iErr = $_WD_ERROR_SocketError
 					$sErrText = "QueryCloseStatus error (" & $fStatus & ")"
+				Else
+					$vResult = $fStatus
 				EndIf
 			EndIf
 
