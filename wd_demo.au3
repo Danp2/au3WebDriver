@@ -918,7 +918,15 @@ Func DemoStyles()
 
 EndFunc   ;==>DemoStyles
 
+#Region - UserTesting
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
+	_WD_CheckContext($sSession, False)
+	If @error Then ; return if session is NOT OK
+		ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & _
+				" : _WD_CheckContext reported a problem with the session" & @CRLF)
+		Return
+	EndIf
+	
 	_WD_Navigate($sSession, 'https://www.google.com')
 	_WD_LoadWait($sSession)
 
@@ -929,6 +937,10 @@ Func UserTesting() ; here you can replace the code to test your stuff before you
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 ;~ 	Exit
 EndFunc   ;==>UserTesting
+
+; if necessary, add any additional function required for testing within this region here
+
+#EndRegion - UserTesting
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
