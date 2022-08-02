@@ -204,6 +204,12 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 		EndIf
 
 		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
+		_WD_CheckContext($sSession, False)
+		If @error Then ; return if session is NOT OK
+			ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & _
+					" : _WD_CheckContext reported a problem with the session" & @CRLF)
+			ContinueLoop
+		EndIf
 		If $aDemoSuite[$iIndex][2] Then
 			Call($sDemoName, $sBrowserName)
 		Else
@@ -920,13 +926,6 @@ EndFunc   ;==>DemoStyles
 
 #Region - UserTesting
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
-	_WD_CheckContext($sSession, False)
-	If @error Then ; return if session is NOT OK
-		ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & _
-				" : _WD_CheckContext reported a problem with the session" & @CRLF)
-		Return
-	EndIf
-	
 	_WD_Navigate($sSession, 'https://www.google.com')
 	_WD_LoadWait($sSession)
 
