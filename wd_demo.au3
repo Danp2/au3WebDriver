@@ -203,13 +203,11 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 			ContinueLoop
 		EndIf
 
-		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
 		_WD_CheckContext($sSession, False)
-		If @error Then ; return if session is NOT OK
-			ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & _
-					" : _WD_CheckContext reported a problem with the session" & @CRLF)
-			ContinueLoop
-		EndIf
+		$iError = @error
+		If @error Then ExitLoop ; return if session is NOT OK
+		
+		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
 		If $aDemoSuite[$iIndex][2] Then
 			Call($sDemoName, $sBrowserName)
 		Else
