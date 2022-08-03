@@ -538,7 +538,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Description ...: Enter the specified frame.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
-;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword)
+;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword) or path in 'null/2/0' format
 ; Return values .: Success - True.
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception or $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
@@ -550,8 +550,8 @@ EndFunc   ;==>_WD_IsWindowTop
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
-	Local Const $bIsIdentifierNull = (IsKeyword($vIdentifier) = $KEYWORD_NULL)
-	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? "Null" : $vIdentifier)
+	Local Const $bIsIdentifierNull = ((IsKeyword($vIdentifier) = $KEYWORD_NULL) Or String($vIdentifier) = 'null')
+	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? ("Null") : ($vIdentifier))
 	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
@@ -560,7 +560,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1)
 	If $bIdentifierAsPath Then
 		For $i = 1 To $aIdentifiers[0]
-			If $aIdentifiers[$i] = 'null' Then
+			If String($aIdentifiers[$i]) = 'null' Then
 				$sValue = _WD_FrameEnter($sSession, Null)
 				$iErr = @error
 			ElseIf StringIsDigit($aIdentifiers[$i]) And IsInt(Number($aIdentifiers[$i])) Then
