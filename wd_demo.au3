@@ -203,6 +203,10 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 			ContinueLoop
 		EndIf
 
+		_WD_CheckContext($sSession, False)
+		$iError = @error
+		If @error Then ExitLoop ; return if session is NOT OK
+		
 		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
 		If $aDemoSuite[$iIndex][2] Then
 			Call($sDemoName, $sBrowserName)
@@ -918,6 +922,7 @@ Func DemoStyles()
 
 EndFunc   ;==>DemoStyles
 
+#Region - UserTesting
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
 	_WD_LoadWait($sSession)
@@ -929,6 +934,10 @@ Func UserTesting() ; here you can replace the code to test your stuff before you
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 ;~ 	Exit
 EndFunc   ;==>UserTesting
+
+; if necessary, add any additional function required for testing within this region here
+
+#EndRegion - UserTesting
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
