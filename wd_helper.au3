@@ -540,7 +540,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
 ;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword)
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception or $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
@@ -551,23 +551,49 @@ EndFunc   ;==>_WD_IsWindowTop
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
 	Local Const $sParameters = 'Parameters:    Identifier=' & $vIdentifier
-	Local $sOption, $sValue, $sResponse, $oJSON
+	Local $sOption, $sValue, $sResponse, $oJSON, $sMessage = ''
 	Local $iErr = $_WD_ERROR_Success
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
+	Local $aIdentifiers = StringSplit($vIdentifier, '/')
+	Local $bIdentifierAsPath = ($aIdentifiers[0] > 1)
+	If $bIdentifierAsPath Then
+;~ 		_ArrayDisplay($aIdentifiers, $vIdentifier & ' >>> $aIdentifiers')
+		For $i = 1 To $aIdentifiers[0]
+			If $aIdentifiers[$i] = 'null' Then
+;~ 				MsgBox(0, "$bIdentifierAsPath", @ScriptLineNumber)
+				$aIdentifiers[$i] = Null
+			ElseIf StringIsDigit($aIdentifiers[$i]) And IsInt(Number($aIdentifiers[$i])) Then
+				_WD_FrameEnter($sSession, Int($aIdentifiers[$i]))
+				$iErr = @error
+;~ 				MsgBox(0, "$bIdentifierAsPath", @ScriptLineNumber & @CRLF & $aIdentifiers[$i]& @CRLF & $iErr)
+			Else
+;~ 				MsgBox(0, "$bIdentifierAsPath", @ScriptLineNumber)
+				$iErr = $_WD_ERROR_InvalidArgue
+			EndIf
+			If $iErr Then ExitLoop
+		Next
+		If $i > $aIdentifiers[0] Then $i = $aIdentifiers[0]
+		If $iErr Then $sMessage = ' Error on ID#' & $i
+	ElseIf (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
 		$sOption = '{"id":null}'
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
+		If @error Then
+			$iErr = $_WD_ERROR_InvalidArgue
+		Else
+			$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		EndIf
 	EndIf
 
-	$sResponse = _WD_Window($sSession, "frame", $sOption)
+	If $iErr = $_WD_ERROR_Success And Not $bIdentifierAsPath Then ; check if $vIdentifier was succesfully validated and not given "as path" with /
+		$sResponse = _WD_Window($sSession, "frame", $sOption)
+		$iErr = @error
+	EndIf
 
-	If @error <> $_WD_ERROR_Success Then
-		$iErr = $_WD_ERROR_Exception
-	Else
+	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
 		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
@@ -577,9 +603,11 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $sValue)
 EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
