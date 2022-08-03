@@ -540,7 +540,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
 ;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword)
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception or $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
 ; Modified ......: mLipok
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
@@ -560,14 +560,20 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
+		If @error Then
+			$iErr = $_WD_ERROR_InvalidArgue
+		Else
+			$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		EndIf
 	EndIf
 
-	$sResponse = _WD_Window($sSession, "frame", $sOption)
+	If $iErr = $_WD_ERROR_Success ; check if $vIdentifier was succesfully validated
+		$sResponse = _WD_Window($sSession, "frame", $sOption)
+		$iErr = @error
+	EndIf
 
-	If @error <> $_WD_ERROR_Success Then
-		$iErr = $_WD_ERROR_Exception
-	Else
+	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
 		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
@@ -577,6 +583,8 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sValue)
