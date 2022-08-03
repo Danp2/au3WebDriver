@@ -550,7 +550,8 @@ EndFunc   ;==>_WD_IsWindowTop
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
-	Local Const $sParameters = 'Parameters:    Identifier=' & $vIdentifier
+	Local Const $bIsIdentifierNull = (IsKeyword($vIdentifier) = $KEYWORD_NULL)
+	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? "Null" : $bIsIdentifierNull)
 	Local $sOption, $sValue, $sResponse, $oJSON, $sMessage = ''
 	Local $iErr = $_WD_ERROR_Success
 
@@ -572,7 +573,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Next
 		If $i > $aIdentifiers[0] Then $i = $aIdentifiers[0]
 		If $iErr Then $sMessage = ' Error on ID#' & $i
-	ElseIf (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
+	ElseIf $bIsIdentifierNull Then
 		$sOption = '{"id":null}'
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
