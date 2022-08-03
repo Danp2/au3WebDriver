@@ -640,103 +640,141 @@ EndFunc   ;==>_WD_FrameLeave
 ; Name ..........: _WD_FrameList
 ; Description ...: get frame list from current webdriver context/tab
 ; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True[, $sFilter = ''[, $bReturnHTML = False]]])
-; Parameters ....: $sSession            - a string value.
-;                  $bReturnAsArray      - [optional] a boolean value. Default is True.
-;                  $sFilter             - RegExp pattern to validate desired element exist in document.body structure
-;                  $bReturnHTML         - Option to return frame document source
-; Return values .: array......
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $bReturnAsArray      - By default on True function will return array, other wise string
+;                  $sFilter             - RegExp pattern to check if desired content exist in frame document HTML source, if used it returns only frames with diesired content
+;                  $bReturnHTML         - On true function will return frame document HTML source
+; Return values .: array or string or set @error to $_WD_ERROR_Exception, $_WD_ERROR_InvalidExpression, $_WD_ERROR_NotFound
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: __WD_FrameList_Internal, _WD_FrameEnter, _WD_GetFrameCount
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTML = False)
+	Local $iErr = $_WD_ERROR_Success
 	Local $a_Result[0][6]
 	Local $sStartBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 
 	Local $vResult = __WD_FrameList_Internal($sSession, 'null', '', $sFilter, $bReturnHTML)
-	If @error = $_WD_ERROR_Success Then
+	$iErr = @error
+	#Region - _WD_FrameList - post processing
+	If $iErr = $_WD_ERROR_Success Then ; can occur when $sFilter is used
 		$vResult = StringTrimRight($vResult, 2) ; last @CRLF
-		_ArrayAdd($a_Result, $vResult)
-
-		Local $sStartLocation
-		For $i = 0 To UBound($a_Result) - 1
-			If $a_Result[$i][4] = $sStartBody_ElementID Then $sStartLocation = $a_Result[$i][0]
-		Next
-
-		ConsoleWrite("! $sStartLocation = " & $sStartLocation & @CRLF)
-
-		For $i = 0 To UBound($a_Result) - 1
-			$a_Result[$i][1] = StringRegExpReplace($a_Result[$i][1], '\A' & $sStartLocation & '\/?', '')
-		Next
-		If $bReturnAsArray Then
-			$vResult = $a_Result
+		If $vResult = '' Then
+			$iErr = $_WD_ERROR_NotFound
 		Else
-			$vResult = _ArrayToString($a_Result)
+			_ArrayAdd($a_Result, $vResult)
+
+			Local $sStartLocation
+			For $i = 0 To UBound($a_Result) - 1
+				If $a_Result[$i][4] = $sStartBody_ElementID Then $sStartLocation = $a_Result[$i][0]
+			Next
+
+			For $i = 0 To UBound($a_Result) - 1
+				$a_Result[$i][1] = StringRegExpReplace($a_Result[$i][1], '\A' & $sStartLocation & '\/?', '')
+			Next
+
+			If $bReturnAsArray Then
+				$vResult = $a_Result
+			Else
+				$vResult = _ArrayToString($a_Result)
+			EndIf
 		EndIf
 	EndIf
-	Return SetError(@error, @extended, $vResult)
+
+	; Back to "calling frame"
+	_WD_FrameEnter($sSession, $sStartBody_ElementID)
+	#TODO decide if Error handling here is required or not ?
+
+	#EndRegion - _WD_FrameList - post processing
+
+	Return SetError($iErr, @extended, $vResult)
 EndFunc   ;==>_WD_FrameList
 
-Func __WD_FrameList_Internal($sSession, $s_level_string, $sFrameAttributes, $sFilter, $bReturnHTML)
-	#WARRNING some kind of remark in the header should be aded first proposal below:
-	; changing frames may affect your further coding by changing contex in browser to different frames
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_FrameList_Internal
+; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
+; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $sFilter, $bReturnHTML)
+; Parameters ....: $sSession            - Session ID from _WD_CreateSession
+;                  $sLevel              - frame location level ... path
+;                  $sFrameAttributes    - all <iframe ....> atributes
+;                  $sFilter             - RegExp pattern to check if desired content exist in frame document HTML source, if used it returns only frames with diesired content
+;                  $bReturnHTML         - On true function will return frame document HTML source
+; Return values .: array or string or set @error to $_WD_ERROR_Exception, $_WD_ERROR_InvalidExpression, $_WD_ERROR_NotFound
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_FrameList, _WD_FrameEnter, _WD_GetFrameCount
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $sFilter, $bReturnHTML)
 	Local Const $sFuncName = "_WD_FrameList"
-	Local $iErr = $_WD_ERROR_Success
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $vResult = '', $s_URL = '', $s_HTML = '', $sMessage = ''
 
-	Local $a_Level = StringSplit($s_level_string, '/')
+	Local $a_Level = StringSplit($sLevel, '/')
 	For $i = 1 To $a_Level[0]
 		If $a_Level[$i] = 'null' Then
 			_WD_FrameEnter($sSession, Null)
 		Else
 			_WD_FrameEnter($sSession, Int($a_Level[$i]))
 		EndIf
+		$iErr = @error
 		If @error Then ExitLoop
 	Next
+
 	If @error Then
-		$sMessage = 'Error occured on "' & $s_level_string & '" level when trying to entering frame'
+		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
 	Else
 		Local $sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
-		#TODO error handling
-
-		$s_URL = _WD_ExecuteScript($sSession, "return window.location.href", Default, Default, $_WD_JSON_Value)
 		If @error Then
-			$sMessage = 'Error occured on "' & $s_level_string & '" level when checking URL'
+			$sMessage = 'Error occured on "' & $sLevel & '" level when checking document.body ElementID'
 		Else
-			If $bReturnHTML Or $sFilter <> '' Then $s_HTML = _WD_GetSource($sSession)
+			$s_URL = _WD_ExecuteScript($sSession, "return window.location.href", Default, Default, $_WD_JSON_Value)
 			If @error Then
-				$sMessage = 'Error occured on "' & $s_level_string & '" level when getting HTML Source'
+				$sMessage = 'Error occured on "' & $sLevel & '" level when checking URL'
 			Else
-				If $sFilter = '' Or StringRegExp($s_HTML, $sFilter, $STR_REGEXPMATCH) Then
-					$s_HTML = ($bReturnHTML) ? (StringToBinary($s_HTML, $SB_UTF8)) : ('')
-					$vResult = $s_level_string & '|' & $s_level_string & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & '|' & $s_HTML & @CRLF
+				If $bReturnHTML Or $sFilter <> '' Then $s_HTML = _WD_GetSource($sSession)
+				If @error Then
+					$sMessage = 'Error occured on "' & $sLevel & '" level when getting HTML Source'
+				Else
+					If $sFilter = '' Or StringRegExp($s_HTML, $sFilter, $STR_REGEXPMATCH) Then
+						$s_HTML = ($bReturnHTML) ? (StringToBinary($s_HTML, $SB_UTF8)) : ('')
+						$vResult = $sLevel & '|' & $sLevel & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & '|' & $s_HTML & @CRLF
+					ElseIf @error = 1 Then ; StringRegExp testing
+						SetError(0)
+					ElseIf @error = 2 Then ; StringRegExp testing
+						$iExt = @error
+						$iErr = $_WD_ERROR_InvalidExpression
+					EndIf
 				EndIf
 			EndIf
 		EndIf
+		$iErr = @error
 	EndIf
-	$iErr = @error
+
 	If Not @error Then
 		Local $iFrameCount = _WD_GetFrameCount($sSession)
 		$iErr = @error
 		If $iErr Then
-			$sMessage = 'Error occured on "' & $s_level_string & '" level when trying to check frames count'
+			$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check frames count'
 		Else
 			For $iFrame = 0 To $iFrameCount - 1
 				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
 				$iErr = @error
 				If @error Then
-					$sMessage = 'Error occured on "' & $s_level_string & '" level when trying to check atributes child frames #' & $iFrame
+					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check atributes child frames #' & $iFrame
 				Else
-					$vResult &= __WD_FrameList_Internal($sSession, $s_level_string & '/' & $iFrame, $sFrameAttributes, $sFilter, $bReturnHTML)
+					$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $sFilter, $bReturnHTML)
 					$iErr = @error
 					If Not @error Then
 						_WD_FrameLeave($sSession)
 						$iErr = @error
 						If @error Then
-							$sMessage = 'Error occured on "' & $s_level_string & '" level when trying to leave frames #' & $iFrame
+							$sMessage = 'Error occured on "' & $sLevel & '" level when trying to leave frames #' & $iFrame
 						EndIf
 					EndIf
 				EndIf
@@ -744,7 +782,8 @@ Func __WD_FrameList_Internal($sSession, $s_level_string, $sFrameAttributes, $sFi
 			Next
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $vResult)
+	If $iErr And $iErr <> $_WD_ERROR_InvalidExpression Then $iErr = $_WD_ERROR_Exception
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), $iExt, $vResult)
 EndFunc   ;==>__WD_FrameList_Internal
 
 ; #FUNCTION# ====================================================================================================================
