@@ -558,17 +558,14 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local $aIdentifiers = StringSplit($vIdentifier, '/')
 	Local $bIdentifierAsPath = ($aIdentifiers[0] > 1)
 	If $bIdentifierAsPath Then
-;~ 		_ArrayDisplay($aIdentifiers, $vIdentifier & ' >>> $aIdentifiers')
 		For $i = 1 To $aIdentifiers[0]
 			If $aIdentifiers[$i] = 'null' Then
-;~ 				MsgBox(0, "$bIdentifierAsPath", @ScriptLineNumber)
-				$aIdentifiers[$i] = Null
+				_WD_FrameEnter($sSession, Null)
+				$iErr = @error
 			ElseIf StringIsDigit($aIdentifiers[$i]) And IsInt(Number($aIdentifiers[$i])) Then
 				_WD_FrameEnter($sSession, Int($aIdentifiers[$i]))
 				$iErr = @error
-;~ 				MsgBox(0, "$bIdentifierAsPath", @ScriptLineNumber & @CRLF & $aIdentifiers[$i]& @CRLF & $iErr)
 			Else
-;~ 				MsgBox(0, "$bIdentifierAsPath", @ScriptLineNumber)
 				$iErr = $_WD_ERROR_InvalidArgue
 			EndIf
 			If $iErr Then ExitLoop
