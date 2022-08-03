@@ -644,7 +644,12 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  $bReturnAsArray      - By default on True function will return array, other wise string
 ;                  $sFilter             - RegExp pattern to check if desired content exist in frame document HTML source, if used it returns only frames with diesired content
 ;                  $bReturnHTML         - On true function will return frame document HTML source
-; Return values .: array or string or set @error to $_WD_ERROR_Exception, $_WD_ERROR_InvalidExpression, $_WD_ERROR_NotFound
+; Return values .: Success - array or string
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidExpression
+;                  - $_WD_ERROR_NotFound
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
@@ -653,12 +658,18 @@ EndFunc   ;==>_WD_FrameLeave
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTML = False)
-	Local $iErr = $_WD_ERROR_Success
-	Local $a_Result[0][6]
+	Local Const $sFuncName = "_WD_FrameList"
+	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray & '   Filter=' & $sFilter & '   ReturnHTML=' & $bReturnHTML
+	Local $a_Result[0][6], $sStartLocation = '', $sMessage = ''
+	Local $vResult = '', $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $sStartBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
-
-	Local $vResult = __WD_FrameList_Internal($sSession, 'null', '', $sFilter, $bReturnHTML)
-	$iErr = @error
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+	Else
+		$vResult = __WD_FrameList_Internal($sSession, 'null', '', $sFilter, $bReturnHTML)
+		$iErr = @error
+		$iExt = @extended
+	EndIf
 	#Region - _WD_FrameList - post processing
 	If $iErr = $_WD_ERROR_Success Then ; can occur when $sFilter is used
 		$vResult = StringTrimRight($vResult, 2) ; last @CRLF
@@ -667,7 +678,6 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 		Else
 			_ArrayAdd($a_Result, $vResult)
 
-			Local $sStartLocation
 			For $i = 0 To UBound($a_Result) - 1
 				If $a_Result[$i][4] = $sStartBody_ElementID Then $sStartLocation = $a_Result[$i][0]
 			Next
@@ -684,13 +694,17 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 		EndIf
 	EndIf
 
-	; Back to "calling frame"
-	_WD_FrameEnter($sSession, $sStartBody_ElementID)
-	#TODO decide if Error handling here is required or not ?
+	If $sStartLocation Then ; Back to "calling frame"
+		_WD_FrameEnter($sSession, $sStartLocation)
+		$iErr = @error
+	EndIf
+	If $iErr Then
+		$sMessage = ' Was not able to check / back to "calling frame"'
+	EndIf
 
 	#EndRegion - _WD_FrameList - post processing
 
-	Return SetError($iErr, @extended, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), $iExt, $vResult)
 EndFunc   ;==>_WD_FrameList
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -702,7 +716,10 @@ EndFunc   ;==>_WD_FrameList
 ;                  $sFrameAttributes    - all <iframe ....> atributes
 ;                  $sFilter             - RegExp pattern to check if desired content exist in frame document HTML source, if used it returns only frames with diesired content
 ;                  $bReturnHTML         - On true function will return frame document HTML source
-; Return values .: array or string or set @error to $_WD_ERROR_Exception, $_WD_ERROR_InvalidExpression, $_WD_ERROR_NotFound
+; Return values .: Success - array or string
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
@@ -711,7 +728,7 @@ EndFunc   ;==>_WD_FrameList
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $sFilter, $bReturnHTML)
-	Local Const $sFuncName = "_WD_FrameList"
+	Local Const $sFuncName = "__WD_FrameList_Internal"
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $vResult = '', $s_URL = '', $s_HTML = '', $sMessage = ''
 
