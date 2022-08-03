@@ -551,20 +551,20 @@ EndFunc   ;==>_WD_IsWindowTop
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
 	Local Const $bIsIdentifierNull = (IsKeyword($vIdentifier) = $KEYWORD_NULL)
-	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? "Null" : $bIsIdentifierNull)
-	Local $sOption, $sValue, $sResponse, $oJSON, $sMessage = ''
+	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? "Null" : $vIdentifier)
+	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	Local $aIdentifiers = StringSplit($vIdentifier, '/')
-	Local $bIdentifierAsPath = ($aIdentifiers[0] > 1)
+	Local Const $aIdentifiers = StringSplit($vIdentifier, '/')
+	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1)
 	If $bIdentifierAsPath Then
 		For $i = 1 To $aIdentifiers[0]
 			If $aIdentifiers[$i] = 'null' Then
-				_WD_FrameEnter($sSession, Null)
+				$sValue = _WD_FrameEnter($sSession, Null)
 				$iErr = @error
 			ElseIf StringIsDigit($aIdentifiers[$i]) And IsInt(Number($aIdentifiers[$i])) Then
-				_WD_FrameEnter($sSession, Int($aIdentifiers[$i]))
+				$sValue = _WD_FrameEnter($sSession, Int($aIdentifiers[$i]))
 				$iErr = @error
 			Else
 				$iErr = $_WD_ERROR_InvalidArgue
@@ -589,20 +589,20 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	If $iErr = $_WD_ERROR_Success And Not $bIdentifierAsPath Then ; check if $vIdentifier was succesfully validated and not given "as path" with /
 		$sResponse = _WD_Window($sSession, "frame", $sOption)
 		$iErr = @error
-	EndIf
 
-	If $iErr = $_WD_ERROR_Success Then
-		$oJSON = Json_Decode($sResponse)
-		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
+		If $iErr = $_WD_ERROR_Success Then
+			$oJSON = Json_Decode($sResponse)
+			$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
-		;*** Evaluate the response
-		If $sValue <> Null Then
-			$sValue = Json_Get($oJSON, $_WD_JSON_Error)
-		Else
-			$sValue = True
+			;*** Evaluate the response
+			If $sValue <> Null Then
+				$sValue = Json_Get($oJSON, $_WD_JSON_Error)
+			Else
+				$sValue = True
+			EndIf
+		ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+			$iErr = $_WD_ERROR_Exception
 		EndIf
-	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
-		$iErr = $_WD_ERROR_Exception
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $sValue)
