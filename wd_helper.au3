@@ -543,7 +543,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception or $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
 ; Modified ......: mLipok
-; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
+; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters or use path like 'null/2/0'
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
@@ -557,7 +557,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
 	Local Const $aIdentifiers = StringSplit($vIdentifier, '/')
-	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1)
+	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1) Or Not $bIsIdentifierNull
 	If $bIdentifierAsPath Then
 		For $i = 1 To $aIdentifiers[0]
 			If String($aIdentifiers[$i]) = 'null' Then
