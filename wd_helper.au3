@@ -550,14 +550,15 @@ EndFunc   ;==>_WD_IsWindowTop
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
-	Local Const $bIsIdentifierNull = ((IsKeyword($vIdentifier) = $KEYWORD_NULL) Or String($vIdentifier) = 'null')
+	If String($vIdentifier) = 'null' Then $vIdentifier = Null ; String must be used because checking 0 = 'null' is True
+	Local Const $bIsIdentifierNull = (IsKeyword($vIdentifier) = $KEYWORD_NULL)
 	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? ("Null") : ($vIdentifier))
 	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
 	Local Const $aIdentifiers = StringSplit($vIdentifier, '/')
-	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1) Or Not $bIsIdentifierNull
+	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1)
 	If $bIdentifierAsPath Then
 		For $i = 1 To $aIdentifiers[0]
 			If String($aIdentifiers[$i]) = 'null' Then
