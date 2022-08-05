@@ -970,7 +970,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
 ; Description ...: Perform action on designated <select> element.
-; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $aParameters = Default])
+; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $vParameters = Default])
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
@@ -981,8 +981,9 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
 ;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array
+;                  |SINGLELABEL    - Select <option> element given as string and deselect all others
 ;                  |VALUE          - Retrieves value of the first selected <option> element
-;                  $aParameters    - [optional] List of parameters (depending on chosen $sCommand)
+;                  $vParameters    - [optional] List of parameters (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -997,10 +998,9 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters = Default)
+Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters = Default)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
 	Local $vResult, $sScript
-
 	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
 
@@ -1015,24 +1015,47 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
-				Case 'multiSelect' ; https://stackoverflow.com/a/1296068/5314940
-					If UBound($aParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($aParameters, $UBOUND_ROWS) = 0 Then ; should be a single dimensional non-empty array
+				Case 'multiSelect', 'singleLabel' ; https://stackoverflow.com/a/1296068/5314940
+					If $sCommand = 'multiSelect' And (UBound($vParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($vParameters, $UBOUND_ROWS) = 0) Then ; for 'multiSelect' should be a single dimensional non-empty array
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
+					ElseIf $sCommand = 'singleLabel' And Not (IsString($vParameters) And StringLen($vParameters)) Then ; for 'singleLabel' should be a non empty string
+						$iErr = $_WD_ERROR_InvalidArgue
+						$iExt = 42 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
-						$sScript = _
-								"var LabelsToSelect = ['" & _ArrayToString($aParameters, "', '") & "'];" & _
-								"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
-								"{" & _
-								"  o = arguments[0].options[i];" & _
-								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
-								"  {" & _
-								"    o.selected = true;" & _
-								"  }" & _
+						Local Static $sScript_MultiSelectTemplate = StringReplace( _ ; it is declared as static to optimize AutoIt processing speed - this line will be processed once per script run
+								"function MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables) {" & _
+								"	var options = SelectElement.options;" & _
+								"	var result = false;" & _
+								"	for (var i = 0, o; i < options.length; i++) {" & _
+								"		o = options[i];" & _
+								"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
+								"				&&	(o.disabled==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)))" & _
+								"				&&	(o.hidden==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)))" & _
+								"			) {" & _
+								"				o.selected = true;" & _
+								"				result = true;" & _
+								"			} else if (DeselectingNonListedLables) {" & _
+								"				o.selected = false;" & _
+								"			};" & _
+								"	};" & _
+								"	if (result || DeselectingNonListedLables) {" & _
+								"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
+								"	};" & _
+								"	return result;" & _
 								"};" & _
-								"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
-								"return true;"
-						$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+								"" & _
+								"var SelectElement = arguments[0];" & _
+								"var LabelsToSelect = arguments[1];" & _ ; ['Label1', 'Label2']
+								"var DeselectingNonListedLables = arguments[2];" & _ ; true or false
+								"return MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables);" & _
+								"", @TAB, '')
+						If $sCommand = 'multiSelect' Then
+							$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & _ArrayToString($vParameters, "', '") & "']"", false"
+						ElseIf $sCommand = 'singleLabel' Then
+							$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & $vParameters & "']"", true"
+						EndIf
+						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
 					EndIf
 				Case 'options' ; 6 columns (value, label, index, selected status, disabled status, and hidden status)
