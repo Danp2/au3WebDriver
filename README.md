@@ -207,6 +207,15 @@ In case you use Firefox, the result should look similar to this:
 
 More useful information following soon.
 
+## Github Integration
+
+To ensure you github project always has the latest version of the UDF.
+
+1. Open your prefered shell (cmd, powershell, bash, zsh)
+2. Navigate to your GitHub Autoit repository
+3. Run `git submodule add https://github.com/Danp2/au3WebDriver`
+4. (OPTIONALLY) Run `git mv au3WebDriver Includes\au3WebDriver` to relocate the UDF into an Includes folder
+
 ## Configuration
 
 Useful information about possible configurations following soon.<br>
