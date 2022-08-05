@@ -538,12 +538,12 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Description ...: Enter the specified frame.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
-;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword) or path in 'null/2/0' format
+;                  $vIdentifier - Identifier of target frame. See remarks for formatting options
 ; Return values .: Success - True.
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception or $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
 ; Modified ......: mLipok
-; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters or use path like 'null/2/0'
+; Remarks .......: Identifier can be Null, specific element, or integer. You can drill-down into nested frames by calling this function repeatedly with the correct parameters or use path like 'null/2/0'
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
