@@ -564,22 +564,15 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1)
 	If $bIdentifierAsPath Then
 		For $i = 1 To $aIdentifiers[0]
-			If String($aIdentifiers[$i]) = 'null' Then
-				$sValue = _WD_FrameEnter($sSession, Null)
-				$iErr = @error
-			ElseIf StringIsDigit($aIdentifiers[$i]) And IsInt(Number($aIdentifiers[$i])) Then
-				$sValue = _WD_FrameEnter($sSession, Int($aIdentifiers[$i]))
-				$iErr = @error
-			Else
-				$iErr = $_WD_ERROR_InvalidArgue
-			EndIf
+			$sValue = _WD_FrameEnter($sSession, $aIdentifiers[$i])
+			$iErr = @error
 			If $iErr Then ExitLoop
 		Next
-		If $i > $aIdentifiers[0] Then $i = $aIdentifiers[0]
+		If $i > $aIdentifiers[0] Then $i = $aIdentifiers[0] ; the case when entire loop was procesed
 		If $iErr Then $sMessage = ' Error on ID#' & $i
 	ElseIf $bIsIdentifierNull Then
 		$sOption = '{"id":null}'
-	ElseIf IsInt($vIdentifier) Then
+	ElseIf StringIsDigit($vIdentifier) And IsInt(Number($vIdentifier)) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
 		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
