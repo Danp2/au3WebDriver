@@ -76,6 +76,14 @@ Global Enum _
 		$_WD_STORAGE_Local = 0, _
 		$_WD_STORAGE_Session = 1
 		
+Global Enum _
+		$_WD_FRAMELIST_Absolute = 0, _
+		$_WD_FRAMELIST_Relative = 1, _
+		$_WD_FRAMELIST_Atributes = 2, _
+		$_WD_FRAMELIST_URL = 3, _
+		$_WD_FRAMELIST_BodyID = 4, _
+		$_WD_FRAMELIST_HTML =
+
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
