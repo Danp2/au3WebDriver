@@ -82,7 +82,7 @@ Global Enum _
 		$_WD_FRAMELIST_Atributes = 2, _
 		$_WD_FRAMELIST_URL = 3, _
 		$_WD_FRAMELIST_BodyID = 4, _
-		$_WD_FRAMELIST_HTML =
+		$_WD_FRAMELIST_HTML = 5
 
 #EndRegion Global Constants
 
