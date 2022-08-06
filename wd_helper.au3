@@ -638,8 +638,8 @@ EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameList
-; Description ...: list detailed information about frames possible to use ("window.top" and all frames)
-; Syntax ........: _WD_FrameList(Const $sSession[, Const $bReturnAsArray = True[, Const $sFilter = ''[, Const $bReturnHTML = False]]])
+; Description ...: Retrieves a detailed list of the main document and all associated frames
+; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True[, $sFilter = ''[, $bReturnHTML = False]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $bReturnAsArray      - By default on True function will return array, other wise string
 ;                  $sFilter             - RegExp pattern to check HTML from "document.body". If used it returns only frames with desired HTML content
@@ -651,13 +651,13 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  - $_WD_ERROR_InvalidExpression
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: mLipok
-; Modified ......:
+; Modified ......: Danp2
 ; Remarks .......: using $bReturnHTML will always return array
 ; Related .......: _WD_GetFrameCount, _WD_FrameEnter, _WD_FrameLeave
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_FrameList(Const $sSession, Const $bReturnAsArray = True, Const $sFilter = '', Const $bReturnHTML = False)
+Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTML = False)
 	Local Const $sFuncName = "_WD_FrameList"
 	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray & '   Filter=' & $sFilter & '   ReturnHTML=' & $bReturnHTML
 	Local Const $bReturnHTML_Internally = ($bReturnHTML Or $sFilter <> '')
@@ -756,7 +756,7 @@ EndFunc   ;==>_WD_FrameList
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: mLipok
-; Modified ......:
+; Modified ......: Danp2
 ; Remarks .......:
 ; Related .......: _WD_FrameList, _WD_GetFrameCount, _WD_FrameEnter, _WD_FrameLeave
 ; Link ..........:
