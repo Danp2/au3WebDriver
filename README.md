@@ -213,7 +213,7 @@ Useful information about possible configurations following soon.<br>
 
 #### Github Integration
 
-To ensure you github project always has the latest version of the UDF.
+To ensure your GitHub project always has the latest version of the UDF --
 
 1. Open your prefered shell (cmd, powershell, bash, zsh)
 2. Navigate to your GitHub Autoit repository
