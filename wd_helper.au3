@@ -560,16 +560,9 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local $iErr = $_WD_ERROR_Success
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	Local Const $aIdentifiers = StringSplit($vIdentifier, '/')
-	Local Const $bIdentifierAsPath = ($aIdentifiers[0] > 1)
+	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, '(?i)\ANull\/[\d\/]*\d\Z', $STR_REGEXPMATCH)
 	If $bIdentifierAsPath Then
-		For $i = 1 To $aIdentifiers[0]
-			$sValue = _WD_FrameEnter($sSession, $aIdentifiers[$i])
-			$iErr = @error
-			If $iErr Then ExitLoop
-		Next
-		If $i > $aIdentifiers[0] Then $i = $aIdentifiers[0] ; the case when entire loop was procesed
-		If $iErr Then $sMessage = ' Error on ID#' & $i
+		; will be processed below
 	ElseIf $bIsIdentifierNull Then
 		$sOption = '{"id":null}'
 	ElseIf StringIsDigit($vIdentifier) And IsInt(Number($vIdentifier)) Then
@@ -583,23 +576,40 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		EndIf
 	EndIf
 
-	If $iErr = $_WD_ERROR_Success And Not $bIdentifierAsPath Then ; check if $vIdentifier was succesfully validated and not given "as path" with /
-		$sResponse = _WD_Window($sSession, "frame", $sOption)
-		$iErr = @error
+	If $iErr = $_WD_ERROR_Success Then ; check if $vIdentifier was succesfully validated
+		If Not $bIdentifierAsPath Then
+			$sResponse = _WD_Window($sSession, "frame", $sOption)
+			$iErr = @error
+		Else
+			Local $aIdentifiers = StringSplit($vIdentifier, '/')
+			For $i = 1 To $aIdentifiers[0]
+				If String($aIdentifiers[$i]) = 'null' Then
+					$aIdentifiers[$i] = '{"id":null}'
+				Else
+					$aIdentifiers[$i] = '{"id":' & $aIdentifiers[$i] & '}'
+				EndIf
+				$sResponse = _WD_Window($sSession, "frame", $aIdentifiers[$i])
+				If Not @error Then ContinueLoop
 
-		If $iErr = $_WD_ERROR_Success Then
-			$oJSON = Json_Decode($sResponse)
-			$sValue = Json_Get($oJSON, $_WD_JSON_Value)
-
-			;*** Evaluate the response
-			If $sValue <> Null Then
-				$sValue = Json_Get($oJSON, $_WD_JSON_Error)
-			Else
-				$sValue = True
-			EndIf
-		ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
-			$iErr = $_WD_ERROR_Exception
+				$iErr = @error
+				$sMessage = ' Error on ID#' & $i & ' > ' & $aIdentifiers[$i]
+				ExitLoop
+			Next
 		EndIf
+	EndIf
+
+	If $iErr = $_WD_ERROR_Success Then
+		$oJSON = Json_Decode($sResponse)
+		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
+
+		;*** Evaluate the response
+		If $sValue <> Null Then
+			$sValue = Json_Get($oJSON, $_WD_JSON_Error)
+		Else
+			$sValue = True
+		EndIf
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $sValue)
