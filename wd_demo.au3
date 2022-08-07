@@ -822,6 +822,10 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: Cat / Hamster / Parrot / Albatros")
 
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'SINGLESELECT', 'Parrot')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: Parrot")
+
 	; retrieves all <option> elements as 2D array
 	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
 	If @error Then Return SetError(@error, @extended, '')
