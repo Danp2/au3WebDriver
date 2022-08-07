@@ -469,7 +469,12 @@ Func DemoCookies()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained at start after navigate) : " & $sAllCookies & @CRLF)
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get 'NID' cookie:" & @CRLF)
-	Local $sNID = _WD_Cookies($sSession, 'Get', 'NID')
+	Local $sNID
+	While 1
+		$sNID = _WD_Cookies($sSession, 'Get', 'NID')
+		If Not @error Then ExitLoop
+		Sleep(100) ; this cookie may not exist at start, may appear later when website will be estabilished, so there is need to wait on @error and try again
+	WEnd
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie obtained 'NID' : " & $sNID & @CRLF)
 
 	Local $sName = "TestName"
