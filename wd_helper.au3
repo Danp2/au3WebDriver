@@ -1005,6 +1005,36 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 	Local $vResult, $sScript
 	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
+	Local Static $sScript_MultiSelectTemplate = StringReplace( _ ; it is declared as static to optimize AutoIt processing speed - this line will be processed once per script run
+			"function MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables) {" & _
+			"	if ((LabelsToSelect.length > 1) && (SelectElement.multiple == false)) {" & _
+			"		return '';" & _
+			"	}; " & _
+			"	var options = SelectElement.options;" & _
+			"	var result = false;" & _
+			"	for (var i = 0, o; i < options.length; i++) {" & _
+			"		o = options[i];" & _
+			"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
+			"				&&	(o.disabled==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)))" & _
+			"				&&	(o.hidden==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)))" & _
+			"			) {" & _
+			"				o.selected = true;" & _
+			"				result = true;" & _
+			"			} else if (DeselectingNonListedLables) {" & _
+			"				o.selected = false;" & _
+			"			};" & _
+			"	};" & _
+			"	if (result || DeselectingNonListedLables) {" & _
+			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
+			"	};" & _
+			"	return result;" & _
+			"};" & _
+			"" & _
+			"var SelectElement = arguments[0];" & _
+			"var LabelsToSelect = arguments[1];" & _ ; ['Label1', 'Label2']
+			"var DeselectingNonListedLables = arguments[2];" & _ ; true or false
+			"return MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables);" & _
+			"", @TAB, '')
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $sNodeName = 'select' Then ; check if designated element is <select> element
@@ -1017,49 +1047,30 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
-				Case 'multiSelect', 'singleSelect' ; https://stackoverflow.com/a/1296068/5314940
-					If $sCommand = 'multiSelect' And (UBound($vParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($vParameters, $UBOUND_ROWS) = 0) Then ; for 'multiSelect' should be a single dimensional non-empty array
+				Case 'multiSelect' ; https://stackoverflow.com/a/1296068/5314940
+					; Should be a single dimensional, multi-entry array
+					If UBound($vParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($vParameters, $UBOUND_ROWS) < 2 Then
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
-					ElseIf $sCommand = 'singleSelect' And Not (IsString($vParameters) And StringLen($vParameters)) Then ; for 'SINGLESELECT' should be a non empty string
+					Else
+						$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & _ArrayToString($vParameters, "', '") & "']"", false"
+						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
+						$iErr = @error
+						If Not @error Then
+							If $vResult = '' Then
+								$iErr = $_WD_ERROR_ElementIssue
+							ElseIf $vResult = False Then
+								$iErr = $_WD_ERROR_NoMatch
+							EndIf
+						EndIf
+					EndIf
+				Case 'singleSelect'
+					; Should be a non empty string
+					If Not (IsString($vParameters) And StringLen($vParameters)) Then
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 42 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
-						Local Static $sScript_MultiSelectTemplate = StringReplace( _ ; it is declared as static to optimize AutoIt processing speed - this line will be processed once per script run
-								"function MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables) {" & _
-								"	if ((LabelsToSelect.length > 1) && (SelectElement.multiple == false)) {" & _
-								"		return '';" & _
-								"	}; " & _
-								"	var options = SelectElement.options;" & _
-								"	var result = false;" & _
-								"	for (var i = 0, o; i < options.length; i++) {" & _
-								"		o = options[i];" & _
-								"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
-								"				&&	(o.disabled==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)))" & _
-								"				&&	(o.hidden==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)))" & _
-								"			) {" & _
-								"				o.selected = true;" & _
-								"				result = true;" & _
-								"			} else if (DeselectingNonListedLables) {" & _
-								"				o.selected = false;" & _
-								"			};" & _
-								"	};" & _
-								"	if (result || DeselectingNonListedLables) {" & _
-								"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
-								"	};" & _
-								"	return result;" & _
-								"};" & _
-								"" & _
-								"var SelectElement = arguments[0];" & _
-								"var LabelsToSelect = arguments[1];" & _ ; ['Label1', 'Label2']
-								"var DeselectingNonListedLables = arguments[2];" & _ ; true or false
-								"return MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables);" & _
-								"", @TAB, '')
-						If $sCommand = 'multiSelect' Then
-							$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & _ArrayToString($vParameters, "', '") & "']"", false"
-						ElseIf $sCommand = 'singleSelect' Then
-							$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & $vParameters & "']"", true"
-						EndIf
+						$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & $vParameters & "']"", true"
 						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
 						If Not @error Then
