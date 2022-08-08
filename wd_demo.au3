@@ -508,6 +508,9 @@ EndFunc   ;==>DemoCookies
 Func DemoAlerts()
 	Local $sStatus, $sText
 
+	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
+	If @error Then Return SetError(@error, @extended)
+
 	; check status before displaying Alert
 	$sStatus = _WD_Alert($sSession, 'status')
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
@@ -522,12 +525,11 @@ Func DemoAlerts()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Text Detected => ' & $sText & @CRLF)
 
 	Sleep(5000)
-	; close Alert
+	; close Alert by rejection
 	_WD_Alert($sSession, 'Dismiss')
 
 	; show Prompt for testing
-	_WD_ExecuteScript($sSession, "prompt('User Prompt 1', 'Default value')")
-
+	_WD_ExecuteScript($sSession, "window.localStorage.setItem('testing',prompt('User Prompt 1', 'Default value'))")
 	Sleep(2000)
 
 	; Set value of text field
@@ -536,6 +538,10 @@ Func DemoAlerts()
 	Sleep(5000)
 	; close Alert by acceptance
 	_WD_Alert($sSession, 'Accept')
+
+	; check if new value was stored i Storage
+	Local $sStorage = _WD_Storage($sSession, 'testing')
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & '$sStorage => ' & $sStorage & @CRLF)
 
 	Sleep(1000)
 	; show Prompt for testing
