@@ -508,7 +508,7 @@ EndFunc   ;==>DemoCookies
 Func DemoAlerts()
 	Local $sStatus, $sText
 
-	; check status before displaying Alert
+	; check status before displaying Alert - this should set @error as there is no any Alert displayed yet
 	$sStatus = _WD_Alert($sSession, 'status')
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
 
