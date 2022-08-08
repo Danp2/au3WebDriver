@@ -836,7 +836,7 @@ Func DemoSelectOptions()
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'DESELECTALL')
 	If @error Then Return SetError(@error, @extended, '')
 
-	; disable multile ability for <select> element
+	; disable multiple ability for <select> element
 	$sJavaScript = _
 			"var element = arguments[0];" & _
 			"element.multiple = false"
