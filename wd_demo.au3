@@ -508,7 +508,7 @@ EndFunc   ;==>DemoCookies
 Func DemoAlerts()
 	Local $sStatus, $sText
 
-	; check status before displaying Alert - this should set @error as there is no any Alert displayed yet
+	; check status before displaying Alert
 	$sStatus = _WD_Alert($sSession, 'status')
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
 
@@ -526,7 +526,7 @@ Func DemoAlerts()
 	_WD_Alert($sSession, 'Dismiss')
 
 	; show Prompt for testing
-	_WD_ExecuteScript($sSession, "prompt('User Prompt', 'Default value')")
+	_WD_ExecuteScript($sSession, "prompt('User Prompt 1', 'Default value')")
 
 	Sleep(2000)
 
@@ -534,8 +534,16 @@ Func DemoAlerts()
 	_WD_Alert($sSession, 'sendtext', 'new text')
 
 	Sleep(5000)
-	; close Alert
+	; close Alert by acceptance
 	_WD_Alert($sSession, 'Accept')
+
+	Sleep(1000)
+	; show Prompt for testing
+	_WD_ExecuteScript($sSession, "prompt('User Prompt 2', 'Default value')")
+
+	Sleep(5000)
+	; close Alert by rejection
+	_WD_Alert($sSession, 'Dismiss')
 
 EndFunc   ;==>DemoAlerts
 
