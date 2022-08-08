@@ -565,7 +565,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		; will be processed below
 	ElseIf $bIsIdentifierNull Then
 		$sOption = '{"id":null}'
-	ElseIf StringIsDigit($vIdentifier) And IsInt(Number($vIdentifier)) Then
+	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
 		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
