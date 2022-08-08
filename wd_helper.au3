@@ -1017,11 +1017,11 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
-				Case 'multiSelect', 'SINGLESELECT' ; https://stackoverflow.com/a/1296068/5314940
+				Case 'multiSelect', 'singleSelect' ; https://stackoverflow.com/a/1296068/5314940
 					If $sCommand = 'multiSelect' And (UBound($vParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($vParameters, $UBOUND_ROWS) = 0) Then ; for 'multiSelect' should be a single dimensional non-empty array
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
-					ElseIf $sCommand = 'SINGLESELECT' And Not (IsString($vParameters) And StringLen($vParameters)) Then ; for 'SINGLESELECT' should be a non empty string
+					ElseIf $sCommand = 'singleSelect' And Not (IsString($vParameters) And StringLen($vParameters)) Then ; for 'SINGLESELECT' should be a non empty string
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 42 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
@@ -1057,7 +1057,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 								"", @TAB, '')
 						If $sCommand = 'multiSelect' Then
 							$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & _ArrayToString($vParameters, "', '") & "']"", false"
-						ElseIf $sCommand = 'SINGLESELECT' Then
+						ElseIf $sCommand = 'singleSelect' Then
 							$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & $vParameters & "']"", true"
 						EndIf
 						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
@@ -1139,7 +1139,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$iErr = @error
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|value) $sCommand=>" & $sCommand), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|singleSelect|value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
