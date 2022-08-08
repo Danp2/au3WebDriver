@@ -741,7 +741,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 		$iErr = @error
 	EndIf
 
-	If $iErr And $iErr <> $_WD_ERROR_InvalidExpression Then
+	If $sStartLocation = '' Or $iErr Then
 		$sMessage = 'Was not able to check / back to "calling frame"'
 	EndIf
 
