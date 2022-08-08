@@ -692,15 +692,15 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 		; check the array backwards as elements may be removed
 		For $i = UBound($a_Result) - 1 To 0 Step -1
 			; find "calling frame" location - set $sStartLocation
-			If $a_Result[$i][4] = $sElement_CallingFrameBody Then $sStartLocation = $a_Result[$i][0]
+			If $a_Result[$i][$_WD_FRAMELIST_BodyID] = $sElement_CallingFrameBody Then $sStartLocation = $a_Result[$i][$_WD_FRAMELIST_Absolute]
 
 			; recalculate locations from absolute path on COL0 to relative path on COL1
-			$a_Result[$i][1] = StringRegExpReplace($a_Result[$i][0], '\A' & $sStartLocation & '\/?', '')
+			$a_Result[$i][$_WD_FRAMELIST_Relative] = StringRegExpReplace($a_Result[$i][$_WD_FRAMELIST_Absolute], '\A' & $sStartLocation & '\/?', '')
 
 			; apply filter - delete frames that HTML content string do not fits a given regular expression pattern
 			If $sFilter <> '' Then
-				; check $s_HTML content :  $a_Result[$i][5]
-				If StringRegExp(BinaryToString($a_Result[$i][5], $SB_UTF8), $sFilter, $STR_REGEXPMATCH) = 1 Then
+				; check $s_HTML content
+				If StringRegExp(BinaryToString($a_Result[$i][$_WD_FRAMELIST_HTML], $SB_UTF8), $sFilter, $STR_REGEXPMATCH) = 1 Then
 					; do nothing keeping current row of $a_Result[$i][....]
 				ElseIf @error = 2 Then ; @error StringRegExp : Bad pattern. @extended = offset of error in pattern
 					$iExt = @extended
