@@ -913,6 +913,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 			$sResult = ($iErr = $_WD_ERROR_NoAlert) ? False : True
+			If $iErr = $_WD_ERROR_NoAlert Then $iErr = $_WD_ERROR_Success
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Accept|Dismiss|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
