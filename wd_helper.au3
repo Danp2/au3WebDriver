@@ -819,6 +819,7 @@ Func __WD_FrameList_Internal(Const $sSession, Const $sLevel, $sFrameAttributes, 
 				If @error Then
 					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check atributes child frames #' & $iFrame
 				Else
+					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
 					$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bReturnHTML)
 					$iErr = @error
 					If Not @error Then
