@@ -995,7 +995,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: If no option is selected, SELECTEDINDEX will return -1. Using MULTISELECT on not multiple able <select> element sets $_WD_ERROR_ElementIssue.
+; Remarks .......: If no option is selected, SELECTEDINDEX will return -1.
 ; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
