@@ -560,7 +560,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local $iErr = $_WD_ERROR_Success
 
 	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	Local Const $bIdentifierAsPath = ((StringRegExp($vIdentifier, '(?i)\A(Null|\d+)(\/)([\d\/]*\d)\Z', $STR_REGEXPMATCH) = 1) And (StringRegExp($vIdentifier, '\/{2,}', $STR_REGEXPMATCH) = 0)) ; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit
+	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH) ; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit
 	If $bIdentifierAsPath Then
 		; will be processed below
 	ElseIf $bIsIdentifierNull Then
