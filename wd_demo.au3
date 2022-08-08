@@ -539,7 +539,7 @@ Func DemoAlerts()
 	; close Alert by acceptance
 	_WD_Alert($sSession, 'Accept')
 
-	; check if new value was stored i Storage
+	; check if new value was properly sent to browser (in this case saved in browser Storage)
 	Local $sStorage = _WD_Storage($sSession, 'testing')
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & '$sStorage => ' & $sStorage & @CRLF)
 
