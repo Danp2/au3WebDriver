@@ -545,7 +545,7 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Return values .: Success - True.
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception or $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
-; Modified ......: mLipok
+; Modified ......: Danp2, mLipok, jchd
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters or use path like 'null/2/0'
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
