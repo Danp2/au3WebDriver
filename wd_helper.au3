@@ -975,7 +975,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |DESELECTALL    - Clear all selections
-;                  |MULTISELECT    - Select <option> elements given in 1D array of labels
+;                  |MULTISELECT    - Select <option> elements given in 1D array of labels and deselect all others
 ;                  |OPTIONS        - Retrieves all <option> elements as 2D array
 ;                  |SELECTALL      - Select all <option> elements
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
