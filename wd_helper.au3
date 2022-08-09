@@ -975,7 +975,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
 ;                  |DESELECTALL    - Clear all selections
-;                  |MULTISELECT    - Select <option> elements given in 1D array of labels and deselect all others
+;                  |MULTISELECT    - Select <option> elements given in 1D array of labels
 ;                  |OPTIONS        - Retrieves all <option> elements as 2D array
 ;                  |SELECTALL      - Select all <option> elements
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
@@ -1006,7 +1006,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
 	Local Static $sScript_MultiSelectTemplate = StringReplace( _ ; it is declared as static to optimize AutoIt processing speed - this line will be processed once per script run
-			"function MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables) {" & _
+			"function MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLabels) {" & _
 			"	if ((LabelsToSelect.length > 1) && (SelectElement.multiple == false)) {" & _
 			"		return '';" & _
 			"	}; " & _
@@ -1020,11 +1020,11 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"			) {" & _
 			"				o.selected = true;" & _
 			"				result = true;" & _
-			"			} else if (DeselectingNonListedLables) {" & _
+			"			} else if (DeselectingNonListedLabels) {" & _
 			"				o.selected = false;" & _
 			"			};" & _
 			"	};" & _
-			"	if (result || DeselectingNonListedLables) {" & _
+			"	if (result || DeselectingNonListedLabels) {" & _
 			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
 			"	};" & _
 			"	return result;" & _
@@ -1032,8 +1032,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"" & _
 			"var SelectElement = arguments[0];" & _
 			"var LabelsToSelect = arguments[1];" & _ ; ['Label1', 'Label2']
-			"var DeselectingNonListedLables = arguments[2];" & _ ; true or false
-			"return MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLables);" & _
+			"var DeselectingNonListedLabels = arguments[2];" & _ ; true or false
+			"return MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLabels);" & _
 			"", @TAB, '')
 
 	If $iErr = $_WD_ERROR_Success Then
