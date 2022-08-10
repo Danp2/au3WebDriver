@@ -508,9 +508,6 @@ EndFunc   ;==>DemoCookies
 Func DemoAlerts()
 	Local $sStatus, $sText
 
-	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
-	If @error Then Return SetError(@error, @extended)
-
 	; check status before displaying Alert
 	$sStatus = _WD_Alert($sSession, 'status')
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
@@ -546,6 +543,27 @@ Func DemoAlerts()
 	Sleep(5000)
 	; close Alert by rejection
 	_WD_Alert($sSession, 'Dismiss')
+
+
+	_WD_Navigate($sSession, 'https://www.quanzhanketang.com/jsref/tryjsref_prompt.html?filename=tryjsref_prompt')
+	_WD_LoadWait($sSession)
+
+	_WD_FrameEnter($sSession, 0)
+
+	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "button[onclick='myFunction()']")
+
+	_WD_ElementAction($sSession, $sButton, 'CLICK')
+
+	Sleep(2000)
+	; Set value of text field
+	_WD_Alert($sSession, 'sendtext', 'AutoIt user')
+
+	Sleep(2000)
+	; close Alert by acceptance
+	_WD_Alert($sSession, 'Accept')
+
+	; Validate if prompt was properly filled up by _WD_Alert()
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "Check website resposne")
 
 EndFunc   ;==>DemoAlerts
 
