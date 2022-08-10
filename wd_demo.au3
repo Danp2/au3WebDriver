@@ -529,7 +529,7 @@ Func DemoAlerts()
 	_WD_Alert($sSession, 'Dismiss')
 
 	; show Prompt for testing
-	_WD_ExecuteScript($sSession, "window.localStorage.setItem('testing',prompt('User Prompt 1', 'Default value'))")
+	_WD_ExecuteScript($sSession, "prompt('User Prompt 1', 'Default value')")
 	Sleep(2000)
 
 	; Set value of text field
@@ -538,10 +538,6 @@ Func DemoAlerts()
 	Sleep(5000)
 	; close Alert by acceptance
 	_WD_Alert($sSession, 'Accept')
-
-	; check if new value was properly sent to browser (in this case saved in browser Storage)
-	Local $sStorage = _WD_Storage($sSession, 'testing')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & '$sStorage => ' & $sStorage & @CRLF)
 
 	Sleep(1000)
 	; show Prompt for testing
