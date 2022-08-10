@@ -1012,6 +1012,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"	}; " & _
 			"	var options = SelectElement.options;" & _
 			"	var result = false;" & _
+			"	var waschanged = false;" & _
 			"	for (var i = 0, o; i < options.length; i++) {" & _
 			"		o = options[i];" & _
 			"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
@@ -1020,11 +1021,13 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"			) {" & _
 			"				o.selected = true;" & _
 			"				result = true;" & _
+			"				waschanged = true;" & _
 			"			} else if (DeselectingNonListedLabels) {" & _
 			"				o.selected = false;" & _
+			"				waschanged = true;" & _
 			"			};" & _
 			"	};" & _
-			"	if (result || DeselectingNonListedLabels) {" & _
+			"	if (waschanged) {" & _
 			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
 			"	};" & _
 			"	return result;" & _
