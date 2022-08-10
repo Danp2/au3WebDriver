@@ -1058,20 +1058,20 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"		return '';" & _
 							"	}; " & _
 							"	let options = SelectElement.options;" & _
-							"	let wasselected = false;" & _
+							"	let waschanged = false;" & _
 							"	for (let i=0, o, isnotdisabled, isnothidden; i < options.length; i++) {" & _
 							"		o = options[i];" & _
 							"		isnotdisabled = (o.disabled==false && 	(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)));" & _
 							"		isnothidden = (o.hidden==false && 		(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)));" & _
 							"		if (isnotdisabled && isnothidden && o.selected==false) {" & _
 							"			o.selected = true;" & _
-							"			wasselected = true;" & _
+							"			waschanged = true;" & _
 							"		};" & _
 							"	};" & _
-							"	if (wasselected==true) {" & _
+							"	if (waschanged==true) {" & _
 							"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
 							"	};" & _
-							"	return wasselected;" & _
+							"	return waschanged;" & _
 							"};" & _
 							"var SelectElement = arguments[0]" & _
 							"SelectAll(SelectElement);" & _
