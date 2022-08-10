@@ -1067,12 +1067,19 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$iErr = @error
 
 				Case 'selectedLabels'
-					$sScript = _
-							"var result ='';" & _
-							"var options = arguments[0].selectedOptions;" & _
-							"for (let i = 0; i < options.length; i++)" & _
-							" {result += options[i].label + '\n'};" & _
-							"return result;"
+					$sScript = StringReplace( _
+							"function GetSelecteLabels(SelectElement) {" & _
+							"	let result ='';" & _
+							"	let options = SelectElement.selectedOptions;" & _
+							"	for (let i = 0, o; i < options.length; i++)	{" & _
+							"		o = options[i];" & _
+							"		result += o.label + '\n';" & _
+							"	};" & _
+							"	return result;" & _
+							"};" & _
+							"var SelectElement = arguments[0];" & _
+							"return GetSelecteLabels(SelectElement);" & _
+							"", @TAB, '')
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
