@@ -1016,8 +1016,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"	for (var i = 0, o; i < options.length; i++) {" & _
 			"		o = options[i];" & _
 			"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
-			"				&&	(o.disabled==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)))" & _
-			"				&&	(o.hidden==false	&& (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)))" & _
+			"				&&	(o.disabled==false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)))" & _
+			"				&&	(o.hidden==false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)))" & _
 			"			) {" & _
 			"				o.selected = true;" & _
 			"				result = true;" & _
