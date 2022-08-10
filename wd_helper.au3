@@ -1048,8 +1048,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$iErr = @error
 
 				Case 'multiSelect' ; https://stackoverflow.com/a/1296068/5314940
-					; Should be a single dimensional, multi-entry array
-					If UBound($vParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($vParameters, $UBOUND_ROWS) < 2 Then
+					; Should be a single dimensional, non-empty array
+					If UBound($vParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($vParameters, $UBOUND_ROWS) = 0 Then
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
