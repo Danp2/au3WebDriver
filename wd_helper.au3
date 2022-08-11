@@ -543,10 +543,12 @@ EndFunc   ;==>_WD_IsWindowTop
 ;                  |String  - Element ID from _WD_FindElement or path like 'null/2/0'
 ;                  |Integer - 0-based index of frames
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception or $_WD_ERROR_InvalidArgue
+;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
 ; Modified ......: Danp2, mLipok, jchd
-; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters or use path like 'null/2/0'
+; Remarks .......: You can drill-down into nested frames by calling this function repeatedly or use identifier like 'null/2/0'
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
@@ -559,8 +561,9 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
-	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH) ; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit
+	; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit	
+	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH) 
+
 	If $bIdentifierAsPath Then
 		; will be processed below
 	ElseIf $bIsIdentifierNull Then
