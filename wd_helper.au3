@@ -1050,7 +1050,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"	}" & _
 							"	return result;" & _
 							"}" & _
-							"var SelectElement = arguments[0]" & _
+							"var SelectElement = arguments[0];" & _
 							"return GetOptions(SelectElement);" & _
 							"", @TAB, '')
 
