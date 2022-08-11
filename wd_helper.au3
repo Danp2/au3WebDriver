@@ -1073,7 +1073,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"	};" & _
 							"	return waschanged;" & _
 							"};" & _
-							"var SelectElement = arguments[0]" & _
+							"var SelectElement = arguments[0];" & _
 							"SelectAll(SelectElement);" & _
 							"", @TAB, '')
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
