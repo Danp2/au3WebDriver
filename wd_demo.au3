@@ -203,6 +203,10 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 			ContinueLoop
 		EndIf
 
+		_WD_CheckContext($sSession, False)
+		$iError = @error
+		If @error Then ExitLoop ; return if session is NOT OK
+		
 		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
 		If $aDemoSuite[$iIndex][2] Then
 			Call($sDemoName, $sBrowserName)
@@ -465,7 +469,13 @@ Func DemoCookies()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained at start after navigate) : " & $sAllCookies & @CRLF)
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get 'NID' cookie:" & @CRLF)
-	Local $sNID = _WD_Cookies($sSession, 'Get', 'NID')
+	Local $hTimer = TimerInit()
+	Local $sNID
+	While 1
+		$sNID = _WD_Cookies($sSession, 'Get', 'NID')
+		If Not @error Or TimerDiff($hTimer) > 5 * 1000 Then ExitLoop
+		Sleep(100) ; this cookie may not exist at start, may appear later when website will be estabilished, so there is need to wait on @error and try again
+	WEnd
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie obtained 'NID' : " & $sNID & @CRLF)
 
 	Local $sName = "TestName"
@@ -518,20 +528,48 @@ Func DemoAlerts()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Text Detected => ' & $sText & @CRLF)
 
 	Sleep(5000)
-	; close Alert
+	; close Alert by rejection
 	_WD_Alert($sSession, 'Dismiss')
 
 	; show Prompt for testing
-	_WD_ExecuteScript($sSession, "prompt('User Prompt', 'Default value')")
-
+	_WD_ExecuteScript($sSession, "prompt('User Prompt 1', 'Default value')")
 	Sleep(2000)
 
 	; Set value of text field
 	_WD_Alert($sSession, 'sendtext', 'new text')
 
 	Sleep(5000)
-	; close Alert
+	; close Alert by acceptance
 	_WD_Alert($sSession, 'Accept')
+
+	Sleep(1000)
+	; show Prompt for testing
+	_WD_ExecuteScript($sSession, "prompt('User Prompt 2', 'Default value')")
+
+	Sleep(5000)
+	; close Alert by rejection
+	_WD_Alert($sSession, 'Dismiss')
+
+
+	_WD_Navigate($sSession, 'https://www.quanzhanketang.com/jsref/tryjsref_prompt.html?filename=tryjsref_prompt')
+	_WD_LoadWait($sSession)
+
+	_WD_FrameEnter($sSession, 0)
+
+	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "button[onclick='myFunction()']")
+
+	_WD_ElementAction($sSession, $sButton, 'CLICK')
+
+	Sleep(2000)
+	; Set value of text field
+	_WD_Alert($sSession, 'sendtext', 'AutoIt user')
+
+	Sleep(2000)
+	; close Alert by acceptance
+	_WD_Alert($sSession, 'Accept')
+
+	; Validate if prompt was properly filled up by _WD_Alert()
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "Check website resposne")
 
 EndFunc   ;==>DemoAlerts
 
@@ -918,6 +956,7 @@ Func DemoStyles()
 
 EndFunc   ;==>DemoStyles
 
+#Region - UserTesting
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
 	_WD_LoadWait($sSession)
@@ -929,6 +968,10 @@ Func UserTesting() ; here you can replace the code to test your stuff before you
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 ;~ 	Exit
 EndFunc   ;==>UserTesting
+
+; if necessary, add any additional function required for testing within this region here
+
+#EndRegion - UserTesting
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.

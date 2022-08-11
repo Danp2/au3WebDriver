@@ -868,12 +868,11 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  |SENDTEXT - Set the text field of the current user prompt to the given value
 ;                  |STATUS   - Return logical value indicating the presence or absence of an alert
 ;                  $sOption  - [optional] a string value. Default is ""
-; Return values .: Success - Requested data returned by web driver.
+; Return values .: Success - True/False or requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
-;                  - $_WD_ERROR_NoAlert
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#user-prompts
@@ -913,6 +912,7 @@ Func _WD_Alert($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 			$sResult = ($iErr = $_WD_ERROR_NoAlert) ? False : True
+			If $iErr = $_WD_ERROR_NoAlert Then $iErr = $_WD_ERROR_Success
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Accept|Dismiss|GetText|SendText|Status) $sCommand=>" & $sCommand), 0, "")
