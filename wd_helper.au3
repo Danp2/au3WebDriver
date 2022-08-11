@@ -538,36 +538,70 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Description ...: Enter the specified frame.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
-;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword)
+;                  $vIdentifier - Target frame identifier. Can be any of the following:
+;                  |Null    - Return to top-most browsing context
+;                  |String  - Element ID from _WD_FindElement or path like 'null/2/0'
+;                  |Integer - 0-based index of frames
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
-; Modified ......: mLipok
-; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
+; Modified ......: Danp2, mLipok, jchd
+; Remarks .......: You can drill-down into nested frames by calling this function repeatedly or use identifier like 'null/2/0'
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
-	Local Const $sParameters = 'Parameters:    Identifier=' & $vIdentifier
-	Local $sOption, $sValue, $sResponse, $oJSON
+	If String($vIdentifier) = 'null' Then $vIdentifier = Null ; String must be used because checking 0 = 'null' is True
+	Local Const $bIsIdentifierNull = (IsKeyword($vIdentifier) = $KEYWORD_NULL)
+	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? ("Null") : ($vIdentifier))
+	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
-	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
+	; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit	
+	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH) 
+
+	If $bIdentifierAsPath Then
+		; will be processed below
+	ElseIf $bIsIdentifierNull Then
 		$sOption = '{"id":null}'
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
+		If @error Then
+			$iErr = $_WD_ERROR_InvalidArgue
+		Else
+			$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		EndIf
 	EndIf
 
-	$sResponse = _WD_Window($sSession, "frame", $sOption)
+	If $iErr = $_WD_ERROR_Success Then ; check if $vIdentifier was succesfully validated
+		If Not $bIdentifierAsPath Then
+			$sResponse = _WD_Window($sSession, "frame", $sOption)
+			$iErr = @error
+		Else
+			Local $aIdentifiers = StringSplit($vIdentifier, '/')
+			For $i = 1 To $aIdentifiers[0]
+				If String($aIdentifiers[$i]) = 'null' Then
+					$aIdentifiers[$i] = '{"id":null}'
+				Else
+					$aIdentifiers[$i] = '{"id":' & $aIdentifiers[$i] & '}'
+				EndIf
+				$sResponse = _WD_Window($sSession, "frame", $aIdentifiers[$i])
+				If Not @error Then ContinueLoop
 
-	If @error <> $_WD_ERROR_Success Then
-		$iErr = $_WD_ERROR_Exception
-	Else
+				$iErr = @error
+				$sMessage = ' Error on ID#' & $i & ' > ' & $aIdentifiers[$i]
+				ExitLoop
+			Next
+		EndIf
+	EndIf
+
+	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
 		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
@@ -577,9 +611,11 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $sValue)
 EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
