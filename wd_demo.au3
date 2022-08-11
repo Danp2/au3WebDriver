@@ -785,7 +785,7 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 
 	; change the attributes of the frame to improve the visibility of the <select> element, on which the options will be indicated
-	Local $sJavaScript =  _
+	Local $sJavaScript = _
 			"var element = arguments[0];" & _
 			"element.setAttribute('height', '500');" & _
 			"element.setAttribute('padding', '0');"
@@ -817,20 +817,26 @@ Func DemoSelectOptions()
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
 
 	; select desired options
-	Local $aOptions[] = ['Cat', 'Hamster', 'Parrot', 'Albatross']
-	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptions)
+	Local $aOptionsToSelect[] = ['Cat', 'Hamster', 'Parrot', 'Albatross']
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptionsToSelect)
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: Cat / Hamster / Parrot / Albatros")
+
+	; retrieves all <option> elements as 2D array
+	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'selectedOptions')
+	If @error Then Return SetError(@error, @extended, '')
+
+	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
 
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'SINGLESELECT', 'Parrot')
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: Parrot")
 
 	; retrieves all <option> elements as 2D array
-	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
+	Local $aAllOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
 	If @error Then Return SetError(@error, @extended, '')
 
-	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
+	_ArrayDisplay($aAllOptions, '$aAllOptions')
 
 	; deselect ALL options
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'DESELECTALL')
@@ -842,7 +848,7 @@ Func DemoSelectOptions()
 			"element.multiple = false"
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
 
-	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptions)
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptionsToSelect)
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT on <select> element with disabled multiple ability")
 
 	; now will test enabled/disabled OPTGROUP
@@ -867,7 +873,7 @@ Func DemoSelectOptions()
 	_WD_FrameEnter($sSession, $sFrame2)
 	If @error Then Return SetError(@error, @extended, '')
 
-	; get <select> element by it's name
+	; get <select> element
 	Local $sSelectElement2 = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "body > select")
 	If @error Then Return SetError(@error, @extended, '')
 
@@ -899,10 +905,10 @@ Func DemoSelectOptions()
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: 1.1 / 2.1 / 3.1")
 
 	; retrieves all <option> elements as 2D array
-	Local $aSelectedOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
+	Local $aAllOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
 	If @error Then Return SetError(@error, @extended, '')
 
-	_ArrayDisplay($aSelectedOptions2, '$aSelectedOptions2')
+	_ArrayDisplay($aAllOptions2, '$aAllOptions2')
 
 EndFunc   ;==>DemoSelectOptions
 
