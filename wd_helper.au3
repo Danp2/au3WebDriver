@@ -79,7 +79,7 @@ Global Enum _
 Global Enum _
 		$_WD_FRAMELIST_Absolute = 0, _
 		$_WD_FRAMELIST_Relative = 1, _
-		$_WD_FRAMELIST_Atributes = 2, _
+		$_WD_FRAMELIST_Attributes = 2, _
 		$_WD_FRAMELIST_URL = 3, _
 		$_WD_FRAMELIST_BodyID = 4, _
 		$_WD_FRAMELIST_HTML = 5
@@ -685,10 +685,10 @@ EndFunc   ;==>_WD_FrameLeave
 ; Description ...: Retrieves a detailed list of the main document and all associated frames
 ; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True[, $sFilter = ''[, $bReturnHTML = False]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $bReturnAsArray      - By default on True function will return array, other wise string
-;                  $sFilter             - RegExp pattern to check HTML from "document.body". If used it returns only frames with desired HTML content
-;                  $bReturnHTML         - On true function will return frame document HTML source
-; Return values .: Success - 2D array (with 6 cols) or string ( delimeted with | and @CRLF )
+;                  $bReturnAsArray      - [optional] Return result as array? Default is True.
+;                  $sFilter             - [optional] RegExp pattern to filter frames with their HTML content. Default is ''.
+;                  $bReturnHTML         - [optional] Return frame document's HTML source? Default is False.
+; Return values .: Success - 2D array (with 6 cols) or string ( delimited with | and @CRLF )
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Exception
@@ -696,7 +696,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  - $_WD_ERROR_NotFound
 ; Author ........: mLipok
 ; Modified ......: Danp2
-; Remarks .......: using $bReturnHTML will always return array
+; Remarks .......: Always returns an array when $bReturnHTML is True.
 ; Related .......: _WD_GetFrameCount, _WD_FrameEnter, _WD_FrameLeave
 ; Link ..........:
 ; Example .......: No
@@ -753,7 +753,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 			$iErr = $_WD_ERROR_NotFound
 			$a_Result = ''
 		Else
-			If $bReturnHTML = False Then
+			If Not $bReturnHTML Then
 				; cleanup HTML
 				For $i = 0 To UBound($a_Result) - 1
 					$a_Result[$i][5] = ''
