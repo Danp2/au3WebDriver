@@ -733,10 +733,15 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 			; recalculate locations from absolute path on COL0 to relative path on COL1
 			$a_Result[$i][$_WD_FRAMELIST_Relative] = StringRegExpReplace($a_Result[$i][$_WD_FRAMELIST_Absolute], '\A' & $sStartLocation & '\/?', '')
 
+			; Decode HTML
+			If $bReturnHTML Or $sFilter <> '' Then
+				$a_Result[$i][$_WD_FRAMELIST_HTML] = BinaryToString($a_Result[$i][$_WD_FRAMELIST_HTML], $SB_UTF8)
+			EndIf
+
 			; apply filter - delete frames that HTML content string do not fits a given regular expression pattern
 			If $sFilter <> '' Then
 				; check $s_HTML content
-				If StringRegExp(BinaryToString($a_Result[$i][$_WD_FRAMELIST_HTML], $SB_UTF8), $sFilter, $STR_REGEXPMATCH) = 1 Then
+				If StringRegExp($a_Result[$i][$_WD_FRAMELIST_HTML], $sFilter, $STR_REGEXPMATCH) = 1 Then
 					; do nothing keeping current row of $a_Result[$i][....]
 				ElseIf @error = 2 Then ; @error StringRegExp : Bad pattern. @extended = offset of error in pattern
 					$iExt = @extended
@@ -746,6 +751,11 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 					_ArrayDelete($a_Result, $i)
 				EndIf
 			EndIf
+
+			; cleanup HTML
+			If Not $bReturnHTML Then
+				$a_Result[$i][$_WD_FRAMELIST_HTML] = ''
+			EndIf
 		Next
 
 		; check if anything stay in the array to check the case when $sFilter was used
@@ -753,13 +763,6 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 			$iErr = $_WD_ERROR_NotFound
 			$a_Result = ''
 		Else
-			If Not $bReturnHTML Then
-				; cleanup HTML
-				For $i = 0 To UBound($a_Result) - 1
-					$a_Result[$i][5] = ''
-				Next
-			EndIf
-
 			; select desired DataType for the $vResult
 			If $bReturnAsArray Or $bReturnHTML Then ; do not return huge amount of HTML data to string - only as array as they can contain restricted data
 				$vResult = $a_Result
@@ -835,6 +838,7 @@ Func __WD_FrameList_Internal(Const $sSession, Const $sLevel, $sFrameAttributes, 
 						$s_HTML = ''
 						$sMessage = 'Error occured on "' & $sLevel & '" level when getting HTML Source'
 					Else
+						; encode HTML
 						$s_HTML = StringToBinary($s_HTML, $SB_UTF8)
 					EndIf
 				EndIf
