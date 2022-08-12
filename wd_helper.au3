@@ -726,7 +726,9 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 		_ArrayAdd($a_Result, $vResult)
 
 		; check the array backwards as elements may be removed
+		Local $bWasDeleted = False
 		For $i = UBound($a_Result) - 1 To 0 Step -1
+			$bWasDeleted = False
 			; find "calling frame" location - set $sStartLocation
 			If $a_Result[$i][$_WD_FRAMELIST_BodyID] = $sElement_CallingFrameBody Then $sStartLocation = $a_Result[$i][$_WD_FRAMELIST_Absolute]
 
@@ -749,11 +751,12 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $sFilter = '', $bReturnHTM
 					ExitLoop
 				Else ; StringRegExp = 0 no MATCH
 					_ArrayDelete($a_Result, $i)
+					$bWasDeleted = True
 				EndIf
 			EndIf
 
 			; cleanup HTML
-			If Not $bReturnHTML Then
+			If Not ($bWasDeleted Or $bReturnHTML) Then
 				$a_Result[$i][$_WD_FRAMELIST_HTML] = ''
 			EndIf
 		Next
