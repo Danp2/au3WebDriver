@@ -1118,14 +1118,21 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 						$vResult = $aSelectedLabels
 					EndIf
 
-				Case 'selectedOptions' ; 4 columns (value, label, index and selected status)
-					$sScript = _
-							"var result ='';" & _
-							"var options = arguments[0].selectedOptions;" & _
-							"for (let i = 0; i < options.length; i++)" & _
-							" {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'};" & _
-							"return result;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+				Case 'selectedOptions' ; 4 columns (value, label, index and group name)
+					Local Static $sScript_SelectedOptionsTemplate = StringReplace( _
+							"function GetSelectedOptions(SelectElement) {" & _
+							"	var result ='';" & _
+							"	var options = SelectElement.selectedOptions;" & _
+							"	for (let i = 0, o; i < options.length; i++) {" & _
+							"		o = options[i];" & _
+							"		result += o.value + '|' + o.label + '|' + o.index + '|' + (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '') + '\n';" & _
+							"	};" & _
+							"	return result;" & _
+							"}" & _
+							"var SelectElement = arguments[0];" & _
+							"return GetSelectedOptions(SelectElement);" & _
+							"", @TAB, '')
+					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectedOptionsTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
