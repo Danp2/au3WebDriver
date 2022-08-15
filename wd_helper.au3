@@ -1071,18 +1071,30 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 						$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 						$iErr = @error
 					EndIf
-				Case 'options' ; 6 columns (value, label, index, selected status, disabled status, and hidden status)
-					$sScript = _
-							"var result ='';" & _
-							"var o = arguments[0].options;" & _
-							"for ( let i = 0; i < o.length; i++ )" & _
-							"  {result += o[i].value + '|' + o[i].label + '|' + o[i].index + '|' + o[i].selected  + '|' + (o[i].disabled || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.disabled)) + '|' + (o[i].hidden || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.hidden))  + '\n'};" & _
-							"return result;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+				Case 'options' ; 7 columns (value, label, index, selected status, disabled status, hidden status and group name)
+					Local Static $sScript_OptionsTemplate = StringReplace( _
+							"function GetOptions(SelectElement) {" & _
+							"	let result ='';" & _
+							"	let options = SelectElement.options;" & _
+							"	for (let i = 0, o; i < options.length; i++) {" & _
+							"		o = options[i];" & _
+							"		result += o.value + '|' + o.label + '|' + o.index + '|' + o.selected;" & _
+							"		result += '|' + (o.disabled || 	(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)	);" & _
+							"		result += '|' + (o.hidden || 	(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)	);" & _
+							"		result += '|' + (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '');" & _
+							"		result += '\n';" & _
+							"	}" & _
+							"	return result;" & _
+							"}" & _
+							"var SelectElement = arguments[0];" & _
+							"return GetOptions(SelectElement);" & _
+							"", @TAB, '')
+
+					$vResult = _WD_ExecuteScript($sSession, $sScript_OptionsTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
-						Local $aAllOptions[0][6]
+						Local $aAllOptions[0][7]
 						_ArrayAdd($aAllOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
 						$vResult = $aAllOptions
 					EndIf
