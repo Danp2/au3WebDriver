@@ -1282,7 +1282,9 @@ EndFunc   ;==>_WD_Shutdown
 ;                  Failure - Response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidValue
-;                  - $_WD_ERROR_InvalidDataType
+;                  - $_WD_ERROR_SendRecv
+;                  - $_WD_ERROR_SocketError
+;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1318,19 +1320,21 @@ Func __WD_Get($sURL)
 				Case $INTERNET_SCHEME_HTTPS
 					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "GET", $aURL[6] & $aURL[7], Default, Default, $_WD_HTTPContentType)
 				Case Else
-					SetError($_WD_ERROR_InvalidValue)
+					$iResult = $_WD_ERROR_InvalidValue
 			EndSwitch
 
-			$iErr = @error
-			$_WD_HTTPRESULT = @extended
-			$_WD_HTTPRESPONSE = $sResponseText
+			If $iResult = $_WD_ERROR_Success Then
+				$iErr = @error
+				$_WD_HTTPRESULT = @extended
+				$_WD_HTTPRESPONSE = $sResponseText
 
-			If $iErr Then
-				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $_WD_WinHTTPTimeoutMsg
-			Else
-				__WD_DetectError($iErr, $sResponseText)
-				$iResult = $iErr
+				If $iErr Then
+					$iResult = $_WD_ERROR_SendRecv
+					$sResponseText = $_WD_WinHTTPTimeoutMsg
+				Else
+					__WD_DetectError($iErr, $sResponseText)
+					$iResult = $iErr
+				EndIf
 			EndIf
 		EndIf
 
@@ -1353,9 +1357,10 @@ EndFunc   ;==>__WD_Get
 ; Return values..: Success - Response from web driver in JSON format
 ;                  Failure - Response from web driver in JSON format and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_Timeout
-;                  - $_WD_ERROR_SocketError
 ;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_SendRecv
+;                  - $_WD_ERROR_SocketError
+;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1393,19 +1398,21 @@ Func __WD_Post($sURL, $sData)
 				Case $INTERNET_SCHEME_HTTPS
 					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "POST", $aURL[6] & $aURL[7], Default, StringToBinary($sData, $_WD_BFORMAT), $_WD_HTTPContentType)
 				Case Else
-					SetError($_WD_ERROR_InvalidValue)
+					$iResult = $_WD_ERROR_InvalidValue
 			EndSwitch
 
-			$iErr = @error
-			$_WD_HTTPRESULT = @extended
-			$_WD_HTTPRESPONSE = $sResponseText
+			If $iResult = $_WD_ERROR_Success Then
+				$iErr = @error
+				$_WD_HTTPRESULT = @extended
+				$_WD_HTTPRESPONSE = $sResponseText
 
-			If $iErr Then
-				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $_WD_WinHTTPTimeoutMsg
-			Else
-				__WD_DetectError($iErr, $sResponseText)
-				$iResult = $iErr
+				If $iErr Then
+					$iResult = $_WD_ERROR_SendRecv
+					$sResponseText = $_WD_WinHTTPTimeoutMsg
+				Else
+					__WD_DetectError($iErr, $sResponseText)
+					$iResult = $iErr
+				EndIf
 			EndIf
 		EndIf
 
@@ -1425,9 +1432,10 @@ EndFunc   ;==>__WD_Post
 ; Return values..: Success - Response from web driver.
 ;                  Failure - Response from web driver and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_SendRecv
 ;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_SendRecv
 ;                  - $_WD_ERROR_SocketError
+;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......:
@@ -1465,19 +1473,21 @@ Func __WD_Delete($sURL)
 				Case $INTERNET_SCHEME_HTTPS
 					$sResponseText = _WinHttpSimpleSSLRequest($hConnect, "DELETE", $aURL[6] & $aURL[7], Default, Default, $_WD_HTTPContentType)
 				Case Else
-					SetError($_WD_ERROR_InvalidValue)
+					$iResult = $_WD_ERROR_InvalidValue
 			EndSwitch
 
-			$iErr = @error
-			$_WD_HTTPRESULT = @extended
-			$_WD_HTTPRESPONSE = $sResponseText
+			If $iResult = $_WD_ERROR_Success Then
+				$iErr = @error
+				$_WD_HTTPRESULT = @extended
+				$_WD_HTTPRESPONSE = $sResponseText
 
-			If $iErr Then
-				$iResult = $_WD_ERROR_SendRecv
-				$sResponseText = $_WD_WinHTTPTimeoutMsg
-			Else
-				__WD_DetectError($iErr, $sResponseText)
-				$iResult = $iErr
+				If $iErr Then
+					$iResult = $_WD_ERROR_SendRecv
+					$sResponseText = $_WD_WinHTTPTimeoutMsg
+				Else
+					__WD_DetectError($iErr, $sResponseText)
+					$iResult = $iErr
+				EndIf
 			EndIf
 		EndIf
 
