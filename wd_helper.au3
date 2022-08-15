@@ -1100,14 +1100,35 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					EndIf
 
 				Case 'selectAll'
-					$sScript = _
-							"var options = arguments[0].options;" & _
-							"for ( i=0; i<options.length; i++)" & _
-							"  {if ( (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) && (options[i].hidden==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.hidden))) ) {options[i].selected = true}};" & _
-							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
-							"return true;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					Local Static $sScript_SelectAllTemplate = StringReplace( _
+							"function SelectAll(SelectElement) {" & _
+							"	if (SelectElement.multiple == false) {" & _
+							"		return '';" & _
+							"	}; " & _
+							"	let options = SelectElement.options;" & _
+							"	let waschanged = false;" & _
+							"	for (let i=0, o, isnotdisabled, isnothidden; i < options.length; i++) {" & _
+							"		o = options[i];" & _
+							"		isnotdisabled = (o.disabled==false && 	(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)));" & _
+							"		isnothidden = (o.hidden==false && 		(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)));" & _
+							"		if (isnotdisabled && isnothidden && o.selected==false) {" & _
+							"			o.selected = true;" & _
+							"			waschanged = true;" & _
+							"		};" & _
+							"	};" & _
+							"	if (waschanged==true) {" & _
+							"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
+							"	};" & _
+							"	return waschanged;" & _
+							"};" & _
+							"var SelectElement = arguments[0];" & _
+							"SelectAll(SelectElement);" & _
+							"", @TAB, '')
+					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectAllTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
+					If Not @error And $vResult = '' Then
+						$iErr = $_WD_ERROR_ElementIssue
+					EndIf
 
 				Case 'selectedIndex'
 					$sScript = "return arguments[0].selectedIndex"
