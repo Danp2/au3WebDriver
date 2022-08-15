@@ -1052,7 +1052,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					EndIf
 
 				Case 'selectAll'
-					$sScript = StringReplace( _
+					Local Static $sScript_SelectAllTemplate = StringReplace( _
 							"function SelectAll(SelectElement) {" & _
 							"	if (SelectElement.multiple == false) {" & _
 							"		return '';" & _
@@ -1076,7 +1076,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"var SelectElement = arguments[0];" & _
 							"SelectAll(SelectElement);" & _
 							"", @TAB, '')
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectAllTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 					If Not @error And $vResult = '' Then
 						$iErr = $_WD_ERROR_ElementIssue
