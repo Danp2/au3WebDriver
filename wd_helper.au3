@@ -733,7 +733,11 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 			$vResult = $a_Result
 		Else
 			$vResult = _ArrayToString($a_Result)
-			If @error Then $vResult = ''
+			If @error Then
+				$iErr = $_WD_ERROR_RetValue
+				$sMessage &= ' ArrayToSring conversion failed'
+				$vResult = ''
+			EndIf
 		EndIf
 
 	EndIf
@@ -744,8 +748,8 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 		$iErr = @error
 	EndIf
 
-	If $sStartLocation = '' Or $iErr Then
-		$sMessage = ' Was not able to check / back to "calling frame"'
+	If $sStartLocation = '' Or ($iErr And $iErr <> $_WD_ERROR_RetValue) Then
+		$sMessage &= ' Was not able to check / back to "calling frame"'
 	EndIf
 
 	#EndRegion - post processing
