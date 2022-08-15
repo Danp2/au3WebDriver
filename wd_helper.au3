@@ -1067,7 +1067,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$iErr = @error
 
 				Case 'selectedLabels'
-					$sScript = StringReplace( _
+					Local Static $sScript_SelectedLabelsTemplate = StringReplace( _
 							"function GetSelecteLabels(SelectElement) {" & _
 							"	let result ='';" & _
 							"	let options = SelectElement.selectedOptions;" & _
@@ -1080,7 +1080,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"var SelectElement = arguments[0];" & _
 							"return GetSelecteLabels(SelectElement);" & _
 							"", @TAB, '')
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectedLabelsTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
