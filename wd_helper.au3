@@ -1036,7 +1036,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 						$iErr = @error
 					EndIf
 				Case 'options' ; 7 columns (value, label, index, selected status, disabled status, hidden status and group name)
-					$sScript = StringReplace( _
+					Local Static $sScript_OptionsTemplate = StringReplace( _
 							"function GetOptions(SelectElement) {" & _
 							"	let result ='';" & _
 							"	let options = SelectElement.options;" & _
@@ -1054,7 +1054,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"return GetOptions(SelectElement);" & _
 							"", @TAB, '')
 
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$vResult = _WD_ExecuteScript($sSession, $sScript_OptionsTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
