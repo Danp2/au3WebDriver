@@ -689,6 +689,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_RetValue
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; Remarks .......:
