@@ -685,7 +685,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $bReturnAsArray      - [optional] Return result as array? Default is True.
-; Return values .: Success - 2D array (with 5 cols) or string ( delimeted with | and @CRLF )
+; Return values .: Success - 2D array (with 5 cols) or string ( delimited with | and @CRLF )
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Exception
