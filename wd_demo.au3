@@ -932,17 +932,28 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
 
-	; select desired options
-	Local $aOptions2[] = ['Option 1.1', 'Option 2.1', 'Option 3.1']
+	; select desired <option> elements one after other each separately
+	Local $aOptions2[] = ['Option 1.1']
 	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
 	If @error Then Return SetError(@error, @extended, '')
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: 1.1 / 2.1 / 3.1")
+
+	$aOptions2[0] = 'Option 2.1'
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
+	If @error Then Return SetError(@error, @extended, '')
+
+	$aOptions2[0] = 'Option 3.1' ; this will set @error as 'Option 3.1' is disabled
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: 1.1 / 2.1 / 3.1" & @CRLF & "<option> elements one after other each separately")
 
 	; retrieves all <option> elements as 2D array
 	Local $aAllOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
 	If @error Then Return SetError(@error, @extended, '')
 
 	_ArrayDisplay($aAllOptions2, '$aAllOptions2')
+
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'SINGLESELECT', 'Option 2.1')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: 2.1")
 
 EndFunc   ;==>DemoSelectOptions
 
