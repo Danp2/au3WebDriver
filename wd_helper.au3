@@ -1156,7 +1156,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							"function SelectAll(SelectElement) {" & _
 							"	if (SelectElement.multiple == false) {" & _
 							"		return '';" & _
-							"	}; " & _
+							"	};" & _
 							"	let options = SelectElement.options;" & _
 							"	let waschanged = false;" & _
 							"	for (let i=0, o, isnotdisabled, isnothidden; i < options.length; i++) {" & _
