@@ -1002,32 +1002,31 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters = Default)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
+	Local Const $sParameters = 'Parameters:    Command = ' & $sCommand &  '    Parameters = ' & ((IsArray($vParameters)) ? ("(array)") : ("(string)"))
 	Local $vResult, $sScript
 	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
 	Local Static $sScript_MultiSelectTemplate = StringReplace( _ ; it is declared as static to optimize AutoIt processing speed - this line will be processed once per script run
-			"function MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLabels) {" & _
-			"	if ((LabelsToSelect.length > 1) && (SelectElement.multiple == false)) {" & _
+			"function MultiSelectOption(SelectElement, LabelsToSelect, AllowMultiple) {" & _
+			"	if (AllowMultiple && SelectElement.multiple == false) {" & _
 			"		return '';" & _
-			"	}; " & _
+			"	};" & _
 			"	var options = SelectElement.options;" & _
 			"	var result = false;" & _
-			"	var waschanged = false;" & _
 			"	for (var i = 0, o; i < options.length; i++) {" & _
 			"		o = options[i];" & _
 			"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
-			"				&&	(o.disabled==false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)))" & _
-			"				&&	(o.hidden==false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)))" & _
+			"				&&	(o.disabled == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)))" & _
+			"				&&	(o.hidden == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)))" & _
 			"			) {" & _
+			"				if (AllowMultiple == false) {" & _
+			"					SelectElement.selectedIndex = -1;" & _
+			"				};" & _
 			"				o.selected = true;" & _
 			"				result = true;" & _
-			"				waschanged = true;" & _
-			"			} else if (DeselectingNonListedLabels) {" & _
-			"				o.selected = false;" & _
-			"				waschanged = true;" & _
 			"			};" & _
 			"	};" & _
-			"	if (waschanged) {" & _
+			"	if (result == true) {" & _
 			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
 			"	};" & _
 			"	return result;" & _
@@ -1035,8 +1034,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"var SelectElement = arguments[0];" & _
 			"var LabelsToSplit = arguments[1];" & _ ; Label1||Label2
 			"var LabelsToSelect = LabelsToSplit.split('||');" & _ ; ['Label1', 'Label2']
-			"var DeselectingNonListedLabels = arguments[2];" & _ ; true or false
-			"return MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLabels);" & _
+			"var AllowMultiple = arguments[2];" & _ ; true or false
+			"return MultiSelectOption(SelectElement, LabelsToSelect, AllowMultiple);" & _
 			"", @TAB, '')
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1056,25 +1055,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
-						$vParameters = StringReplace(_ArrayToString($vParameters, "||"),'"','\"') ; labels can contains double quotation marks
-						$vParameters = __WD_JsonElement($sSelectElement) & ',"' & $vParameters & '", false'
-						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
-						$iErr = @error
-						If Not @error Then
-							If $vResult = '' Then
-								$iErr = $_WD_ERROR_ElementIssue
-							ElseIf $vResult = False Then
-								$iErr = $_WD_ERROR_NoMatch
-							EndIf
-						EndIf
-					EndIf
-				Case 'singleSelect'
-					; Should be a non empty string
-					If Not (IsString($vParameters) And StringLen($vParameters)) Then
-						$iErr = $_WD_ERROR_InvalidArgue
-						$iExt = 42 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
-					Else
-						$vParameters = StringReplace($vParameters,'"','\"') ; labels can contains double quotation marks
+						$vParameters = StringReplace(_ArrayToString($vParameters, "||"), '"', '\"') ; labels can contains double quotation marks
 						$vParameters = __WD_JsonElement($sSelectElement) & ',"' & $vParameters & '", true'
 						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
@@ -1086,6 +1067,26 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							EndIf
 						EndIf
 					EndIf
+
+				Case 'singleSelect'
+					; Should be a non empty string
+					If Not (IsString($vParameters) And StringLen($vParameters)) Then
+						$iErr = $_WD_ERROR_InvalidArgue
+						$iExt = 42 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
+					Else
+						$vParameters = StringReplace($vParameters, '"', '\"') ; labels can contains double quotation marks
+						$vParameters = __WD_JsonElement($sSelectElement) & ',"' & $vParameters & '", false'
+						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
+						$iErr = @error
+						If Not @error Then
+							If $vResult = '' Then
+								$iErr = $_WD_ERROR_ElementIssue
+							ElseIf $vResult = False Then
+								$iErr = $_WD_ERROR_NoMatch
+							EndIf
+						EndIf
+					EndIf
+
 				Case 'options' ; 6 columns (value, label, index, selected status, disabled status, and hidden status)
 					$sScript = _
 							"var result ='';" & _
@@ -1164,7 +1165,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 		EndIf
 	EndIf
 
-	Local $sMessage = '$sCommand = ' & $sCommand & ' : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
+	Local $sMessage = $sParameters & '    : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
