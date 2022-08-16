@@ -1006,7 +1006,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementSelectAction
 ; Description ...: Perform action on designated <select> element.
-; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $aParameters = Default])
+; Syntax ........: _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand[, $vParameters = Default])
 ; Parameters ....: $sSession       - Session ID from _WD_CreateSession
 ;                  $sSelectElement - Element ID of <select> element from _WD_FindElement
 ;                  $sCommand       - Action to be performed. Can be one of the following:
@@ -1017,8 +1017,9 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDINDEX  - Retrieves 0-based index of the first selected <option> element
 ;                  |SELECTEDLABELS - Retrieves labels of selected <option> elements as 1D array
 ;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array
+;                  |SINGLESELECT   - Select <option> element given as string and deselect all others
 ;                  |VALUE          - Retrieves value of the first selected <option> element
-;                  $aParameters    - [optional] List of parameters (depending on chosen $sCommand)
+;                  $vParameters    - [optional] List of parameters (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
@@ -1027,19 +1028,51 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
 ;                  - $_WD_ERROR_InvalidArgue
+;                  - $_WD_ERROR_ElementIssue
+;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: If no option is selected, SELECTEDINDEX will return -1
+; Remarks .......: If no option is selected, SELECTEDINDEX will return -1.
 ; Related .......: _WD_FindElement, _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters = Default)
+Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters = Default)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
+	Local Const $sParameters = 'Parameters:    Command = ' & $sCommand &  '    Parameters = ' & ((IsArray($vParameters)) ? ("(array)") : ("(string)"))
 	Local $vResult, $sScript
-
 	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
+	Local Static $sScript_MultiSelectTemplate = StringReplace( _ ; it is declared as static to optimize AutoIt processing speed - this line will be processed once per script run
+			"function MultiSelectOption(SelectElement, LabelsToSelect, AllowMultiple) {" & _
+			"	if (AllowMultiple && SelectElement.multiple == false) {" & _
+			"		return '';" & _
+			"	}" & _
+			"	var options = SelectElement.options;" & _
+			"	var result = false;" & _
+			"	for (var i = 0, o; i < options.length; i++) {" & _
+			"		o = options[i];" & _
+			"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
+			"				&&	(o.disabled == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)))" & _
+			"				&&	(o.hidden == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)))" & _
+			"			) {" & _
+			"				if (AllowMultiple == false) { SelectElement.selectedIndex = -1; }" & _
+			"				o.selected = true;" & _
+			"				result = true;" & _
+			"				if (AllowMultiple == false) { break; }" & _
+			"			}" & _
+			"	}" & _
+			"	if (result == true) {" & _
+			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
+			"	}" & _
+			"	return result;" & _
+			"};" & _
+			"var SelectElement = arguments[0];" & _
+			"var LabelsToSplit = arguments[1];" & _ ; Label1||Label2
+			"var LabelsToSelect = LabelsToSplit.split('||');" & _ ; ['Label1', 'Label2']
+			"var AllowMultiple = arguments[2];" & _ ; true or false
+			"return MultiSelectOption(SelectElement, LabelsToSelect, AllowMultiple);" & _
+			"", @TAB, '')
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $sNodeName = 'select' Then ; check if designated element is <select> element
@@ -1053,24 +1086,41 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$iErr = @error
 
 				Case 'multiSelect' ; https://stackoverflow.com/a/1296068/5314940
-					If UBound($aParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($aParameters, $UBOUND_ROWS) = 0 Then ; should be a single dimensional non-empty array
+					; Should be a single dimensional, non-empty array
+					If UBound($vParameters, $UBOUND_DIMENSIONS) <> 1 Or UBound($vParameters, $UBOUND_ROWS) = 0 Then
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
-						$sScript = _
-								"var LabelsToSelect = ['" & _ArrayToString($aParameters, "', '") & "'];" & _
-								"for ( var i = 0, l = arguments[0].options.length, o; i < l; i++ )" & _
-								"{" & _
-								"  o = arguments[0].options[i];" & _
-								"  if ( ( LabelsToSelect.indexOf(o.label) != -1 ) && (o.disabled==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled))) && (o.hidden==false && (!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden))) )" & _
-								"  {" & _
-								"    o.selected = true;" & _
-								"  }" & _
-								"};" & _
-								"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
-								"return true;"
-						$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+						$vParameters = StringReplace(_ArrayToString($vParameters, "||"), '"', '\"') ; labels can contains double quotation marks
+						$vParameters = __WD_JsonElement($sSelectElement) & ',"' & $vParameters & '", true'
+						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
+						If Not @error Then
+							If $vResult = '' Then
+								$iErr = $_WD_ERROR_ElementIssue
+							ElseIf $vResult = False Then
+								$iErr = $_WD_ERROR_NoMatch
+							EndIf
+						EndIf
+					EndIf
+
+				Case 'singleSelect'
+					; Should be a non empty string
+					If Not (IsString($vParameters) And StringLen($vParameters)) Then
+						$iErr = $_WD_ERROR_InvalidArgue
+						$iExt = 42 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
+					Else
+						$vParameters = StringReplace($vParameters, '"', '\"') ; labels can contains double quotation marks
+						$vParameters = __WD_JsonElement($sSelectElement) & ',"' & $vParameters & '", false'
+						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
+						$iErr = @error
+						If Not @error Then
+							If $vResult = '' Then
+								$iErr = $_WD_ERROR_ElementIssue
+							ElseIf $vResult = False Then
+								$iErr = $_WD_ERROR_NoMatch
+							EndIf
+						EndIf
 					EndIf
 				Case 'options' ; 7 columns (value, label, index, selected status, disabled status, hidden status and group name)
 					Local Static $sScript_OptionsTemplate = StringReplace( _
@@ -1105,7 +1155,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 							"function SelectAll(SelectElement) {" & _
 							"	if (SelectElement.multiple == false) {" & _
 							"		return '';" & _
-							"	}; " & _
+							"	};" & _
 							"	let options = SelectElement.options;" & _
 							"	let waschanged = false;" & _
 							"	for (let i=0, o, isnotdisabled, isnothidden; i < options.length; i++) {" & _
@@ -1188,7 +1238,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 					$iErr = @error
 
 				Case Else
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|value) $sCommand=>" & $sCommand), 0, "")
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(deselectAll|multiSelect|options|selectAll|selectedIndex|selectedLabels|selectedOptions|singleSelect|value) $sCommand=>" & $sCommand), 0, "")
 
 			EndSwitch
 		Else
@@ -1197,7 +1247,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $aParameters
 		EndIf
 	EndIf
 
-	Local $sMessage = '$sCommand = ' & $sCommand & ' : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
+	Local $sMessage = $sParameters & '    : Result = ' & ((IsArray($vResult)) ? ("(array)") : ($vResult))
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $vResult)
 EndFunc   ;==>_WD_ElementSelectAction
 
