@@ -16,7 +16,7 @@
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; URL ...........: https://www.autoitscript.com/wiki/WebDriver_Capabilities
-; Date ..........: 2022/04/15
+; Date ..........: 2022/07/27
 ; ================================================================================
 
 #Region - wd_capabilities.au3 - Copyright
@@ -120,7 +120,7 @@ Global $_WD_KEYS__SPECIFICVENDOR_ARRAY = _
 ; $_WD_KEYS__SPECIFICVENDOR_OBJECT should be RegExpPattern of "JSON_OBJECT" - "a dictionary element" that
 ; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
 Global $_WD_KEYS__SPECIFICVENDOR_OBJECT = _
-		'\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|localState)\Z'
+		'\A(env|log|prefs|perfLoggingPrefs|mobileEmulation|mobileEmulation>deviceMetrics|localState)\Z'
 
 #EndRegion - wd_capabilities.au3 UDF - Global's declarations
 
@@ -238,6 +238,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) And $_WD_NOTATION__SPECIFICVENDOR <> '' Then ; add "JSON_ARRAY" capability in SPECIFIC/VENDOR part of Capabilities JSON Structure
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
+		$key = StringReplace($key, '>', '"]' & '["')
 		$s_Notation &= '["' & $key & '"]'
 		Local $iCurrent2 = UBound(Json_Get($_WD_CAPS__OBJECT, $s_Notation))
 		SetError(0) ; for any case because UBound() can set @error
@@ -250,6 +251,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) And $_WD_NOTATION__SPECIFICVENDOR <> '' Then ; add "JSON_OBJECT" capability in SPECIFIC/VENDOR part of Capabilities JSON Structure
 		$v_WatchPoint = @ScriptLineNumber
 		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
+		$key = StringReplace($key, '>', '"]' & '["')
 		$s_Notation &= '["' & $key & '"]' & '[' & $value1 & ']'
 		$value1 = $value2 ; switch
 
@@ -297,7 +299,7 @@ Func _WD_CapabilitiesGet()
 
 	Local $Data3 = Json_Decode($Json2)
 	Local $Json3 = Json_Encode($Data3, $Json_PRETTY_PRINT, "    ", ",\n", ",\n", ":")
-	
+
 	If $Json3 = '' Or $Json3 = '""' Or Not IsString($Json3) Then $Json3 = $_WD_EmptyDict
 
 	Return $Json3

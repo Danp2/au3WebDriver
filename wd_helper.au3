@@ -538,36 +538,70 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Description ...: Enter the specified frame.
 ; Syntax ........: _WD_FrameEnter($sSession, $vIdentifier)
 ; Parameters ....: $sSession    - Session ID from _WD_CreateSession
-;                  $vIdentifier - Index (as 0-based Integer) or Element ID (as String) or Null (Keyword)
+;                  $vIdentifier - Target frame identifier. Can be any of the following:
+;                  |Null    - Return to top-most browsing context
+;                  |String  - Element ID from _WD_FindElement or path like 'null/2/0'
+;                  |Integer - 0-based index of frames
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
-; Modified ......: mLipok
-; Remarks .......: You can drill-down into nested frames by calling this function repeatedly with the correct parameters.
+; Modified ......: Danp2, mLipok, jchd
+; Remarks .......: You can drill-down into nested frames by calling this function repeatedly or use identifier like 'null/2/0'
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local Const $sFuncName = "_WD_FrameEnter"
-	Local Const $sParameters = 'Parameters:    Identifier=' & $vIdentifier
-	Local $sOption, $sValue, $sResponse, $oJSON
+	If String($vIdentifier) = 'null' Then $vIdentifier = Null ; String must be used because checking 0 = 'null' is True
+	Local Const $bIsIdentifierNull = (IsKeyword($vIdentifier) = $KEYWORD_NULL)
+	Local Const $sParameters = 'Parameters:    Identifier=' & ($bIsIdentifierNull ? ("Null") : ($vIdentifier))
+	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
-	;*** Encapsulate the value if it's an integer, assuming that it's supposed to be an Index, not ID attrib value.
-	If (IsKeyword($vIdentifier) = $KEYWORD_NULL) Then
+	; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit	
+	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH) 
+
+	If $bIdentifierAsPath Then
+		; will be processed below
+	ElseIf $bIsIdentifierNull Then
 		$sOption = '{"id":null}'
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
+		If @error Then
+			$iErr = $_WD_ERROR_InvalidArgue
+		Else
+			$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
+		EndIf
 	EndIf
 
-	$sResponse = _WD_Window($sSession, "frame", $sOption)
+	If $iErr = $_WD_ERROR_Success Then ; check if $vIdentifier was succesfully validated
+		If Not $bIdentifierAsPath Then
+			$sResponse = _WD_Window($sSession, "frame", $sOption)
+			$iErr = @error
+		Else
+			Local $aIdentifiers = StringSplit($vIdentifier, '/')
+			For $i = 1 To $aIdentifiers[0]
+				If String($aIdentifiers[$i]) = 'null' Then
+					$aIdentifiers[$i] = '{"id":null}'
+				Else
+					$aIdentifiers[$i] = '{"id":' & $aIdentifiers[$i] & '}'
+				EndIf
+				$sResponse = _WD_Window($sSession, "frame", $aIdentifiers[$i])
+				If Not @error Then ContinueLoop
 
-	If @error <> $_WD_ERROR_Success Then
-		$iErr = $_WD_ERROR_Exception
-	Else
+				$iErr = @error
+				$sMessage = ' Error on ID#' & $i & ' > ' & $aIdentifiers[$i]
+				ExitLoop
+			Next
+		EndIf
+	EndIf
+
+	If $iErr = $_WD_ERROR_Success Then
 		$oJSON = Json_Decode($sResponse)
 		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
@@ -577,9 +611,11 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $sValue)
 EndFunc   ;==>_WD_FrameEnter
 
 ; #FUNCTION# ====================================================================================================================
@@ -987,6 +1023,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_ElementIssue
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
@@ -1086,32 +1123,64 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							EndIf
 						EndIf
 					EndIf
+				Case 'options' ; 7 columns (value, label, index, selected status, disabled status, hidden status and group name)
+					Local Static $sScript_OptionsTemplate = StringReplace( _
+							"function GetOptions(SelectElement) {" & _
+							"	let result ='';" & _
+							"	let options = SelectElement.options;" & _
+							"	for (let i = 0, o; i < options.length; i++) {" & _
+							"		o = options[i];" & _
+							"		result += o.value + '|' + o.label + '|' + o.index + '|' + o.selected;" & _
+							"		result += '|' + (o.disabled || 	(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)	);" & _
+							"		result += '|' + (o.hidden || 	(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)	);" & _
+							"		result += '|' + (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '');" & _
+							"		result += '\n';" & _
+							"	}" & _
+							"	return result;" & _
+							"}" & _
+							"var SelectElement = arguments[0];" & _
+							"return GetOptions(SelectElement);" & _
+							"", @TAB, '')
 
-				Case 'options' ; 6 columns (value, label, index, selected status, disabled status, and hidden status)
-					$sScript = _
-							"var result ='';" & _
-							"var o = arguments[0].options;" & _
-							"for ( let i = 0; i < o.length; i++ )" & _
-							"  {result += o[i].value + '|' + o[i].label + '|' + o[i].index + '|' + o[i].selected  + '|' + (o[i].disabled || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.disabled)) + '|' + (o[i].hidden || (o[i].parentNode.nodeName =='OPTGROUP' && o[i].parentNode.hidden))  + '\n'};" & _
-							"return result;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					$vResult = _WD_ExecuteScript($sSession, $sScript_OptionsTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
-						Local $aAllOptions[0][6]
+						Local $aAllOptions[0][7]
 						_ArrayAdd($aAllOptions, StringStripWS($vResult, $STR_STRIPTRAILING), 0, Default, @LF, $ARRAYFILL_FORCE_SINGLEITEM)
 						$vResult = $aAllOptions
 					EndIf
 
 				Case 'selectAll'
-					$sScript = _
-							"var options = arguments[0].options;" & _
-							"for ( i=0; i<options.length; i++)" & _
-							"  {if ( (options[i].disabled==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.disabled))) && (options[i].hidden==false && (!(options.item(i).parentNode.nodeName =='OPTGROUP' && options.item(i).parentNode.hidden))) ) {options[i].selected = true}};" & _
-							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
-							"return true;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					Local Static $sScript_SelectAllTemplate = StringReplace( _
+							"function SelectAll(SelectElement) {" & _
+							"	if (SelectElement.multiple == false) {" & _
+							"		return '';" & _
+							"	}; " & _
+							"	let options = SelectElement.options;" & _
+							"	let waschanged = false;" & _
+							"	for (let i=0, o, isnotdisabled, isnothidden; i < options.length; i++) {" & _
+							"		o = options[i];" & _
+							"		isnotdisabled = (o.disabled==false && 	(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)));" & _
+							"		isnothidden = (o.hidden==false && 		(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)));" & _
+							"		if (isnotdisabled && isnothidden && o.selected==false) {" & _
+							"			o.selected = true;" & _
+							"			waschanged = true;" & _
+							"		};" & _
+							"	};" & _
+							"	if (waschanged==true) {" & _
+							"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
+							"	};" & _
+							"	return waschanged;" & _
+							"};" & _
+							"var SelectElement = arguments[0];" & _
+							"SelectAll(SelectElement);" & _
+							"", @TAB, '')
+					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectAllTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
+					If Not @error And $vResult = '' Then
+						$iErr = $_WD_ERROR_ElementIssue
+					EndIf
 
 				Case 'selectedIndex'
 					$sScript = "return arguments[0].selectedIndex"
@@ -1119,13 +1188,20 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$iErr = @error
 
 				Case 'selectedLabels'
-					$sScript = _
-							"var result ='';" & _
-							"var options = arguments[0].selectedOptions;" & _
-							"for (let i = 0; i < options.length; i++)" & _
-							" {result += options[i].label + '\n'};" & _
-							"return result;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+					Local Static $sScript_SelectedLabelsTemplate = StringReplace( _
+							"function GetSelecteLabels(SelectElement) {" & _
+							"	let result ='';" & _
+							"	let options = SelectElement.selectedOptions;" & _
+							"	for (let i = 0, o; i < options.length; i++)	{" & _
+							"		o = options[i];" & _
+							"		result += o.label + '\n';" & _
+							"	};" & _
+							"	return result;" & _
+							"};" & _
+							"var SelectElement = arguments[0];" & _
+							"return GetSelecteLabels(SelectElement);" & _
+							"", @TAB, '')
+					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectedLabelsTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
@@ -1134,14 +1210,21 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 						$vResult = $aSelectedLabels
 					EndIf
 
-				Case 'selectedOptions' ; 4 columns (value, label, index and selected status)
-					$sScript = _
-							"var result ='';" & _
-							"var options = arguments[0].selectedOptions;" & _
-							"for (let i = 0; i < options.length; i++)" & _
-							" {result += options[i].value + '|' + options[i].label + '|' + options[i].index + '|' + options[i].selected + '\n'};" & _
-							"return result;"
-					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
+				Case 'selectedOptions' ; 4 columns (value, label, index and group name)
+					Local Static $sScript_SelectedOptionsTemplate = StringReplace( _
+							"function GetSelectedOptions(SelectElement) {" & _
+							"	var result ='';" & _
+							"	var options = SelectElement.selectedOptions;" & _
+							"	for (let i = 0, o; i < options.length; i++) {" & _
+							"		o = options[i];" & _
+							"		result += o.value + '|' + o.label + '|' + o.index + '|' + (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '') + '\n';" & _
+							"	};" & _
+							"	return result;" & _
+							"}" & _
+							"var SelectElement = arguments[0];" & _
+							"return GetSelectedOptions(SelectElement);" & _
+							"", @TAB, '')
+					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectedOptionsTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 
 					If $iErr = $_WD_ERROR_Success Then
