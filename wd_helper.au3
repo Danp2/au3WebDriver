@@ -1047,7 +1047,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"function MultiSelectOption(SelectElement, LabelsToSelect, AllowMultiple) {" & _
 			"	if (AllowMultiple && SelectElement.multiple == false) {" & _
 			"		return '';" & _
-			"	};" & _
+			"	}" & _
 			"	var options = SelectElement.options;" & _
 			"	var result = false;" & _
 			"	for (var i = 0, o; i < options.length; i++) {" & _
@@ -1056,16 +1056,15 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"				&&	(o.disabled == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)))" & _
 			"				&&	(o.hidden == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)))" & _
 			"			) {" & _
-			"				if (AllowMultiple == false) {" & _
-			"					SelectElement.selectedIndex = -1;" & _
-			"				};" & _
+			"				if (AllowMultiple == false) { SelectElement.selectedIndex = -1; }" & _
 			"				o.selected = true;" & _
 			"				result = true;" & _
-			"			};" & _
-			"	};" & _
+			"				if (AllowMultiple == false) { break; }" & _
+			"			}" & _
+			"	}" & _
 			"	if (result == true) {" & _
 			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
-			"	};" & _
+			"	}" & _
 			"	return result;" & _
 			"};" & _
 			"var SelectElement = arguments[0];" & _
