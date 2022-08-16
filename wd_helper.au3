@@ -1032,9 +1032,9 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"	};" & _
 			"	return result;" & _
 			"};" & _
-			"" & _
 			"var SelectElement = arguments[0];" & _
-			"var LabelsToSelect = arguments[1];" & _ ; ['Label1', 'Label2']
+			"var LabelsToSplit = arguments[1];" & _ ; Label1||Label2
+			"var LabelsToSelect = LabelsToSplit.split('||');" & _ ; ['Label1', 'Label2']
 			"var DeselectingNonListedLabels = arguments[2];" & _ ; true or false
 			"return MultiSelectOption(SelectElement, LabelsToSelect, DeselectingNonListedLabels);" & _
 			"", @TAB, '')
@@ -1056,7 +1056,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 41 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
-						$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & _ArrayToString($vParameters, "', '") & "']"", false"
+						$vParameters = StringReplace(_ArrayToString($vParameters, "||"),'"','\"') ; labels can contains double quotation marks
+						$vParameters = __WD_JsonElement($sSelectElement) & ',"' & $vParameters & '", false'
 						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
 						If Not @error Then
@@ -1073,7 +1074,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 						$iErr = $_WD_ERROR_InvalidArgue
 						$iExt = 42 ; $iExt from 41 to 49 are related to _WD_ElementSelectAction()
 					Else
-						$vParameters = __WD_JsonElement($sSelectElement) & ",""['" & $vParameters & "']"", true"
+						$vParameters = StringReplace($vParameters,'"','\"') ; labels can contains double quotation marks
+						$vParameters = __WD_JsonElement($sSelectElement) & ',"' & $vParameters & '", true'
 						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
 						If Not @error Then
