@@ -2194,7 +2194,7 @@ EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DispatchEvent
-; Description ...:
+; Description ...: Create and dispatch events
 ; Syntax ........: _WD_DispatchEvent($sSession,  $sElement,  $sEvent[,  $sOptions = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession.
 ;                  $sElement - Element ID from _WD_FindElement.
