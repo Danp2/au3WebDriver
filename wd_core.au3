@@ -115,20 +115,9 @@ Global Enum _
 		$_WD_ERROR_NotSupported, _ ; When user try to use unsupported browser or capability
 		$_WD_ERROR_AlreadyDefined, _ ; Capability previously defined
 		$_WD_ERROR_Javascript, _ ; Javascript error
-		$_WD_ERROR_COUNTER ; Defines row count for $aWD_ERROR_DESC
+		$_WD_ERROR__COUNTER ; Defines row count for $aWD_ERROR_DESC
 
-Global Enum _ ; Column positions of $_WD_SupportedBrowsers
-		$_WD_BROWSER_Name, _
-		$_WD_BROWSER_ExeName, _
-		$_WD_BROWSER_DriverName, _
-		$_WD_BROWSER_64Bit, _
-		$_WD_BROWSER_OptionsKey, _
-		$_WD_BROWSER_LatestReleaseURL, _
-		$_WD_BROWSER_LatestReleaseRegex, _
-		$_WD_BROWSER_NewDriverURL, _
-		$_WD_BROWSER__COUNTER
-
-Global Const $aWD_ERROR_DESC[$_WD_ERROR_COUNTER] = [ _
+Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
 		"Success", _
 		"General Error", _
 		"Socket Error", _
@@ -166,6 +155,26 @@ Global Const $_WD_ErrorElementIntercept = "element click intercepted"
 Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 
 Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
+
+Global Enum _ ; Column positions of $_WD_SupportedBrowsers
+		$_WD_BROWSER_Name, _
+		$_WD_BROWSER_ExeName, _
+		$_WD_BROWSER_DriverName, _
+		$_WD_BROWSER_64Bit, _
+		$_WD_BROWSER_OptionsKey, _
+		$_WD_BROWSER_LatestReleaseURL, _
+		$_WD_BROWSER_LatestReleaseRegex, _
+		$_WD_BROWSER_NewDriverURL, _
+		$_WD_BROWSER__COUNTER
+
+Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
+		[ _
+		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions", "'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", "", '"https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"'], _
+		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions", "https://github.com/mozilla/geckodriver/releases/latest", '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(?:v)(.*?)"', '"https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest & (($bFlag64) ? "-win64.zip" : "-win32.zip")'], _
+		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions", "'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1) & '_WINDOWS'", "", '"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'], _
+		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions", "https://github.com/operasoftware/operachromiumdriver/releases/latest", '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(?:v\.)(.*?)"', '"https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'] _
+		]
+
 #EndRegion Global Constants
 
 #Region Global Variables
@@ -193,13 +202,6 @@ Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
 
-Global $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
-		[ _
-		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions", "'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", "", '"https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"'], _
-		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions", "https://github.com/mozilla/geckodriver/releases/latest", '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(?:v)(.*?)"', '"https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest & (($bFlag64) ? "-win64.zip" : "-win32.zip")'], _
-		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions", "'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1) & '_WINDOWS'", "", '"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'], _
-		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions", "https://github.com/operasoftware/operachromiumdriver/releases/latest", '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(?:v\.)(.*?)"', '"https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'] _
-		]
 #EndRegion Global Variables
 
 ; #FUNCTION# ====================================================================================================================
