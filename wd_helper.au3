@@ -1096,7 +1096,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
 						If Not @error Then
-							If $vResult = '' Then
+							If $vResult == '' Then
 								$iErr = $_WD_ERROR_ElementIssue
 							ElseIf $vResult = False Then
 								$iErr = $_WD_ERROR_NoMatch
@@ -1115,7 +1115,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 						$vResult = _WD_ExecuteScript($sSession, $sScript_MultiSelectTemplate, $vParameters, Default, $_WD_JSON_Value)
 						$iErr = @error
 						If Not @error Then
-							If $vResult = '' Then
+							If $vResult == '' Then
 								$iErr = $_WD_ERROR_ElementIssue
 							ElseIf $vResult = False Then
 								$iErr = $_WD_ERROR_NoMatch
@@ -1177,7 +1177,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							"", @TAB, '')
 					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectAllTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
-					If Not @error And $vResult = '' Then
+					If Not @error And $vResult == '' Then
 						$iErr = $_WD_ERROR_ElementIssue
 					EndIf
 
@@ -1312,7 +1312,7 @@ Func _WD_ElementStyle($sSession, $sElement, $sCSSProperty = Default, $sValue = D
 		$sJavaScript = StringReplace($sJavaScript, @TAB, '')
 		$vResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 		$iErr = @error
-		If $iErr = $_WD_ERROR_Success And $vResult = '' Then
+		If $iErr = $_WD_ERROR_Success And $vResult == '' Then
 			$iErr = $_WD_ERROR_NoMatch
 		ElseIf $iErr = $_WD_ERROR_Success Then
 			Local $aProperties[0][2]
