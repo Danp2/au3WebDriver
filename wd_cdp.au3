@@ -9,7 +9,7 @@
 	*
 	* MIT License
 	*
-	* Copyright (c) 2021 Dan Pollak
+	* Copyright (c) 2022 Dan Pollak
 	*
 	* Permission is hereby granted, free of charge, to any person obtaining a copy
 	* of this software and associated documentation files (the "Software"), to deal
@@ -32,33 +32,30 @@
 #EndRegion Copyright
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_ExecuteCDPCommand
-; Description ...: Execute CDP command
-; Syntax ........: _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams[, $sWebSocketURL = Default])
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sCommand            - Name of the command
-;                  $oParams             - Parameters of the command as an object
-;                  $sWebSocketURL       - [optional] Websocket URL
-;
-; Return values .: Success      - Raw return value from web driver in JSON format
-;                  Failure      - Empty string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  @EXTENDED    - WinHTTP status code
+; Name ..........: _WD_CDPExecuteCommand
+; Description ...: Execute CDP command.
+; Syntax ........: _WD_CDPExecuteCommand($sSession, $sCommand, $oParams[, $sWebSocketURL = Default])
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sCommand      - Name of the command
+;                  $oParams       - Parameters of the command as an object
+;                  $sWebSocketURL - [optional] Websocket URL
+; Return values .: Success - Raw return value from web driver in JSON format.
+;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception
 ; Author ........: Damon Harris (TheDcoder)
 ; Modified ......: Danp2
 ; Remarks .......: The original version of this function is specific to ChromeDriver, you can execute "Chrome DevTools Protocol"
 ;                  commands by using this function, for all available commands see: https://chromedevtools.github.io/devtools-protocol/tot/
-;
+;+
 ;                  The revised version uses websockets to provide CDP access for all compatible browsers. However, it
 ;                  will only with an OS that natively supports WebSockets (Windows 8, Windows Server 2012, or newer)
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
+Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Default)
 	Local Const $sFuncName = "_WD_ExecuteCDPCommand"
 	Local $iErr = 0, $vData = Json_ObjCreate()
+	$_WD_HTTPRESULT = 0
 
 	If $sWebSocketURL = Default Then $sWebSocketURL = ''
 
@@ -71,16 +68,14 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 		Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & '/goog/cdp/execute', $vData)
 		$iErr = @error
 
-		If $_WD_DEBUG = $_WD_DEBUG_Info Then
-			__WD_ConsoleWrite($sFuncName & ': ' & $sResponse & @CRLF)
-		EndIf
+		__WD_ConsoleWrite($sFuncName & ': ' & $sResponse, $_WD_DEBUG_Info)
 
-		Return SetError(__WD_Error($sFuncName, $iErr), $_WD_HTTPRESULT, $sResponse)
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResponse)
 	EndIf
 
 	; Websocket version
 	Local $hOpen = 0, $hConnect = 0, $hRequest = 0, $hWebSocket = 0
-	Local $aURL, $fStatus, $sErrText
+	Local $aURL, $fStatus, $sErrText, $sMessage = ""
 	Local $iBufferLen = 1024, $tBuffer = 0, $bRecv = Binary(""), $sRecv
 	Local $iBytesRead = 0, $iBufferType = 0
 	Local $iStatus = 0, $iReasonLengthConsumed = 0
@@ -155,7 +150,7 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 			Json_ObjPut($vData, 'params', $oParams)
 			$vData = Json_Encode($vData)
 
-		  ; Send and receive data on the websocket protocol.
+			; Send and receive data on the websocket protocol.
 
 			$fStatus = _WinHttpWebSocketSend($hWebSocket, _
 					$WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, _
@@ -228,47 +223,48 @@ Func _WD_ExecuteCDPCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 		EndIf
 	EndIf
 
-	If $_WD_DEBUG = $_WD_DEBUG_Info Then
-		__WD_ConsoleWrite($sFuncName & ': ' & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "..." & @CRLF)
-	EndIf
-
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, $sErrText), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr, $sErrText), 0, "")
 	EndIf
 
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $sRecv)
-EndFunc
+	If ($sRecv) Then
+		If $_WD_RESPONSE_TRIM <> -1 And StringLen($sRecv) > $_WD_RESPONSE_TRIM Then
+			$sMessage &= " ResponseText=" & StringLeft($sRecv, $_WD_RESPONSE_TRIM) & "..."
+		Else
+			$sMessage &= " ResponseText=" & $sRecv
+		EndIf
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, $sRecv)		
+EndFunc   ;==>_WD_CDPExecuteCommand
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_GetCDPSettings
-; Description ...: Retrieve CDP related settings from the browser
-; Syntax ........: _WD_GetCDPSettings($sSession, $sOption)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sOption             - one of the following:
-;                               | debugger
-;                               | list
-;                               | version
-;
-; Return values .: Success      - (debugger) websocket target originally returned by _WD_CreateSession
-;								- (list) array containing websocket targets
-;								- (version) array containing version metadata
-;
-;                  Failure      - Empty string
-;                  @ERROR       - $_WD_ERROR_Success
-;                  				- $_WD_ERROR_Exception
-;                  				- $_WD_ERROR_GeneralError
-;                  @EXTENDED    - WinHTTP status code
+; Name ..........: _WD_CDPGetSettings
+; Description ...: Retrieve CDP related settings from the browser.
+; Syntax ........: _WD_CDPGetSettings($sSession, $sOption)
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+;                  $sOption  - one of the following:
+;                  |DEBUGGER - Returns the Websocket target originally returned by _WD_CreateSession
+;                  |LIST - Lists websocket targets
+;                  |VERSION - Reurns an array containing version metadata
+; Return values .: Success - The returned value depends on the selected $sOption.
+;                  |DEBUGGER: Websocket target originally returned by _WD_CreateSession
+;                  |LIST: Array containing websocket targets
+;                  |VERSION: Array containing version metadata
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Dan Pollak
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetCDPSettings($sSession, $sOption)
+Func _WD_CDPGetSettings($sSession, $sOption)
 	Local Const $sFuncName = "_WD_GetCDPSettings"
-	Local $sJSON, $oJSON, $sDebuggerAdress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
+	Local $sJSON, $oJSON, $sDebuggerAddress, $iEntries, $aKeys, $iKeys, $aResults, $iErr
 	Local $sKey, $vResult, $sBrowser
+	$_WD_HTTPRESULT = 0
 
 	$sJSON = _WD_GetSession($sSession)
 	$oJSON = Json_Decode($sJSON)
@@ -286,7 +282,7 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 
 	EndSwitch
 
-	$sDebuggerAdress = Json_Get($oJSON, $sKey)
+	$sDebuggerAddress = Json_Get($oJSON, $sKey)
 
 	If @error Then
 		$iErr = $_WD_ERROR_GeneralError
@@ -295,17 +291,17 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 
 		Switch $sOption
 			Case 'debugger'
-				$vResult = $sDebuggerAdress
+				$vResult = $sDebuggerAddress
 
 			Case 'list', 'version'
-				$sJSON = __WD_Get("http://" & $sDebuggerAdress & "/json/" & $sOption)
+				$sJSON = __WD_Get("http://" & $sDebuggerAddress & "/json/" & $sOption)
 				$iErr = @error
 
 				If $iErr = $_WD_ERROR_Success Then
 					$oJSON = Json_Decode($sJSON)
 					$iEntries = UBound($oJSON)
 
-					If $iEntries  Then
+					If $iEntries Then
 						$aKeys = Json_ObjGetKeys($oJSON[0])
 						$iKeys = UBound($aKeys)
 
@@ -316,7 +312,7 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 
 							For $j = 0 To $iEntries - 1
 								$sKey = "[" & $j & "]." & $aKeys[$i]
-								$aResults[$i][$j+1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
+								$aResults[$i][$j + 1] = Json_Get($oJSON, "[" & $j & "]." & $aKeys[$i])
 							Next
 						Next
 					Else
@@ -341,8 +337,7 @@ Func _WD_GetCDPSettings($sSession, $sOption)
 	EndIf
 
 	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $iErr, "HTTP status = " & $_WD_HTTPRESULT), $_WD_HTTPRESULT, "")
+		Return SetError(__WD_Error($sFuncName, $iErr), 0, "")
 	EndIf
-
-	Return SetError($_WD_ERROR_Success, $_WD_HTTPRESULT, $vResult)
-EndFunc
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $vResult)	
+EndFunc   ;==>_WD_CDPGetSettings
