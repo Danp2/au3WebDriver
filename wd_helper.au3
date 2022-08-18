@@ -1048,20 +1048,24 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"	if (AllowMultiple && SelectElement.multiple == false) {" & _
 			"		return '';" & _
 			"	}" & _
-			"	var LabelsUpperCased = LabelsToSelect.map( function(value) { return value.toUpperCase(); } );" & _ ; https://stackoverflow.com/a/24718430/5314940
-			"	var options = SelectElement.options;" & _
-			"	var result = false;" & _
+			"	const LabelsUpperCased = LabelsToSelect.map( function(value) { return value.toUpperCase(); } );" & _ ; https://stackoverflow.com/a/24718430/5314940
+			"	const options = SelectElement.options;" & _
+			"	let result = false;" & _
 			"	for (let i = 0, o, IsDisabled, IsHidden, Matching; i < options.length; i++) {" & _
 			"		o = options[i];" & _
-			"		IsDisabled =	( o.disabled	|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled) );" & _
-			"		IsHidden =		( o.hidden		|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden) );" & _
-			"		Matching = 		( LabelsUpperCased.indexOf( o.label.toUpperCase() ) != -1 );" & _
-			"		if ( !( IsDisabled || IsHidden ) && Matching ) {" & _
-			"				if (AllowMultiple == false) { SelectElement.selectedIndex = -1; }" & _
-			"				o.selected = true;" & _
-			"				result = true;" & _
-			"				if (AllowMultiple == false) { break; }" & _
-			"			}" & _
+			"		Matching = ( LabelsUpperCased.indexOf( o.label.toUpperCase() ) != -1 );" & _
+			"		if (Matching) {" & _
+			"			IsDisabled =	( o.disabled	|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled) );" & _
+			"			IsHidden =		( o.hidden		|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden) );" & _
+			"			if (IsDisabled || IsHidden) {" & _
+			"					return '';" & _
+			"				} else {" & _
+			"					if (AllowMultiple == false) { SelectElement.selectedIndex = -1; }" & _
+			"					o.selected = true;" & _
+			"					result = true;" & _
+			"					if (AllowMultiple == false) { break; }" & _
+			"				}" & _
+			"		}" & _
 			"	}" & _
 			"	if (result == true) {" & _
 			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
