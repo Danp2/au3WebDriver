@@ -1039,7 +1039,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ; ===============================================================================================================================
 Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters = Default)
 	Local Const $sFuncName = "_WD_ElementSelectAction"
-	Local Const $sParameters = 'Parameters:    Command = ' & $sCommand &  '    Parameters = ' & ((IsArray($vParameters)) ? ("(array)") : ("(string)"))
+	Local Const $sParameters = 'Parameters:    Command = ' & $sCommand & '    Parameters = ' & ((IsArray($vParameters)) ? ("(array)") : ("(string)"))
 	Local $vResult, $sScript
 	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
@@ -1048,19 +1048,31 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"	if (AllowMultiple && SelectElement.multiple == false) {" & _
 			"		return '';" & _
 			"	}" & _
-			"	var options = SelectElement.options;" & _
-			"	var result = false;" & _
-			"	for (var i = 0, o; i < options.length; i++) {" & _
+			"	const LabelsUpperCased = LabelsToSelect.map( function(value) { return value.toUpperCase(); } );" & _ ; https://stackoverflow.com/a/24718430/5314940
+			"	const options = SelectElement.options;" & _
+			"	let result = false;" & _
+			"	for (let i = 0, o, IsDisabled, IsHidden, Matching; i < options.length; i++) {" & _
 			"		o = options[i];" & _
-			"		if (		(LabelsToSelect.indexOf(o.label)!= -1)" & _
-			"				&&	(o.disabled == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)))" & _
-			"				&&	(o.hidden == false	&& (!(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)))" & _
-			"			) {" & _
-			"				if (AllowMultiple == false) { SelectElement.selectedIndex = -1; }" & _
-			"				o.selected = true;" & _
-			"				result = true;" & _
-			"				if (AllowMultiple == false) { break; }" & _
+			"		Matching = ( LabelsUpperCased.indexOf( o.label.toUpperCase() ) != -1 );" & _
+			"		if (Matching) {" & _
+			"			IsDisabled =	( o.disabled	|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled) );" & _
+			"			IsHidden =		( o.hidden		|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden) );" & _
+			"			if (AllowMultiple) {" & _
+			"				if (!(IsDisabled || IsHidden)) {" & _
+			"					o.selected = true;" & _
+			"					result = true;" & _
+			"				}" & _
+			"			} else {" & _
+			"				if (IsDisabled || IsHidden) {" & _
+			"					result = '';" & _
+			"				} else {" & _
+			"					SelectElement.selectedIndex = -1;" & _
+			"					o.selected = true;" & _
+			"					result = true;" & _
+			"				}" & _
+			"				break;" & _
 			"			}" & _
+			"		}" & _			
 			"	}" & _
 			"	if (result == true) {" & _
 			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
@@ -1079,8 +1091,9 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			Switch $sCommand
 				Case 'deselectAll'
 					$sScript = _
-							"arguments[0].selectedIndex = -1;" & _
-							"arguments[0].dispatchEvent(new Event('change', {bubbles: true}));" & _
+							"var SelectElement = arguments[0];" & _
+							"SelectElement.selectedIndex = -1;" & _
+							"SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
 							"return true;"
 					$vResult = _WD_ExecuteScript($sSession, $sScript, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
@@ -1122,18 +1135,18 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							EndIf
 						EndIf
 					EndIf
+
 				Case 'options' ; 7 columns (value, label, index, selected status, disabled status, hidden status and group name)
 					Local Static $sScript_OptionsTemplate = StringReplace( _
 							"function GetOptions(SelectElement) {" & _
 							"	let result ='';" & _
 							"	let options = SelectElement.options;" & _
-							"	for (let i = 0, o; i < options.length; i++) {" & _
+							"	for (let i = 0, o, IsDisabled, IsHidden, GroupName; i < options.length; i++) {" & _
 							"		o = options[i];" & _
-							"		result += o.value + '|' + o.label + '|' + o.index + '|' + o.selected;" & _
-							"		result += '|' + (o.disabled || 	(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled)	);" & _
-							"		result += '|' + (o.hidden || 	(o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden)	);" & _
-							"		result += '|' + (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '');" & _
-							"		result += '\n';" & _
+							"		IsDisabled =	( o.disabled	|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled) );" & _
+							"		IsHidden =		( o.hidden		|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden) );" & _
+							"		GroupName = (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '');" & _
+							"		result += o.value + '|' + o.label + '|' + o.index + '|' + o.selected + '|' + IsDisabled + '|' + IsHidden + '|' + GroupName + '\n';" & _
 							"	}" & _
 							"	return result;" & _
 							"}" & _
@@ -1158,11 +1171,11 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							"	};" & _
 							"	let options = SelectElement.options;" & _
 							"	let waschanged = false;" & _
-							"	for (let i=0, o, isnotdisabled, isnothidden; i < options.length; i++) {" & _
+							"	for (let i = 0, o, IsDisabled, IsHidden; i < options.length; i++) {" & _
 							"		o = options[i];" & _
-							"		isnotdisabled = (o.disabled==false && 	(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.disabled)));" & _
-							"		isnothidden = (o.hidden==false && 		(!(o.parentNode.nodeName =='OPTGROUP' && o.parentNode.hidden)));" & _
-							"		if (isnotdisabled && isnothidden && o.selected==false) {" & _
+							"		IsDisabled =	( o.disabled	|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled) );" & _
+							"		IsHidden =		( o.hidden		|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden) );" & _
+							"		if ( !(IsDisabled || IsHidden || o.selected) ) {" & _
 							"			o.selected = true;" & _
 							"			waschanged = true;" & _
 							"		};" & _
@@ -1173,12 +1186,14 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							"	return waschanged;" & _
 							"};" & _
 							"var SelectElement = arguments[0];" & _
-							"SelectAll(SelectElement);" & _
+							"return SelectAll(SelectElement);" & _
 							"", @TAB, '')
 					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectAllTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
 					If Not @error And $vResult == '' Then
 						$iErr = $_WD_ERROR_ElementIssue
+					ElseIf $vResult = False Then
+						$iErr = $_WD_ERROR_NoMatch
 					EndIf
 
 				Case 'selectedIndex'
@@ -1214,9 +1229,10 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							"function GetSelectedOptions(SelectElement) {" & _
 							"	var result ='';" & _
 							"	var options = SelectElement.selectedOptions;" & _
-							"	for (let i = 0, o; i < options.length; i++) {" & _
+							"	for (let i = 0, o, GroupName; i < options.length; i++) {" & _
 							"		o = options[i];" & _
-							"		result += o.value + '|' + o.label + '|' + o.index + '|' + (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '') + '\n';" & _
+							"		GroupName = (o.parentNode.nodeName == 'OPTGROUP' ? o.parentNode.label : '');" & _
+							"		result += o.value + '|' + o.label + '|' + o.index + '|' + GroupName + '\n';" & _
 							"	};" & _
 							"	return result;" & _
 							"}" & _
