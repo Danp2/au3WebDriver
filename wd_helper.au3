@@ -1088,7 +1088,6 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vLabels = D
 	; Save current debug level and set to none to reduce excessive logging
 	Local $WDDebugSave = $_WD_DEBUG
 	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
-	MsgBox(0, @ScriptLineNumber, $_WD_DEBUG)
 
 	Local $sNodeName = _WD_ElementAction($sSession, $sSelectElement, 'property', 'nodeName')
 	Local $iErr = @error, $iExt = 0
