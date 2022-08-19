@@ -1019,7 +1019,7 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  |SELECTEDOPTIONS- Retrieves selected <option> elements as 2D array
 ;                  |SINGLESELECT   - Select <option> element given as string and deselect all others
 ;                  |VALUE          - Retrieves value of the first selected <option> element
-;                  $vLabels        - [optional] List of Labels (depending on chosen $sCommand)
+;                  $vLabels        - [optional] List of labels (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError

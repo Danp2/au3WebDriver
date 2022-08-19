@@ -884,7 +884,7 @@ Func DemoSelectOptions()
 
 	; this will set @error as <select> element does not have a 'multiple' attribute
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptionsToSelect)
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT on <select> element with disabled 'multiple' atribute" & @CRLF & "@error=" & @error)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT on <select> element with disabled 'multiple' attribute" & @CRLF & "@error=" & @error)
 
 	; now will test enabled/disabled OPTGROUP
 	_WD_Navigate($sSession, 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup#examples')
