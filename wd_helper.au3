@@ -1022,13 +1022,12 @@ EndFunc   ;==>_WD_ElementOptionSelect
 ;                  $vLabels        - [optional] List of labels (depending on chosen $sCommand)
 ; Return values .: Success - Requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
-;                  - $_WD_ERROR_GeneralError
-;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_ElementIssue
 ;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_InvalidDataType
 ;                  - $_WD_ERROR_InvalidExpression
-;                  - $_WD_ERROR_InvalidArgue
-;                  - $_WD_ERROR_ElementIssue
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: Danp2
 ; Modified ......: mLipok
