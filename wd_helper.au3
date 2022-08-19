@@ -1186,7 +1186,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 							"	return waschanged;" & _
 							"};" & _
 							"var SelectElement = arguments[0];" & _
-							"SelectAll(SelectElement);" & _
+							"return SelectAll(SelectElement);" & _
 							"", @TAB, '')
 					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectAllTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
