@@ -1192,6 +1192,8 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 					$iErr = @error
 					If Not @error And $vResult == '' Then
 						$iErr = $_WD_ERROR_ElementIssue
+					ElseIf $vResult = False Then
+						$iErr = $_WD_ERROR_NoMatch
 					EndIf
 
 				Case 'selectedIndex'
