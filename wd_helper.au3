@@ -1058,7 +1058,7 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"			IsDisabled =	( o.disabled	|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled) );" & _
 			"			IsHidden =		( o.hidden		|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden) );" & _
 			"			if (IsDisabled || IsHidden) {" & _
-			"					return '';" & _
+			"					if ( AllowMultiple == false ) { return ''; }" & _
 			"				} else {" & _
 			"					if (AllowMultiple == false) { SelectElement.selectedIndex = -1; }" & _
 			"					o.selected = true;" & _
