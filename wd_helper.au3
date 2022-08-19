@@ -1057,15 +1057,22 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vParameters
 			"		if (Matching) {" & _
 			"			IsDisabled =	( o.disabled	|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.disabled) );" & _
 			"			IsHidden =		( o.hidden		|| (o.parentNode.nodeName == 'OPTGROUP' && o.parentNode.hidden) );" & _
-			"			if (IsDisabled || IsHidden) {" & _
-			"					if ( AllowMultiple == false ) { return ''; }" & _
-			"				} else {" & _
-			"					if (AllowMultiple == false) { SelectElement.selectedIndex = -1; }" & _
+			"			if (AllowMultiple) {" & _
+			"				if (!(IsDisabled || IsHidden)) {" & _
 			"					o.selected = true;" & _
 			"					result = true;" & _
-			"					if (AllowMultiple == false) { break; }" & _
 			"				}" & _
-			"		}" & _
+			"			} else {" & _
+			"				if (IsDisabled || IsHidden) {" & _
+			"					result = '';" & _
+			"				} else {" & _
+			"					SelectElement.selectedIndex = -1;" & _
+			"					o.selected = true;" & _
+			"					result = true;" & _
+			"				}" & _
+			"				break;" & _
+			"			}" & _
+			"		}" & _			
 			"	}" & _
 			"	if (result == true) {" & _
 			"		SelectElement.dispatchEvent(new Event('change', {bubbles: true}));" & _
