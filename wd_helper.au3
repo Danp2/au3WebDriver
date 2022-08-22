@@ -793,7 +793,6 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 	Local $vResult = '', $s_URL = '', $sMessage = ''
 
 	_WD_FrameEnter($sSession, $sLevel)
-	If $sLevel = 'null/3' Then SetError($_WD_ERROR_Exception)
 	$iErr = @error
 	If @error Then
 		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
