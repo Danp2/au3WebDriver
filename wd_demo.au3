@@ -851,10 +851,10 @@ Func DemoSelectOptions()
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
 
 	; select desired options
-	Local $aOptionsToSelect[] = ['Cat', 'Hamster', 'Parrot', 'Albatross']
+	Local $aOptionsToSelect[] = ['Cat', 'HAMSTER', 'parrot', 'albatroSS']
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptionsToSelect)
 	If @error Then Return SetError(@error, @extended, '')
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: Cat / Hamster / Parrot / Albatros")
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: Cat / HAMSTER / parrot / albatroSS")
 
 	; retrieves selected <option> elements as 2D array
 	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'selectedOptions')
@@ -862,9 +862,9 @@ Func DemoSelectOptions()
 
 	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
 
-	_WD_ElementSelectAction($sSession, $sSelectElement, 'SINGLESELECT', 'Parrot')
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'SINGLESELECT', 'PARROT')
 	If @error Then Return SetError(@error, @extended, '')
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: Parrot")
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: PARROT (Parrot)")
 
 	; retrieves all <option> elements as 2D array
 	Local $aAllOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
@@ -876,14 +876,15 @@ Func DemoSelectOptions()
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'DESELECTALL')
 	If @error Then Return SetError(@error, @extended, '')
 
-	; disable multiple ability for <select> element
+	; disable 'multiple' attribute for <select> element
 	$sJavaScript = _
 			"var element = arguments[0];" & _
 			"element.multiple = false"
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
 
+	; this will set @error as <select> element does not have a 'multiple' attribute
 	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptionsToSelect)
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT on <select> element with disabled multiple ability")
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT on <select> element with disabled 'multiple' attribute" & @CRLF & "@error=" & @error)
 
 	; now will test enabled/disabled OPTGROUP
 	_WD_Navigate($sSession, 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup#examples')
@@ -943,7 +944,7 @@ Func DemoSelectOptions()
 
 	$aOptions2[0] = 'Option 3.1' ; this will set @error as 'Option 3.1' is disabled
 	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: 1.1 / 2.1 / 3.1" & @CRLF & "<option> elements one after other each separately")
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: 1.1 / 2.1 / 3.1" & @CRLF & "<option> elements one after other each separately" & @CRLF & "@error=" & @error)
 
 	; retrieves all <option> elements as 2D array
 	Local $aAllOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
@@ -954,6 +955,10 @@ Func DemoSelectOptions()
 	_WD_ElementSelectAction($sSession, $sSelectElement2, 'SINGLESELECT', 'Option 2.1')
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: 2.1")
+
+	; this will set @error as 'Option 3.2' is disabled
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'SINGLESELECT', 'Option 3.2')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: 3.2 - disabled <option> element" & @CRLF & "@error=" & @error)
 
 EndFunc   ;==>DemoSelectOptions
 
