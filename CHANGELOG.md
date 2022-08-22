@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Changed
+
+- _WD_ElementSelectAction
+	- Added `singleSelect` command
+	- Revised columns returned by `options` and `selectedOptions` commands
+	- Refactored Javascript coding
+
 ## [0.10.1]
 
 ### Added
