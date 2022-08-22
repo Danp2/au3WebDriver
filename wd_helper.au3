@@ -797,17 +797,23 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 	If @error Then
 		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
 	Else
-		Local $sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
+		_WD_LoadWait($sSession, 10)
 		$iErr = @error
 		If @error Then
-			$sMessage = 'Error occured on "' & $sLevel & '" level when checking "document.body" ElementID'
+			$sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
 		Else
-			$s_URL = _WD_ExecuteScript($sSession, "return window.location.href", Default, Default, $_WD_JSON_Value)
+			Local $sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 			$iErr = @error
 			If @error Then
-				$sMessage = 'Error occured on "' & $sLevel & '" level when checking URL'
+				$sMessage = 'Error occured on "' & $sLevel & '" level when checking "document.body" ElementID'
 			Else
-				$vResult = $sLevel & '|' & $sLevel & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & @CRLF
+				$s_URL = _WD_ExecuteScript($sSession, "return window.location.href", Default, Default, $_WD_JSON_Value)
+				$iErr = @error
+				If @error Then
+					$sMessage = 'Error occured on "' & $sLevel & '" level when checking URL'
+				Else
+					$vResult = $sLevel & '|' & $sLevel & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & @CRLF
+				EndIf
 			EndIf
 		EndIf
 	EndIf
