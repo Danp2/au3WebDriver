@@ -782,6 +782,12 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes)
 	Local $iErr = $_WD_ERROR_Success
 	Local $vResult = '', $s_URL = '', $sMessage = ''
 
+	; save current DEBUG level
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG
+
+	; Prevent logging multiple errors from __WD_FrameList_Internal if not in Full debug mode - https://github.com/Danp2/au3WebDriver/pull/362#issuecomment-1220962556
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
 	_WD_FrameEnter($sSession, $sLevel)
 	$iErr = @error
 
@@ -831,6 +837,8 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes)
 		EndIf
 	EndIf
 	If $iErr Then $iErr = $_WD_ERROR_Exception
+
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 	$sMessage = ($sMessage And $_WD_DEBUG > $_WD_DEBUG_Error) ? (' Information: ' & $sMessage) : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $vResult)
