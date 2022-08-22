@@ -755,7 +755,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 
 	#EndRegion - post processing
 
-	$sMessage = ($sMessage And $_WD_DEBUG = $_WD_DEBUG_Full) ? (' Information: ' & $sMessage) : ("")
+	$sMessage = ($sMessage And $_WD_DEBUG > $_WD_DEBUG_Error) ? (' Information: ' & $sMessage) : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $vResult)
 EndFunc   ;==>_WD_FrameList
 
@@ -832,7 +832,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes)
 	EndIf
 	If $iErr Then $iErr = $_WD_ERROR_Exception
 
-	$sMessage = ($sMessage And $_WD_DEBUG = $_WD_DEBUG_Full) ? (' Information: ' & $sMessage) : ("")
+	$sMessage = ($sMessage And $_WD_DEBUG > $_WD_DEBUG_Error) ? (' Information: ' & $sMessage) : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $vResult)
 EndFunc   ;==>__WD_FrameList_Internal
 
