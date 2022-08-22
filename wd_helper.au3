@@ -743,7 +743,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 			$vResult = _ArrayToString($a_Result)
 			If @error Then
 				$iErr = $_WD_ERROR_RetValue
-				$sMessage &= ' ArrayToSring conversion failed'
+				$sMessage &= ' ArrayToString conversion failed'
 				$vResult = ''
 			EndIf
 		EndIf
