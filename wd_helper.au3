@@ -744,7 +744,7 @@ EndFunc   ;==>_WD_HighlightElements
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......: This function waits only on loading current document context it means that it not waits for loading all frames
+; Remarks .......: Only the current document context is checked (frames must be checked individually)
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
