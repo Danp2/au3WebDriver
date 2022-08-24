@@ -631,7 +631,7 @@ Func DemoFrames()
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 1" & @CRLF)
 	ConsoleWrite($sResult & @CRLF)
 
-	; Example 2 - from 'https://www.w3schools.com' get frame list as array, with HTML content of each document
+	; Example 2 - from 'https://www.w3schools.com' get frame list as array
 	Local $aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 2" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array, with HTML content of each document', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
@@ -640,15 +640,15 @@ Func DemoFrames()
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	; change document context location
-	_WD_FrameEnter($sSession, 'null/2/0')
+	_WD_FrameEnter($sSession, 'null/0')
 
 	; check if document context location is Top Window
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; Example 3 - from 'https://www.w3schools.com' get frame list as array, while is current location is "null/2/0"
+	; Example 3 - from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 3" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/2/0"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/0"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
 
 	; go to another website
 	_WD_Navigate($sSession, 'https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom')
