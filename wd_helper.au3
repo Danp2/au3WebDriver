@@ -973,37 +973,71 @@ EndFunc   ;==>_WD_jQuerify
 ; Description ...: Check if element exist in all documents (including frames) and return their location
 ; Syntax ........: _WD_ElementExist($sSession, $sStrategy, $sSelector[, $bShadowRoot = Default])
 ;                  $iErr = @error[, $iExt = @extended]]]])
-; Parameters ....: $sSession            - .....
-;                  $sStrategy           - .....
-;                  $sSelector           - .....
-;                  $bShadowRoot         - [optional] .....
-; Return values .: #TODO
+; Parameters ....: $sSession     - Session ID from _WD_CreateSession
+;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector    - $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
+;                  $bShadowRoot  - [optional] Starting node is a shadow root? Default is False
+; Return values .: Success - frame location in path
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_ElementIssue
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_NoMatch
+;                  - $_WD_ERROR_Exception
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......:
-; Related .......:
+; Remarks .......: in case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame
+; Related .......: _Wd_FrameList, _WD_FindElement
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_ElementExist($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
 	Local Const $sFuncName = "_WD_ElementExist"
-	Local $iErr = $_WD_ERROR_Success
 	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   ShadowRoot=' & $bShadowRoot
+	Local $iErr = $_WD_ERROR_Success
+	Local $sStartLocation = '', $sLocationOfElement = '', $sMessage = ''
 
 	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 
 	; Prevent logging from _WD_FindElement if not in Full debug mode
 	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
-	#Region - ; TODO use _Wd_FrameList() to check all frames
-	_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
+	Local $aFrameList = _Wd_FrameList($sSession, True)
 	$iErr = @error
-	Local $sLocationOfElement = ((@error = 0) ? ('Exist') : (''))
-	#EndRegion - ; TODO _Wd_FrameList() support to check all frames
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+		$sMessage = ' > Issue with getting list of frames'
+	Else
+		For $i = 0 To UBound($aFrameList, $UBOUND_ROWS) - 1
+			If $aFrameList[$i][$_WD_FRAMELIST_Relative] = '' Then $sStartLocation = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+		Next
+
+		For $i = 0 To UBound($aFrameList, $UBOUND_ROWS) - 1
+			_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
+			$iErr = @error
+			If $iErr = $_WD_ERROR_Success Then
+				$sLocationOfElement = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+				ExitLoop
+			ElseIf $iErr <> $_WD_ERROR_NoMatch Then
+				$iErr = $_WD_ERROR_ElementIssue
+				$sMessage = ' > Issue with finding element on location: ' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+				ExitLoop
+			EndIf
+		Next
+	EndIf
+
+	; Back to "calling frame"
+	If $sStartLocation Then
+		_WD_FrameEnter($sSession, $sStartLocation)
+		If @error Then $iErr = $_WD_ERROR_Exception
+	EndIf
+
+	If $sStartLocation = '' Or $iErr Then
+		$sMessage = ' > Was not able to check / back to "calling frame"'
+	EndIf
 
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
-	Local $sMessage = $sParameters & '    : LocationOfElement= ' & $sLocationOfElement
+	$sMessage = $sParameters & $sMessage & '    : LocationOfElement= ' & $sLocationOfElement
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sLocationOfElement)
 EndFunc   ;==>_WD_ElementExist
 
