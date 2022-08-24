@@ -1565,7 +1565,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 	EndIf
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
-	Local $bNoUpdate = (IsKeyword($bForce) = $KEYWORD_NULL) ; Flag to track if updates should be performed
+	Local Const $bNoUpdate = (IsKeyword($bForce) = $KEYWORD_NULL) ; Flag to track if updates should be performed
 
 	; If the Install directory doesn't exist and it can't be created, then set error
 	If (Not FileExists($sInstallDir)) And (Not DirCreate($sInstallDir)) Then
@@ -1976,8 +1976,9 @@ EndFunc   ;==>_WD_DownloadFile
 ; ===============================================================================================================================
 Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImplicitWait = Default)
 	Local Const $sFuncName = "_WD_SetTimeouts"
-	Local Const $sParameters = 'Parameters:    PageLoad=' & $iPageLoad & '    Script=' & $iScript & '    Implicit=' & $iImplicitWait
-	Local $sTimeouts = '', $sResult = 0, $bIsNull, $iErr
+	Local Const $bIsNull = (IsKeyword($iScript) = $KEYWORD_NULL)
+	Local Const $sParameters = 'Parameters:    PageLoad=' & $iPageLoad & '    Script=' & ($bIsNull ? "Null" : $iScript) & '    Implicit=' & $iImplicitWait
+	Local $sTimeouts = '', $sResult = 0, $iErr
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
@@ -1991,7 +1992,6 @@ Func _WD_SetTimeouts($sSession, $iPageLoad = Default, $iScript = Default, $iImpl
 	EndIf
 
 	If $iScript <> Default Then
-		$bIsNull = (IsKeyword($iScript) = $KEYWORD_NULL)
 		If Not IsInt($iScript) And Not $bIsNull Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $vValue: " & $iScript), 0, 0)
 		EndIf
@@ -2576,7 +2576,7 @@ EndFunc   ;==>_WD_GetElementByRegEx
 Func _WD_Storage($sSession, $vKey, $vValue = Default, $nType = Default)
 	Local Const $sFuncName = "_WD_Storage"
 	Local $sParams, $vResult = '', $iErr = $_WD_ERROR_Success
-	Local $bIsKeyNull = (IsKeyword($vKey) = $KEYWORD_NULL), $bIsValueNull = (IsKeyword($vValue) = $KEYWORD_NULL)
+	Local Const $bIsKeyNull = (IsKeyword($vKey) = $KEYWORD_NULL), $bIsValueNull = (IsKeyword($vValue) = $KEYWORD_NULL)
 	Local Const $sParameters = 'Parameters:   Key=' & ($bIsKeyNull ? "Null" : $vKey) & '   Value=' & ($bIsValueNull ? "Null" : $vValue) & '   Type=' & $nType
 	
 	If $nType = Default Or $nType < $_WD_STORAGE_Local Or $nType > $_WD_STORAGE_Session Then $nType = $_WD_STORAGE_Local
