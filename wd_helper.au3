@@ -969,6 +969,45 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_ElementExist
+; Description ...: Check if element exist in all documents (including frames) and return their location
+; Syntax ........: _WD_ElementExist($sSession, $sStrategy, $sSelector[, $bShadowRoot = Default])
+;                  $iErr = @error[, $iExt = @extended]]]])
+; Parameters ....: $sSession            - .....
+;                  $sStrategy           - .....
+;                  $sSelector           - .....
+;                  $bShadowRoot         - [optional] .....
+; Return values .: #TODO
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_ElementExist($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
+	Local Const $sFuncName = "_WD_ElementExist"
+	Local $iErr = $_WD_ERROR_Success
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   ShadowRoot=' & $bShadowRoot
+
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+	; Prevent logging from _WD_FindElement if not in Full debug mode
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
+	#Region - ; TODO use _Wd_FrameList() to check all frames
+	_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
+	$iErr = @error
+	Local $sLocationOfElement = ((@error = 0) ? ('Exist') : (''))
+	#EndRegion - ; TODO _Wd_FrameList() support to check all frames
+
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+
+	Local $sMessage = $sParameters & '    : LocationOfElement= ' & $sLocationOfElement
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sLocationOfElement)
+EndFunc   ;==>_WD_ElementExist
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementOptionSelect
 ; Description ...: Find and click on an option from a Select element.
 ; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
