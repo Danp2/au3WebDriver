@@ -80,6 +80,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_ElementStyle        | Set/Get element style property.                                                 |
 | _WD_FrameEnter          | Enter the specified frame.                                                      |
 | _WD_FrameLeave          | Leave the current frame, to its parent.                                         |
+| _WD_FrameList           | Retrieves a detailed list of the main document and all associated frames.       |
 | _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                              |
 | _WD_GetBrowserVersion   | Get version number of specified browser.                                        |
 | _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                             |
