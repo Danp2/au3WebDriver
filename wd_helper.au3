@@ -1185,7 +1185,7 @@ Func _WD_ElementExist($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
 
 	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 
-	; Prevent logging from _WD_FindElement if not in Full debug mode
+	; Prevent logging from _WD_FindElement and _Wd_FrameList if not in Full debug mode
 	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 	Local $aFrameList = _Wd_FrameList($sSession, True)
@@ -1199,15 +1199,21 @@ Func _WD_ElementExist($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
 		Next
 
 		For $i = 0 To UBound($aFrameList, $UBOUND_ROWS) - 1
-			_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
-			$iErr = @error
-			If $iErr = $_WD_ERROR_Success Then
-				$sLocationOfElement = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
-				ExitLoop
-			ElseIf $iErr <> $_WD_ERROR_NoMatch Then
-				$iErr = $_WD_ERROR_ElementIssue
-				$sMessage = ' > Issue with finding element on location: ' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
-				ExitLoop
+			_WD_FrameEnter($sSession, $aFrameList[$i][$_WD_FRAMELIST_Absolute])
+			If @error Then
+				$iErr = $_WD_ERROR_GeneralError
+				$sMessage = ' > Issue with entering frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+			Else
+				_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
+				$iErr = @error
+				If $iErr = $_WD_ERROR_Success Then
+					$sLocationOfElement = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+					ExitLoop
+				ElseIf $iErr <> $_WD_ERROR_NoMatch Then
+					$iErr = $_WD_ERROR_ElementIssue
+					$sMessage = ' > Issue with finding element on location: ' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+					ExitLoop
+				EndIf
 			EndIf
 		Next
 	EndIf
@@ -1219,7 +1225,7 @@ Func _WD_ElementExist($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
 	EndIf
 
 	If $sStartLocation = '' Or $iErr Then
-		$sMessage = ' > Was not able to check / back to "calling frame"'
+		$sMessage = ' > Was not able to check / back to "calling frame" : StartLocatkon=' & $sStartLocation
 	EndIf
 
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
