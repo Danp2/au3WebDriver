@@ -579,6 +579,11 @@ Func DemoFrames()
 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
 	If @error Then Return SetError(@error, @extended)
 
+	Local $sLocationOfElement1 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement1=" & $sLocationOfElement1 & @CRLF)
+
+	MsgBox(0, "", '$sLocationOfElement1')
+
 	Local $iFrameCount = _WD_GetFrameCount($sSession)
 	If @error Then Return SetError(@error, @extended)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Frames=" & $iFrameCount & @CRLF)
@@ -596,6 +601,11 @@ Func DemoFrames()
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after changing context to first frame the current context is not on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
+
+	Local $sLocationOfElement2 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement2=" & $sLocationOfElement2 & @CRLF)
+
+	MsgBox(0, "", '$sLocationOfElement2')
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
 	; changing context to first sub frame
