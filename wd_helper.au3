@@ -798,8 +798,8 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
 	Else
 		_WD_LoadWait($sSession, 100, 1000)
-		If 0 And @error Then ; intentionally do not check for error here, for details look at: https://github.com/Danp2/au3WebDriver/pull/362#issuecomment-1225512052
-			; $sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
+		If @error And @error <> $_WD_ERROR_Timeout Then
+			$sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
 		Else
 			Local $sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 			$iErr = @error
