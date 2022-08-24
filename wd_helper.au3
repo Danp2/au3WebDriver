@@ -83,7 +83,7 @@ Global Enum _
 		$_WD_FRAMELIST_URL = 3, _
 		$_WD_FRAMELIST_BodyID = 4
 
-Global Enum _ ;https://www.w3schools.com/jsref/prop_doc_readystate.asp
+Global Enum _ ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
 		$_WD_READYSTATE_Uninitialized, _ ; Has not started loading
 		$_WD_READYSTATE_Loading, _  ; Is loading
 		$_WD_READYSTATE_Loaded, _  ; Has been loaded
@@ -985,7 +985,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 				$sReadyState = ''
 			Else
 				For $i = 0 To $_WD_READYSTATE__COUNTER - 1
-					If $sReadyState = $aWD_READYSTATE[$i][0] Then ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
+					If $sReadyState = $aWD_READYSTATE[$i][0] Then
 						$iExt = $i
 						$sReadyState &= ' (' & $aWD_READYSTATE[$i][1] & ')'
 						ExitLoop
