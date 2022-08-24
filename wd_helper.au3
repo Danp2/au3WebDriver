@@ -737,12 +737,14 @@ EndFunc   ;==>_WD_HighlightElements
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $iDelay   - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout - [optional] Period of time (in milliseconds) to wait before exiting function
-;                  $sElement - [optional] Element ID to confirm DOM invalidation
+;                  $sElement - [optional] Element ID (from _WD_FindElement or _WD_WaitElement) to confirm DOM invalidation
 ; Return values .: Success - 1.
-;                  Failure - 0 and sets @error to $_WD_ERROR_Timeout
+;                  Failure - 0 and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: This function waits only on loading current document context it means that it not waits for loading all frames
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
@@ -750,7 +752,7 @@ EndFunc   ;==>_WD_HighlightElements
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement
-	Local $iErr, $sReadyState
+	Local $iErr, $iExt = 0, $sReadyState
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
@@ -762,9 +764,10 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	$iErr = @error
 
 	Local $hLoadWaitTimer = TimerInit()
+
 	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level to prevent multiple errors
-	; Prevent logging from _WD_ElementAction if not in Full debug mode
-	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; Prevent logging from _WD_ElementAction if not in Full debug mode
+
 	While True
 		If $iErr Then ExitLoop
 
@@ -774,6 +777,19 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 		Else
 			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
+			If $iErr Then $iErr = $_WD_ERROR_Exception
+			Switch $sReadyState ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
+				Case 'uninitialized' ; Has not started loading
+					$iExt = 1
+				Case 'loading' ; Is loading
+					$iExt = 2
+				Case 'loaded' ; Has been loaded
+					$iExt = 3
+				Case 'interactive' ; Has loaded enough to interact with
+					$iExt = 4
+				Case 'complete' ; Fully loaded
+					$iExt = 5
+			EndSwitch
 			If $iErr Or $sReadyState = 'complete' Then
 				ExitLoop
 			EndIf
@@ -790,7 +806,8 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 	Local $iReturn = ($iErr) ? (0) : (1)
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $iReturn)
+	Local $sMessage = $sParameters & '    : ReadyState= ' & $sReadyState
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $iReturn)
 EndFunc   ;==>_WD_LoadWait
 
 ; #FUNCTION# ====================================================================================================================
