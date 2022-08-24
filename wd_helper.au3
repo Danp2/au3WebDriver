@@ -692,7 +692,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  - $_WD_ERROR_RetValue
 ; Author ........: mLipok
 ; Modified ......: Danp2
-; Remarks .......:
+; Remarks .......: The list of frames can depend on many factors, including geolocation, as well as problems with the local Internet
 ; Related .......: _WD_GetFrameCount, _WD_FrameEnter, _WD_FrameLeave
 ; Link ..........:
 ; Example .......: No
@@ -797,10 +797,9 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 	If @error Then
 		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
 	Else
-		_WD_LoadWait($sSession, 10, 30 * 1000)
-		$iErr = @error
-		If @error Then
-			$sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
+		_WD_LoadWait($sSession, 100, 1000)
+		If 0 And @error Then ; intentionally do not check for error here, for details look at: https://github.com/Danp2/au3WebDriver/pull/362#issuecomment-1225512052
+			; $sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
 		Else
 			Local $sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 			$iErr = @error
