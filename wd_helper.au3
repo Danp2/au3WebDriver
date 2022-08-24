@@ -76,6 +76,22 @@ Global Enum _
 		$_WD_STORAGE_Local = 0, _
 		$_WD_STORAGE_Session = 1
 		
+Global Enum _ ;https://www.w3schools.com/jsref/prop_doc_readystate.asp
+		$_WD_READYSTATE_Uninitialized, _ ; Has not started loading
+		$_WD_READYSTATE_Loading, _  ; Is loading
+		$_WD_READYSTATE_Loaded, _  ; Has been loaded
+		$_WD_READYSTATE_Interactive, _  ; Has loaded enough to interact with
+		$_WD_READYSTATE_Complete, _  ; Fully loaded
+		$_WD_READYSTATE__COUNTER
+
+Global Const $aWD_READYSTATE[$_WD_READYSTATE__COUNTER][2] = [ _
+		["uninitialized", "Has not started loading"], _
+		["loading", "Is loading"], _
+		["loaded", "Has been loaded"], _
+		["interactive", "Has loaded enough to interact with"], _
+		["complete", "Fully loaded"] _
+		]
+
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
@@ -777,20 +793,20 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 		Else
 			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
-			If $iErr Then $iErr = $_WD_ERROR_Exception
-			Switch $sReadyState ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
-				Case 'uninitialized' ; Has not started loading
-					$iExt = 1
-				Case 'loading' ; Is loading
-					$iExt = 2
-				Case 'loaded' ; Has been loaded
-					$iExt = 3
-				Case 'interactive' ; Has loaded enough to interact with
-					$iExt = 4
-				Case 'complete' ; Fully loaded
-					$iExt = 5
-			EndSwitch
-			If $iErr Or $sReadyState = 'complete' Then
+			If $iErr Then
+				$iErr = $_WD_ERROR_Exception
+				$sReadyState = ''
+			Else
+				For $i = 0 To $_WD_READYSTATE__COUNTER - 1
+					If $sReadyState = $aWD_READYSTATE[$i][0] Then ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
+						$iExt = $i
+						$sReadyState &= ' (' & $aWD_READYSTATE[$i][1] & ')'
+						ExitLoop
+					EndIf
+				Next
+			EndIf
+
+			If $iErr Or StringInStr($sReadyState, 'complete') Then
 				ExitLoop
 			EndIf
 		EndIf
