@@ -798,6 +798,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
 	Else
 		_WD_LoadWait($sSession, 100, 1000)
+		$iErr = @error
 		If @error And @error <> $_WD_ERROR_Timeout Then
 			$sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
 		Else
