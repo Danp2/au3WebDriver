@@ -980,9 +980,9 @@ EndFunc   ;==>_WD_jQuerify
 ; Return values .: Success - frame location in path
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_ElementIssue
+;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NoMatch
-;                  - $_WD_ERROR_Exception
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......: in case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame
