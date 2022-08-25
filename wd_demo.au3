@@ -579,7 +579,7 @@ Func DemoFrames()
 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
 	If @error Then Return SetError(@error, @extended)
 
-	Local $sLocationOfElement1 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
+	Local $sLocationOfElement1 = _WD_FindElementFrames($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement1=" & $sLocationOfElement1 & @CRLF)
 
 	Local $iFrameCount = _WD_GetFrameCount($sSession)
@@ -600,7 +600,7 @@ Func DemoFrames()
 	; after changing context to first frame the current context is not on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
-	Local $sLocationOfElement2 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
+	Local $sLocationOfElement2 = _WD_FindElementFrames($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement2=" & $sLocationOfElement2 & @CRLF)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
@@ -707,7 +707,7 @@ Func DemoFrames()
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 7" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 7 - www.tutorialspoint.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
 
-	Local $sLocationOfElement3 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
+	Local $sLocationOfElement3 = _WD_FindElementFrames($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement3=" & $sLocationOfElement3 & @CRLF)
 
 	MsgBox(0, "", 'After Example 7')
