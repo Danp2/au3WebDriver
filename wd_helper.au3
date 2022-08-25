@@ -99,6 +99,10 @@ Global Const $aWD_READYSTATE[$_WD_READYSTATE__COUNTER][2] = [ _
 		["complete", "Fully loaded"] _
 		]
 
+Global Enum _ ; Column positions of $aWD_READYSTATE
+		$_WD_READYSTATE_State, _
+		$_WD_READYSTATE_Desc
+
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
@@ -944,6 +948,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
@@ -955,7 +960,7 @@ EndFunc   ;==>_WD_HighlightElements
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement
-	Local $iErr, $iExt = 0, $sReadyState
+	Local $iErr, $iExt = 0, $sReadyState, $iIndex = -1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
@@ -983,17 +988,10 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 			If $iErr Then
 				$iErr = $_WD_ERROR_Exception
 				$sReadyState = ''
-			Else
-				For $i = 0 To $_WD_READYSTATE__COUNTER - 1
-					If $sReadyState = $aWD_READYSTATE[$i][0] Then
-						$iExt = $i
-						$sReadyState &= ' (' & $aWD_READYSTATE[$i][1] & ')'
-						ExitLoop
-					EndIf
-				Next
+				ExitLoop
 			EndIf
 
-			If $iErr Or StringInStr($sReadyState, 'complete') Then
+			If $sReadyState = 'complete' Then
 				ExitLoop
 			EndIf
 		EndIf
@@ -1007,6 +1005,16 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 		$iErr = @error
 	WEnd
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+
+	If $sReadyState Then
+		$iIndex = _ArraySearch($aWD_READYSTATE, $sReadyState, Default, Default, Default, Default, Default, $_WD_READYSTATE_State)
+		If @error Then
+			$iErr = $_WD_ERROR_GeneralError
+		Else
+			$iExt = $iIndex
+			$sReadyState &= ' (' & $aWD_READYSTATE[$iIndex][$_WD_READYSTATE_Desc] & ')'
+		EndIf
+	EndIf
 
 	Local $iReturn = ($iErr) ? (0) : (1)
 	Local $sMessage = $sParameters & '    : ReadyState= ' & $sReadyState
