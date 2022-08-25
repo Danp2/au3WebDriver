@@ -83,6 +83,26 @@ Global Enum _
 		$_WD_FRAMELIST_URL = 3, _
 		$_WD_FRAMELIST_BodyID = 4
 
+Global Enum _ ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
+		$_WD_READYSTATE_Uninitialized, _ ; Has not started loading
+		$_WD_READYSTATE_Loading, _  ; Is loading
+		$_WD_READYSTATE_Loaded, _  ; Has been loaded
+		$_WD_READYSTATE_Interactive, _  ; Has loaded enough to interact with
+		$_WD_READYSTATE_Complete, _  ; Fully loaded
+		$_WD_READYSTATE__COUNTER
+
+Global Const $aWD_READYSTATE[$_WD_READYSTATE__COUNTER][2] = [ _
+		["uninitialized", "Has not started loading"], _
+		["loading", "Is loading"], _
+		["loaded", "Has been loaded"], _
+		["interactive", "Has loaded enough to interact with"], _
+		["complete", "Fully loaded"] _
+		]
+
+Global Enum _ ; Column positions of $aWD_READYSTATE
+		$_WD_READYSTATE_State, _
+		$_WD_READYSTATE_Desc
+
 #EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
@@ -924,12 +944,15 @@ EndFunc   ;==>_WD_HighlightElements
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $iDelay   - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout - [optional] Period of time (in milliseconds) to wait before exiting function
-;                  $sElement - [optional] Element ID to confirm DOM invalidation
+;                  $sElement - [optional] Element ID (from _WD_FindElement or _WD_WaitElement) to confirm DOM invalidation
 ; Return values .: Success - 1.
-;                  Failure - 0 and sets @error to $_WD_ERROR_Timeout
+;                  Failure - 0 and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_RetValue
+;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
-; Remarks .......:
+; Remarks .......: Only the current document context is checked (frames must be checked individually)
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
@@ -937,7 +960,7 @@ EndFunc   ;==>_WD_HighlightElements
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
 	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement
-	Local $iErr, $sReadyState
+	Local $iErr, $iExt = 0, $sReadyState, $iIndex = -1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
@@ -949,9 +972,10 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	$iErr = @error
 
 	Local $hLoadWaitTimer = TimerInit()
+
 	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level to prevent multiple errors
-	; Prevent logging from _WD_ElementAction if not in Full debug mode
-	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; Prevent logging from _WD_ElementAction if not in Full debug mode
+
 	While True
 		If $iErr Then ExitLoop
 
@@ -961,7 +985,13 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 		Else
 			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
-			If $iErr Or $sReadyState = 'complete' Then
+			If $iErr Then
+				$iErr = $_WD_ERROR_Exception
+				$sReadyState = ''
+				ExitLoop
+			EndIf
+
+			If $sReadyState = 'complete' Then
 				ExitLoop
 			EndIf
 		EndIf
@@ -976,8 +1006,19 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	WEnd
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
+	If $sReadyState Then
+		$iIndex = _ArraySearch($aWD_READYSTATE, $sReadyState, Default, Default, Default, Default, Default, $_WD_READYSTATE_State)
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+		Else
+			$iExt = $iIndex
+			$sReadyState &= ' (' & $aWD_READYSTATE[$iIndex][$_WD_READYSTATE_Desc] & ')'
+		EndIf
+	EndIf
+
 	Local $iReturn = ($iErr) ? (0) : (1)
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $iReturn)
+	Local $sMessage = $sParameters & '    : ReadyState= ' & $sReadyState
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $iReturn)
 EndFunc   ;==>_WD_LoadWait
 
 ; #FUNCTION# ====================================================================================================================
