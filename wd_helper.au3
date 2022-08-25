@@ -774,7 +774,7 @@ EndFunc   ;==>_WD_FrameList
 ; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_Calling)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sLevel              - frame location level ... path
-;                  $sFrameAttributes    - all <iframe ....> atributes
+;                  $sFrameAttributes    - all <iframe ....> attributes
 ;                  $_WD_DEBUG_Calling   - log level taken from calling function
 ; Return values .: Success - array or string
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
@@ -828,7 +828,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
 				$iErr = @error
 				If @error Then
-					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check atributes child frames #' & $iFrame
+					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
 				Else
 					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
 					$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $_WD_DEBUG_Calling)
