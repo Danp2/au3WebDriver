@@ -582,8 +582,6 @@ Func DemoFrames()
 	Local $sLocationOfElement1 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement1=" & $sLocationOfElement1 & @CRLF)
 
-	MsgBox(0, "", '$sLocationOfElement1')
-
 	Local $iFrameCount = _WD_GetFrameCount($sSession)
 	If @error Then Return SetError(@error, @extended)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Frames=" & $iFrameCount & @CRLF)
@@ -604,8 +602,6 @@ Func DemoFrames()
 
 	Local $sLocationOfElement2 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "div.trytopnav")
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement2=" & $sLocationOfElement2 & @CRLF)
-
-	MsgBox(0, "", '$sLocationOfElement2')
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
 	; changing context to first sub frame
@@ -630,8 +626,9 @@ Func DemoFrames()
 	; after leaving first frame, the current context should back on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
-	; now lets try to check frame list and using locations as path:
-	; go to website
+	; now lets try to check frame list and using locations as path 'null/0'
+
+	; firstly go to website
 	_WD_Navigate($sSession, 'https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe')
 	_WD_LoadWait($sSession)
 
@@ -644,15 +641,15 @@ Func DemoFrames()
 	; Example 2 - from 'https://www.w3schools.com' get frame list as array
 	Local $aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 2" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array, with HTML content of each document', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
 
-	; check if document context location is Top Window
+	; check if document context location is Top Window - should be as we are after navigation
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; change document context location
+	; change document context location by path 'null/0'
 	_WD_FrameEnter($sSession, 'null/0')
 
-	; check if document context location is Top Window
+	; check if document context location is Top Window - should not be as we enter to frame 'null/0'
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	; Example 3 - from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
@@ -674,13 +671,13 @@ Func DemoFrames()
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 5" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 5 - stackoverflow.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
 
-	; check if document context location is Top Window
+	; check if document context location is Top Window - should be as we are after navigation
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; change document context location
+	; change document context location by path 'null/2'
 	_WD_FrameEnter($sSession, 'null/2')
 
-	; check if document context location is Top Window
+	; check if document context location is Top Window - should not be as we enter to frame 'null/2'
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	; Example 6v1 - from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
@@ -698,6 +695,22 @@ Func DemoFrames()
 
 	; check if document context location is Top Window
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	; now lets try to check locataion of multiple elements on multiple frames
+	; go to website
+	_WD_Navigate($sSession, 'https://www.tutorialspoint.com/html/html_frames.htm#')
+	_WD_LoadWait($sSession)
+
+	MsgBox(0, "", 'Before Example 7')
+
+	$aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 7" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Example 7 - www.tutorialspoint.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+
+	Local $sLocationOfElement3 = _WD_ELementExist($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sLocationOfElement3=" & $sLocationOfElement3 & @CRLF)
+
+	MsgBox(0, "", 'After Example 7')
 
 EndFunc   ;==>DemoFrames
 
