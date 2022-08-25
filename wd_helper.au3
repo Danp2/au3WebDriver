@@ -1207,8 +1207,8 @@ Func _WD_FindElementFrames($sSession, $sStrategy, $sSelector, $bShadowRoot = Def
 				_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
 				$iErr = @error
 				If $iErr = $_WD_ERROR_Success Then
-					$sLocationOfElement = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
-					ExitLoop
+					$sLocationOfElement &= $aFrameList[$i][$_WD_FRAMELIST_Absolute] & '|'
+					ContinueLoop
 				ElseIf $iErr <> $_WD_ERROR_NoMatch Then
 					$iErr = $_WD_ERROR_ElementIssue
 					$sMessage = ' > Issue with finding element on location: ' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
@@ -1229,9 +1229,13 @@ Func _WD_FindElementFrames($sSession, $sStrategy, $sSelector, $bShadowRoot = Def
 	EndIf
 
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
-
+	If $sLocationOfElement Then $sLocationOfElement = StringTrimRight($sLocationOfElement, 2)
 	$sMessage = $sParameters & $sMessage & '    : LocationOfElement= ' & $sLocationOfElement
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sLocationOfElement)
+
+	Local $aResults = StringSplit($sLocationOfElement, '|', $STR_NOCOUNT)
+	Local $iExt = UBound($aResults, $UBOUND_ROWS)
+	If $iErr Or $iExt = 0 Then $aResults = ''
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $aResults)
 EndFunc   ;==>_WD_FindElementFrames
 
 ; #FUNCTION# ====================================================================================================================
