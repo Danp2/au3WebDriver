@@ -1157,14 +1157,14 @@ EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FindElementFrames
-; Description ...: Check if element exist in all documents (including frames) and return their location
+; Description ...: Search the current document (including frames) and return locations of matching elements
 ; Syntax ........: _WD_FindElementFrames($sSession, $sStrategy, $sSelector[, $bShadowRoot = Default])
 ;                  $iErr = @error[, $iExt = @extended]]]])
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector    - $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
 ;                  $bShadowRoot  - [optional] Starting node is a shadow root? Default is False
-; Return values .: Success - frame location in path
+; Return values .: Success - array of frames location in path format like 'null/2/0'
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_ElementIssue
 ;                  - $_WD_ERROR_Exception
@@ -1172,7 +1172,8 @@ EndFunc   ;==>_WD_jQuerify
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......: in case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame
+; Remarks .......: Returned location (path like 'null/2/0') can be used with _WD_FrameEnter before _WD_FindElement or _WD_WaitElement will be used.
+;                  In case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame.
 ; Related .......: _Wd_FrameList, _WD_FindElement
 ; Link ..........:
 ; Example .......: No
@@ -1229,7 +1230,7 @@ Func _WD_FindElementFrames($sSession, $sStrategy, $sSelector, $bShadowRoot = Def
 	EndIf
 
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
-	If $sLocationOfElement Then $sLocationOfElement = StringTrimRight($sLocationOfElement, 1)
+	If $sLocationOfElement Then $sLocationOfElement = StringTrimRight($sLocationOfElement, 2)
 	$sMessage = $sParameters & $sMessage & '    : LocationOfElement= ' & $sLocationOfElement
 
 	Local $aResults = StringSplit($sLocationOfElement, '|', $STR_NOCOUNT)
