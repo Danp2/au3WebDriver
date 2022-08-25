@@ -1156,9 +1156,9 @@ Func _WD_jQuerify($sSession, $sjQueryFile = Default, $iTimeout = Default)
 EndFunc   ;==>_WD_jQuerify
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_ElementExist
+; Name ..........: _WD_FindElementFrames
 ; Description ...: Check if element exist in all documents (including frames) and return their location
-; Syntax ........: _WD_ElementExist($sSession, $sStrategy, $sSelector[, $bShadowRoot = Default])
+; Syntax ........: _WD_FindElementFrames($sSession, $sStrategy, $sSelector[, $bShadowRoot = Default])
 ;                  $iErr = @error[, $iExt = @extended]]]])
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
@@ -1177,8 +1177,8 @@ EndFunc   ;==>_WD_jQuerify
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementExist($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
-	Local Const $sFuncName = "_WD_ElementExist"
+Func _WD_FindElementFrames($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
+	Local Const $sFuncName = "_WD_FindElementFrames"
 	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   ShadowRoot=' & $bShadowRoot
 	Local $iErr = $_WD_ERROR_Success
 	Local $sStartLocation = '', $sLocationOfElement = '', $sMessage = ''
@@ -1232,7 +1232,7 @@ Func _WD_ElementExist($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
 
 	$sMessage = $sParameters & $sMessage & '    : LocationOfElement= ' & $sLocationOfElement
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sLocationOfElement)
-EndFunc   ;==>_WD_ElementExist
+EndFunc   ;==>_WD_FindElementFrames
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementOptionSelect
