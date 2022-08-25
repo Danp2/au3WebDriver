@@ -948,7 +948,7 @@ EndFunc   ;==>_WD_HighlightElements
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_RetValue
 ;                  - $_WD_ERROR_Timeout
 ; Author ........: Danp2
 ; Modified ......: mLipok
@@ -1009,7 +1009,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	If $sReadyState Then
 		$iIndex = _ArraySearch($aWD_READYSTATE, $sReadyState, Default, Default, Default, Default, Default, $_WD_READYSTATE_State)
 		If @error Then
-			$iErr = $_WD_ERROR_GeneralError
+			$iErr = $_WD_ERROR_RetValue
 		Else
 			$iExt = $iIndex
 			$sReadyState &= ' (' & $aWD_READYSTATE[$iIndex][$_WD_READYSTATE_Desc] & ')'
