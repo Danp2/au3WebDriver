@@ -1229,7 +1229,7 @@ Func _WD_FindElementFrames($sSession, $sStrategy, $sSelector, $bShadowRoot = Def
 	EndIf
 
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
-	If $sLocationOfElement Then $sLocationOfElement = StringTrimRight($sLocationOfElement, 2)
+	If $sLocationOfElement Then $sLocationOfElement = StringTrimRight($sLocationOfElement, 1)
 	$sMessage = $sParameters & $sMessage & '    : LocationOfElement= ' & $sLocationOfElement
 
 	Local $aResults = StringSplit($sLocationOfElement, '|', $STR_NOCOUNT)
