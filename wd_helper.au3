@@ -52,7 +52,8 @@ Global Enum _
 		$_WD_OPTION_Visible = 1, _
 		$_WD_OPTION_Enabled = 2, _
 		$_WD_OPTION_Element = 4, _
-		$_WD_OPTION_NoMatch = 8
+		$_WD_OPTION_NoMatch = 8, _
+		$_WD_OPTION_Hidden  = 16
 
 Global Enum _
 		$_WD_OPTION_Standard, _
@@ -338,7 +339,8 @@ EndFunc   ;==>_WD_LinkClickByText
 ;                  |$_WD_OPTION_None    (0) = No optional feature processing
 ;                  |$_WD_OPTION_Visible (1) = Confirm element is visible
 ;                  |$_WD_OPTION_Enabled (2) = Confirm element is enabled
-;                  |$_WD_OPTION_NoMatch (8) = Confirm element not found
+;                  |$_WD_OPTION_NoMatch (8) = Confirm element is not found
+;                  |$_WD_OPTION_Hidden (16) = Confirm element is not visible
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -363,12 +365,14 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 	If $iOptions = Default Then $iOptions = $_WD_OPTION_None
 
-	Local $bVisible = BitAND($iOptions, $_WD_OPTION_Visible)
-	Local $bEnabled = BitAND($iOptions, $_WD_OPTION_Enabled)
-	Local $bCheckNoMatch = BitAND($iOptions, $_WD_OPTION_NoMatch)
+	Local Const $bVisible = BitAND($iOptions, $_WD_OPTION_Visible)
+	Local Const $bEnabled = BitAND($iOptions, $_WD_OPTION_Enabled)
+	Local Const $bNoMatch = BitAND($iOptions, $_WD_OPTION_NoMatch)
+	Local Const $bHidden = BitAND($iOptions, $_WD_OPTION_Hidden)
 
-	; Other options aren't valid if No Match option is supplied
-	If $bCheckNoMatch And $iOptions <> $_WD_OPTION_NoMatch Then
+	; Other options aren't valid if No Match or Hidden option is supplied
+	If ($bNoMatch And $iOptions <> $_WD_OPTION_NoMatch) Or _
+		($bHidden And $iOptions <> $_WD_OPTION_Hidden) Then
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
 		__WD_Sleep($iDelay)
@@ -391,16 +395,16 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				; Exit loop if unexpected error occurs
 				ExitLoop
 
-			ElseIf $iErr = $_WD_ERROR_NoMatch And $bCheckNoMatch Then
+			ElseIf $iErr = $_WD_ERROR_NoMatch And $bNoMatch Then
 				; if element wasn't found and "no match" option is active
 				; exit loop indicating success
 				$iErr = $_WD_ERROR_Success
 				ExitLoop
 
-			ElseIf $iErr = $_WD_ERROR_Success And Not $bCheckNoMatch Then
+			ElseIf $iErr = $_WD_ERROR_Success And Not $bNoMatch Then
 				; if element was found and "no match" option isn't active
-				; check $bVisible and $bEnabled options
-				If $bVisible Then
+				; check other options
+				If $bVisible Or $bHidden Then
 					$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
 
 					If @error Then
@@ -417,11 +421,16 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 					EndIf
 				EndIf
 
-				If $bIsVisible And $bIsEnabled Then
+				Select
+				Case $bHidden
+					If Not $bIsVisible Then ExitLoop
+
+				Case $bIsVisible And $bIsEnabled
 					ExitLoop
-				Else
+
+				Case Else
 					$sElement = ''
-				EndIf
+				EndSelect
 			EndIf
 
 			If (TimerDiff($hWaitTimer) > $iTimeout) Then
