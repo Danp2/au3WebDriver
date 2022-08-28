@@ -949,11 +949,12 @@ EndFunc   ;==>_WD_HighlightElements
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LoadWait
 ; Description ...: Wait for a browser page load to complete before returning.
-; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
+; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default[, $iState = Default]]]])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $iDelay   - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sElement - [optional] Element ID (from _WD_FindElement or _WD_WaitElement) to confirm DOM invalidation
+;                  $iState   - [optional] Minimal desired ReadyState that is expected. Default is $_WD_READYSTATE_Complete.
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -966,9 +967,11 @@ EndFunc   ;==>_WD_HighlightElements
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
+Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default, $iState = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
-	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement
+	If $iState = Default Then $iState = $_WD_READYSTATE_Complete ; Fully loaded
+	Local Const $sDesiredState = _ArrayToString($aWD_READYSTATE, '', $iState, $_WD_READYSTATE__COUNTER - 1, '|', $_WD_READYSTATE_State, $_WD_READYSTATE_State)
+	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement & '    DesiredState=' & $sDesiredState
 	Local $iErr, $iExt = 0, $sReadyState, $iIndex = -1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -1000,7 +1003,7 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 				ExitLoop
 			EndIf
 
-			If $sReadyState = 'complete' Then
+			If StringInStr($sDesiredState, $sReadyState) Then
 				ExitLoop
 			EndIf
 		EndIf
