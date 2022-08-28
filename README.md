@@ -78,6 +78,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_ElementOptionSelect | Find and click on an option from a Select element.                              |
 | _WD_ElementSelectAction | Perform action on designated Select element.                                    |
 | _WD_ElementStyle        | Set/Get element style property.                                                 |
+| _WD_FindElementFrames   | Search the current document (including frames) and return locations of matching elements    |
 | _WD_FrameEnter          | Enter the specified frame.                                                      |
 | _WD_FrameLeave          | Leave the current frame, to its parent.                                         |
 | _WD_FrameList           | Retrieves a detailed list of the main document and all associated frames.       |
