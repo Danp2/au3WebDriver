@@ -1171,7 +1171,7 @@ EndFunc   ;==>_WD_jQuerify
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: mLipok
-; Modified ......:
+; Modified ......: Danp2
 ; Remarks .......: The returned location can be used with _WD_FrameEnter to switch to the target frame.
 ;                  In case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame.
 ; Related .......: _Wd_FrameList, _WD_FindElement
