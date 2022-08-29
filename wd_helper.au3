@@ -2554,6 +2554,36 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 EndFunc   ;==>_WD_ElementActionEx
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DispatchEvent
+; Description ...: Create and dispatch events
+; Syntax ........: _WD_DispatchEvent($sSession,  $sElement,  $sEvent[,  $sOptions = Default])
+; Parameters ....: $sSession - Session ID from _WD_CreateSession.
+;                  $sElement - Element ID from _WD_FindElement.
+;                  $sEvent   - The event type.
+;                  $sOptions  - [optional] Event options in JSON format. Default is "{bubbles: true}".
+; Return values .: None
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_ExecuteScript
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_DispatchEvent($sSession, $sElement, $sEvent, $sOptions = Default)
+	Local Const $sFuncName = "_WD_DispatchEvent"
+	Local $sScript, $sJsonElement, $sParameters
+
+	If $sOptions = Default Or Not IsString($sOptions) Then $sOptions = "{bubbles: true}"
+
+	$sScript = "arguments[0].dispatchEvent(new Event(arguments[1], arguments[2]));"
+	$sJsonElement = __WD_JsonElement($sElement)
+	$sParameters = '"' & $sJsonElement & '","' & $sEvent & '","' & $sOptions & '"'
+	_WD_ExecuteScript($sSession, $sScript, $sParameters)
+
+	Return SetError(__WD_Error($sFuncName, @error))
+EndFunc   ;==>_WD_DispatchEvent
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table.
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
