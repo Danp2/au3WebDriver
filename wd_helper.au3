@@ -82,7 +82,8 @@ Global Enum _
 		$_WD_FRAMELIST_Relative = 1, _
 		$_WD_FRAMELIST_Attributes = 2, _
 		$_WD_FRAMELIST_URL = 3, _
-		$_WD_FRAMELIST_BodyID = 4
+		$_WD_FRAMELIST_BodyID = 4, _
+		$_WD_FRAMELIST_BodyVisibility = 5
 
 Global Enum _ ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
 		$_WD_READYSTATE_Uninitialized, _ ; Has not started loading
@@ -714,7 +715,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $bReturnAsArray      - [optional] Return result as array? Default is True.
-; Return values .: Success - 2D array (with 5 cols) or string ( delimited with | and @CRLF )
+; Return values .: Success - 2D array (with 6 cols) or string ( delimited with | and @CRLF )
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Exception
@@ -729,7 +730,7 @@ EndFunc   ;==>_WD_FrameLeave
 Func _WD_FrameList($sSession, $bReturnAsArray = True)
 	Local Const $sFuncName = "_WD_FrameList"
 	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray
-	Local $a_Result[0][5], $sStartLocation = '', $sMessage = ''
+	Local $a_Result[0][6], $sStartLocation = '', $sMessage = ''
 	Local $vResult = '', $iErr = $_WD_ERROR_Success
 
 	; save current DEBUG level
@@ -743,7 +744,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 	If @error Then
 		$iErr = $_WD_ERROR_GeneralError
 	Else
-		$vResult = __WD_FrameList_Internal($sSession, 'null', '', $_WD_DEBUG_Saved)
+		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False, $_WD_DEBUG_Saved)
 		$iErr = @error
 	EndIf
 
@@ -800,12 +801,13 @@ EndFunc   ;==>_WD_FrameList
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_FrameList_Internal
 ; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
-; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_Calling)
+; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $_WD_DEBUG_Calling)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sLevel              - frame location level ... path
-;                  $sFrameAttributes    - all <iframe ....> atributes
+;                  $sFrameAttributes    - all <iframe ....> attributes
+;                  $bIsHidden           - information about visibility of frame
 ;                  $_WD_DEBUG_Calling   - log level taken from calling function
-; Return values .: Success - array or string
+; Return values .: Success - string
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ; Author ........: mLipok
@@ -815,11 +817,11 @@ EndFunc   ;==>_WD_FrameList
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_Calling)
+Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $_WD_DEBUG_Calling)
 	Local Const $sFuncName = "__WD_FrameList_Internal"
-	Local Const $sParameters = 'Parameters:    Level=' & $sLevel ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
+	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
 	Local $iErr = $_WD_ERROR_Success
-	Local $vResult = '', $s_URL = '', $sMessage = ''
+	Local $vResult = '', $s_URL = '', $sMessage = '', $sCurrentBody_ElementID = ''
 
 	_WD_FrameEnter($sSession, $sLevel)
 	$iErr = @error
@@ -831,7 +833,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 		If @error And @error <> $_WD_ERROR_Timeout Then
 			$sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
 		Else
-			Local $sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
+			$sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 			$iErr = @error
 			If @error Then
 				$sMessage = 'Error occured on "' & $sLevel & '" level when checking "document.body" ElementID'
@@ -841,7 +843,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 				If @error Then
 					$sMessage = 'Error occured on "' & $sLevel & '" level when checking URL'
 				Else
-					$vResult = $sLevel & '|' & $sLevel & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & @CRLF
+					$vResult = $sLevel & '|' & $sLevel & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & '|' & $bIsHidden & @CRLF
 				EndIf
 			EndIf
 		EndIf
@@ -857,16 +859,26 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
 				$iErr = @error
 				If @error Then
-					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check atributes child frames #' & $iFrame
+					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
 				Else
-					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
-					$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $_WD_DEBUG_Calling)
+					Local $sScript = _
+							"var element = document.querySelectorAll('iframe')[" & $iFrame & "];" & _
+							"var style = window.getComputedStyle(element);" & _
+							"return (style.display === 'none');"
+					$bIsHidden = _WD_ExecuteScript($sSession, $sScript, Default, Default, $_WD_JSON_Value)
 					$iErr = @error
-					If Not @error Then
-						_WD_FrameLeave($sSession)
+					If @error Then
+						$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
+					Else
+						$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
+						$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $_WD_DEBUG_Calling)
 						$iErr = @error
-						If @error Then
-							$sMessage = 'Error occured on "' & $sLevel & '" level when trying to leave frames #' & $iFrame
+						If Not @error Then
+							_WD_FrameLeave($sSession)
+							$iErr = @error
+							If @error Then
+								$sMessage = 'Error occured on "' & $sLevel & '" level when trying to leave frames #' & $iFrame
+							EndIf
 						EndIf
 					EndIf
 				EndIf
