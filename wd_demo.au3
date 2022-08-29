@@ -1123,6 +1123,8 @@ Func _Demo_NavigateCheckBanner($sSession, $sURL, $sXpath)
 		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
 		Return SetError(@error, @extended)
 	EndIf
+
+	_WD_LoadWait($sSession)
 EndFunc   ;==>_Demo_NavigateCheckBanner
 
 Func SetupGecko($bHeadless)
