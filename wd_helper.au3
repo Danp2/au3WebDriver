@@ -1172,7 +1172,7 @@ EndFunc   ;==>_WD_jQuerify
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......: Returned location (path like 'null/2/0') can be used with _WD_FrameEnter before _WD_FindElement or _WD_WaitElement will be used.
+; Remarks .......: The returned location can be used with _WD_FrameEnter to switch to the target frame.
 ;                  In case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame.
 ; Related .......: _Wd_FrameList, _WD_FindElement
 ; Link ..........:
