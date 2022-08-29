@@ -83,7 +83,7 @@ Global Enum _
 		$_WD_FRAMELIST_Attributes = 2, _
 		$_WD_FRAMELIST_URL = 3, _
 		$_WD_FRAMELIST_BodyID = 4, _
-		$_WD_FRAMELIST_BodyVisibility = 5
+		$_WD_FRAMELIST_FrameVisibility = 5
 
 Global Enum _ ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
 		$_WD_READYSTATE_Uninitialized, _ ; Has not started loading
