@@ -73,6 +73,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_Attach              | Attach to existing browser tab.                                                 |
 | _WD_CheckContext        | Check if browser context is still valid.                                        |
 | _WD_ConsoleVisible      | Control visibility of the webdriver console app.                                |
+| _WD_DispatchEvent       | Create and dispatch events.                                                     |
 | _WD_DownloadFile        | Download file and save to disk.                                                 |
 | _WD_ElementActionEx     | Perform advanced action on designated element.                                  |
 | _WD_ElementOptionSelect | Find and click on an option from a Select element.                              |

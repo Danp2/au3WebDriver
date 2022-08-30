@@ -11,12 +11,27 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
+### Added
+
+- _WD_FrameList (@mLipok)
+- _WD_DispatchEvent
+
 ### Changed
 
+- _WD_CapabilitiesAdd: Support `mobileEmulation>deviceMetrics` capability
 - _WD_ElementSelectAction
 	- Added `singleSelect` command
 	- Revised columns returned by `options` and `selectedOptions` commands
 	- Refactored Javascript coding
+- _WD_FrameEnter: Added support for _WD_FrameList style paths
+- WD_LoadWait
+	- Improved error handling / logging
+	- 
+
+### Fixed
+
+- _WD_Alert: Set correct error code when 'status' no alert present
+- Improved error detection in winhttp routines
 
 ## [0.10.1]
 
