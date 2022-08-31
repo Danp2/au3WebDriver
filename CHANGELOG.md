@@ -26,7 +26,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_FrameEnter: Added support for _WD_FrameList style paths
 - WD_LoadWait
 	- Improved error handling / logging
-	- 
+	- Added ability to specify minimally acceptable page loading status 
 
 ### Fixed
 
