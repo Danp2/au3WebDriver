@@ -27,6 +27,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - WD_LoadWait
 	- Improved error handling / logging
 	- Added ability to specify minimally acceptable page loading status 
+- _WD_LinkClickByText: Added ability to specify the starting element
 
 ### Fixed
 
