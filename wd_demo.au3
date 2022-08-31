@@ -1085,7 +1085,7 @@ EndFunc   ;==>DemoStyles
 #Region - UserTesting
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
-	_WD_LoadWait($sSession)
+	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
 
 	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
