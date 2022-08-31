@@ -260,10 +260,11 @@ EndFunc   ;==>_WD_Attach
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
 ; Description ...: Simulate a mouse click on a link with text matching the provided string.
-; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $bPartial = Default])
-; Parameters ....: $sSession - Session ID from _WD_CreateSession
-;                  $sText    - Text to find in link
-;                  $bPartial - [optional] Search by partial text? Default is True
+; Syntax ........: _WD_LinkClickByText($sSession,  $sText[,  $bPartial = Default[,  $sStartElement = Default]])
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sText         - Text to find in link
+;                  $bPartial      - [optional] Search by partial text? Default is True
+;                  $sStartElement - [optional] Element ID of element to use as starting point
 ; Return values .: Success - None.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -277,10 +278,11 @@ EndFunc   ;==>_WD_Attach
 ; ===============================================================================================================================
 Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
-	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial
+	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial & '   StartElement=' & $sStartElement
 	Local $bIsVisible = False, $bIsEnabled = False
 
 	If $bPartial = Default Then $bPartial = True
+	If $sStartElement = Default Then $sStartElement = ""
 
 	Local $aElements = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText, $sStartElement, True)
 	Local $iErr = @error
