@@ -279,7 +279,6 @@ EndFunc   ;==>_WD_Attach
 Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartElement = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
 	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial & '   StartElement=' & $sStartElement
-	Local $bIsVisible = False, $bIsEnabled = False
 
 	If $bPartial = Default Then $bPartial = True
 	If $sStartElement = Default Then $sStartElement = ""
