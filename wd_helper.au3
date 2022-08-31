@@ -284,27 +284,15 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartElement 
 	If $bPartial = Default Then $bPartial = True
 	If $sStartElement = Default Then $sStartElement = ""
 
-	Local $aElements = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText, $sStartElement, True)
+	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText, $sStartElement)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
-		For $sElement In $aElements
-			$bIsVisible = _WD_ElementAction($sSession, $sElement, 'displayed')
-			If Not $bIsVisible Then ContinueLoop
+		_WD_ElementAction($sSession, $sElement, 'click')
+		$iErr = @error
 
-			$bIsEnabled = _WD_ElementAction($sSession, $sElement, 'enabled')
-			If $bIsEnabled Then ExitLoop
-		Next
-
-		If $bIsVisible and $bIsEnabled Then
-			_WD_ElementAction($sSession, $sElement, 'click')
-			$iErr = @error
-
-			If $iErr <> $_WD_ERROR_Success Then
-				$iErr = $_WD_ERROR_Exception
-			EndIf
-		Else
-			$iErr = $_WD_ERROR_NoMatch
+		If $iErr <> $_WD_ERROR_Success Then
+			$iErr = $_WD_ERROR_Exception
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_NoMatch
