@@ -970,6 +970,7 @@ EndFunc   ;==>_WD_HighlightElements
 Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default, $iState = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
 	If $iState = Default Then $iState = $_WD_READYSTATE_Complete ; Fully loaded
+	If Not (IsInt($iState) And $iState > 0 And $iState < $_WD_READYSTATE__COUNTER) Then $iState = $_WD_READYSTATE_Complete  ; Fully loaded
 	Local Const $sDesiredState = _ArrayToString($aWD_READYSTATE, '', $iState, $_WD_READYSTATE__COUNTER - 1, '|', $_WD_READYSTATE_State, $_WD_READYSTATE_State)
 	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement & '    DesiredState=' & $sDesiredState
 	Local $iErr, $iExt = 0, $sReadyState, $iIndex = -1
