@@ -2081,8 +2081,8 @@ EndFunc   ;==>_WD_GetBrowserPath
 ; Name ..........: _WD_GetWebDriverVersion
 ; Description ...: Get version number of specifed webdriver.
 ; Syntax ........: _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
-; Parameters ....: $sInstallDir - a string value. Directory where $sDriverEXE is located
-;                  $sDriverEXE  - a string value. File name of "WebDriver.exe"
+; Parameters ....: $sInstallDir - Directory where $sDriverEXE is located
+;                  $sDriverEXE  - File name of "WebDriver.exe"
 ; Return values .: Success - The value you get when you call WebDriver with the --version parameter
 ;                  Failure - "0" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
