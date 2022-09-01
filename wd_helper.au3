@@ -288,11 +288,11 @@ EndFunc   ;==>_WD_Attach
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
 ; Description ...: Simulate a mouse click on a link with text matching the provided string.
-; Syntax ........: _WD_LinkClickByText($sSession,  $sText[,  $bPartial = Default[,  $sStartElement = Default]])
+; Syntax ........: _WD_LinkClickByText($sSession,  $sText[,  $bPartial = Default[,  $sStartNodeID = Default]])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sText         - Text to find in link
 ;                  $bPartial      - [optional] Search by partial text? Default is True
-;                  $sStartElement - [optional] Element ID of element to use as starting point
+;                  $sStartNodeID  - [optional] Element ID to use as starting node. Default is ""
 ; Return values .: Success - None.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -304,14 +304,14 @@ EndFunc   ;==>_WD_Attach
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartElement = Default)
+Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartNodeID = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
-	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial & '   StartElement=' & $sStartElement
+	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial & '   StartElement=' & $sStartNodeID
 
 	If $bPartial = Default Then $bPartial = True
-	If $sStartElement = Default Then $sStartElement = ""
+	If $sStartNodeID = Default Then $sStartNodeID = ""
 
-	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText, $sStartNodeID)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -1214,11 +1214,11 @@ EndFunc   ;==>_WD_jQuerify
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementOptionSelect
 ; Description ...: Find and click on an option from a Select element.
-; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
+; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartNodeID = Default])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).  Should point to <option> in element of type '<select>'
-;                  $sStartElement - [optional] Element ID of element to use as starting point
+;                  $sStartNodeID  - [optional] Element ID to use as starting node. Default is ""
 ; Return values .: Success - None.
 ;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -1232,12 +1232,12 @@ EndFunc   ;==>_WD_jQuerify
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
+Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartNodeID = Default)
 	Local Const $sFuncName = "_WD_ElementOptionSelect"
-	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartElement
-	If $sStartElement = Default Then $sStartElement = ""
+	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartNodeID
+	If $sStartNodeID = Default Then $sStartNodeID = ""
 
-	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID)
 
 	If @error = $_WD_ERROR_Success Then
 		_WD_ElementAction($sSession, $sElement, 'click')
@@ -1638,11 +1638,11 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetShadowRoot
 ; Description ...: Retrieves the shadow root of an element.
-; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
+; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartNodeID = Default])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
-;                  $sStartElement - [optional] a string value. Default is ""
+;                  $sStartNodeID  - [optional] Element ID to use as starting node. Default is ""
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -1654,14 +1654,14 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
+Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartNodeID = Default)
 	Local Const $sFuncName = "_WD_GetShadowRoot"
-	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartElement
+	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartNodeID
 	Local $sResponse, $sResult = "", $oJSON
 
-	If $sStartElement = Default Then $sStartElement = ""
+	If $sStartNodeID = Default Then $sStartNodeID = ""
 
-	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
