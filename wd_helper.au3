@@ -662,49 +662,34 @@ EndFunc   ;==>_WD_FrameEnter
 ; Syntax ........: _WD_FrameLeave($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "chrome not reachable") and sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "chrome not reachable") and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Decibel
-; Modified ......: 2018-04-27
-; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
+; Modified ......: Danp2
+; Remarks .......: 
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
 	Local Const $sFuncName = "_WD_FrameLeave"
-	Local $sValue, $oJSON, $asJSON, $sOption = '{}'
+	Local $sValue, $oJSON, $sOption = '{}'
 
 	Local $sResponse = _WD_Window($sSession, "parent", $sOption)
+	Local $iErr = @error
 
-	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
-	EndIf
+	If $iErr = $_WD_ERROR_Success Then
+		$oJSON = Json_Decode($sResponse)
+		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
-	;Chrome--
-	;   Good: '{"value":null}'
-	;   Bad: '{"value":{"error":"chrome not reachable"....
-	;Firefox--
-	;   Good: '{"value": {}}'
-	;   Bad: '{"value":{"error":"unknown error","message":"Failed to decode response from marionette","stacktrace":""}}'
-
-	$oJSON = Json_Decode($sResponse)
-	$sValue = Json_Get($oJSON, $_WD_JSON_Value)
-
-	;*** Is this something besides a Chrome PASS?
-	If $sValue <> Null Then
-		;*** Check for a nested JSON object
-		If Json_IsObject($sValue) = True Then
-			$asJSON = Json_ObjGetKeys($sValue)
-
-			;*** Is this an empty nested object
-			If UBound($asJSON) = 0 Then ;Firefox PASS
-				$sValue = True
-			Else ;Chrome and Firefox FAIL
-				$sValue = $asJSON[0] & ":" & Json_Get($oJSON, "[value][" & $asJSON[0] & "]")
-			EndIf
+		;*** Evaluate the response
+		If $sValue <> Null Then
+			$sValue = Json_Get($oJSON, $_WD_JSON_Error)
+		Else
+			$sValue = True
 		EndIf
-	Else ;Chrome PASS
-		$sValue = True
+	Else
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sValue)
