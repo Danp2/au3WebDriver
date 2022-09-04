@@ -24,10 +24,11 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- Revised columns returned by `options` and `selectedOptions` commands
 	- Refactored Javascript coding
 - _WD_FrameEnter: Added support for _WD_FrameList style paths
-- WD_LoadWait
+- _WD_FrameLeave: Refactored for improved functionality
+- _WD_LinkClickByText: Added ability to specify the starting element
+- _WD_LoadWait
 	- Improved error handling / logging
 	- Added ability to specify minimally acceptable page loading status 
-- _WD_LinkClickByText: Added ability to specify the starting element
 
 ### Fixed
 
