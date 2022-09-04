@@ -673,7 +673,7 @@ EndFunc   ;==>_WD_FrameEnter
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
 	Local Const $sFuncName = "_WD_FrameLeave"
-	Local $sValue, $oJSON, $asJSON, $sOption = '{}'
+	Local $sValue, $oJSON, $sOption = '{}'
 
 	Local $sResponse = _WD_Window($sSession, "parent", $sOption)
 	Local $iErr = @error
