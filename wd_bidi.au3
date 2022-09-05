@@ -46,7 +46,7 @@ EndFunc
 Func _WD_BidiConnect($sWebSocketURL)
 	Local Const $sFuncName = "_WD_BidiConnect"
 	Local Const $sParameters = 'Parameters:   URL=' & $sWebSocketURL
-	Local $hSocket = __WD_BidiCommands('open', $sWebSocketURL)
+	Local $hSocket = __WD_BidiActions('open', $sWebSocketURL)
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $hSocket)	
@@ -67,7 +67,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_BidiDisconnect()
 	Local Const $sFuncName = "_WD_BidiDisconnect"
-	Local $sResult = __WD_BidiCommands('close')
+	Local $sResult = __WD_BidiActions('close')
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)	
@@ -75,7 +75,7 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiExecute
-; Description ...:
+; Description ...: Execute a Webdriver BiDi command
 ; Syntax ........: _WD_BidiExecute($sCommand,  $oParams)
 ; Parameters ....: $sCommand - Command to execute
 ;                  $oParams  - Parameters for command
@@ -91,25 +91,60 @@ EndFunc
 Func _WD_BidiExecute($sCommand, $oParams)
 	Local Const $sFuncName = "_WD_BidiExecute"
 
-	Local $vResult = __WD_BidiCommands('send', $sCommand, $oParams)
+	Local $vResult = __WD_BidiActions('send', $sCommand, $oParams)
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)	
 EndFunc
 
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_BidiGetContextID
+; Description ...: Retrieve browsing context ID
+; Syntax ........: _WD_BidiGetContextID()
+; Parameters ....: None
+; Return values .: Success - string containing browsing context ID
+;                  Failure - "" and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NotFound
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_BidiGetContextID()
+	Local Const $sFuncName = "_WD_BidiGetContextID"
+	Local $iErr = $_WD_ERROR_Success, $sContext = ''
+	Local $oParams = Json_ObjCreate()
+
+	Local $sResult = _WD_BidiExecute('browsingContext.getTree', $oParams)
+	If @error Then 
+		$iErr = $_WD_ERROR_Exception
+	Else
+		Local $oJSON = Json_Decode($sResult)
+		Local $sKey = '[result][contexts][0][context]'
+		$sContext = Json_Get($oJSON, $sKey)
+		If @error Then $iErr = $_WD_ERROR_NotFound
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr, $sContext), 0, $sContext)
+EndFunc
+
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __WD_BidiCommands
-; Description ...: Perform designated Bidi command
-; Syntax ........: __WD_BidiCommands($sCommand[,  $vData = Default[,  $oParams = Default]])
-; Parameters ....: $sCommand - One of the following actions:
+; Name ..........: __WD_BidiActions
+; Description ...: Perform designated Bidi action
+; Syntax ........: __WD_BidiActions($sAction[,  $sArgument = Default[,  $oParams = Default]])
+; Parameters ....: $sAction - One of the following actions:
 ;                  |
 ;                  |CLOSE       - Close the current websocket connection
 ;                  |OPEN        - Open a websocket connection
 ;                  |HANDLE      - Retrieve the current websocket connection handle
 ;                  |SEND        - Send Bidi command via websocket
-;                  $vData               - [optional] 
-;                  $oParams             - [optional] 
-; Return values .: Success - result of requested command
+;
+;                  $sArgument   - [optional] URL or BiDi method. Default is "".
+;                  $oParams     - [optional] Parameters for BiDi method. Default is {}.
+; Return values .: Success - result of requested action
 ;                  Failure - "" and sets @error
 ; Author ........: Danp2
 ; Modified ......:
@@ -118,9 +153,9 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_BidiCommands($sCommand, $vData = Default, $oParams = Default)
-	Local Const $sFuncName = "__WD_BidiCommands"
-	Local $sMessage = 'Parameters:   Command=' & $sCommand & '   Data=' & $vData & '   Params=' & $oParams
+Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
+	Local Const $sFuncName = "__WD_BidiActions"
+	Local $sMessage = 'Parameters:   Action=' & $sAction & '   Argument=' & $sArgument & '   Params=' & $oParams
 	Local Static $hWebSocket = 0, $iID = 0
 	Local $iErr = 0, $sErrText, $vTransmit = Json_ObjCreate()
 	Local $fStatus, $iStatus = 0, $iReasonLengthConsumed = 0
@@ -130,11 +165,11 @@ Func __WD_BidiCommands($sCommand, $vData = Default, $oParams = Default)
 	Local $sWSSRegex = '^((ws[s]?):\/\/)([^:\/\s]+)(?::([0-9]+))?(.*)$'
 	Local $vResult 
 
-	If $vData = Default Then $vData = ''
+	If $sArgument = Default Then $sArgument = ''
 	If $oParams = Default Then $oParams = Json_ObjCreate()
 
-	$sCommand = StringLower($sCommand)
-	Switch $sCommand
+	$sAction = StringLower($sAction)
+	Switch $sAction
 		Case 'close' ; close websocket
 			$fStatus = _WinHttpWebSocketClose($hWebSocket, _
 					$WINHTTP_WEB_SOCKET_SUCCESS_CLOSE_STATUS)
@@ -161,7 +196,7 @@ Func __WD_BidiCommands($sCommand, $vData = Default, $oParams = Default)
 
 		Case 'open' ; open websocket
 			Local $hOpen = 0, $hConnect = 0, $hRequest = 0
-			Local $aURL = StringRegExp($vData, $sWSSRegex, 3)
+			Local $aURL = StringRegExp($sArgument, $sWSSRegex, 3)
 
 			If Not IsArray($aURL) Or UBound($aURL) < 5 Then
 				$iErr = $_WD_ERROR_InvalidValue
@@ -229,7 +264,7 @@ Func __WD_BidiCommands($sCommand, $vData = Default, $oParams = Default)
 		Case 'send' ; send command
 			$iID += 1
 			Json_ObjPut($vTransmit, 'id', $iID)
-			Json_ObjPut($vTransmit, 'method', $vData)
+			Json_ObjPut($vTransmit, 'method', $sArgument)
 			Json_ObjPut($vTransmit, 'params', $oParams)
 			$vTransmit = Json_Encode($vTransmit)
 
@@ -281,7 +316,7 @@ Func __WD_BidiCommands($sCommand, $vData = Default, $oParams = Default)
 				EndIf
 			EndIf
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Open|Handle|Send) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Open|Handle|Send) $sAction=>" & $sAction), 0, "")
 	EndSwitch
 
 	If $iErr Then 
@@ -292,37 +327,3 @@ Func __WD_BidiCommands($sCommand, $vData = Default, $oParams = Default)
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $vResult)		
 EndFunc
 
-
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_BidiGetContextID
-; Description ...: Retrieve browsing context ID
-; Syntax ........: _WD_BidiGetContextID()
-; Parameters ....: None
-; Return values .: Success - string containing browsing context ID
-;                  Failure - "" and sets @error to one of the following values:
-;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_NotFound
-; Author ........: Danp2
-; Modified ......:
-; Remarks .......:
-; Related .......:
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-Func _WD_BidiGetContextID()
-	Local Const $sFuncName = "_WD_BidiGetContextID"
-	Local $iErr = $_WD_ERROR_Success, $sContext = ''
-	Local $oParams = Json_ObjCreate()
-
-	Local $sResult = _WD_BidiExecute('browsingContext.getTree', $oParams)
-	If @error Then 
-		$iErr = $_WD_ERROR_Exception
-	Else
-		Local $oJSON = Json_Decode($sResult)
-		Local $sKey = '[result][contexts][0][context]'
-		$sContext = Json_Get($oJSON, $sKey)
-		If @error Then $iErr = $_WD_ERROR_NotFound
-	EndIf
-
-	Return SetError(__WD_Error($sFuncName, $iErr, $sContext), 0, $sContext)
-EndFunc
