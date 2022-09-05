@@ -46,8 +46,16 @@ EndFunc
 Func _WD_BidiConnect($sWebSocketURL)
 	Local Const $sFuncName = "_WD_BidiConnect"
 	Local Const $sParameters = 'Parameters:   URL=' & $sWebSocketURL
+
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+	; Prevent logging from __WD_BidiActions if not in Full debug mode
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
 	Local $hSocket = __WD_BidiActions('open', $sWebSocketURL)
 	Local $iErr = @error
+
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $hSocket)	
 EndFunc
@@ -67,8 +75,15 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_BidiDisconnect()
 	Local Const $sFuncName = "_WD_BidiDisconnect"
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+	; Prevent logging from __WD_BidiActions if not in Full debug mode
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
 	Local $sResult = __WD_BidiActions('close')
 	Local $iErr = @error
+
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)	
 EndFunc
@@ -90,11 +105,18 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_BidiExecute($sCommand, $oParams)
 	Local Const $sFuncName = "_WD_BidiExecute"
+	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING))
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+	; Prevent logging from __WD_BidiActions if not in Full debug mode
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 	Local $vResult = __WD_BidiActions('send', $sCommand, $oParams)
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)	
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)	
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
@@ -155,7 +177,7 @@ EndFunc
 ; ===============================================================================================================================
 Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	Local Const $sFuncName = "__WD_BidiActions"
-	Local $sMessage = 'Parameters:   Action=' & $sAction & '   Argument=' & $sArgument & '   Params=' & $oParams
+	Local $sMessage = 'Parameters:   Action=' & $sAction & '   Argument=' & $sArgument & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING))
 	Local Static $hWebSocket = 0, $iID = 0
 	Local $iErr = 0, $sErrText, $vTransmit = Json_ObjCreate()
 	Local $fStatus, $iStatus = 0, $iReasonLengthConsumed = 0
@@ -323,7 +345,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 		$vResult = ""
 		$sMessage = $sErrText
 	EndIf
-	
+
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $vResult)		
 EndFunc
 
