@@ -181,7 +181,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	Local Static $hWebSocket = 0, $iID = 0
 	Local $iErr = 0, $sErrText, $vTransmit = Json_ObjCreate()
 	Local $fStatus, $iStatus = 0, $iReasonLengthConsumed = 0
-	Local $iBufferLen = 1024, $tBuffer = 0, $bRecv = Binary("")
+	Local $iBufferLen = 4096, $tBuffer = 0, $bRecv = Binary("")
 	Local $iBytesRead = 0, $iBufferType = 0
 	Local $tCloseReasonBuffer = DllStructCreate("byte[123]")
 	Local $sWSSRegex = '^((ws[s]?):\/\/)([^:\/\s]+)(?::([0-9]+))?(.*)$'
@@ -291,7 +291,6 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 			$vTransmit = Json_Encode($vTransmit)
 
 			; Send and receive data on the websocket protocol.
-
 			$fStatus = _WinHttpWebSocketSend($hWebSocket, _
 					$WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, _
 					$vTransmit)
