@@ -292,7 +292,7 @@ EndFunc   ;==>_WD_Attach
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sText         - Text to find in link
 ;                  $bPartial      - [optional] Search by partial text? Default is True
-;                  $sStartNodeID  - [optional] Element ID to use as starting node. Default is ""
+;                  $sStartNodeID  - [optional] Element ID to use as starting HTML node. Default is ""
 ; Return values .: Success - None.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -1218,7 +1218,7 @@ EndFunc   ;==>_WD_jQuerify
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).  Should point to <option> in element of type '<select>'
-;                  $sStartNodeID  - [optional] Element ID to use as starting node. Default is ""
+;                  $sStartNodeID  - [optional] Element ID to use as starting HTML node. Default is ""
 ; Return values .: Success - None.
 ;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -1642,7 +1642,7 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
-;                  $sStartNodeID  - [optional] Element ID to use as starting node. Default is ""
+;                  $sStartNodeID  - [optional] Element ID to use as starting HTML node. Default is ""
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
