@@ -1,7 +1,5 @@
 #include-once
 #include "wd_core.au3"
-#include "WinHttp_WebSocket.au3" ; https://github.com/Danp2/autoit-websocket
-#include <APIErrorsConstants.au3>
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetWebsocketURL
@@ -27,15 +25,15 @@ Func _WD_BidiGetWebsocketURL($sSession)
 
 	If @error Then $iErr = $_WD_ERROR_NotFound
 	Return SetError(__WD_Error($sFuncName, $iErr, $sURL), 0, $sURL)
-EndFunc
+EndFunc   ;==>_WD_BidiGetWebsocketURL
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiConnect
 ; Description ...: Open connection to bidirectional websocket
 ; Syntax ........: _WD_BidiConnect($sWebSocketURL)
-; Parameters ....: $sWebSocketURL - URL from _WD_BidiGetWebsocketURL
-; Return values .: Success - handle for websocket connection
-;                  Failure - 0 and sets @error
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - None
+;                  Failure - Sets @error
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -43,29 +41,23 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_BidiConnect($sWebSocketURL)
+Func _WD_BidiConnect($sSession)
 	Local Const $sFuncName = "_WD_BidiConnect"
-	Local Const $sParameters = 'Parameters:   URL=' & $sWebSocketURL
+	Local Const $sParameters = 'Parameters:   Session=' & $sSession
+	Local $iErr = $_WD_ERROR_Success
 
-	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+	__WD_BidiActions('open', $sSession)
+	If @error Then $iErr = $_WD_ERROR_Exception
 
-	; Prevent logging from __WD_BidiActions if not in Full debug mode
-	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
-
-	Local $hSocket = __WD_BidiActions('open', $sWebSocketURL)
-	Local $iErr = @error
-
-	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
-
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $hSocket)	
-EndFunc
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0)
+EndFunc   ;==>_WD_BidiConnect
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiDisconnect
 ; Description ...: Close connection to bidirectional websocket
 ; Syntax ........: _WD_BidiDisconnect()
 ; Parameters ....: None
-; Return values .: 
+; Return values .:
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -75,18 +67,12 @@ EndFunc
 ; ===============================================================================================================================
 Func _WD_BidiDisconnect()
 	Local Const $sFuncName = "_WD_BidiDisconnect"
-	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+	Local $iErr = $_WD_ERROR_Success
 
-	; Prevent logging from __WD_BidiActions if not in Full debug mode
-	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+	__WD_BidiActions('close')
 
-	Local $sResult = __WD_BidiActions('close')
-	Local $iErr = @error
-
-	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
-
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sResult)	
-EndFunc
+	Return SetError(__WD_Error($sFuncName, $iErr))
+EndFunc   ;==>_WD_BidiDisconnect
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiExecute
@@ -94,7 +80,8 @@ EndFunc
 ; Syntax ........: _WD_BidiExecute($sCommand,  $oParams)
 ; Parameters ....: $sCommand - Command to execute
 ;                  $oParams  - Parameters for command
-; Return values .: Success - Response in JSON format
+;                  $bAsync   - Perform request asyncronously? Default is False
+; Return values .: Success - Response in JSON format (sync) or ID of request (async)
 ;                  Failure - "" and sets @error
 ; Author ........: Danp2
 ; Modified ......:
@@ -103,10 +90,12 @@ EndFunc
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_BidiExecute($sCommand, $oParams)
+Func _WD_BidiExecute($sCommand, $oParams, $bAsync = Default)
 	Local Const $sFuncName = "_WD_BidiExecute"
 	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING))
 	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+	If $bAsync = Default Then $bAsync = False
 
 	; Prevent logging from __WD_BidiActions if not in Full debug mode
 	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
@@ -114,10 +103,46 @@ Func _WD_BidiExecute($sCommand, $oParams)
 	Local $vResult = __WD_BidiActions('send', $sCommand, $oParams)
 	Local $iErr = @error
 
+	If $iErr = $_WD_ERROR_Success And Not $bAsync Then
+;~ $oParams = Json_ObjCreate()
+;~ Json_ObjPut($oParams, 'id', $vResult)
+
+;~ $vResult = __WD_BidiActions('receive', 'result', $oParams)
+;~ $iErr = @error
+		$vResult = _WD_BidiGetResult($vResult)
+		$iErr = @error
+	EndIf
+
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)	
-EndFunc
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
+EndFunc   ;==>_WD_BidiExecute
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_BidiGetResult
+; Description ...: Retrieve results from prior call to _WD_BidiExecute with $bAsyc = True
+; Syntax ........: _WD_BidiGetResult($iID)
+; Parameters ....: $iID                 - Identifier previously returned by _WD_BidiExecute
+; Return values .: Success - Result in JSON format
+;                  Failure - "" and sets @error
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_BidiGetResult($iID)
+	Local Const $sFuncName = "_WD_BidiGetResult"
+	Local Const $sParameters = 'Parameters:   ID=' & $iID
+	Local $oParams = Json_ObjCreate()
+	Json_ObjPut($oParams, 'id', $iID)
+
+	Local $vResult = __WD_BidiActions('receive', 'result', $oParams)
+	Local $iErr = @error
+
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
+EndFunc   ;==>_WD_BidiGetResult
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetContextID
@@ -141,7 +166,7 @@ Func _WD_BidiGetContextID()
 	Local $oParams = Json_ObjCreate()
 
 	Local $sResult = _WD_BidiExecute('browsingContext.getTree', $oParams)
-	If @error Then 
+	If @error Then
 		$iErr = $_WD_ERROR_Exception
 	Else
 		Local $oJSON = Json_Decode($sResult)
@@ -151,7 +176,7 @@ Func _WD_BidiGetContextID()
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sContext), 0, $sContext)
-EndFunc
+EndFunc   ;==>_WD_BidiGetContextID
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_BidiActions
@@ -161,7 +186,7 @@ EndFunc
 ;                  |
 ;                  |CLOSE       - Close the current websocket connection
 ;                  |OPEN        - Open a websocket connection
-;                  |HANDLE      - Retrieve the current websocket connection handle
+;                  |RECEIVE     - Receive results / events via websocket
 ;                  |SEND        - Send Bidi command via websocket
 ;
 ;                  $sArgument   - [optional] URL or BiDi method. Default is "".
@@ -178,14 +203,10 @@ EndFunc
 Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	Local Const $sFuncName = "__WD_BidiActions"
 	Local $sMessage = 'Parameters:   Action=' & $sAction & '   Argument=' & $sArgument & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING))
-	Local Static $hWebSocket = 0, $iID = 0
+	Local Static $iSocket = 0, $iPID = 0, $iID = 0
+	Local Static $mEvents[], $mResults[]
 	Local $iErr = 0, $sErrText, $vTransmit = Json_ObjCreate()
-	Local $fStatus, $iStatus = 0, $iReasonLengthConsumed = 0
-	Local $iBufferLen = 4096, $tBuffer = 0, $bRecv = Binary("")
-	Local $iBytesRead = 0, $iBufferType = 0
-	Local $tCloseReasonBuffer = DllStructCreate("byte[123]")
-	Local $sWSSRegex = '^((ws[s]?):\/\/)([^:\/\s]+)(?::([0-9]+))?(.*)$'
-	Local $vResult 
+	Local $bRecv = Binary(""), $vResult, $oJSON, $aKeys, $iKey, $iResult
 
 	If $sArgument = Default Then $sArgument = ''
 	If $oParams = Default Then $oParams = Json_ObjCreate()
@@ -193,95 +214,36 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	$sAction = StringLower($sAction)
 	Switch $sAction
 		Case 'close' ; close websocket
-			$fStatus = _WinHttpWebSocketClose($hWebSocket, _
-					$WINHTTP_WEB_SOCKET_SUCCESS_CLOSE_STATUS)
+			TCPCloseSocket($iSocket)
+			TCPShutdown()
+			ProcessClose($iPID)
 
-			If @error Or ($fStatus And $fStatus <> $ERROR_WINHTTP_CONNECTION_ERROR) Then
-				$iErr = $_WD_ERROR_SocketError
-				$sErrText = "WebSocketClose error (" & $fStatus & ")"
-			Else
-				; Check close status returned by the server.
-				$fStatus = _WinHttpWebSocketQueryCloseStatus($hWebSocket, _
-						$iStatus, _
-						$iReasonLengthConsumed, _
-						$tCloseReasonBuffer)
-
-				If @error Or ($fStatus And $fStatus <> $ERROR_INVALID_OPERATION) Then
-					$iErr = $_WD_ERROR_SocketError
-					$sErrText = "QueryCloseStatus error (" & $fStatus & ")"
-				Else
-					$vResult = $fStatus
-				EndIf
-			EndIf
-
-			$hWebSocket = 0
+			$iSocket = 0
+			$iPID = 0
 
 		Case 'open' ; open websocket
-			Local $hOpen = 0, $hConnect = 0, $hRequest = 0
-			Local $aURL = StringRegExp($sArgument, $sWSSRegex, 3)
+			If Not $iPID And Not $iSocket Then
+				Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 
-			If Not IsArray($aURL) Or UBound($aURL) < 5 Then
-				$iErr = $_WD_ERROR_InvalidValue
-				$sErrText = "URL invalid"
-			Else
-				; Initialize and get session handle
-				$hOpen = _WinHttpOpen()
+				; Prevent logging if not in Full debug mode
+				If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
-				If $_WD_WINHTTP_TIMEOUTS Then
-					_WinHttpSetTimeouts($hOpen, $_WD_HTTPTimeOuts[0], $_WD_HTTPTimeOuts[1], $_WD_HTTPTimeOuts[2], $_WD_HTTPTimeOuts[3])
-				EndIf
+				Local $sIPAddress = "127.0.0.1" ; local host
+				Local $iPort = Random(60000, 65000, 1) ; Port used for the connection.
 
-				; Get connection handle
-				$hConnect = _WinHttpConnect($hOpen, $aURL[2], $aURL[3])
+				Local $sWSUrl = _WD_BidiGetWebsocketURL($sArgument)
+				Local $sCmd = "websocat.exe -tv -E tcp-l:" & $sIPAddress & ":" & $iPort & " " & $sWSUrl
+				$iPID = Run(@ComSpec & " /c " & $sCmd)
 
-				$hRequest = _WinHttpOpenRequest($hConnect, "GET", $aURL[4], "")
-
-				; Request protocol upgrade from http to websocket.
-				$fStatus = _WinHttpSetOptionNoParams($hRequest, $WINHTTP_OPTION_UPGRADE_TO_WEB_SOCKET)
-
-				If Not $fStatus Then
-					$iErr = $_WD_ERROR_SocketError
-					$sErrText = "SetOption error"
-				Else
-					; Perform websocket handshake by sending a request and receiving server's response.
-					; Application may specify additional headers if needed.
-					$fStatus = _WinHttpSendRequest($hRequest)
-
-					If Not $fStatus Then
-						$iErr = $_WD_ERROR_SocketError
-						$sErrText = "SendRequest error"
-					Else
-						$fStatus = _WinHttpReceiveResponse($hRequest)
-
-						If Not $fStatus Then
-							$iErr = $_WD_ERROR_SocketError
-							$sErrText = "ReceiveResponse error"
-						Else
-							; Application should check what is the HTTP status code returned by the server and behave accordingly.
-							; WinHttpWebSocketCompleteUpgrade will fail if the HTTP status code is different than 101.
-							$iStatus = _WinHttpQueryHeaders($hRequest, $WINHTTP_QUERY_STATUS_CODE)
-
-							If $iStatus = $HTTP_STATUS_SWITCH_PROTOCOLS Then
-								$hWebSocket = _WinHttpWebSocketCompleteUpgrade($hRequest, 0)
-
-								If $hWebSocket = 0 Then
-									$iErr = $_WD_ERROR_SocketError
-									$sErrText = "WebSocketCompleteUpgrade error"
-								EndIf
-							Else
-								$iErr = $_WD_ERROR_SocketError
-								$sErrText = "ReceiveResponse Status <> $HTTP_STATUS_SWITCH_PROTOCOLS"
-							EndIf
-						EndIf
-					EndIf
-				EndIf
+				For $i = 0 To 10 Step 1
+					Sleep(100)
+					$iSocket = TCPConnect($sIPAddress, $iPort)
+					If Not @error Then ExitLoop
+				Next
+				$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 			EndIf
 
-			$vResult = ($iErr) ? 0 : $hWebSocket
-
-
-		Case 'handle' ; return websocket handle
-			$vResult = $hWebSocket
+			$vResult = ($iSocket) ? $iSocket : 0
 
 		Case 'send' ; send command
 			$iID += 1
@@ -291,60 +253,125 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 			$vTransmit = Json_Encode($vTransmit)
 
 			; Send and receive data on the websocket protocol.
-			$fStatus = _WinHttpWebSocketSend($hWebSocket, _
-					$WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, _
-					$vTransmit)
+			__TCPSendLine($iSocket, $vTransmit)
 
-			If @error Or $fStatus <> 0 Then
+			If @error Then
 				$iErr = $_WD_ERROR_SocketError
 				$sErrText = "WebSocketSend error"
 			Else
-				Do
-					If $iBufferLen = 0 Then
-						$iErr = $_WD_ERROR_GeneralError
-						$sErrText = "Not enough memory"
-						ExitLoop
-					EndIf
+				$vResult = $iID
+			EndIf
 
-					$tBuffer = DllStructCreate("byte[" & $iBufferLen & "]")
+		Case 'receive' ; receive response
+			$bRecv = __TCPRecvLine($iSocket)
+			If BinaryLen($bRecv) Then
+				$vResult = BinaryToString($bRecv)
 
-					$fStatus = _WinHttpWebSocketReceive($hWebSocket, _
-							$tBuffer, _
-							$iBytesRead, _
-							$iBufferType)
-
-					If @error Or $fStatus <> 0 Then
-						$iErr = $_WD_ERROR_SocketError
-						$sErrText = "WebSocketReceive error"
-						ExitLoop
-					EndIf
-
-					; If we receive just part of the message restart the receive operation.
-					$bRecv &= BinaryMid(DllStructGetData($tBuffer, 1), 1, $iBytesRead)
-					$tBuffer = 0
-
-					$iBufferLen -= $iBytesRead
-				Until $iBufferType <> $WINHTTP_WEB_SOCKET_UTF8_FRAGMENT_BUFFER_TYPE
-
-				If Not $iErr Then
-					; We expected server just to echo single UTF8 message.
-					If $iBufferType <> $WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE Then
-						$iErr = $_WD_ERROR_SocketError
-						$sErrText = "Unexpected buffer type"
-					EndIf
-
-					$vResult = BinaryToString($bRecv)
+				$oJSON = Json_Decode($vResult)
+				If Json_ObjExists($oJSON, 'id') And Json_ObjExists($oJSON, 'result') Then
+					$iResult = Json_ObjGet($oJSON, 'id')
+					$mResults[$iResult] = $vResult
+;~ ConsoleWrite("$mResults: " & _ArrayToString(MapKeys($mResults)) & @CRLF)
+				Else
+					MapAppend($mEvents, $vResult)
+;~ ConsoleWrite("$mEvents: " & _ArrayToString(MapKeys($mEvents)) & @CRLF)
 				EndIf
 			EndIf
+
+			Switch $sArgument
+				Case 'event' ; request first event
+					$aKeys = MapKeys($mEvents)
+
+					If Not @error Then
+;~ ConsoleWrite("$mEvents Before: " & _ArrayToString(MapKeys($mEvents)) & @CRLF)
+						$vResult = $mEvents[$aKeys[0]]
+						MapRemove($mEvents, $aKeys[0])
+;~ ConsoleWrite("$mEvents After: " & _ArrayToString(MapKeys($mEvents)) & @CRLF)
+					EndIf
+				Case 'result' ; request result
+					$iKey = Json_ObjGet($oParams, 'id')
+
+					If Not @error Then
+						If MapExists($mResults, $iKey) Then
+							$vResult = $mResults[$iKey]
+							MapRemove($mResults, $iKey)
+						Else
+							$iErr = $_WD_ERROR_NotFound
+						EndIf
+					EndIf
+			EndSwitch
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Open|Handle|Send) $sAction=>" & $sAction), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Open|Receive|Send) $sAction=>" & $sAction), 0, "")
 	EndSwitch
 
-	If $iErr Then 
+	If $iErr Then
 		$vResult = ""
 		$sMessage = $sErrText
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $vResult)		
-EndFunc
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $vResult)
+EndFunc   ;==>__WD_BidiActions
 
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __TCPRecvLine
+; Description ...: Receive binary data from a connected socket 
+; Syntax ........: __TCPRecvLine($iSocket[,  $bEOLChar = 0x0A])
+; Parameters ....: $iSocket             - Socket identifier
+;                  $bEOLChar            - [optional] Character designating end of line. Default is 0x0A
+; Return values .: Success - String in binary format
+;                  Failure - "" and sets @error
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __TCPRecvLine($iSocket, $bEOLChar = 0x0A)
+	Local Static $bReceived = Binary("")     ; Buffer for received data
+	Local $bResult = Binary("")
+	Local $bData = TCPRecv($iSocket, 4096, $TCP_DATA_BINARY)
+	If @error Then
+		;### Debug CONSOLE ↓↓↓
+		ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $bData = ' & $bData & @CRLF & '>Error code: ' & @error & @CRLF)
+		Return SetError(1, 0, $bResult)
+	EndIf
+
+	$bReceived = $bReceived & $bData
+	Local $iLength = BinaryLen($bReceived)
+
+	If $iLength Then
+		For $i = 1 To $iLength
+			If BinaryMid($bReceived, $i, 1) = $bEOLChar Then
+				$bResult = BinaryMid($bReceived, 1, $i)    ; Save the found line and
+				$bReceived = BinaryMid($bReceived, $i + 1) ; remove it from the buffer
+				ExitLoop
+			EndIf
+		Next
+	EndIf
+
+	Return $bResult
+EndFunc   ;==>__TCPRecvLine
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __TCPSendLine
+; Description ...: Sends data on a connected socket
+; Syntax ........: __TCPSendLine($iSocket,  $sData)
+; Parameters ....: $iSocket             - Socket identifier
+;                  $sData               - Data to send
+; Return values .: None
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __TCPSendLine($iSocket, $sData)
+	If StringRight($sData, 2) <> @CRLF Then
+		$sData &= @CRLF
+	EndIf
+
+	TCPSend($iSocket, $sData)
+EndFunc   ;==>__TCPSendLine
