@@ -147,6 +147,28 @@ Func _WD_BidiGetResult($iID)
 EndFunc   ;==>_WD_BidiGetResult
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_BidiGetEvent
+; Description ...: Retrieve next avail event
+; Syntax ........: _WD_BidiGetEvent()
+; Parameters ....: None
+; Return values .: Success - Result in JSON format
+;                  Failure - "" and sets @error
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_BidiGetEvent()
+	Local Const $sFuncName = "_WD_BidiGetEvent"
+	Local $vResult = __WD_BidiActions('receive', 'event')
+	Local $iErr = @error
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetContextID
 ; Description ...: Retrieve browsing context ID
 ; Syntax ........: _WD_BidiGetContextID()
