@@ -1,6 +1,8 @@
 #include-once
 #include "wd_core.au3"
 
+; Requires Websocat, which can be downloaded from https://github.com/vi/websocat
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetWebsocketURL
 ; Description ...: Obtain websocket URL from webdriver session data
@@ -185,6 +187,7 @@ EndFunc   ;==>_WD_BidiGetContextID
 ; Parameters ....: $sAction - One of the following actions:
 ;                  |
 ;                  |CLOSE       - Close the current websocket connection
+;                  |COUNT       - Get count of pending results / events
 ;                  |OPEN        - Open a websocket connection
 ;                  |RECEIVE     - Receive results / events via websocket
 ;                  |SEND        - Send Bidi command via websocket
@@ -235,11 +238,18 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				Local $sCmd = "websocat.exe -tv -E tcp-l:" & $sIPAddress & ":" & $iPort & " " & $sWSUrl
 				$iPID = Run(@ComSpec & " /c " & $sCmd)
 
-				For $i = 0 To 10 Step 1
-					Sleep(100)
-					$iSocket = TCPConnect($sIPAddress, $iPort)
-					If Not @error Then ExitLoop
-				Next
+				If $iPID Then
+					For $i = 0 To 10 Step 1
+						Sleep(100)
+						$iSocket = TCPConnect($sIPAddress, $iPort)
+						If Not @error Then ExitLoop
+					Next
+
+					If @error Then $iErr = $_WD_ERROR_SocketError
+				Else
+					$iErr = $_WD_ERROR_FileIssue
+				EndIf
+
 				$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 			EndIf
 
@@ -268,13 +278,12 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				$vResult = BinaryToString($bRecv)
 
 				$oJSON = Json_Decode($vResult)
-				If Json_ObjExists($oJSON, 'id') And Json_ObjExists($oJSON, 'result') Then
+				If Json_ObjExists($oJSON, 'id') And _
+				(Json_ObjExists($oJSON, 'result') or Json_ObjExists($oJSON, 'error')) Then
 					$iResult = Json_ObjGet($oJSON, 'id')
 					$mResults[$iResult] = $vResult
-;~ ConsoleWrite("$mResults: " & _ArrayToString(MapKeys($mResults)) & @CRLF)
 				Else
 					MapAppend($mEvents, $vResult)
-;~ ConsoleWrite("$mEvents: " & _ArrayToString(MapKeys($mEvents)) & @CRLF)
 				EndIf
 			EndIf
 
@@ -283,10 +292,8 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 					$aKeys = MapKeys($mEvents)
 
 					If Not @error Then
-;~ ConsoleWrite("$mEvents Before: " & _ArrayToString(MapKeys($mEvents)) & @CRLF)
 						$vResult = $mEvents[$aKeys[0]]
 						MapRemove($mEvents, $aKeys[0])
-;~ ConsoleWrite("$mEvents After: " & _ArrayToString(MapKeys($mEvents)) & @CRLF)
 					EndIf
 				Case 'result' ; request result
 					$iKey = Json_ObjGet($oParams, 'id')
@@ -301,8 +308,24 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 					EndIf
 			EndSwitch
 
+		Case 'count'
+			Switch $sArgument
+				Case 'event' ; request event count
+					$vResult = UBound(MapKeys($mEvents))
+				Case 'result' ; request result count
+					$vResult = UBound(MapKeys($mResults))
+			EndSwitch
+
+		Case 'maps'
+			Switch $sArgument
+				Case 'event' ; request event count
+					$vResult = $mEvents
+				Case 'result' ; request result count
+					$vResult = $mResults
+			EndSwitch
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Open|Receive|Send) $sAction=>" & $sAction), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Count|Maps|Open|Receive|Send) $sAction=>" & $sAction), 0, "")
 	EndSwitch
 
 	If $iErr Then
@@ -334,7 +357,7 @@ Func __TCPRecvLine($iSocket, $bEOLChar = 0x0A)
 	Local $bData = TCPRecv($iSocket, 4096, $TCP_DATA_BINARY)
 	If @error Then
 		;### Debug CONSOLE ↓↓↓
-		ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $bData = ' & $bData & @CRLF & '>Error code: ' & @error & @CRLF)
+		;~ ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $bData = ' & $bData & @CRLF & '>Error code: ' & @error & @CRLF)
 		Return SetError(1, 0, $bResult)
 	EndIf
 
