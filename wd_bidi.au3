@@ -12,7 +12,8 @@
 ;                  Failure - "" and sets @error to $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: This functionality depends on the webdriver session being initiated with a Capabilities string that 
+;                  includes the directive "webSocketUrl":true
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
@@ -106,11 +107,6 @@ Func _WD_BidiExecute($sCommand, $oParams, $bAsync = Default)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success And Not $bAsync Then
-;~ $oParams = Json_ObjCreate()
-;~ Json_ObjPut($oParams, 'id', $vResult)
-
-;~ $vResult = __WD_BidiActions('receive', 'result', $oParams)
-;~ $iErr = @error
 		$vResult = _WD_BidiGetResult($vResult)
 		$iErr = @error
 	EndIf
@@ -300,12 +296,17 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				$vResult = BinaryToString($bRecv)
 
 				$oJSON = Json_Decode($vResult)
-				If Json_ObjExists($oJSON, 'id') And _
-				(Json_ObjExists($oJSON, 'result') or Json_ObjExists($oJSON, 'error')) Then
-					$iResult = Json_ObjGet($oJSON, 'id')
-					$mResults[$iResult] = $vResult
+				If Json_IsObject($oJSON) Then
+					If Json_ObjExists($oJSON, 'id') And _
+					(Json_ObjExists($oJSON, 'result') or Json_ObjExists($oJSON, 'error')) Then
+						$iResult = Json_ObjGet($oJSON, 'id')
+						$mResults[$iResult] = $vResult
+					Else
+						MapAppend($mEvents, $vResult)
+					EndIf
 				Else
-					MapAppend($mEvents, $vResult)
+					$iErr = $_WD_ERROR_UnknownCommand
+					$sErrText = "Non-JSON response from webdriver"				
 				EndIf
 			EndIf
 
