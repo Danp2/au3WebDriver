@@ -315,45 +315,49 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 
 		Case 'receive' ; receive response
 			$bRecv = __TCPRecvLine($iSocket)
-			If BinaryLen($bRecv) Then
-				$vResult = BinaryToString($bRecv)
 
-				$oJSON = Json_Decode($vResult)
-				If Json_IsObject($oJSON) Then
-					If Json_ObjExists($oJSON, 'id') And _
-					(Json_ObjExists($oJSON, 'result') or Json_ObjExists($oJSON, 'error')) Then
-						$iResult = Json_ObjGet($oJSON, 'id')
-						$mResults[$iResult] = $vResult
-					Else
-						MapAppend($mEvents, $vResult)
-					EndIf
-				Else
-					$iErr = $_WD_ERROR_UnknownCommand
-					$sErrText = "Non-JSON response from webdriver"				
-				EndIf
-			EndIf
+			If @error Then
+				$iErr = $_WD_ERROR_SendRecv
+			Else	
+				If BinaryLen($bRecv) Then
+					$sRecv = BinaryToString($bRecv)
 
-			Switch $sArgument
-				Case 'event' ; request first event
-					$aKeys = MapKeys($mEvents)
-
-					If Not @error Then
-						$vResult = $mEvents[$aKeys[0]]
-						MapRemove($mEvents, $aKeys[0])
-					EndIf
-				Case 'result' ; request result
-					$iKey = Json_ObjGet($oParams, 'id')
-
-					If Not @error Then
-						If MapExists($mResults, $iKey) Then
-							$vResult = $mResults[$iKey]
-							MapRemove($mResults, $iKey)
+					$oJSON = Json_Decode($sRecv)
+					If Json_IsObject($oJSON) Then
+						If Json_ObjExists($oJSON, 'id') And _
+						(Json_ObjExists($oJSON, 'result') or Json_ObjExists($oJSON, 'error')) Then
+							$iResult = Json_ObjGet($oJSON, 'id')
+							$mResults[$iResult] = $sRecv
 						Else
-							$iErr = $_WD_ERROR_NotFound
+							MapAppend($mEvents, $sRecv)
 						EndIf
+					Else
+						$iErr = $_WD_ERROR_UnknownCommand
+						$sErrText = "Non-JSON response from webdriver"
 					EndIf
-			EndSwitch
+				EndIf
 
+				Switch $sArgument
+					Case 'event' ; request first event
+						$aKeys = MapKeys($mEvents)
+
+						If Not @error Then
+							$vResult = $mEvents[$aKeys[0]]
+							MapRemove($mEvents, $aKeys[0])
+						EndIf
+					Case 'result' ; request result
+						$iKey = Json_ObjGet($oParams, 'id')
+
+						If Not @error Then
+							If MapExists($mResults, $iKey) Then
+								$vResult = $mResults[$iKey]
+								MapRemove($mResults, $iKey)
+							Else
+								$iErr = $_WD_ERROR_NotFound
+							EndIf
+						EndIf
+				EndSwitch
+			EndIf
 		Case 'count'
 			Switch $sArgument
 				Case 'event' ; request event count
