@@ -78,6 +78,28 @@ Func _WD_BidiDisconnect()
 EndFunc   ;==>_WD_BidiDisconnect
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_BidiIsConnected
+; Description ...: Return a boolean indicating if the Bidi session is connected.
+; Syntax ........: _WD_BidiIsConnected()
+; Parameters ....: None
+; Return values .: Boolean response indicating connection status
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_BidiIsConnected()
+	Local Const $sFuncName = "_WD_BidiIsConnected"
+	Local $iErr = $_WD_ERROR_Success
+
+	Local $bResult = __WD_BidiActions('status')
+
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
+EndFunc   ;==>_WD_BidiIsConnected
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiExecute
 ; Description ...: Execute a Webdriver BiDi command
 ; Syntax ........: _WD_BidiExecute($sCommand,  $oParams)
@@ -209,6 +231,7 @@ EndFunc   ;==>_WD_BidiGetContextID
 ;                  |OPEN        - Open a websocket connection
 ;                  |RECEIVE     - Receive results / events via websocket
 ;                  |SEND        - Send Bidi command via websocket
+;                  |STATUS      - Check status of bidi connection
 ;
 ;                  $sArgument   - [optional] URL or BiDi method. Default is "".
 ;                  $oParams     - [optional] Parameters for BiDi method. Default is {}.
@@ -227,7 +250,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	Local Static $iSocket = 0, $iPID = 0, $iID = 0
 	Local Static $mEvents[], $mResults[]
 	Local $iErr = 0, $sErrText, $vTransmit = Json_ObjCreate()
-	Local $bRecv = Binary(""), $vResult, $oJSON, $aKeys, $iKey, $iResult
+	Local $bRecv = Binary(""), $vResult = "", $oJSON, $aKeys, $iKey, $iResult, $sRecv
 
 	If $sArgument = Default Then $sArgument = ''
 	If $oParams = Default Then $oParams = Json_ObjCreate()
@@ -346,9 +369,12 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				Case 'result' ; request result count
 					$vResult = $mResults
 			EndSwitch
+		
+		Case 'status'
+			$vResult = ($iSocket And $iPID And ProcessExists($iPID))
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Count|Maps|Open|Receive|Send) $sAction=>" & $sAction), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Count|Maps|Open|Receive|Send|Status) $sAction=>" & $sAction), 0, "")
 	EndSwitch
 
 	If $iErr Then
@@ -379,8 +405,6 @@ Func __TCPRecvLine($iSocket, $bEOLChar = 0x0A)
 	Local $bResult = Binary("")
 	Local $bData = TCPRecv($iSocket, 4096, $TCP_DATA_BINARY)
 	If @error Then
-		;### Debug CONSOLE ↓↓↓
-		;~ ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $bData = ' & $bData & @CRLF & '>Error code: ' & @error & @CRLF)
 		Return SetError(1, 0, $bResult)
 	EndIf
 
