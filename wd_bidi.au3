@@ -49,6 +49,7 @@ Func _WD_BidiConnect($sSession)
 	Local Const $sParameters = 'Parameters:   Session=' & $sSession
 	Local $iErr = $_WD_ERROR_Success
 
+	__WD_BidiActions('close', $sSession)
 	__WD_BidiActions('open', $sSession)
 	If @error Then $iErr = $_WD_ERROR_Exception
 
@@ -140,7 +141,7 @@ EndFunc   ;==>_WD_BidiExecute
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetResult
-; Description ...: Retrieve results from prior call to _WD_BidiExecute with $bAsyc = True
+; Description ...: Retrieve results from prior call to _WD_BidiExecute with $bAsync = True
 ; Syntax ........: _WD_BidiGetResult($iID)
 ; Parameters ....: $iID                 - Identifier previously returned by _WD_BidiExecute
 ; Return values .: Success - Result in JSON format
@@ -258,9 +259,9 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	$sAction = StringLower($sAction)
 	Switch $sAction
 		Case 'close' ; close websocket
-			TCPCloseSocket($iSocket)
+			If $iSocket Then TCPCloseSocket($iSocket)
 			TCPShutdown()
-			ProcessClose($iPID)
+			If $iPID Then ProcessClose($iPID)
 
 			$iSocket = 0
 			$iPID = 0
