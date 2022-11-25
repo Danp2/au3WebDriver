@@ -1,7 +1,75 @@
 #include-once
-#include "wd_core.au3"
 
-; Requires Websocat, which can be downloaded from https://github.com/vi/websocat
+; WebDriver related UDF's
+#include "wd_core.au3"
+#include "jq.au3"
+
+#Region Copyright
+#cs
+	* WD_BiDi.au3
+	*
+	* MIT License
+	*
+	* Copyright (c) 2022 Dan Pollak (@Danp2)
+	*
+	* Permission is hereby granted, free of charge, to any person obtaining a copy
+	* of this software and associated documentation files (the "Software"), to deal
+	* in the Software without restriction, including without limitation the rights
+	* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	* copies of the Software, and to permit persons to whom the Software is
+	* furnished to do so, subject to the following conditions:
+	*
+	* The above copyright notice and this permission notice shall be included in all
+	* copies or substantial portions of the Software.
+	*
+	* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	* SOFTWARE.
+#ce
+#EndRegion Copyright
+
+#Region Description
+; ==============================================================================
+; UDF ...........: WD_BiDi.au3
+; Description ...: A UDF for bidirectional webdriver automation
+; Requirement ...: jq UDF from @TheXman
+;                  https://www.autoitscript.com/forum/files/file/502-jq-udf-a-powerful-flexible-json-processor/
+;
+;				   One of the following websocket clients --
+;                  websocat   			https://github.com/vi/websocat/releases
+;                  sgcWebSocketClient	https://www.esegece.com/products/apps
+;
+; Author(s) .....: Dan Pollak
+; AutoIt Version : v3.3.16.1
+; ==============================================================================
+#EndRegion Description
+
+#Region Global Constants
+Global Enum _ ; Column positions of JQ array
+		$_WD_JQ_WSEvent, _
+		$_WD_JQ_WDEvent, _
+		$_WD_JQ_Code, _
+		$_WD_JQ_Data, _
+		$_WD_JQ__COUNTER
+
+Global Enum _ ; Column positions of $_WD_BidiClients
+		$_WD_BIDICLIENT_Name, _
+		$_WD_BIDICLIENT_ExeName, _
+		$_WD_BIDICLIENT_ExeParams, _
+		$_WD_BIDICLIENT_OpenWS, _
+		$_WD_BIDICLIENT_Message, _
+		$_WD_BIDICLIENT__COUNTER
+
+Global $_WD_BidiClients[][$_WD_BIDICLIENT__COUNTER] = _
+		[ _
+		["sgcwebsocket", "sgcWebSocketClient.exe", " -server -server.ip %s -server.port %s", '{"message":"open", "params":{"url": "%s"}}', '{"message":"write", "params":{"text":%s}}'], _
+		["websocat", "websocat.exe", " -tv -E tcp-l:%s:%s %s", '', '%s'] _
+		]
+#EndRegion Global Constants
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetWebsocketURL
@@ -12,7 +80,7 @@
 ;                  Failure - "" and sets @error to $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: This functionality depends on the webdriver session being initiated with a Capabilities string that 
+; Remarks .......: This functionality depends on the webdriver session being initiated with a Capabilities string that
 ;                  includes the directive "webSocketUrl":true
 ; Related .......:
 ; Link ..........:
@@ -51,7 +119,12 @@ Func _WD_BidiConnect($sSession)
 
 	__WD_BidiActions('close', $sSession)
 	__WD_BidiActions('open', $sSession)
-	If @error Then $iErr = $_WD_ERROR_Exception
+	If @error Then
+		$iErr = $_WD_ERROR_Exception
+	Else
+		_jqInit()
+		If @error Then $iErr = $_WD_ERROR_SocketError
+	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0)
 EndFunc   ;==>_WD_BidiConnect
@@ -99,6 +172,27 @@ Func _WD_BidiIsConnected()
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $bResult)
 EndFunc   ;==>_WD_BidiIsConnected
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_BidiSetClient
+; Description ...: Set the websocket client
+; Syntax ........: _WD_BidiSetClient($sClient)
+; Parameters ....: $sClient             - Name of desired websocket client
+; Return values .: None
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: Clients are defined in $_WD_BidiClients
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_BidiSetClient($sClient)
+	Local Const $sFuncName = "_WD_BidiSetClient"
+	__WD_BidiActions('init', $sClient)
+	Local $iErr = @error
+
+	Return SetError(__WD_Error($sFuncName, $iErr))
+EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiExecute
@@ -167,7 +261,7 @@ EndFunc   ;==>_WD_BidiGetResult
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetEvent
-; Description ...: Retrieve next avail event
+; Description ...: Retrieve next available event
 ; Syntax ........: _WD_BidiGetEvent()
 ; Parameters ....: None
 ; Return values .: Success - Result in JSON format
@@ -185,7 +279,7 @@ Func _WD_BidiGetEvent()
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $vResult)
-EndFunc
+EndFunc   ;==>_WD_BidiGetEvent
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetContextID
@@ -248,10 +342,12 @@ EndFunc   ;==>_WD_BidiGetContextID
 Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	Local Const $sFuncName = "__WD_BidiActions"
 	Local $sMessage = 'Parameters:   Action=' & $sAction & '   Argument=' & $sArgument & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING))
-	Local Static $iSocket = 0, $iPID = 0, $iID = 0
+	Local Static $iSocket = 0, $iPID = 0, $iID = 0, $iClient = 0
 	Local Static $mEvents[], $mResults[]
+
 	Local $iErr = 0, $sErrText, $vTransmit = Json_ObjCreate()
-	Local $bRecv = Binary(""), $vResult = "", $oJSON, $aKeys, $iKey, $iResult, $sRecv
+	Local $vResult = "", $oJSON, $aKeys, $iKey
+	Local $aResults
 
 	If $sArgument = Default Then $sArgument = ''
 	If $oParams = Default Then $oParams = Json_ObjCreate()
@@ -274,11 +370,13 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 				Local $sIPAddress = "127.0.0.1" ; local host
-				Local $iPort = Random(60000, 65000, 1) ; Port used for the connection.
+				Local $iPort = __WD_GetFreePort(60000, 65000) ; Port used for the connection.
 
 				Local $sWSUrl = _WD_BidiGetWebsocketURL($sArgument)
-				Local $sCmd = "websocat.exe -tv -E tcp-l:" & $sIPAddress & ":" & $iPort & " " & $sWSUrl
-				$iPID = Run(@ComSpec & " /c " & $sCmd)
+
+				Local $sCmd = $_WD_BidiClients[$iClient][$_WD_BIDICLIENT_ExeName] & $_WD_BidiClients[$iClient][$_WD_BIDICLIENT_ExeParams]
+				$sCmd = StringFormat($sCmd, $sIPAddress, $iPort, $sWSUrl)
+				$iPID = Run(@ComSpec & " /c " & $sCmd, @ScriptDir)
 
 				If $iPID Then
 					For $i = 0 To 10 Step 1
@@ -295,6 +393,12 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 			EndIf
 
+			If $_WD_BidiClients[$iClient][$_WD_BIDICLIENT_OpenWS] Then
+				$sCmd = $_WD_BidiClients[$iClient][$_WD_BIDICLIENT_OpenWS]
+				$sCmd = StringFormat($sCmd, $sWSUrl)
+				__TCPSendLine($iSocket, $sCmd)
+			EndIf
+
 			$vResult = ($iSocket) ? $iSocket : 0
 
 		Case 'send' ; send command
@@ -302,7 +406,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 			Json_ObjPut($vTransmit, 'id', $iID)
 			Json_ObjPut($vTransmit, 'method', $sArgument)
 			Json_ObjPut($vTransmit, 'params', $oParams)
-			$vTransmit = Json_Encode($vTransmit)
+			$vTransmit = StringFormat($_WD_BidiClients[$iClient][$_WD_BIDICLIENT_Message], Json_Encode($vTransmit))
 
 			; Send and receive data on the websocket protocol.
 			__TCPSendLine($iSocket, $vTransmit)
@@ -314,69 +418,79 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				$vResult = $iID
 			EndIf
 
-		Case 'receive' ; receive response
-			$bRecv = __TCPRecvLine($iSocket)
+		Case 'receive' ; receive responses / events
+			$aResults = __WD_BidiGetData($iSocket, 250)
 
-			If @error Then
-				$iErr = $_WD_ERROR_SendRecv
-			Else	
-				If BinaryLen($bRecv) Then
-					$sRecv = BinaryToString($bRecv)
+			If Not @error Then
+				For $i = 0 To UBound($aResults) - 1
 
-					$oJSON = Json_Decode($sRecv)
-					If Json_IsObject($oJSON) Then
-						If Json_ObjExists($oJSON, 'id') And _
-						(Json_ObjExists($oJSON, 'result') or Json_ObjExists($oJSON, 'error')) Then
-							$iResult = Json_ObjGet($oJSON, 'id')
-							$mResults[$iResult] = $sRecv
-						Else
-							MapAppend($mEvents, $sRecv)
-						EndIf
-					Else
-						$iErr = $_WD_ERROR_UnknownCommand
-						$sErrText = "Non-JSON response from webdriver"
-					EndIf
-				EndIf
+					Switch $aResults[$i][$_WD_JQ_WSEvent]
+						Case 'message'
+							Switch $aResults[$i][$_WD_JQ_WDEvent]
+								Case 'response'
+									$mResults[Number($aResults[$i][$_WD_JQ_Code])] = $aResults[$i][$_WD_JQ_Data]
 
-				Switch $sArgument
-					Case 'event' ; request first event
-						$aKeys = MapKeys($mEvents)
+								Case 'event'
+									MapAppend($mEvents, $aResults[$i][$_WD_JQ_Data])
 
-						If Not @error Then
-							$vResult = $mEvents[$aKeys[0]]
-							MapRemove($mEvents, $aKeys[0])
-						EndIf
-					Case 'result' ; request result
-						$iKey = Json_ObjGet($oParams, 'id')
+							EndSwitch
 
-						If Not @error Then
-							If MapExists($mResults, $iKey) Then
-								$vResult = $mResults[$iKey]
-								MapRemove($mResults, $iKey)
-							Else
-								$iErr = $_WD_ERROR_NotFound
-							EndIf
-						EndIf
-				EndSwitch
+						Case 'connected', 'disconnected', 'error'
+							MapAppend($mEvents, $aResults[$i][$_WD_JQ_Data])
+					EndSwitch
+				Next
 			EndIf
+
+			Switch $sArgument
+				Case 'event' ; request first event
+					$aKeys = MapKeys($mEvents)
+
+					If Not @error Then
+						$vResult = $mEvents[$aKeys[0]]
+						MapRemove($mEvents, $aKeys[0])
+					EndIf
+				Case 'result' ; request result
+					$iKey = Json_ObjGet($oParams, 'id')
+
+					If Not @error Then
+						If MapExists($mResults, $iKey) Then
+							$vResult = $mResults[$iKey]
+							MapRemove($mResults, $iKey)
+						Else
+							$iErr = $_WD_ERROR_NotFound
+						EndIf
+					EndIf
+			EndSwitch
+
 		Case 'count'
 			Switch $sArgument
 				Case 'event' ; request event count
 					$vResult = UBound(MapKeys($mEvents))
+
 				Case 'result' ; request result count
 					$vResult = UBound(MapKeys($mResults))
 			EndSwitch
 
 		Case 'maps'
 			Switch $sArgument
-				Case 'event' ; request event count
+				Case 'event'
 					$vResult = $mEvents
-				Case 'result' ; request result count
+
+				Case 'result'
 					$vResult = $mResults
 			EndSwitch
-		
+
 		Case 'status'
 			$vResult = ($iSocket And $iPID And ProcessExists($iPID))
+
+		Case 'init'
+			Local $iIndex = _ArraySearch($_WD_BidiClients, StringLower($sArgument), Default, Default, Default, Default, Default, $_WD_BIDICLIENT_Name)
+			If @error Then 
+				$iErr = $_WD_ERROR_NotFound
+				$sErrText = 'Unsupported client'
+			Else
+				$iClient = $iIndex
+			EndIf
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Count|Maps|Open|Receive|Send|Status) $sAction=>" & $sAction), 0, "")
@@ -391,12 +505,12 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 EndFunc   ;==>__WD_BidiActions
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __TCPRecvLine
-; Description ...: Receive binary data from a connected socket 
-; Syntax ........: __TCPRecvLine($iSocket[,  $bEOLChar = 0x0A])
+; Name ..........: __WD_BidiGetData
+; Description ...: Receive data from a connected TCP socket
+; Syntax ........:__WD_BidiGetData($iSocket[,  $iTimeout = 500])
 ; Parameters ....: $iSocket             - Socket identifier
-;                  $bEOLChar            - [optional] Character designating end of line. Default is 0x0A
-; Return values .: Success - String in binary format
+;                  $iTimeout            - [optional] Max time to wait for data to arrive
+; Return values .: Success - Array containing received data
 ;                  Failure - "" and sets @error
 ; Author ........: Danp2
 ; Modified ......:
@@ -405,29 +519,65 @@ EndFunc   ;==>__WD_BidiActions
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __TCPRecvLine($iSocket, $bEOLChar = 0x0A)
-	Local Static $bReceived = Binary("")     ; Buffer for received data
-	Local $bResult = Binary("")
-	Local $bData = TCPRecv($iSocket, 4096, $TCP_DATA_BINARY)
-	If @error Then
-		Return SetError(1, 0, $bResult)
-	EndIf
+Func __WD_BidiGetData($iSocket, $iTimeout = 500)
+	Local $sReceived = ""    ; Buffer for received data
+	Local $iPrevDataLen = 0
+	Local $aEventQueue[0][$_WD_JQ__COUNTER]
+	Local $sResult
+	Local $hTimeoutTimer = TimerInit()    ; Initialize timeout timer
 
-	$bReceived = $bReceived & $bData
-	Local $iLength = BinaryLen($bReceived)
+	; Receive until timeout or data received
+	Do
+		Sleep(10)
+		$sReceived &= TCPRecv($iSocket, 2048)
+	Until $sReceived Or TimerDiff($hTimeoutTimer) >= $iTimeout
 
-	If $iLength Then
-		For $i = 1 To $iLength
-			If BinaryMid($bReceived, $i, 1) = $bEOLChar Then
-				$bResult = BinaryMid($bReceived, 1, $i)    ; Save the found line and
-				$bReceived = BinaryMid($bReceived, $i + 1) ; remove it from the buffer
-				ExitLoop
-			EndIf
-		Next
-	EndIf
+	; Timeout occurred waiting for events or user aborted
+	If StringLen($sReceived) = 0 Then Return SetError(1, 0, "")
 
-	Return $bResult
-EndFunc   ;==>__TCPRecvLine
+	Do
+		Sleep(10)
+		$iPrevDataLen = StringLen($sReceived)
+		$sReceived &= TCPRecv($iSocket, 2048)
+	Until StringLen($sReceived) = $iPrevDataLen
+
+	Local Const $JQ_PARSE_EVENTS = _
+			'[' & _
+			'	if has("event") then' & _
+			'		.event, ' & _
+			'		if .event == "message" then' & _
+			'			if .text|has("id") then' & _
+			'			  "response", .text.id,.text|tostring' & _
+			'			else' & _
+			'			  "event", "",.text|tostring' & _
+			'			end' & _
+			'		elif .event == "error" then .description, "", .|tostring' & _
+			'		elif .event == "connected" then "", "", .|tostring' & _
+			'		elif .event == "disconnected" then "", .code, .|tostring' & _
+			'		else' & _
+			'		""' & _
+			'		end' & _
+			'	else ' & _
+			'		if has("id") then "message", "response", .id, .|tostring' & _
+			'		else "message", "event", "", .|tostring' & _
+			'		end' & _
+			'	end' & _
+			'  ]' & _
+			'|@tsv'
+
+	; Strip excess quotation marks
+	$sReceived = StringReplace($sReceived, '"{', '{')
+	$sReceived = StringReplace($sReceived, '}"', '}')
+
+	; Parse JSON events into the event queue
+	$sResult = _jqExec($sReceived, $JQ_PARSE_EVENTS)
+	If @error Then Return SetError(2, 0, "")
+
+	_ArrayAdd($aEventQueue, $sResult, 0, @TAB)
+	If @error Then Return SetError(3, 0, @error)
+
+	Return $aEventQueue
+EndFunc   ;==>__WD_BidiGetData
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __TCPSendLine
@@ -450,3 +600,51 @@ Func __TCPSendLine($iSocket, $sData)
 
 	TCPSend($iSocket, $sData)
 EndFunc   ;==>__TCPSendLine
+
+Func __WD_GetFreePort($iMinPort, $iMaxPort)
+	Local $aPorts = _WinAPI_GetTcpTable()
+
+	If Not @error Then
+		For $iPort = $iMinPort To $iMaxPort
+			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
+			If @error = 6 Then Return $iPort
+		Next
+	Endif
+
+	Return 0
+EndFunc   ;==>__WD_GetFreePort
+
+Func _WinAPI_GetTcpTable()
+    ;funkey 2012.12.14
+    Local Const $aConnState[12] = ["CLOSED", "LISTENING", "SYN_SENT", "SYN_RCVD", "ESTABLISHED", "FIN_WAIT1", _
+            "FIN_WAIT2", "CLOSE_WAIT", "CLOSING", "LAST_ACK", "TIME_WAIT", "DELETE_TCB"]
+
+    Local $tMIB_TCPTABLE = DllStructCreate("dword[6]")
+    Local $aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", 0, "BOOL", True)
+    Local $dwSize = $aRet[2]
+    $tMIB_TCPTABLE = DllStructCreate("DWORD[" & $dwSize / 4 & "]")
+
+    $aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", $dwSize, "BOOL", True)
+    If $aRet[0] <> 0 Then Return SetError(1)
+    Local $iNumEntries = DllStructGetData($tMIB_TCPTABLE, 1, 1)
+    Local $aRes[$iNumEntries][6]
+
+    For $i = 0 To $iNumEntries - 1
+        $aRes[$i][0] = DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 0)
+        $aRes[$i][1] = $aConnState[$aRes[$i][0] - 1]
+        $aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 1)) ; local IP / translate
+        $aRes[$i][2] = $aRet[0]
+        $aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 2)) ; local port / translate
+        $aRes[$i][3] = $aRet[0]
+        $aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 3)) ; remote IP / translate
+        $aRes[$i][4] = $aRet[0]
+        If $aRes[$i][0] <= 2 Then
+            $aRes[$i][5] = 0
+        Else
+            $aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 4)) ; remote port / translate
+            $aRes[$i][5] = $aRet[0]
+        EndIf
+    Next
+
+    Return $aRes
+EndFunc   ;==>_WinAPI_GetTcpTable
