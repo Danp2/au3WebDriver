@@ -186,9 +186,30 @@ EndFunc   ;==>_WD_BidiIsConnected
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_BidiSetClient($sClient)
-	Local Const $sFuncName = "_WD_BidiSetClient"
-	__WD_BidiActions('init', $sClient)
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_BidiConfig
+; Description ...: Override default BiDi configuration
+; Syntax ........: _WD_BidiConfig($sClient,  $sIPAddress,  $iPort)
+; Parameters ....: $sClient             - Name of desired websocket client
+;                  $sIPAddress          - TCP server IP address
+;                  $iPort               - TCP server port
+; Return values .: None
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_BidiConfig($sClient, $sIPAddress = Default, $iPort = Default)
+	Local Const $sFuncName = "_WD_BidiConfig"
+
+	Local $oParams = Json_ObjCreate()
+	If $sClient <> Default Then Json_ObjPut($oParams, 'client', $sClient)
+	If $sIPAddress <> Default Then Json_ObjPut($oParams, 'ip', $sIPAddress)
+	If $iPort <> Default Then Json_ObjPut($oParams, 'port', $iPort)
+
+	__WD_BidiActions('init', Default, $oParams)
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr))
@@ -342,11 +363,12 @@ EndFunc   ;==>_WD_BidiGetContextID
 Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 	Local Const $sFuncName = "__WD_BidiActions"
 	Local $sMessage = 'Parameters:   Action=' & $sAction & '   Argument=' & $sArgument & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING))
-	Local Static $iSocket = 0, $iPID = 0, $iID = 0, $iClient = 0
+	Local Static $iSocket = 0, $iPID = 0, $iID = 0
+	Local Static $sIPAddress = "127.0.0.1", $iPort = 0, $iClient = 0
 	Local Static $mEvents[], $mResults[]
 
 	Local $iErr = 0, $sErrText, $vTransmit = Json_ObjCreate()
-	Local $vResult = "", $oJSON, $aKeys, $iKey
+	Local $vResult = "", $aKeys, $iKey
 	Local $aResults
 
 	If $sArgument = Default Then $sArgument = ''
@@ -369,8 +391,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				; Prevent logging if not in Full debug mode
 				If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
-				Local $sIPAddress = "127.0.0.1" ; local host
-				Local $iPort = __WD_GetFreePort(60000, 65000) ; Port used for the connection.
+				If $iPort = 0 Then $iPort = __WD_GetFreePort(60000, 65000) ; Port used for the connection.
 
 				Local $sWSUrl = _WD_BidiGetWebsocketURL($sArgument)
 
@@ -484,16 +505,25 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 			$vResult = ($iSocket And $iPID And ProcessExists($iPID))
 
 		Case 'init'
-			Local $iIndex = _ArraySearch($_WD_BidiClients, StringLower($sArgument), Default, Default, Default, Default, Default, $_WD_BIDICLIENT_Name)
-			If @error Then 
-				$iErr = $_WD_ERROR_NotFound
-				$sErrText = 'Unsupported client'
-			Else
-				$iClient = $iIndex
+			Local $sTemp = Json_ObjGet($oParams, 'client')
+			If Not @error Then 
+				Local $iIndex = _ArraySearch($_WD_BidiClients, StringLower($sTemp), Default, Default, Default, Default, Default, $_WD_BIDICLIENT_Name)
+				If @error Then 
+					$iErr = $_WD_ERROR_NotFound
+					$sErrText = 'Unsupported client'
+				Else
+					$iClient = $iIndex
+				EndIf
 			EndIf
 
+			$sTemp = Json_ObjGet($oParams, 'ip')
+			If Not @error Then $sIPAddress = $sTemp
+
+			Local $iTemp = Json_ObjGet($oParams, 'port')
+			If Not @error Then $iPort = $iTemp
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Count|Maps|Open|Receive|Send|Status) $sAction=>" & $sAction), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Close|Count|Init|Maps|Open|Receive|Send|Status) $sAction=>" & $sAction), 0, "")
 	EndSwitch
 
 	If $iErr Then
