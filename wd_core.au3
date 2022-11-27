@@ -605,9 +605,9 @@ EndFunc   ;==>_WD_Window
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector    - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
-;                  $sStartNodeID - [optional] Element ID to use as starting node. Default is ""
+;                  $sStartNodeID - [optional] Element ID to use as starting HTML node. Default is ""
 ;                  $bMultiple    - [optional] Return multiple matching elements? Default is False
-;                  $bShadowRoot  - [optional] Starting node is a shadow root? Default is False
+;                  $bShadowRoot  - [optional] Starting HTML node is a shadow root? Default is False
 ; Return values .: Success - Element ID(s) returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
