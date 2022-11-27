@@ -802,11 +802,11 @@ EndFunc   ;==>_WD_FrameList
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_FrameList_Internal
 ; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
-; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_Calling)
+; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $iDebugLevel)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sLevel              - frame location level ... path
 ;                  $sFrameAttributes    - all <iframe ....> atributes
-;                  $_WD_DEBUG_Calling   - log level taken from calling function
+;                  $iDebugLevel         - log level taken from calling function
 ; Return values .: Success - array or string
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -817,7 +817,7 @@ EndFunc   ;==>_WD_FrameList
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_Calling)
+Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $iDebugLevel)
 	Local Const $sFuncName = "__WD_FrameList_Internal"
 	Local Const $sParameters = 'Parameters:    Level=' & $sLevel ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
 	Local $iErr = $_WD_ERROR_Success
@@ -862,7 +862,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check atributes child frames #' & $iFrame
 				Else
 					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
-					$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $_WD_DEBUG_Calling)
+					$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $iDebugLevel)
 					$iErr = @error
 					If Not @error Then
 						_WD_FrameLeave($sSession)
@@ -880,7 +880,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $_WD_DEBUG_C
 	If $iErr Then
 		$iErr = $_WD_ERROR_Exception
 		If $_WD_DEBUG = $_WD_DEBUG_None Then ; @error occurs in current __WD_FrameList_Internal() runtime
-			$_WD_DEBUG = $_WD_DEBUG_Calling
+			$_WD_DEBUG = $iDebugLevel
 		Else ; @error occurs in previous __WD_FrameList_Internal() runtime
 			$_WD_DEBUG = $_WD_DEBUG_None
 		EndIf
