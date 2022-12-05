@@ -417,7 +417,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 			If $_WD_BidiClients[$iClient][$_WD_BIDICLIENT_OpenWS] Then
 				$sCmd = $_WD_BidiClients[$iClient][$_WD_BIDICLIENT_OpenWS]
 				$sCmd = StringFormat($sCmd, $sWSUrl)
-				__TCPSendLine($iSocket, $sCmd)
+				__WD_BidiSendData($iSocket, $sCmd)
 			EndIf
 
 			$vResult = ($iSocket) ? $iSocket : 0
@@ -430,7 +430,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 			$vTransmit = StringFormat($_WD_BidiClients[$iClient][$_WD_BIDICLIENT_Message], Json_Encode($vTransmit))
 
 			; Send and receive data on the websocket protocol.
-			__TCPSendLine($iSocket, $vTransmit)
+			__WD_BidiSendData($iSocket, $vTransmit)
 
 			If @error Then
 				$iErr = $_WD_ERROR_SocketError
@@ -610,9 +610,9 @@ Func __WD_BidiGetData($iSocket, $iTimeout = 500)
 EndFunc   ;==>__WD_BidiGetData
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __TCPSendLine
-; Description ...: Sends data on a connected socket
-; Syntax ........: __TCPSendLine($iSocket,  $sData)
+; Name ..........: __WD_BidiSendData
+; Description ...: Sends data on a connected TCP socket
+; Syntax ........: __WD_BidiSendData($iSocket,  $sData)
 ; Parameters ....: $iSocket             - Socket identifier
 ;                  $sData               - Data to send
 ; Return values .: None
@@ -623,13 +623,13 @@ EndFunc   ;==>__WD_BidiGetData
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __TCPSendLine($iSocket, $sData)
+Func __WD_BidiSendData($iSocket, $sData)
 	If StringRight($sData, 2) <> @CRLF Then
 		$sData &= @CRLF
 	EndIf
 
 	TCPSend($iSocket, $sData)
-EndFunc   ;==>__TCPSendLine
+EndFunc   ;==>__WD_BidiSendData
 
 Func __WD_GetFreePort($iMinPort, $iMaxPort)
 	Local $aPorts = _WinAPI_GetTcpTable()
