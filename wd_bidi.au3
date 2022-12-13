@@ -174,34 +174,21 @@ Func _WD_BidiIsConnected()
 EndFunc   ;==>_WD_BidiIsConnected
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_BidiSetClient
-; Description ...: Set the websocket client
-; Syntax ........: _WD_BidiSetClient($sClient)
-; Parameters ....: $sClient             - Name of desired websocket client
-; Return values .: None
-; Author ........: Danp2
-; Modified ......:
-; Remarks .......:
-; Related .......: Clients are defined in $_WD_BidiClients
-; Link ..........:
-; Example .......: No
-; ===============================================================================================================================
-; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiConfig
 ; Description ...: Override default BiDi configuration
-; Syntax ........: _WD_BidiConfig($sClient,  $sIPAddress,  $iPort)
-; Parameters ....: $sClient             - Name of desired websocket client
-;                  $sIPAddress          - TCP server IP address
-;                  $iPort               - TCP server port
+; Syntax ........: _WD_BidiConfig([$sClient = Default[,  $sIPAddress = Default[,  $iPort = Default]]])
+; Parameters ....: $sClient             - [optional] Name of desired websocket client
+;                  $sIPAddress          - [optional] TCP server IP address
+;                  $iPort               - [optional] TCP server port
 ; Return values .: None
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: Supported clients are defined in $_WD_BidiClients
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_BidiConfig($sClient, $sIPAddress = Default, $iPort = Default)
+Func _WD_BidiConfig($sClient = Default, $sIPAddress = Default, $iPort = Default)
 	Local Const $sFuncName = "_WD_BidiConfig"
 
 	Local $oParams = Json_ObjCreate()
