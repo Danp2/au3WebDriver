@@ -2910,9 +2910,9 @@ EndFunc   ;==>_WD_JsonActionKey
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetFreePort
 ; Description ...:  Locate and return an available TCP port within a defined range
-; Syntax ........: _WD_GetFreePort($iMinPort,  $iMaxPort)
-; Parameters ....: $iMinPort            - Starting port number
-;                  $iMaxPort            - Ending port number
+; Syntax ........: _WD_GetFreePort([$iMinPort = Default[,  $iMaxPort = Default]])
+; Parameters ....: $iMinPort - [optional] Starting port number. Default is 64000
+;                  $iMaxPort - [optional] Ending port number. Default is $iMinPort or 65000
 ; Return values .: Success - Available TCP port number
 ;                  Failure - 0 and @error set to $_WD_ERROR_NotFound 
 ; Author ........: Danp2
@@ -2922,9 +2922,12 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetFreePort($iMinPort, $iMaxPort)
+Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 	Local Const $sFuncName = "_WD_GetFreePort"
 	Local $iResult = 0, $iErr = $_WD_ERROR_NotFound
+
+	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
+	If $iMinPort = Default Then $iMinPort = 64000
 	Local $aPorts = __WinAPI_GetTcpTable()
 
 	If Not @error Then
