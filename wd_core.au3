@@ -1194,8 +1194,8 @@ EndFunc   ;==>_WD_Option
 ; ===============================================================================================================================
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
-	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iErr = $_WD_ERROR_Success
-	Local $sDriverBitness = "", $sExistingDriver = ""
+	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iPort, $iErr = $_WD_ERROR_Success
+	Local $sDriverBitness = "", $sExistingDriver = "", $sPortAvailable = ""
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
@@ -1204,6 +1204,17 @@ Func _WD_Startup()
 	EndIf
 
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
+
+	$sFunction = "_WD_GetFreePort"
+	$iPort = Call($sFunction, $_WD_PORT)
+	
+	Select
+			Case @error = 0xDEAD And @extended = 0xBEEF
+				; function not available
+
+			Case @error
+				$sPortAvailable = " (Unavailable)"
+	EndSelect
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
@@ -1250,7 +1261,7 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
 		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
 		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
-		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT)
+		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & $sPortAvailable)
 		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & (($sExistingDriver) ? $sExistingDriver : $sCommand))
 	EndIf
 

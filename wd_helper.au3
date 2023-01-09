@@ -2906,6 +2906,80 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionKey
 
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetFreePort
+; Description ...:  Locate and return an available TCP port within a defined range
+; Syntax ........: _WD_GetFreePort([$iMinPort = Default[,  $iMaxPort = Default]])
+; Parameters ....: $iMinPort - [optional] Starting port number. Default is 64000
+;                  $iMaxPort - [optional] Ending port number. Default is $iMinPort or 65000
+; Return values .: Success - Available TCP port number
+;                  Failure - 0 and @error set to $_WD_ERROR_NotFound 
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
+	Local Const $sFuncName = "_WD_GetFreePort"
+	Local $iResult = 0, $iErr = $_WD_ERROR_NotFound
+
+	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
+	If $iMinPort = Default Then $iMinPort = 64000
+	Local $aPorts = __WinAPI_GetTcpTable()
+
+	If Not @error Then
+		For $iPort = $iMinPort To $iMaxPort
+			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
+			If @error = 6 Then 
+				$iResult = $iPort
+				$iErr = $_WD_ERROR_Success
+				ExitLoop
+			EndIf
+		Next
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr, $iResult), 0, $iResult)
+EndFunc   ;==>_WD_GetFreePort
+
+Func __WinAPI_GetTcpTable()
+	;funkey 2012.12.14
+	;https://www.autoitscript.com/forum/topic/146671-getextendedtcptable-get-netstat-information/?tab=comments#comment-1038649
+	Local Const $aConnState[12] = ["CLOSED", "LISTENING", "SYN_SENT", "SYN_RCVD", "ESTABLISHED", "FIN_WAIT1", _
+			"FIN_WAIT2", "CLOSE_WAIT", "CLOSING", "LAST_ACK", "TIME_WAIT", "DELETE_TCB"]
+
+	Local $tMIB_TCPTABLE = DllStructCreate("dword[6]")
+	Local $aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", 0, "BOOL", True)
+	Local $dwSize = $aRet[2]
+	$tMIB_TCPTABLE = DllStructCreate("DWORD[" & $dwSize / 4 & "]")
+
+	$aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", $dwSize, "BOOL", True)
+	If $aRet[0] <> 0 Then Return SetError(1)
+	Local $iNumEntries = DllStructGetData($tMIB_TCPTABLE, 1, 1)
+	Local $aRes[$iNumEntries][6]
+
+	For $i = 0 To $iNumEntries - 1
+		$aRes[$i][0] = DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 0)
+		$aRes[$i][1] = $aConnState[$aRes[$i][0] - 1]
+		$aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 1)) ; local IP / translate
+		$aRes[$i][2] = $aRet[0]
+		$aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 2)) ; local port / translate
+		$aRes[$i][3] = $aRet[0]
+		$aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 3)) ; remote IP / translate
+		$aRes[$i][4] = $aRet[0]
+		If $aRes[$i][0] <= 2 Then
+			$aRes[$i][5] = 0
+		Else
+			$aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 4)) ; remote port / translate
+			$aRes[$i][5] = $aRet[0]
+		EndIf
+	Next
+
+	Return $aRes
+EndFunc   ;==>__WinAPI_GetTcpTable
+
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionPointer
 ; Description ...: Formats pointer "action" strings for use in _WD_Action
