@@ -1084,29 +1084,38 @@ EndFunc   ;==>DemoStyles
 
 #Region - UserTesting
 Func UserTesting()
-	Local $bStyle = True ; Change to false to use older style
-
-	If $bStyle Then ; New style
-		; Modify the contents of usertesting.txt to change the code being executed.
-		; Changes can be made and executed without restarting this script
-		Local $aCmds = FileReadToArray("usertesting.txt")
-
-		For $sCmd In $aCmds
-			Execute($sCmd)
-		Next
-	Else ; Old style
-		_WD_Navigate($sSession, 'https://www.google.com')
-		_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
-
-		ConsoleWrite("- Test 1:" & @CRLF)
-		_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
-
-		ConsoleWrite("- Test 2:" & @CRLF)
-		_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
-	EndIf	
+	If $IDYES = MsgBox($MB_YESNO + $MB_TOPMOST + $MB_ICONQUESTION + $MB_DEFBUTTON1, "Question", _
+			"Do you want to test with  usertesting.txt ?") Then
+		__UserTesting_2()
+	Else
+		__UserTesting_1()
+	EndIf
+	Return SetError(@error, @extended)
 EndFunc   ;==>UserTesting
 
-; if necessary, add any additional function required for testing within this region here
+Func __UserTesting_1()
+	; if necessary, you can modify the following function content by replacing, adding any additional function required for testing within this function
+	_WD_Navigate($sSession, 'https://www.google.com')
+	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+
+	ConsoleWrite("- Test 1:" & @CRLF)
+	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
+
+	ConsoleWrite("- Test 2:" & @CRLF)
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
+EndFunc   ;==>__UserTesting_1
+
+Func __UserTesting_2()
+	; Modify the contents of usertesting.txt to change the code being executed.
+	; Changes can be made and executed without restarting this script
+	Local $aCmds = FileReadToArray("usertesting.txt")
+	If @error Then Return SetError(@error, @extended)
+
+	For $sCmd In $aCmds
+		Execute($sCmd)
+		If @error Then Return SetError(@error, @extended)
+	Next
+EndFunc   ;==>__UserTesting_2
 
 #EndRegion - UserTesting
 
