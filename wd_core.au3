@@ -1194,7 +1194,7 @@ EndFunc   ;==>_WD_Option
 ; ===============================================================================================================================
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
-	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iPort, $iErr = $_WD_ERROR_Success
+	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iErr = $_WD_ERROR_Success
 	Local $sDriverBitness = "", $sExistingDriver = "", $sPortAvailable = ""
 
 	If $_WD_DRIVER = "" Then
@@ -1206,7 +1206,7 @@ Func _WD_Startup()
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
 
 	$sFunction = "_WD_GetFreePort"
-	$iPort = Call($sFunction, $_WD_PORT)
+	Call($sFunction, $_WD_PORT)
 	
 	Select
 			Case @error = 0xDEAD And @extended = 0xBEEF
