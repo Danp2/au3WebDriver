@@ -74,6 +74,7 @@ Global Const $__WDVERSION = "0.11.0"
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_EmptyDict = "{}"
+Global Const $_WD_EmptyCaps = '{"capabilities":{}}'
 
 Global Const $_WD_LOCATOR_ByCSSSelector = "css selector"
 Global Const $_WD_LOCATOR_ByXPath = "xpath"
@@ -208,7 +209,7 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; Name ..........: _WD_CreateSession
 ; Description ...: Request new session from web driver.
 ; Syntax ........: _WD_CreateSession([$sCapabilities = Default])
-; Parameters ....: $sCapabilities - [optional] Requested features in JSON format. Default is "{}"
+; Parameters ....: $sCapabilities - [optional] Requested features in JSON format. Default is '{"capabilities":{}}'
 ; Return values .: Success - Session ID to be used in future requests to web driver session.
 ;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
 ; Author ........: Danp2
@@ -222,7 +223,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Local Const $sFuncName = "_WD_CreateSession"
 	Local $sSession = "", $sMessage = ''
 
-	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyDict
+	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyCaps
 
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
