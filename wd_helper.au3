@@ -2400,7 +2400,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementActionEx
 ; Description ...: Perform advanced action on designated element.
-; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default]]]]])
+; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default[, $bScrollView = Default]]]]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sElement   - Element ID from _WD_FindElement
 ;                  $sCommand   - one of the following actions:
@@ -2416,11 +2416,12 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |RIGHTCLICK - Do a rightclick on the selected element
 ;                  |SHOW - Change the element's style to 'display: normal' to unhide/show the element
 ;                  |UNCHECK - Unchecks a checkbox input element
-;                  $iXOffset   - [optional] X Offset. Default is 0
-;                  $iYOffset   - [optional] Y Offset. Default is 0
-;                  $iButton    - [optional] Mouse button. Default is $_WD_BUTTON_Left
-;                  $iHoldDelay - [optional] Hold time in ms. Default is 1000
-;                  $sModifier  - [optional] Modifier key. Default is "\uE008" (shift key)
+;                  $iXOffset    - [optional] X Offset. Default is 0
+;                  $iYOffset    - [optional] Y Offset. Default is 0
+;                  $iButton     - [optional] Mouse button. Default is $_WD_BUTTON_Left
+;                  $iHoldDelay  - [optional] Hold time in ms. Default is 1000
+;                  $sModifier   - [optional] Modifier key. Default is "\uE008" (shift key)
+;                  $bScrollView - [optional] Forcibly scroll element into view? Default is True
 ; Return values .: Success - Return value from web driver (could be an empty string)
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -2433,9 +2434,9 @@ EndFunc   ;==>_WD_SetElementValue
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
+Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default, $bScrollView = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
-	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Command=' & $sCommand & '    XOffset=' & $iXOffset & '    YOffset=' & $iYOffset & '    Button=' & $iButton & '    HoldDelay=' & $iHoldDelay & '    Modifier=' & $sModifier
+	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Command=' & $sCommand & '    XOffset=' & $iXOffset & '    YOffset=' & $iYOffset & '    Button=' & $iButton & '    HoldDelay=' & $iHoldDelay & '    Modifier=' & $sModifier & '    ScrollView=' & $bScrollView
 	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -2445,6 +2446,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	If $iButton = Default Then $iButton = $_WD_BUTTON_Left
 	If $iHoldDelay = Default Then $iHoldDelay = 1000
 	If $sModifier = Default Then $sModifier = "\uE008" ; shift
+	If $bScrollView = Default Then $bScrollView = True
 
 	If Not IsInt($iXOffset) Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iXOffset: " & $iXOffset), 0, "")
@@ -2564,6 +2566,11 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			'	]' & _ ; Close main action
 			'}', @TAB, '')
 	#EndRegion - JSON builder
+
+	If $bScrollView Then
+		_WD_ExecuteScript($sSession, "arguments[0].scrollIntoView(false);", __WD_JsonElement($sElement))
+		Sleep(500)
+	EndIf
 
 	Switch $iActionType
 		Case 1
