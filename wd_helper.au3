@@ -475,7 +475,7 @@ Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 		; check and do not delete stored debug level if this is the first one on the stack
 		If $iStackSize > 1 Then ReDim $a_WD_DEBUG_SavedStack[$iStackSize - 1]
 		$iResult = 1
-	ElseIf IsInt($vMode) And $vMode <= $_WD_DEBUG_None And $vMode >= $_WD_DEBUG_Full Then ; setting new debug level
+	ElseIf IsInt($vMode) And $vMode >= $_WD_DEBUG_None And $vMode <= $_WD_DEBUG_Full Then ; setting new debug level
 		ReDim $a_WD_DEBUG_SavedStack[$iStackSize + 1] ; resize / add new position to the stack
 		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $vMode ; set new last stack value
 		$_WD_DEBUG = $vMode ; set new debug level
