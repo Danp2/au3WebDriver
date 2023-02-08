@@ -467,7 +467,8 @@ EndFunc   ;==>_WD_WaitElement
 Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 	Local Const $sFuncName = "_WD_DebugSwitch"
 	Local Static $a_WD_DEBUG_SavedStack[1] = [$_WD_DEBUG] ; at first run save currently used debug level to the stack
-	Local Const $iStackSize = UBound($a_WD_DEBUG_SavedStack), $iResult = 0
+	Local Const $iStackSize = UBound($a_WD_DEBUG_SavedStack)
+	Local $iResult = 0
 
 	If $vMode = Default Then ; restoring saved debug level
 		$_WD_DEBUG = $a_WD_DEBUG_SavedStack[$iStackSize - 1] ; restore last element on the stack
