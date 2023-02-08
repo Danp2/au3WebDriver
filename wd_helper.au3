@@ -450,6 +450,41 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DebugSwitch
+; Description ...: Switch to new debug level or switch back to saved debug level
+; Syntax ........: _WD_DebugSwitch([$vMode = Default])
+; Parameters ....: $vMode               - [optional] Set new $_WD_DEBUG level. When not specified (Default) restore saved debug level.
+; Return values .: Success - 1
+;                  Failure - 0
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......: Function saves debug level at first call.
+;                  The first stored value will be never deleted, will be stored on the stack forever.
+; Related .......:
+; Link ..........:
+; Example .......: _WD_DebugSwitch($_WD_DEBUG_Full)
+; ===============================================================================================================================
+Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
+	Local Const $sFuncName = "_WD_DebugSwitch"
+	Local Static $a_WD_DEBUG_SavedStack[1] = [$_WD_DEBUG] ; at first run save currently used debug level to the stack
+	Local Const $iStackSize = UBound($a_WD_DEBUG_SavedStack)
+	Local $iResult = 0
+
+	If $vMode = Default Then ; restoring saved debug level
+		$_WD_DEBUG = $a_WD_DEBUG_SavedStack[$iStackSize - 1] ; restore last element on the stack
+		; check and do not delete stored debug level if this is the first one on the stack
+		If $iStackSize > 1 Then ReDim $a_WD_DEBUG_SavedStack[$iStackSize - 1]
+		$iResult = 1
+	ElseIf IsInt($vMode) And $vMode >= $_WD_DEBUG_None And $vMode <= $_WD_DEBUG_Full Then ; setting new debug level
+		ReDim $a_WD_DEBUG_SavedStack[$iStackSize + 1] ; resize / add new position to the stack
+		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $vMode ; set new last stack value
+		$_WD_DEBUG = $vMode ; set new debug level
+		$iResult = 1
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $iResult)
+EndFunc   ;==>_WD_DebugSwitch
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetMouseElement
 ; Description ...: Retrieves reference to element below mouse pointer.
 ; Syntax ........: _WD_GetMouseElement($sSession)
