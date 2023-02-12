@@ -50,17 +50,17 @@
 
 #Region - wd_capabilities.au3 - thanks, remarks, comments
 #CS
-; Author(s) .....: Michał Lipok - @mLipok
-; AutoIt Version : v3.3.14.5
-	- Jonathan Bennett and the AutoIt Team https://www.autoitscript.com/forum/staff/
-	- Dan Pollak (@Danp2) for all his work on https://github.com/Danp2/WebDriver/
-	- @trancexx for https://github.com/dragana-r/autoit-winhttp and https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
-	- @Ward for  https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
+	; Author(s) .....: Michał Lipok - @mLipok
+	; AutoIt Version : v3.3.14.5
+		- Jonathan Bennett and the AutoIt Team https://www.autoitscript.com/forum/staff/
+		- Dan Pollak (@Danp2) for all his work on https://github.com/Danp2/WebDriver/
+		- @trancexx for https://github.com/dragana-r/autoit-winhttp and https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
+		- @Ward for  https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 
-	wd_capabilities.au3 UDF was originally designed by Michał Lipok : https://www.autoitscript.com/forum/topic/206576-wd_capabilitiesau3-support-topic-early-beta-version-work-in-progress/
-	By mutual consent (@mLipok + @Danp2) for the sake of the entire project, it was decided that: first official release will be published on https://github.com/Danp2/au3WebDriver/
-	Future project management will remain in the hands of @Danp2
-	@mLipok will remain an active contributor to this project
+		wd_capabilities.au3 UDF was originally designed by Michał Lipok : https://www.autoitscript.com/forum/topic/206576-wd_capabilitiesau3-support-topic-early-beta-version-work-in-progress/
+		By mutual consent (@mLipok + @Danp2) for the sake of the entire project, it was decided that: first official release will be published on https://github.com/Danp2/au3WebDriver/
+		Future project management will remain in the hands of @Danp2
+		@mLipok will remain an active contributor to this project
 #CE
 #EndRegion - wd_capabilities.au3 - thanks, remarks, comments
 
@@ -144,7 +144,7 @@ Func _WD_CapabilitiesStartup()
 	$_WD_CAPS__OBJECT = ''
 
 	; Create object with empty capabilites: {"capabilities":"{}"}
-	Json_Put($_WD_CAPS__OBJECT, '[capabilities]', '{}')
+	Json_Put($_WD_CAPS__OBJECT, '[capabilities]', '{}') ; $_WD_EmptyCaps
 	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' : > ' & Json_Encode($_WD_CAPS__OBJECT) & ' > IsObj = ' & IsObj($_WD_CAPS__OBJECT), $_WD_DEBUG_Full)
 EndFunc   ;==>_WD_CapabilitiesStartup
 
