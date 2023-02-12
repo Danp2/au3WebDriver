@@ -239,7 +239,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 			$sMessage = $sSession
 
 			; Save response details for future use
-			$_WD_SESSION_DETAILS = $sResponse			
+			$_WD_SESSION_DETAILS = $sResponse
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_Exception
@@ -321,19 +321,19 @@ Func _WD_GetSession($sSession)
 	#forceref $sSession, $sFuncName
 
 	#cs See remarks in header
-	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
-	Local $iErr = @error, $sResult = ''
+		Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
+		Local $iErr = @error, $sResult = ''
 
-	If $iErr = $_WD_ERROR_Success Then
-		Local $oJSON = Json_Decode($sResponse)
-		$sResult = Json_Get($oJSON, $_WD_JSON_Value)
-	EndIf
+		If $iErr = $_WD_ERROR_Success Then
+			Local $oJSON = Json_Decode($sResponse)
+			$sResult = Json_Get($oJSON, $_WD_JSON_Value)
+		EndIf
 
-	__WD_ConsoleWrite($sFuncName & ": " & $sResponse, $_WD_DEBUG_Info)
+		__WD_ConsoleWrite($sFuncName & ": " & $sResponse, $_WD_DEBUG_Info)
 
-	If $iErr Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResult)
-	EndIf
+		If $iErr Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), 0, $sResult)
+		EndIf
 	#ce See remarks in header
 
 	$sResult = $_WD_SESSION_DETAILS
@@ -1208,13 +1208,13 @@ Func _WD_Startup()
 
 	$sFunction = "_WD_GetFreePort"
 	Call($sFunction, $_WD_PORT)
-	
-	Select
-			Case @error = 0xDEAD And @extended = 0xBEEF
-				; function not available
 
-			Case @error
-				$sPortAvailable = " (Unavailable)"
+	Select
+		Case @error = 0xDEAD And @extended = 0xBEEF
+			; function not available
+
+		Case @error
+			$sPortAvailable = " (Unavailable)"
 	EndSelect
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
@@ -1223,7 +1223,7 @@ Func _WD_Startup()
 	$iPID = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $iPID Then
-		 $sExistingDriver = "Existing instance of " & $sFile & " detected! (PID=" & $iPID & ")"
+		$sExistingDriver = "Existing instance of " & $sFile & " detected! (PID=" & $iPID & ")"
 	Else
 		$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
