@@ -53,7 +53,7 @@ Global Enum _
 		$_WD_OPTION_Enabled = 2, _
 		$_WD_OPTION_Element = 4, _
 		$_WD_OPTION_NoMatch = 8, _
-		$_WD_OPTION_Hidden  = 16
+		$_WD_OPTION_Hidden = 16
 
 Global Enum _
 		$_WD_OPTION_Standard, _
@@ -76,7 +76,7 @@ Global Enum _
 Global Enum _
 		$_WD_STORAGE_Local = 0, _
 		$_WD_STORAGE_Session = 1
-		
+
 Global Enum _
 		$_WD_FRAMELIST_Absolute = 0, _
 		$_WD_FRAMELIST_Relative = 1, _
@@ -180,7 +180,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 		EndIf
 
 		_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
-		
+
 		If @error <> $_WD_ERROR_Success Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sParameters), 0, $sTabHandle)
 		EndIf
@@ -235,7 +235,7 @@ EndFunc   ;==>_WD_NewTab
 ; ===============================================================================================================================
 Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 	Local Const $sFuncName = "_WD_Attach"
-	Local Const $sParameters = 'Parameters:    Search=' & $sSearch & '    Mode=' & $sMode 
+	Local Const $sParameters = 'Parameters:    Search=' & $sSearch & '    Mode=' & $sMode
 	Local $sTabHandle = '', $bFound = False, $sCurrentTab = '', $aHandles
 	Local $iErr = $_WD_ERROR_Success
 
@@ -374,7 +374,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 	; Other options aren't valid if No Match or Hidden option is supplied
 	If ($bNoMatch And $iOptions <> $_WD_OPTION_NoMatch) Or _
-		($bHidden And $iOptions <> $_WD_OPTION_Hidden) Then
+			($bHidden And $iOptions <> $_WD_OPTION_Hidden) Then
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
 		__WD_Sleep($iDelay)
@@ -424,14 +424,14 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				EndIf
 
 				Select
-				Case $bHidden
-					If Not $bIsVisible Then ExitLoop
+					Case $bHidden
+						If Not $bIsVisible Then ExitLoop
 
-				Case $bIsVisible And $bIsEnabled
-					ExitLoop
+					Case $bIsVisible And $bIsEnabled
+						ExitLoop
 
-				Case Else
-					$sElement = ''
+					Case Else
+						$sElement = ''
 				EndSelect
 			EndIf
 
@@ -634,8 +634,8 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
-	; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit	
-	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH) 
+	; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit
+	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH)
 
 	If $bIdentifierAsPath Then
 		; will be processed below
@@ -701,7 +701,7 @@ EndFunc   ;==>_WD_FrameEnter
 ;                  - $_WD_ERROR_Exception
 ; Author ........: Decibel
 ; Modified ......: Danp2
-; Remarks .......: 
+; Remarks .......:
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
@@ -2437,7 +2437,7 @@ EndFunc   ;==>_WD_SetElementValue
 Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default, $bScrollView = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
 	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Command=' & $sCommand & '    XOffset=' & $iXOffset & '    YOffset=' & $iYOffset & '    Button=' & $iButton & '    HoldDelay=' & $iHoldDelay & '    Modifier=' & $sModifier & '    ScrollView=' & $bScrollView
-	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
+	Local $sAction, $sJavaScript, $iErr, $sResult, $iActionType = 1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
@@ -2516,19 +2516,19 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'hide'
 			$iActionType = 2
-			$sJavascript = "arguments[0].style='display: none'; return true;"
+			$sJavaScript = "arguments[0].style='display: none'; return true;"
 
 		Case 'show'
 			$iActionType = 2
-			$sJavascript = "arguments[0].style='display: normal'; return true;"
+			$sJavaScript = "arguments[0].style='display: normal'; return true;"
 
 		Case 'childcount'
 			$iActionType = 2
-			$sJavascript = "return arguments[0].children.length;"
+			$sJavaScript = "return arguments[0].children.length;"
 
 		Case 'check', 'uncheck'
 			$iActionType = 2
-			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
+			$sJavaScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
 		Case Else
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
@@ -2579,7 +2579,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iErr = @error
 
 		Case 2
-			$sResult = _WD_ExecuteScript($sSession, $sJavascript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+			$sResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 			$iErr = @error
 	EndSwitch
 
@@ -2878,37 +2878,37 @@ Func _WD_Storage($sSession, $vKey, $vValue = Default, $nType = Default)
 	Local $sParams, $vResult = '', $iErr = $_WD_ERROR_Success
 	Local Const $bIsKeyNull = (IsKeyword($vKey) = $KEYWORD_NULL), $bIsValueNull = (IsKeyword($vValue) = $KEYWORD_NULL)
 	Local Const $sParameters = 'Parameters:   Key=' & ($bIsKeyNull ? "Null" : $vKey) & '   Value=' & ($bIsValueNull ? "Null" : $vValue) & '   Type=' & $nType
-	
+
 	If $nType = Default Or $nType < $_WD_STORAGE_Local Or $nType > $_WD_STORAGE_Session Then $nType = $_WD_STORAGE_Local
 
 	Local $sTarget = ($nType = $_WD_STORAGE_Local) ? "window.localStorage" : "window.sessionStorage"
-	Local $sJavaScript = 'return ' & $sTarget 
+	Local $sJavaScript = 'return ' & $sTarget
 
 	Select
-	Case $bIsKeyNull ; Empty storage
-		If $vValue = Default Then
-			$sJavaScript &= '.clear()' 
-			$sParams = $_WD_EmptyDict
-		Else
-			$iErr = $_WD_ERROR_InvalidArgue			
-		EndIf
+		Case $bIsKeyNull ; Empty storage
+			If $vValue = Default Then
+				$sJavaScript &= '.clear()'
+				$sParams = $_WD_EmptyDict
+			Else
+				$iErr = $_WD_ERROR_InvalidArgue
+			EndIf
 
-	Case $vValue = Default ; Retrieve key
-		If IsNumber($vKey) Then
-			$sJavaScript &= '.key(arguments[0])'
-			$sParams = String($vKey)
-		Else
-			$sJavaScript &= '.getItem(arguments[0])'
+		Case $vValue = Default ; Retrieve key
+			If IsNumber($vKey) Then
+				$sJavaScript &= '.key(arguments[0])'
+				$sParams = String($vKey)
+			Else
+				$sJavaScript &= '.getItem(arguments[0])'
+				$sParams = '"' & $vKey & '"'
+			EndIf
+
+		Case $bIsValueNull ; Remove key
+			$sJavaScript &= '.removeItem(arguments[0])'
 			$sParams = '"' & $vKey & '"'
-		EndIf
 
-	Case $bIsValueNull ; Remove key
-		$sJavaScript &= '.removeItem(arguments[0])' 
-		$sParams = '"' & $vKey & '"'
-
-	Case $vKey And $vValue ; Set key
-		$sJavaScript &=  '.setItem(arguments[0], arguments[1])'
-		$sParams = '"' & $vKey & '","' & $vValue & '"'
+		Case $vKey And $vValue ; Set key
+			$sJavaScript &= '.setItem(arguments[0], arguments[1])'
+			$sParams = '"' & $vKey & '","' & $vValue & '"'
 	EndSelect
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -2917,7 +2917,7 @@ Func _WD_Storage($sSession, $vKey, $vValue = Default, $nType = Default)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
-EndFunc
+EndFunc   ;==>_WD_Storage
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionKey
@@ -2956,7 +2956,7 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Parameters ....: $iMinPort - [optional] Starting port number. Default is 64000
 ;                  $iMaxPort - [optional] Ending port number. Default is $iMinPort or 65000
 ; Return values .: Success - Available TCP port number
-;                  Failure - 0 and @error set to $_WD_ERROR_NotFound 
+;                  Failure - 0 and @error set to $_WD_ERROR_NotFound
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -2975,7 +2975,7 @@ Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 	If Not @error Then
 		For $iPort = $iMinPort To $iMaxPort
 			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
-			If @error = 6 Then 
+			If @error = 6 Then
 				$iResult = $iPort
 				$iErr = $_WD_ERROR_Success
 				ExitLoop

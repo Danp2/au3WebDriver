@@ -234,7 +234,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 			$sMessage &= " ResponseText=" & $sRecv
 		EndIf
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, $sRecv)		
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage), 0, $sRecv)
 EndFunc   ;==>_WD_CDPExecuteCommand
 
 ; #FUNCTION# ====================================================================================================================
@@ -339,5 +339,5 @@ Func _WD_CDPGetSettings($sSession, $sOption)
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr), 0, "")
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $vResult)	
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $vResult)
 EndFunc   ;==>_WD_CDPGetSettings

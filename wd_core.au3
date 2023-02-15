@@ -69,7 +69,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.11.0"
+Global Const $__WDVERSION = "0.12.0"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -239,7 +239,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 			$sMessage = $sSession
 
 			; Save response details for future use
-			$_WD_SESSION_DETAILS = $sResponse			
+			$_WD_SESSION_DETAILS = $sResponse
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_Exception
@@ -1208,13 +1208,13 @@ Func _WD_Startup()
 
 	$sFunction = "_WD_GetFreePort"
 	Call($sFunction, $_WD_PORT)
-	
-	Select
-			Case @error = 0xDEAD And @extended = 0xBEEF
-				; function not available
 
-			Case @error
-				$sPortAvailable = " (Unavailable)"
+	Select
+		Case @error = 0xDEAD And @extended = 0xBEEF
+			; function not available
+
+		Case @error
+			$sPortAvailable = " (Unavailable)"
 	EndSelect
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
@@ -1223,7 +1223,7 @@ Func _WD_Startup()
 	$iPID = ProcessExists($sFile)
 
 	If $_WD_DRIVER_DETECT And $iPID Then
-		 $sExistingDriver = "Existing instance of " & $sFile & " detected! (PID=" & $iPID & ")"
+		$sExistingDriver = "Existing instance of " & $sFile & " detected! (PID=" & $iPID & ")"
 	Else
 		$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
 		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError

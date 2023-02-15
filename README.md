@@ -73,6 +73,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_Attach              | Attach to existing browser tab.                                                 |
 | _WD_CheckContext        | Check if browser context is still valid.                                        |
 | _WD_ConsoleVisible      | Control visibility of the webdriver console app.                                |
+| _WD_DebugSwitch         | Switch to new debug level or switch back to saved debug level.                  |
 | _WD_DispatchEvent       | Create and dispatch events.                                                     |
 | _WD_DownloadFile        | Download file and save to disk.                                                 |
 | _WD_ElementActionEx     | Perform advanced action on designated element.                                  |
@@ -90,6 +91,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_GetElementByRegEx   | Find element by matching attributes values using Javascript regular expression. |
 | _WD_GetElementFromPoint | Retrieves reference to element at specified point.                              |
 | _WD_GetFrameCount       | Returns the number of frames/iframes in the current document context.           |
+| _WD_GetFreePort         | Locate and return an available TCP port within a defined range.                 |
 | _WD_GetMouseElement     | Retrieves reference to element below mouse pointer.                             |
 | _WD_GetShadowRoot       | Retrieves the shadow root of an element.                                        |
 | _WD_GetTable            | Return all elements of a table.                                                 |
