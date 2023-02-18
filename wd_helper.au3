@@ -2748,10 +2748,11 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 	_WD_Action($sSession, 'url')
 	Local $iErr = @error
 
-	If $iErr = $_WD_ERROR_Success Then
+	Switch $iErr
+	Case $_WD_ERROR_Success
 		$iResult = $_WD_STATUS_Valid
 
-	ElseIf $iErr = $_WD_ERROR_Exception Then
+	Case $_WD_ERROR_Exception, $_WD_ERROR_ContextInvalid
 		If $bReconnect Then
 			If IsInt($vTarget) Then
 				; To recover, get an array of window handles and use one
@@ -2775,7 +2776,7 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 				$iResult = $_WD_STATUS_Reconnect
 			EndIf
 		EndIf
-	EndIf
+	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
 EndFunc   ;==>_WD_CheckContext
