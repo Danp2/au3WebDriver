@@ -979,6 +979,7 @@ EndFunc   ;==>_WD_HighlightElements
 ;                  $iState   - [optional] Minimal desired ReadyState that is expected. Default is $_WD_READYSTATE_Complete.
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
+;                  - $_WD_ERROR_ContextInvalid
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_RetValue
 ;                  - $_WD_ERROR_Timeout
@@ -1016,12 +1017,32 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 
 		If $sElement <> '' Then
 			_WD_ElementAction($sSession, $sElement, 'name')
+
+			Switch @error
+				Case $_WD_ERROR_NoMatch
+					$sElement = ''
+
+				Case $_WD_ERROR_ContextInvalid
+					$iErr = @error
+					ExitLoop
+
+				Case $_WD_ERROR_Success
+
+				Case Else
+					$iErr = $_WD_ERROR_Exception
+					ExitLoop
+			EndSwitch
+
 			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
 		Else
 			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
+
 			If $iErr Then
-				$iErr = $_WD_ERROR_Exception
+				If $iErr <> $_WD_ERROR_ContextInvalid Then
+					$iErr = $_WD_ERROR_Exception
+				EndIf
+
 				$sReadyState = ''
 				ExitLoop
 			EndIf
