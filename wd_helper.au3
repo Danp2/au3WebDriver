@@ -2536,7 +2536,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$sJavaScript = "arguments[0].remove();"
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck|Remove) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
