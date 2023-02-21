@@ -2416,6 +2416,7 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |RIGHTCLICK - Do a rightclick on the selected element
 ;                  |SHOW - Change the element's style to 'display: normal' to unhide/show the element
 ;                  |UNCHECK - Unchecks a checkbox input element
+;                  |REMOVE - Removes the element from the DOM
 ;                  $iXOffset    - [optional] X Offset. Default is 0
 ;                  $iYOffset    - [optional] Y Offset. Default is 0
 ;                  $iButton     - [optional] Mouse button. Default is $_WD_BUTTON_Left
@@ -2530,8 +2531,12 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iActionType = 2
 			$sJavaScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
 
+		Case 'remove'
+			$iActionType = 2
+			$sJavaScript = "arguments[0].remove();"
+
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck|Remove) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
