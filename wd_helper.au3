@@ -2770,33 +2770,33 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 	Local $iErr = @error
 
 	Switch $iErr
-	Case $_WD_ERROR_Success
-		$iResult = $_WD_STATUS_Valid
+		Case $_WD_ERROR_Success
+			$iResult = $_WD_STATUS_Valid
 
-	Case $_WD_ERROR_Exception, $_WD_ERROR_ContextInvalid
-		If $bReconnect Then
-			If IsInt($vTarget) Then
-				; To recover, get an array of window handles and use one
-				Local $aHandles = _WD_Window($sSession, "handles")
+		Case $_WD_ERROR_Exception, $_WD_ERROR_ContextInvalid
+			If $bReconnect Then
+				If IsInt($vTarget) Then
+					; To recover, get an array of window handles and use one
+					Local $aHandles = _WD_Window($sSession, "handles")
 
-				If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
-					Select
-						Case $vTarget = $_WD_TARGET_FirstTab
-							$vTarget = $aHandles[0]
+					If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
+						Select
+							Case $vTarget = $_WD_TARGET_FirstTab
+								$vTarget = $aHandles[0]
 
-						Case $vTarget = $_WD_TARGET_LastTab
-							$vTarget = $aHandles[UBound($aHandles) - 1]
+							Case $vTarget = $_WD_TARGET_LastTab
+								$vTarget = $aHandles[UBound($aHandles) - 1]
 
-					EndSelect
+						EndSelect
+					EndIf
+				EndIf
+
+				_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
+
+				If @error = $_WD_ERROR_Success Then
+					$iResult = $_WD_STATUS_Reconnect
 				EndIf
 			EndIf
-
-			_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
-
-			If @error = $_WD_ERROR_Success Then
-				$iResult = $_WD_STATUS_Reconnect
-			EndIf
-		EndIf
 	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
