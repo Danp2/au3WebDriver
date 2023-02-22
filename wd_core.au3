@@ -110,6 +110,7 @@ Global Enum _
 		$_WD_ERROR_NotFound, _ ; File or registry key not found
 		$_WD_ERROR_ElementIssue, _ ; Problem interacting with element (click intercepted, etc)
 		$_WD_ERROR_SessionInvalid, _ ; Invalid session ID was submitted to webdriver
+		$_WD_ERROR_ContextInvalid, _ ; Invalid browsing context
 		$_WD_ERROR_UnknownCommand, _ ; Unknown command submitted to webdriver
 		$_WD_ERROR_UserAbort, _ ; In case when user abort when @error occurs and $_WD_ERROR_MSGBOX was set
 		$_WD_ERROR_FileIssue, _ ; Errors related to WebDriver EXE File
@@ -135,6 +136,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
 		"Not found", _
 		"Element interaction issue", _
 		"Invalid session ID", _
+		"Invalid Browsing Context", _
 		"Unknown Command", _
 		"User Aborted", _
 		"File issue", _
@@ -154,6 +156,7 @@ Global Const $_WD_ErrorElementStale = "stale element reference"
 Global Const $_WD_ErrorElementInvalid = "invalid argument"
 Global Const $_WD_ErrorElementIntercept = "element click intercepted"
 Global Const $_WD_ErrorElementNotInteract = "element not interactable"
+Global Const $_WD_ErrorWindowNotFound = "no such window"
 
 Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 
@@ -1749,6 +1752,9 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 			Case $_WD_ErrorInvalidSelector
 				$iErr = $_WD_ERROR_InvalidExpression
 
+			Case $_WD_ErrorWindowNotFound
+				$iErr = $_WD_ERROR_ContextInvalid
+				
 			Case Else
 				$iErr = $_WD_ERROR_Exception
 

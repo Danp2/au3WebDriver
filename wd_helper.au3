@@ -979,6 +979,7 @@ EndFunc   ;==>_WD_HighlightElements
 ;                  $iState   - [optional] Minimal desired ReadyState that is expected. Default is $_WD_READYSTATE_Complete.
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
+;                  - $_WD_ERROR_ContextInvalid
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_RetValue
 ;                  - $_WD_ERROR_Timeout
@@ -1016,12 +1017,32 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 
 		If $sElement <> '' Then
 			_WD_ElementAction($sSession, $sElement, 'name')
+
+			Switch @error
+				Case $_WD_ERROR_NoMatch
+					$sElement = ''
+
+				Case $_WD_ERROR_ContextInvalid
+					$iErr = @error
+					ExitLoop
+
+				Case $_WD_ERROR_Success
+
+				Case Else
+					$iErr = $_WD_ERROR_Exception
+					ExitLoop
+			EndSwitch
+
 			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
 		Else
 			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
+
 			If $iErr Then
-				$iErr = $_WD_ERROR_Exception
+				If $iErr <> $_WD_ERROR_ContextInvalid Then
+					$iErr = $_WD_ERROR_Exception
+				EndIf
+
 				$sReadyState = ''
 				ExitLoop
 			EndIf
@@ -2753,34 +2774,35 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 	_WD_Action($sSession, 'url')
 	Local $iErr = @error
 
-	If $iErr = $_WD_ERROR_Success Then
-		$iResult = $_WD_STATUS_Valid
+	Switch $iErr
+		Case $_WD_ERROR_Success
+			$iResult = $_WD_STATUS_Valid
 
-	ElseIf $iErr = $_WD_ERROR_Exception Then
-		If $bReconnect Then
-			If IsInt($vTarget) Then
-				; To recover, get an array of window handles and use one
-				Local $aHandles = _WD_Window($sSession, "handles")
+		Case $_WD_ERROR_Exception, $_WD_ERROR_ContextInvalid
+			If $bReconnect Then
+				If IsInt($vTarget) Then
+					; To recover, get an array of window handles and use one
+					Local $aHandles = _WD_Window($sSession, "handles")
 
-				If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
-					Select
-						Case $vTarget = $_WD_TARGET_FirstTab
-							$vTarget = $aHandles[0]
+					If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
+						Select
+							Case $vTarget = $_WD_TARGET_FirstTab
+								$vTarget = $aHandles[0]
 
-						Case $vTarget = $_WD_TARGET_LastTab
-							$vTarget = $aHandles[UBound($aHandles) - 1]
+							Case $vTarget = $_WD_TARGET_LastTab
+								$vTarget = $aHandles[UBound($aHandles) - 1]
 
-					EndSelect
+						EndSelect
+					EndIf
+				EndIf
+
+				_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
+
+				If @error = $_WD_ERROR_Success Then
+					$iResult = $_WD_STATUS_Reconnect
 				EndIf
 			EndIf
-
-			_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
-
-			If @error = $_WD_ERROR_Success Then
-				$iResult = $_WD_STATUS_Reconnect
-			EndIf
-		EndIf
-	EndIf
+	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
 EndFunc   ;==>_WD_CheckContext
