@@ -727,7 +727,7 @@ Func _WD_FrameLeave($sSession)
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sValue)
 EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ====================================================================================================================
