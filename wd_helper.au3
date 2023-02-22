@@ -2595,7 +2595,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	If $bScrollView Then
 		_WD_ExecuteScript($sSession, "arguments[0].scrollIntoView(false);", __WD_JsonElement($sElement))
-		Sleep(500)
+		Sleep(500) ; short Sleep() outside of the loop so no need to use __WD_Sleep()
 	EndIf
 
 	Switch $iActionType
