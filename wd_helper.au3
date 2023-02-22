@@ -2595,19 +2595,23 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 	If $bScrollView Then
 		_WD_ExecuteScript($sSession, "arguments[0].scrollIntoView(false);", __WD_JsonElement($sElement))
-		Sleep(500)
+		__WD_Sleep(500)
 	EndIf
 
-	Switch $iActionType
-		Case 1
-			$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction)
-			$sResult = _WD_Action($sSession, 'actions', $sAction)
-			$iErr = @error
+	If @error Then
+		$iErr = @error
+	Else
+		Switch $iActionType
+			Case 1
+				$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction)
+				$sResult = _WD_Action($sSession, 'actions', $sAction)
+				$iErr = @error
 
-		Case 2
-			$sResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
-			$iErr = @error
-	EndSwitch
+			Case 2
+				$sResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+				$iErr = @error
+		EndSwitch
+	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_ElementActionEx
