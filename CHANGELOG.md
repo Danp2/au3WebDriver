@@ -9,11 +9,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [ 0.12.0]
+
+### Added
+
+- _WD_DebugSwitch (@mLipok)
+- _WD_GetFreePort
+
+### Changed
+
+- _WD_CreateSession: Revise default capabilities
+- _WD_ElementActionEx: Scroll element into view by default
+
+## [ 0.11.0]
+
+### Added
+
+- _WD_FrameList (@mLipok)
+- _WD_DispatchEvent
+
+### Changed
+
+- _WD_CapabilitiesAdd: Support `mobileEmulation>deviceMetrics` capability
+- _WD_ElementSelectAction
+	- Added `singleSelect` command
+	- Revised columns returned by `options` and `selectedOptions` commands
+	- Refactored Javascript coding
+- _WD_FrameEnter: Added support for _WD_FrameList style paths
+- _WD_FrameLeave: Refactored for improved functionality
+- _WD_LinkClickByText: Added ability to specify the starting element
+- _WD_LoadWait
+	- Improved error handling / logging
+	- Added ability to specify minimally acceptable page loading status 
 
 ### Fixed
 
-_WD_CDPExecuteCommand: Missing $ prefix in variable name
+- _WD_Alert: Set correct error code when 'status' no alert present
+- Improved error detection in winhttp routines
+
+## [0.10.1]
+
+### Added
+
+- _WD_CapabilitiesAdd: Support `webSocketUrl` capability
+
+### Changed
+
+- _WD_ElementSelectAction: Hidden option detection
+
+### Fixed
+
+- _WD_CDPExecuteCommand: Missing $ prefix in variable name
+- _WD_CapabilitiesAdd: Support keys containing colons
+- _WD_ElementSelectAction: Altering selection now triggers Change event
 
 ## [0.10.0]
 
@@ -971,8 +1019,11 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.10.0...HEAD
-[0.10.0]:      https://github.com/Danp2/au3WebDriver/compare/0.9.1...0.10.0
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.12.0...HEAD
+[0.12.0]:     https://github.com/Danp2/au3WebDriver/compare/0.11.0...0.12.0
+[0.11.0]:     https://github.com/Danp2/au3WebDriver/compare/0.10.1...0.11.0
+[0.10.1]:     https://github.com/Danp2/au3WebDriver/compare/0.10.0...0.10.1
+[0.10.0]:     https://github.com/Danp2/au3WebDriver/compare/0.9.1...0.10.0
 [0.9.1]:      https://github.com/Danp2/au3WebDriver/compare/0.9.0...0.9.1
 [0.9.0]:      https://github.com/Danp2/au3WebDriver/compare/0.8.1...0.9.0
 [0.8.1]:      https://github.com/Danp2/au3WebDriver/compare/0.8.0...0.8.1

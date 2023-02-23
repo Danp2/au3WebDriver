@@ -73,6 +73,8 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_Attach              | Attach to existing browser tab.                                                 |
 | _WD_CheckContext        | Check if browser context is still valid.                                        |
 | _WD_ConsoleVisible      | Control visibility of the webdriver console app.                                |
+| _WD_DebugSwitch         | Switch to new debug level or switch back to saved debug level.                  |
+| _WD_DispatchEvent       | Create and dispatch events.                                                     |
 | _WD_DownloadFile        | Download file and save to disk.                                                 |
 | _WD_ElementActionEx     | Perform advanced action on designated element.                                  |
 | _WD_ElementOptionSelect | Find and click on an option from a Select element.                              |
@@ -80,6 +82,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_ElementStyle        | Set/Get element style property.                                                 |
 | _WD_FrameEnter          | Enter the specified frame.                                                      |
 | _WD_FrameLeave          | Leave the current frame, to its parent.                                         |
+| _WD_FrameList           | Retrieves a detailed list of the main document and all associated frames.       |
 | _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                              |
 | _WD_GetBrowserVersion   | Get version number of specified browser.                                        |
 | _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                             |
@@ -88,6 +91,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_GetElementByRegEx   | Find element by matching attributes values using Javascript regular expression. |
 | _WD_GetElementFromPoint | Retrieves reference to element at specified point.                              |
 | _WD_GetFrameCount       | Returns the number of frames/iframes in the current document context.           |
+| _WD_GetFreePort         | Locate and return an available TCP port within a defined range.                 |
 | _WD_GetMouseElement     | Retrieves reference to element below mouse pointer.                             |
 | _WD_GetShadowRoot       | Retrieves the shadow root of an element.                                        |
 | _WD_GetTable            | Return all elements of a table.                                                 |
@@ -210,6 +214,15 @@ More useful information following soon.
 ## Configuration
 
 Useful information about possible configurations following soon.<br>
+
+#### Github Integration
+
+To ensure your GitHub project always has the latest version of the UDF --
+
+1. Open your prefered shell (cmd, powershell, bash, zsh)
+2. Navigate to your GitHub Autoit repository
+3. Run `git submodule add https://github.com/Danp2/au3WebDriver`
+4. (OPTIONALLY) Run `git mv au3WebDriver Includes\au3WebDriver` to relocate the UDF into an Includes folder
 
 ## Contributing
 

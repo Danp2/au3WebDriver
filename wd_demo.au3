@@ -203,6 +203,10 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 			ContinueLoop
 		EndIf
 
+		_WD_CheckContext($sSession, False)
+		$iError = @error
+		If @error Then ExitLoop ; return if session is NOT OK
+
 		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
 		If $aDemoSuite[$iIndex][2] Then
 			Call($sDemoName, $sBrowserName)
@@ -465,7 +469,13 @@ Func DemoCookies()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained at start after navigate) : " & $sAllCookies & @CRLF)
 
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get 'NID' cookie:" & @CRLF)
-	Local $sNID = _WD_Cookies($sSession, 'Get', 'NID')
+	Local $hTimer = TimerInit()
+	Local $sNID
+	While 1
+		$sNID = _WD_Cookies($sSession, 'Get', 'NID')
+		If Not @error Or TimerDiff($hTimer) > 5 * 1000 Then ExitLoop
+		Sleep(100) ; this cookie may not exist at start, may appear later when website will be estabilished, so there is need to wait on @error and try again
+	WEnd
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie obtained 'NID' : " & $sNID & @CRLF)
 
 	Local $sName = "TestName"
@@ -518,20 +528,48 @@ Func DemoAlerts()
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Text Detected => ' & $sText & @CRLF)
 
 	Sleep(5000)
-	; close Alert
+	; close Alert by rejection
 	_WD_Alert($sSession, 'Dismiss')
 
 	; show Prompt for testing
-	_WD_ExecuteScript($sSession, "prompt('User Prompt', 'Default value')")
-
+	_WD_ExecuteScript($sSession, "prompt('User Prompt 1', 'Default value')")
 	Sleep(2000)
 
 	; Set value of text field
 	_WD_Alert($sSession, 'sendtext', 'new text')
 
 	Sleep(5000)
-	; close Alert
+	; close Alert by acceptance
 	_WD_Alert($sSession, 'Accept')
+
+	Sleep(1000)
+	; show Prompt for testing
+	_WD_ExecuteScript($sSession, "prompt('User Prompt 2', 'Default value')")
+
+	Sleep(5000)
+	; close Alert by rejection
+	_WD_Alert($sSession, 'Dismiss')
+
+
+	_WD_Navigate($sSession, 'https://www.quanzhanketang.com/jsref/tryjsref_prompt.html?filename=tryjsref_prompt')
+	_WD_LoadWait($sSession)
+
+	_WD_FrameEnter($sSession, 0)
+
+	Local $sButton = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "button[onclick='myFunction()']")
+
+	_WD_ElementAction($sSession, $sButton, 'CLICK')
+
+	Sleep(2000)
+	; Set value of text field
+	_WD_Alert($sSession, 'sendtext', 'AutoIt user')
+
+	Sleep(2000)
+	; close Alert by acceptance
+	_WD_Alert($sSession, 'Accept')
+
+	; Validate if prompt was properly filled up by _WD_Alert()
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "Check website resposne")
 
 EndFunc   ;==>DemoAlerts
 
@@ -542,15 +580,18 @@ Func DemoFrames()
 	If @error Then Return SetError(@error, @extended)
 
 	Local $iFrameCount = _WD_GetFrameCount($sSession)
+	If @error Then Return SetError(@error, @extended)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Frames=" & $iFrameCount & @CRLF)
 
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
+	If @error Then Return SetError(@error, @extended)
 	; just after navigate current context should be on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
 	; changing context to first frame
 	_WD_FrameEnter($sSession, $sElement)
+	If @error Then Return SetError(@error, @extended)
 
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after changing context to first frame the current context is not on top level Window
@@ -559,18 +600,94 @@ Func DemoFrames()
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
 	; changing context to first sub frame
 	_WD_FrameEnter($sSession, $sElement)
+	If @error Then Return SetError(@error, @extended)
 
 	_WD_LinkClickByText($sSession, "Not Sure Where")
 
+	; Leaving sub frame
 	_WD_FrameLeave($sSession)
+	If @error Then Return SetError(@error, @extended)
+
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after leaving sub frame, the current context is back to first frame but still is not on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
+	; Leaving first frame
 	_WD_FrameLeave($sSession)
+	If @error Then Return SetError(@error, @extended)
+
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after leaving first frame, the current context should back on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
+
+	; now lets try to check frame list and using locations as path:
+	; go to website
+	_WD_Navigate($sSession, 'https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe')
+	_WD_LoadWait($sSession)
+
+	; Example 1 - from 'https://www.w3schools.com' get frame list as string
+	Local $sResult = _WD_FrameList($sSession, False)
+	#forceref $sResult
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 1" & @CRLF)
+	ConsoleWrite($sResult & @CRLF)
+
+	; Example 2 - from 'https://www.w3schools.com' get frame list as array
+	Local $aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 2" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array, with HTML content of each document', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	; change document context location
+	_WD_FrameEnter($sSession, 'null/0')
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	; Example 3 - from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
+	$aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 3" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/0"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+
+	; go to another website
+	_WD_Navigate($sSession, 'https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom')
+	_WD_LoadWait($sSession)
+
+	; Example 4 - from 'https://stackoverflow.com' get frame list as string
+	$sResult = _WD_FrameList($sSession, False)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 4" & @CRLF)
+	ConsoleWrite($sResult & @CRLF)
+
+	; Example 5 - from 'https://stackoverflow.com' get frame list as array
+	$aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 5" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Example 5 - stackoverflow.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	; change document context location
+	_WD_FrameEnter($sSession, 'null/2')
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	; Example 6v1 - from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
+	$aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v1" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Example 6v1 - stackoverflow.com - relative to "null/2"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	; Example 6v2 - from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
+	$aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v2" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Example 6v2 - stackoverflow.com - check if it is still relative to "null/2"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 EndFunc   ;==>DemoFrames
 
@@ -781,7 +898,10 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 
 	; change the attributes of the frame to improve the visibility of the <select> element, on which the options will be indicated
-	Local $sJavaScript = "var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
+	Local $sJavaScript = _
+			"var element = arguments[0];" & _
+			"element.setAttribute('height', '500');" & _
+			"element.setAttribute('padding', '0');"
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sFrame), Default, Default)
 	If @error Then Return SetError(@error, @extended, '')
 
@@ -795,7 +915,8 @@ Func DemoSelectOptions()
 
 	; change <select> element size, to see all <option> at once
 	$sJavaScript = _
-			"var element = arguments[0];element.setAttribute('size', '10')"
+			"var element = arguments[0];" & _
+			"element.setAttribute('size', '10')"
 	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
 
 	; select ALL options
@@ -809,16 +930,40 @@ Func DemoSelectOptions()
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
 
 	; select desired options
-	Local $aOptions[] = ['Cat', 'Hamster', 'Parrot', 'Albatross']
-	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptions)
+	Local $aOptionsToSelect[] = ['Cat', 'HAMSTER', 'parrot', 'albatroSS']
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptionsToSelect)
 	If @error Then Return SetError(@error, @extended, '')
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: Cat / HAMSTER / parrot / albatroSS")
 
-	; retrieves all <option> elements as 2D array containing 5 columns (value, label, index, selected status, disabled status)
-	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
+	; retrieves selected <option> elements as 2D array
+	Local $aSelectedOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'selectedOptions')
 	If @error Then Return SetError(@error, @extended, '')
 
 	_ArrayDisplay($aSelectedOptions, '$aSelectedOptions')
+
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'SINGLESELECT', 'PARROT')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: PARROT (Parrot)")
+
+	; retrieves all <option> elements as 2D array
+	Local $aAllOptions = _WD_ElementSelectAction($sSession, $sSelectElement, 'OPTIONS')
+	If @error Then Return SetError(@error, @extended, '')
+
+	_ArrayDisplay($aAllOptions, '$aAllOptions')
+
+	; deselect ALL options
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'DESELECTALL')
+	If @error Then Return SetError(@error, @extended, '')
+
+	; disable 'multiple' attribute for <select> element
+	$sJavaScript = _
+			"var element = arguments[0];" & _
+			"element.multiple = false"
+	_WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sSelectElement), Default, Default)
+
+	; this will set @error as <select> element does not have a 'multiple' attribute
+	_WD_ElementSelectAction($sSession, $sSelectElement, 'MULTISELECT', $aOptionsToSelect)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT on <select> element with disabled 'multiple' attribute" & @CRLF & "@error=" & @error)
 
 	; now will test enabled/disabled OPTGROUP
 	_WD_Navigate($sSession, 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup#examples')
@@ -831,7 +976,10 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 
 	; change the attributes of the frame to improve the visibility of the <select> element, on which the options will be indicated
-	Local $sJavaScript2 = "var element = arguments[0]; element.setAttribute('height', '500'); element.setAttribute('padding', '0');"
+	Local $sJavaScript2 = _
+			"var element = arguments[0];" & _
+			"element.setAttribute('height', '500');" & _
+			"element.setAttribute('padding', '0');"
 	_WD_ExecuteScript($sSession, $sJavaScript2, __WD_JsonElement($sFrame2), Default, Default)
 	If @error Then Return SetError(@error, @extended, '')
 
@@ -839,17 +987,19 @@ Func DemoSelectOptions()
 	_WD_FrameEnter($sSession, $sFrame2)
 	If @error Then Return SetError(@error, @extended, '')
 
-	; get <select> element by it's name
-	Local $sSelectElement2 = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector,"body > select")
+	; get <select> element
+	Local $sSelectElement2 = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "body > select")
 	If @error Then Return SetError(@error, @extended, '')
 
 	; change <select> element size, to see all <option> at once
 	$sJavaScript2 = _
-			"var element = arguments[0];element.setAttribute('size', '9')"
+			"var element = arguments[0];" & _
+			"element.setAttribute('size', '9')"
 	_WD_ExecuteScript($sSession, $sJavaScript2, __WD_JsonElement($sSelectElement2), Default, Default)
 
 	$sJavaScript2 = _
-			"var element = arguments[0];element.setAttribute('multiple','')"
+			"var element = arguments[0];" & _
+			"element.setAttribute('multiple','')"
 	_WD_ExecuteScript($sSession, $sJavaScript2, __WD_JsonElement($sSelectElement2), Default, Default)
 
 	; select ALL options
@@ -862,18 +1012,32 @@ Func DemoSelectOptions()
 	If @error Then Return SetError(@error, @extended, '')
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After DESELECTALL")
 
-	; select desired options
-	Local $aOptions2[] = ['Option 1.1', 'Option 2.1', 'Option 3.1']
+	; select desired <option> elements one after other each separately
+	Local $aOptions2[] = ['Option 1.1']
 	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
 	If @error Then Return SetError(@error, @extended, '')
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT")
 
-	; retrieves all <option> elements as 2D array containing 5 columns (value, label, index, selected status, disabled status)
-	Local $aSelectedOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
+	$aOptions2[0] = 'Option 2.1'
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
 	If @error Then Return SetError(@error, @extended, '')
 
-	_ArrayDisplay($aSelectedOptions2, '$aSelectedOptions2')
+	$aOptions2[0] = 'Option 3.1' ; this will set @error as 'Option 3.1' is disabled
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'MULTISELECT', $aOptions2)
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After MULTISELECT: 1.1 / 2.1 / 3.1" & @CRLF & "<option> elements one after other each separately" & @CRLF & "@error=" & @error)
 
+	; retrieves all <option> elements as 2D array
+	Local $aAllOptions2 = _WD_ElementSelectAction($sSession, $sSelectElement2, 'OPTIONS')
+	If @error Then Return SetError(@error, @extended, '')
+
+	_ArrayDisplay($aAllOptions2, '$aAllOptions2')
+
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'SINGLESELECT', 'Option 2.1')
+	If @error Then Return SetError(@error, @extended, '')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: 2.1")
+
+	; this will set @error as 'Option 3.2' is disabled
+	_WD_ElementSelectAction($sSession, $sSelectElement2, 'SINGLESELECT', 'Option 3.2')
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", "After SINGLESELECT: 3.2 - disabled <option> element" & @CRLF & "@error=" & @error)
 
 EndFunc   ;==>DemoSelectOptions
 
@@ -918,9 +1082,10 @@ Func DemoStyles()
 
 EndFunc   ;==>DemoStyles
 
+#Region - UserTesting
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
-	_WD_LoadWait($sSession)
+	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
 
 	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
@@ -929,6 +1094,10 @@ Func UserTesting() ; here you can replace the code to test your stuff before you
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 ;~ 	Exit
 EndFunc   ;==>UserTesting
+
+; if necessary, add any additional function required for testing within this region here
+
+#EndRegion - UserTesting
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
@@ -954,6 +1123,8 @@ Func _Demo_NavigateCheckBanner($sSession, $sURL, $sXpath)
 		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
 		Return SetError(@error, @extended)
 	EndIf
+
+	_WD_LoadWait($sSession)
 EndFunc   ;==>_Demo_NavigateCheckBanner
 
 Func SetupGecko($bHeadless)
