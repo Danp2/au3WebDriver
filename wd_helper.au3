@@ -457,7 +457,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Return values .: Success - 1
 ;                  Failure - 0
 ; Author ........: mLipok
-; Modified ......:
+; Modified ......: Danp2
 ; Remarks .......: Function saves debug level at first call.
 ;                  The first stored value will be never deleted, will be stored on the stack forever.
 ; Related .......:
@@ -477,7 +477,7 @@ Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 		$iResult = 1
 	ElseIf IsInt($vMode) And $vMode >= $_WD_DEBUG_None And $vMode <= $_WD_DEBUG_Full Then ; setting new debug level
 		ReDim $a_WD_DEBUG_SavedStack[$iStackSize + 1] ; resize / add new position to the stack
-		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $vMode ; set new last stack value
+		$a_WD_DEBUG_SavedStack[$iStackSize] = $vMode ; set new last stack value
 		$_WD_DEBUG = $vMode ; set new debug level
 		$iResult = 1
 	EndIf
