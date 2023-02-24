@@ -43,7 +43,8 @@ Global $aDemoSuite[][3] = _
 		["DemoSleep", False, False], _
 		["DemoSelectOptions", False, False], _
 		["DemoStyles", False, False], _
-		["UserTesting", False, False] _
+		["UserTesting1", False, False], _
+		["UserTesting2", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -1083,39 +1084,48 @@ Func DemoStyles()
 EndFunc   ;==>DemoStyles
 
 #Region - UserTesting
-Func UserTesting()
-	If $IDYES = MsgBox($MB_YESNO + $MB_TOPMOST + $MB_ICONQUESTION + $MB_DEFBUTTON1, "Question", _
-			"Do you want to test with  usertesting.txt ?") Then
-		__UserTesting_2()
-	Else
-		__UserTesting_1()
-	EndIf
-	Return SetError(@error, @extended)
-EndFunc   ;==>UserTesting
-
-Func __UserTesting_1()
+Func UserTesting1()
 	; if necessary, you can modify the following function content by replacing, adding any additional function required for testing within this function
-	_WD_Navigate($sSession, 'https://www.google.com')
-	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+	Local $vResult
+	$vResult = _WD_Navigate($sSession, 'https://www.google.com')
+	If @error Then Return SetError(@error, @extended, $vResult)
+
+	$vResult = _WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 2:" & @CRLF)
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
-EndFunc   ;==>__UserTesting_1
+	$vResult = _WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
+	If @error Then Return SetError(@error, @extended, $vResult)
+EndFunc   ;==>UserTesting1
 
-Func __UserTesting_2()
-	; Modify the contents of usertesting.txt to change the code being executed.
+Func UserTesting2()
+	Local Const $sFuncName = 'UserTesting2'
+	; Modify the contents of UserTesting.au3 to change the code being executed.
 	; Changes can be made and executed without restarting this script
-	Local $aCmds = FileReadToArray("usertesting.txt")
+	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting2.au3', $__g_hGUIDemo)
 	If @error Then Return SetError(@error, @extended)
 
+	Local $aCmds = FileReadToArray($sScriptFileFullPath)
+	If @error Then Return SetError(@error, @extended)
+
+	Local $iLine = 0
 	For $sCmd In $aCmds
+		$iLine += 1
 		Execute($sCmd)
-		If @error Then Return SetError(@error, @extended)
+		If @error Then ExitLoop
 	Next
-EndFunc   ;==>__UserTesting_2
+
+	Local $iErrProtect = @error, $iExtProtect = @extended
+	Local $sMessage = 'Last processed line #' & $iLine & ' is: ' & $sCmd
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "Check results of UserTesting2")
+	SetError($iErrProtect, $iExtProtect)
+
+	Return SetError(__WD_Error($sFuncName, $iErrProtect, $sMessage, $iExtProtect), $iExtProtect, '')
+EndFunc   ;==>UserTesting2
 
 #EndRegion - UserTesting
 
