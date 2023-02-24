@@ -1138,7 +1138,7 @@ Func SetupGecko($bHeadless)
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
 	; REMARK
-	; using 32bit geckodriver.exe sometimes may require to set 'binary' capabilities,
+	; using 32bit geckodriver.exe sometimes may require to set 'binary' option,
 	; using 64bit geckodriver.exe usually dosen't require to set this capability, but at the same time setting is not affecting the script
 	; So this is good habit to setup for any case.
 	Local $sPath = _WD_GetBrowserPath("firefox")
@@ -1191,7 +1191,7 @@ Func SetupOpera($bHeadless)
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	; REMARK
-	; using 32bit operadriver.exe sometimes may require to set 'binary' capabilities,
+	; using 32bit operadriver.exe sometimes may require to set 'binary' option,
 	; using 64bit operadriver.exe usually dosen't require to set this capability, but at the same time setting is not affecting the script
 	; So this is good habit to setup for any case.
 	Local $sPath = _WD_GetBrowserPath("opera")
