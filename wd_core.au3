@@ -157,6 +157,7 @@ Global Const $_WD_ErrorElementInvalid = "invalid argument"
 Global Const $_WD_ErrorElementIntercept = "element click intercepted"
 Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 Global Const $_WD_ErrorWindowNotFound = "no such window"
+Global Const $_WD_ErrorSessionNotCreated = "session not created"
 
 Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 
@@ -230,9 +231,9 @@ Func _WD_CreateSession($sCapabilities = Default)
 
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
+	Local $oJSON = Json_Decode($sResponse)
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $oJSON = Json_Decode($sResponse)
 		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
@@ -244,11 +245,12 @@ Func _WD_CreateSession($sCapabilities = Default)
 			; Save response details for future use
 			$_WD_SESSION_DETAILS = $sResponse
 		EndIf
-	ElseIf $iErr = $_WD_ERROR_SocketError Or $iErr = $_WD_ERROR_InvalidValue Then
-		$iErr = $_WD_ERROR_Exception
 	Else
-		$sMessage = Json_Get($oJSON, "[value][message]")
 		$iErr = $_WD_ERROR_Exception
+
+		If Json_Get($oJSON, "[value][error]") = $_WD_ErrorSessionNotCreated Then
+			$sMessage = Json_Get($oJSON, "[value][message]")
+		EndIf
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sSession)
