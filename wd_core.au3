@@ -244,7 +244,10 @@ Func _WD_CreateSession($sCapabilities = Default)
 			; Save response details for future use
 			$_WD_SESSION_DETAILS = $sResponse
 		EndIf
+	ElseIf $iErr = $_WD_ERROR_SocketError Or $iErr = $_WD_ERROR_InvalidValue Then
+		$iErr = $_WD_ERROR_Exception
 	Else
+		$sMessage = Json_Get($oJSON, "[value][message]")
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
