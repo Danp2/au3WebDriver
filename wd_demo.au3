@@ -1137,6 +1137,16 @@ Func SetupGecko($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	; REMARKS
+	; When using 32bit geckodriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit geckodriver.exe,
+	;  but at the same time setting it is not affecting the script.
+	Local $sPath = _WD_GetBrowserPath("firefox")
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
+
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
@@ -1184,12 +1194,15 @@ Func SetupOpera($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
-	; REMARK
-	; using 32bit operadriver.exe requires to set 'binary' capabilities,
-	; using 64bit operadriver.exe dosen't require to set this capability, but at the same time setting is not affecting the script
-	; So this is good habit to setup for any case.
-	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
-	ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
+	; REMARKS
+	; When using 32bit operadriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit operadriver.exe,
+	;  but at the same time setting it is not affecting the script.
+	Local $sPath = _WD_GetBrowserPath("opera")
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
