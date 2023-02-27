@@ -1138,11 +1138,15 @@ Func SetupGecko($bHeadless)
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
 	; REMARKS
-	; When using 32bit geckodriver.exe, you may need to set 'binary' option. This shouldn't be needed
-	; when using 64bit geckodriver.exe, but at the same time setting it is not affecting the script.
-	; So this is a good habit to setup for any case.
+	; When using 32bit geckodriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit geckodriver.exe,
+	;  but at the same time setting it is not affecting the script.
 	Local $sPath = _WD_GetBrowserPath("firefox")
-	If Not @error Then _WD_CapabilitiesAdd('binary', $sPath)
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
+
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
@@ -1191,12 +1195,14 @@ Func SetupOpera($bHeadless)
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	; REMARKS
-	; When using 32bit operadriver.exe, you may need to set 'binary' option. This shouldn't be needed
-	; when using 64bit operadriver.exe, but at the same time setting it is not affecting the script.
-	; So this is a good habit to setup for any case.
+	; When using 32bit operadriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit operadriver.exe,
+	;  but at the same time setting it is not affecting the script.
 	Local $sPath = _WD_GetBrowserPath("opera")
-	If Not @error Then _WD_CapabilitiesAdd('binary', $sPath)
-	ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
