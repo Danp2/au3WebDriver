@@ -561,6 +561,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case 'switch'
+			If $sOption <> "" And StringLeft($sOption, 1) <> "{" Then $sOption = '{"handle":"' & $sOption & '"}'
 			$sResponse = __WD_Post($sURLSession & "window", $sOption)
 			$iErr = @error
 
@@ -568,6 +569,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			If $sOption = '' Then
 				$sResponse = __WD_Get($sURLSession & $sCommand)
 			Else
+				If StringLeft($sOption, 1) <> "{" Then $sOption = '{"handle":"' & $sOption & '"}'
 				$sResponse = __WD_Post($sURLSession & $sCommand, $sOption)
 			EndIf
 
