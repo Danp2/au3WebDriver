@@ -561,7 +561,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			$iErr = @error
 
 		Case 'switch'
-			If $sOption <> "" And StringLeft($sOption, 1) <> "{" Then $sOption = '{"handle":"' & $sOption & '"}'
+			$sOption = __WD_JsonHandle($sOption)
 			$sResponse = __WD_Post($sURLSession & "window", $sOption)
 			$iErr = @error
 
@@ -569,7 +569,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 			If $sOption = '' Then
 				$sResponse = __WD_Get($sURLSession & $sCommand)
 			Else
-				If StringLeft($sOption, 1) <> "{" Then $sOption = '{"handle":"' & $sOption & '"}'
+				$sOption = __WD_JsonHandle($sOption)
 				$sResponse = __WD_Post($sURLSession & $sCommand, $sOption)
 			EndIf
 
@@ -1756,7 +1756,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 			Case $_WD_ErrorWindowNotFound
 				$iErr = $_WD_ERROR_ContextInvalid
-				
+
 			Case Else
 				$iErr = $_WD_ERROR_Exception
 
@@ -1864,3 +1864,20 @@ Func __WD_Sleep($iPause)
 	$_WD_Sleep($iPause)
 	If @error Then Return SetError($_WD_ERROR_UserAbort)
 EndFunc   ;==>__WD_Sleep
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_JsonHandle
+; Description ...: Converts a handle into JSON string as needed
+; Syntax ........: __WD_JsonHandle($sHandle)
+; Parameters ....: $sHandle - Element ID from _WD_Window
+; Return values .: Formatted JSON string
+; Author ........: Seadoggie
+; Modified ......:
+; Remarks .......:
+; Related .......: __WD_JsonElement
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_JsonHandle($sHandle)
+	Return (StringLeft($sHandle, 1) <> '{') ? ('{"handle":"' & $sHandle & '"}') : ($sHandle)
+EndFunc   ;==>__WD_JsonHandle
