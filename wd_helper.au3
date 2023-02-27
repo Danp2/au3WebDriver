@@ -467,21 +467,26 @@ EndFunc   ;==>_WD_WaitElement
 Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 	Local Const $sFuncName = "_WD_DebugSwitch"
 	Local Static $a_WD_DEBUG_SavedStack[1] = [$_WD_DEBUG] ; at first run save currently used debug level to the stack
-	Local Const $iStackSize = UBound($a_WD_DEBUG_SavedStack)
-	Local $iResult = 0
+	Local $iStackSize = UBound($a_WD_DEBUG_SavedStack)
+	Local $sMessage = ''
 
 	If $vMode = Default Then ; restoring saved debug level
-		; check and do not delete stored debug level if this is the first one on the stack
-		If $iStackSize > 1 Then ReDim $a_WD_DEBUG_SavedStack[$iStackSize - 1]
-		$_WD_DEBUG = $a_WD_DEBUG_SavedStack[UBound($a_WD_DEBUG_SavedStack) - 1] ; restore "current last" element on the stack ; note that $iStackSize was not changed after ReDim
-		$iResult = UBound($a_WD_DEBUG_SavedStack)
+		If $iStackSize > 1 Then ; check and do not delete stored debug level if this is the first one on the stack
+			ReDim $a_WD_DEBUG_SavedStack[$iStackSize - 1]
+			$iStackSize -=1 ; change stack "current size"
+		EndIf
+
+		$_WD_DEBUG = $a_WD_DEBUG_SavedStack[$iStackSize - 1] ; restore "current last" element on the stack ; note that $iStackSize was not changed after ReDim
 	ElseIf IsInt($vMode) And $vMode >= $_WD_DEBUG_None And $vMode <= $_WD_DEBUG_Full Then ; setting new debug level
 		ReDim $a_WD_DEBUG_SavedStack[$iStackSize + 1] ; resize / add new position to the stack
-		$a_WD_DEBUG_SavedStack[UBound($a_WD_DEBUG_SavedStack) - 1] = $vMode ; set new value to "current last" stack element ; note that $iStackSize was not changed after ReDim
+		$iStackSize +=1 ; change stack "current size"
+		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $vMode ; set new value to "current last" stack element ; note that $iStackSize was not changed after ReDim
 		$_WD_DEBUG = $vMode ; set new debug level
-		$iResult = UBound($a_WD_DEBUG_SavedStack)
+	Else
+		$iStackSize = 0
+		$sMessage = 'Invalid argument in function-call'
 	EndIf
-	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $iResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $iStackSize)
 EndFunc   ;==>_WD_DebugSwitch
 
 ; #FUNCTION# ====================================================================================================================
