@@ -878,6 +878,7 @@ EndFunc   ;==>_WD_ExecuteScript
 ;                  $sOption  - [optional] a string value. Default is ""
 ; Return values .: Success - True/False or requested data returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_NoAlert
 ;                  - $_WD_ERROR_InvalidDataType
 ; Author ........: Danp2
 ; Modified ......: mLipok
