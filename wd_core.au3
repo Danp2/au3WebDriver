@@ -217,9 +217,11 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; Syntax ........: _WD_CreateSession([$sCapabilities = Default])
 ; Parameters ....: $sCapabilities - [optional] Requested features in JSON format. Default is '{"capabilities":{}}'
 ; Return values .: Success - Session ID to be used in future requests to web driver session.
-;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_SessionNotCreated
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_DeleteSession, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
@@ -231,7 +233,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 
 	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyCaps
 
-	$_WD_SESSION_DETAILS = '' ; resetting saved response details before namking new request
+	$_WD_SESSION_DETAILS = '' ; resetting saved response details before making new request
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
 	Local $oJSON = Json_Decode($sResponse)
