@@ -458,8 +458,7 @@ EndFunc   ;==>_WD_WaitElement
 ;                  Failure - -1
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......: Function saves debug level at first call.
-;                  The first stored value will be never deleted, will be stored on the stack forever.
+; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......: _WD_DebugSwitch($_WD_DEBUG_Full)
