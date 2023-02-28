@@ -206,7 +206,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 		_WD_CheckContext($sSession, False)
 		$iError = @error
 		If @error Then ExitLoop ; return if session is NOT OK
-		
+
 		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
 		If $aDemoSuite[$iIndex][2] Then
 			Call($sDemoName, $sBrowserName)
@@ -1091,7 +1091,7 @@ EndFunc   ;==>DemoStyles
 #Region - UserTesting
 Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
 	_WD_Navigate($sSession, 'https://www.google.com')
-	_WD_LoadWait($sSession)
+	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
 
 	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
@@ -1129,6 +1129,8 @@ Func _Demo_NavigateCheckBanner($sSession, $sURL, $sXpath)
 		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
 		Return SetError(@error, @extended)
 	EndIf
+
+	_WD_LoadWait($sSession)
 EndFunc   ;==>_Demo_NavigateCheckBanner
 
 Func SetupGecko($bHeadless)
@@ -1141,6 +1143,16 @@ Func SetupGecko($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	; REMARKS
+	; When using 32bit geckodriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit geckodriver.exe,
+	;  but at the same time setting it is not affecting the script.
+	Local $sPath = _WD_GetBrowserPath("firefox")
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
+
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
@@ -1188,12 +1200,15 @@ Func SetupOpera($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
-	; REMARK
-	; using 32bit operadriver.exe requires to set 'binary' capabilities,
-	; using 64bit operadriver.exe dosen't require to set this capability, but at the same time setting is not affecting the script
-	; So this is good habit to setup for any case.
-	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
-	ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
+	; REMARKS
+	; When using 32bit operadriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit operadriver.exe,
+	;  but at the same time setting it is not affecting the script.
+	Local $sPath = _WD_GetBrowserPath("opera")
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo

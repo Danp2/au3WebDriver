@@ -14,7 +14,7 @@
 	*
 	* MIT License
 	*
-	* Copyright (c) 2022 Dan Pollak (@Danp2)
+	* Copyright (c) 2023 Dan Pollak (@Danp2)
 	*
 	* Permission is hereby granted, free of charge, to any person obtaining a copy
 	* of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ Global Enum _
 		$_WD_OPTION_Enabled = 2, _
 		$_WD_OPTION_Element = 4, _
 		$_WD_OPTION_NoMatch = 8, _
-		$_WD_OPTION_Hidden  = 16
+		$_WD_OPTION_Hidden = 16
 
 Global Enum _
 		$_WD_OPTION_Standard, _
@@ -76,7 +76,7 @@ Global Enum _
 Global Enum _
 		$_WD_STORAGE_Local = 0, _
 		$_WD_STORAGE_Session = 1
-		
+
 Global Enum _
 		$_WD_FRAMELIST_Absolute = 0, _
 		$_WD_FRAMELIST_Relative = 1, _
@@ -182,7 +182,7 @@ Func _WD_NewTab($sSession, $bSwitch = Default, $iTimeout = Default, $sURL = Defa
 		EndIf
 
 		_WD_ExecuteScript($sSession, "window.open(arguments[0], '', arguments[1])", '"' & $sURL & '","' & $sFeatures & '"')
-		
+
 		If @error <> $_WD_ERROR_Success Then
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception, $sParameters), 0, $sTabHandle)
 		EndIf
@@ -237,7 +237,7 @@ EndFunc   ;==>_WD_NewTab
 ; ===============================================================================================================================
 Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 	Local Const $sFuncName = "_WD_Attach"
-	Local Const $sParameters = 'Parameters:    Search=' & $sSearch & '    Mode=' & $sMode 
+	Local Const $sParameters = 'Parameters:    Search=' & $sSearch & '    Mode=' & $sMode
 	Local $sTabHandle = '', $bFound = False, $sCurrentTab = '', $aHandles
 	Local $iErr = $_WD_ERROR_Success
 
@@ -290,10 +290,11 @@ EndFunc   ;==>_WD_Attach
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
 ; Description ...: Simulate a mouse click on a link with text matching the provided string.
-; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $bPartial = Default])
-; Parameters ....: $sSession - Session ID from _WD_CreateSession
-;                  $sText    - Text to find in link
-;                  $bPartial - [optional] Search by partial text? Default is True
+; Syntax ........: _WD_LinkClickByText($sSession,  $sText[,  $bPartial = Default[,  $sStartNodeID = Default]])
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sText         - Text to find in link
+;                  $bPartial      - [optional] Search by partial text? Default is True
+;                  $sStartNodeID  - [optional] Element ID to use as starting HTML node. Default is ""
 ; Return values .: Success - None.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -305,13 +306,14 @@ EndFunc   ;==>_WD_Attach
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default)
+Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartNodeID = Default)
 	Local Const $sFuncName = "_WD_LinkClickByText"
-	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial
+	Local Const $sParameters = 'Parameters:   Text=' & $sText & '   Partial=' & $bPartial & '   StartElement=' & $sStartNodeID
 
 	If $bPartial = Default Then $bPartial = True
+	If $sStartNodeID = Default Then $sStartNodeID = ""
 
-	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText)
+	Local $sElement = _WD_FindElement($sSession, ($bPartial) ? $_WD_LOCATOR_ByPartialLinkText : $_WD_LOCATOR_ByLinkText, $sText, $sStartNodeID)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -374,7 +376,7 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 	; Other options aren't valid if No Match or Hidden option is supplied
 	If ($bNoMatch And $iOptions <> $_WD_OPTION_NoMatch) Or _
-		($bHidden And $iOptions <> $_WD_OPTION_Hidden) Then
+			($bHidden And $iOptions <> $_WD_OPTION_Hidden) Then
 		$iErr = $_WD_ERROR_InvalidArgue
 	Else
 		__WD_Sleep($iDelay)
@@ -424,14 +426,14 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 				EndIf
 
 				Select
-				Case $bHidden
-					If Not $bIsVisible Then ExitLoop
+					Case $bHidden
+						If Not $bIsVisible Then ExitLoop
 
-				Case $bIsVisible And $bIsEnabled
-					ExitLoop
+					Case $bIsVisible And $bIsEnabled
+						ExitLoop
 
-				Case Else
-					$sElement = ''
+					Case Else
+						$sElement = ''
 				EndSelect
 			EndIf
 
@@ -448,6 +450,41 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sElement)
 EndFunc   ;==>_WD_WaitElement
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DebugSwitch
+; Description ...: Switch to new debug level or switch back to saved debug level
+; Syntax ........: _WD_DebugSwitch([$vMode = Default])
+; Parameters ....: $vMode               - [optional] Set new $_WD_DEBUG level. When not specified (Default) restore saved debug level.
+; Return values .: Success - 1
+;                  Failure - 0
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......: Function saves debug level at first call.
+;                  The first stored value will be never deleted, will be stored on the stack forever.
+; Related .......:
+; Link ..........:
+; Example .......: _WD_DebugSwitch($_WD_DEBUG_Full)
+; ===============================================================================================================================
+Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
+	Local Const $sFuncName = "_WD_DebugSwitch"
+	Local Static $a_WD_DEBUG_SavedStack[1] = [$_WD_DEBUG] ; at first run save currently used debug level to the stack
+	Local Const $iStackSize = UBound($a_WD_DEBUG_SavedStack)
+	Local $iResult = 0
+
+	If $vMode = Default Then ; restoring saved debug level
+		$_WD_DEBUG = $a_WD_DEBUG_SavedStack[$iStackSize - 1] ; restore last element on the stack
+		; check and do not delete stored debug level if this is the first one on the stack
+		If $iStackSize > 1 Then ReDim $a_WD_DEBUG_SavedStack[$iStackSize - 1]
+		$iResult = 1
+	ElseIf IsInt($vMode) And $vMode >= $_WD_DEBUG_None And $vMode <= $_WD_DEBUG_Full Then ; setting new debug level
+		ReDim $a_WD_DEBUG_SavedStack[$iStackSize + 1] ; resize / add new position to the stack
+		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $vMode ; set new last stack value
+		$_WD_DEBUG = $vMode ; set new debug level
+		$iResult = 1
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $iResult)
+EndFunc   ;==>_WD_DebugSwitch
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetMouseElement
@@ -599,8 +636,8 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	Local $sValue, $sMessage = '', $sOption, $sResponse, $oJSON
 	Local $iErr = $_WD_ERROR_Success
 
-	; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit	
-	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH) 
+	; must start with null or digit, must have at least one slash (may have many slashes but should not be followed one per other), must end with digit
+	Local Const $bIdentifierAsPath = StringRegExp($vIdentifier, "(?i)\A(?:Null|\d+)(?:\/\d+)+\Z", $STR_REGEXPMATCH)
 
 	If $bIdentifierAsPath Then
 		; will be processed below
@@ -662,52 +699,37 @@ EndFunc   ;==>_WD_FrameEnter
 ; Syntax ........: _WD_FrameLeave($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - True.
-;                  Failure - WD Response error message (E.g. "chrome not reachable") and sets @error to $_WD_ERROR_Exception
+;                  Failure - WD Response error message (E.g. "chrome not reachable") and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
 ; Author ........: Decibel
-; Modified ......: 2018-04-27
-; Remarks .......: ChromeDriver and GeckoDriver respond differently for a successful operation
+; Modified ......: Danp2
+; Remarks .......:
 ; Related .......: _WD_Window, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver/#switch-to-parent-frame
 ; Example .......: No
 ; ===============================================================================================================================
 Func _WD_FrameLeave($sSession)
 	Local Const $sFuncName = "_WD_FrameLeave"
-	Local $sValue, $oJSON, $asJSON, $sOption = '{}'
+	Local $sValue, $oJSON, $sOption = '{}'
 
 	Local $sResponse = _WD_Window($sSession, "parent", $sOption)
+	Local $iErr = @error
 
-	If @error <> $_WD_ERROR_Success Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Exception), "")
-	EndIf
+	If $iErr = $_WD_ERROR_Success Then
+		$oJSON = Json_Decode($sResponse)
+		$sValue = Json_Get($oJSON, $_WD_JSON_Value)
 
-	;Chrome--
-	;   Good: '{"value":null}'
-	;   Bad: '{"value":{"error":"chrome not reachable"....
-	;Firefox--
-	;   Good: '{"value": {}}'
-	;   Bad: '{"value":{"error":"unknown error","message":"Failed to decode response from marionette","stacktrace":""}}'
-
-	$oJSON = Json_Decode($sResponse)
-	$sValue = Json_Get($oJSON, $_WD_JSON_Value)
-
-	;*** Is this something besides a Chrome PASS?
-	If $sValue <> Null Then
-		;*** Check for a nested JSON object
-		If Json_IsObject($sValue) = True Then
-			$asJSON = Json_ObjGetKeys($sValue)
-
-			;*** Is this an empty nested object
-			If UBound($asJSON) = 0 Then ;Firefox PASS
-				$sValue = True
-			Else ;Chrome and Firefox FAIL
-				$sValue = $asJSON[0] & ":" & Json_Get($oJSON, "[value][" & $asJSON[0] & "]")
-			EndIf
+		;*** Evaluate the response
+		If $sValue <> Null Then
+			$sValue = Json_Get($oJSON, $_WD_JSON_Error)
+		Else
+			$sValue = True
 		EndIf
-	Else ;Chrome PASS
-		$sValue = True
+	Else
+		$iErr = $_WD_ERROR_Exception
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sValue)
 EndFunc   ;==>_WD_FrameLeave
 
 ; #FUNCTION# ====================================================================================================================
@@ -964,13 +986,15 @@ EndFunc   ;==>_WD_HighlightElements
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LoadWait
 ; Description ...: Wait for a browser page load to complete before returning.
-; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default]]])
+; Syntax ........: _WD_LoadWait($sSession[, $iDelay = Default[, $iTimeout = Default[, $sElement = Default[, $iState = Default]]]])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $iDelay   - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout - [optional] Period of time (in milliseconds) to wait before exiting function
 ;                  $sElement - [optional] Element ID (from _WD_FindElement or _WD_WaitElement) to confirm DOM invalidation
+;                  $iState   - [optional] Minimal desired ReadyState that is expected. Default is $_WD_READYSTATE_Complete.
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
+;                  - $_WD_ERROR_ContextInvalid
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_RetValue
 ;                  - $_WD_ERROR_Timeout
@@ -981,9 +1005,12 @@ EndFunc   ;==>_WD_HighlightElements
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default)
+Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement = Default, $iState = Default)
 	Local Const $sFuncName = "_WD_LoadWait"
-	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement
+	If $iState = Default Then $iState = $_WD_READYSTATE_Complete ; Fully loaded
+	If Not (IsInt($iState) And $iState > 0 And $iState < $_WD_READYSTATE__COUNTER) Then $iState = $_WD_READYSTATE_Complete  ; Fully loaded
+	Local Const $sDesiredState = _ArrayToString($aWD_READYSTATE, '', $iState, $_WD_READYSTATE__COUNTER - 1, '|', $_WD_READYSTATE_State, $_WD_READYSTATE_State)
+	Local Const $sParameters = 'Parameters:    Delay=' & $iDelay & '    Timeout=' & $iTimeout & '    Element=' & $sElement & '    DesiredState=' & $sDesiredState
 	Local $iErr, $iExt = 0, $sReadyState, $iIndex = -1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -1005,17 +1032,37 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 
 		If $sElement <> '' Then
 			_WD_ElementAction($sSession, $sElement, 'name')
+
+			Switch @error
+				Case $_WD_ERROR_NoMatch
+					$sElement = ''
+
+				Case $_WD_ERROR_ContextInvalid
+					$iErr = @error
+					ExitLoop
+
+				Case $_WD_ERROR_Success
+
+				Case Else
+					$iErr = $_WD_ERROR_Exception
+					ExitLoop
+			EndSwitch
+
 			If $_WD_HTTPRESULT = $HTTP_STATUS_NOT_FOUND Then $sElement = ''
 		Else
 			$sReadyState = _WD_ExecuteScript($sSession, 'return document.readyState', '', Default, $_WD_JSON_Value)
 			$iErr = @error
+
 			If $iErr Then
-				$iErr = $_WD_ERROR_Exception
+				If $iErr <> $_WD_ERROR_ContextInvalid Then
+					$iErr = $_WD_ERROR_Exception
+				EndIf
+
 				$sReadyState = ''
 				ExitLoop
 			EndIf
 
-			If $sReadyState = 'complete' Then
+			If StringInStr($sDesiredState, $sReadyState) Then
 				ExitLoop
 			EndIf
 		EndIf
@@ -1223,11 +1270,11 @@ EndFunc   ;==>_WD_jQuerify
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementOptionSelect
 ; Description ...: Find and click on an option from a Select element.
-; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
+; Syntax ........: _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector[, $sStartNodeID = Default])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).  Should point to <option> in element of type '<select>'
-;                  $sStartElement - [optional] Element ID of element to use as starting point
+;                  $sStartNodeID  - [optional] Element ID to use as starting HTML node. Default is ""
 ; Return values .: Success - None.
 ;                  Failure - None and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -1241,12 +1288,12 @@ EndFunc   ;==>_WD_jQuerify
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartElement = Default)
+Func _WD_ElementOptionSelect($sSession, $sStrategy, $sSelector, $sStartNodeID = Default)
 	Local Const $sFuncName = "_WD_ElementOptionSelect"
-	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartElement
-	If $sStartElement = Default Then $sStartElement = ""
+	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartNodeID
+	If $sStartNodeID = Default Then $sStartNodeID = ""
 
-	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID)
 
 	If @error = $_WD_ERROR_Success Then
 		_WD_ElementAction($sSession, $sElement, 'click')
@@ -1647,11 +1694,11 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetShadowRoot
 ; Description ...: Retrieves the shadow root of an element.
-; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartElement = Default])
+; Syntax ........: _WD_GetShadowRoot($sSession, $sStrategy, $sSelector[, $sStartNodeID = Default])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
-;                  $sStartElement - [optional] a string value. Default is ""
+;                  $sStartNodeID  - [optional] Element ID to use as starting HTML node. Default is ""
 ; Return values .: Success - Element ID returned by web driver.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -1663,14 +1710,14 @@ EndFunc   ;==>_WD_ConsoleVisible
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartElement = Default)
+Func _WD_GetShadowRoot($sSession, $sStrategy, $sSelector, $sStartNodeID = Default)
 	Local Const $sFuncName = "_WD_GetShadowRoot"
-	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartElement
+	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    StartElement=' & $sStartNodeID
 	Local $sResponse, $sResult = "", $oJSON
 
-	If $sStartElement = Default Then $sStartElement = ""
+	If $sStartNodeID = Default Then $sStartNodeID = ""
 
-	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartElement)
+	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -2090,8 +2137,8 @@ EndFunc   ;==>_WD_GetBrowserPath
 ; Name ..........: _WD_GetWebDriverVersion
 ; Description ...: Get version number of specifed webdriver.
 ; Syntax ........: _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
-; Parameters ....: $sInstallDir - a string value. Directory where $sDriverEXE is located
-;                  $sDriverEXE  - a string value. File name of "WebDriver.exe"
+; Parameters ....: $sInstallDir - Directory where $sDriverEXE is located
+;                  $sDriverEXE  - File name of "WebDriver.exe"
 ; Return values .: Success - The value you get when you call WebDriver with the --version parameter
 ;                  Failure - "0" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
@@ -2389,7 +2436,7 @@ EndFunc   ;==>_WD_SetElementValue
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ElementActionEx
 ; Description ...: Perform advanced action on designated element.
-; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default]]]]])
+; Syntax ........: _WD_ElementActionEx($sSession, $sElement, $sCommand[, $iXOffset = Default[, $iYOffset = Default[, $iButton = Default[, $iHoldDelay = Default[, $sModifier = Default[, $bScrollView = Default]]]]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sElement   - Element ID from _WD_FindElement
 ;                  $sCommand   - one of the following actions:
@@ -2405,11 +2452,13 @@ EndFunc   ;==>_WD_SetElementValue
 ;                  |RIGHTCLICK - Do a rightclick on the selected element
 ;                  |SHOW - Change the element's style to 'display: normal' to unhide/show the element
 ;                  |UNCHECK - Unchecks a checkbox input element
-;                  $iXOffset   - [optional] X Offset. Default is 0
-;                  $iYOffset   - [optional] Y Offset. Default is 0
-;                  $iButton    - [optional] Mouse button. Default is $_WD_BUTTON_Left
-;                  $iHoldDelay - [optional] Hold time in ms. Default is 1000
-;                  $sModifier  - [optional] Modifier key. Default is "\uE008" (shift key)
+;                  |REMOVE - Removes the element from the DOM
+;                  $iXOffset    - [optional] X Offset. Default is 0
+;                  $iYOffset    - [optional] Y Offset. Default is 0
+;                  $iButton     - [optional] Mouse button. Default is $_WD_BUTTON_Left
+;                  $iHoldDelay  - [optional] Hold time in ms. Default is 1000
+;                  $sModifier   - [optional] Modifier key. Default is "\uE008" (shift key)
+;                  $bScrollView - [optional] Forcibly scroll element into view? Default is True
 ; Return values .: Success - Return value from web driver (could be an empty string)
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -2422,10 +2471,10 @@ EndFunc   ;==>_WD_SetElementValue
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default)
+Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $iYOffset = Default, $iButton = Default, $iHoldDelay = Default, $sModifier = Default, $bScrollView = Default)
 	Local Const $sFuncName = "_WD_ElementActionEx"
-	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Command=' & $sCommand & '    XOffset=' & $iXOffset & '    YOffset=' & $iYOffset & '    Button=' & $iButton & '    HoldDelay=' & $iHoldDelay & '    Modifier=' & $sModifier
-	Local $sAction, $sJavascript, $iErr, $sResult, $iActionType = 1
+	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Command=' & $sCommand & '    XOffset=' & $iXOffset & '    YOffset=' & $iYOffset & '    Button=' & $iButton & '    HoldDelay=' & $iHoldDelay & '    Modifier=' & $sModifier & '    ScrollView=' & $bScrollView
+	Local $sAction, $sJavaScript, $iErr, $sResult, $iActionType = 1
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
@@ -2434,6 +2483,7 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 	If $iButton = Default Then $iButton = $_WD_BUTTON_Left
 	If $iHoldDelay = Default Then $iHoldDelay = 1000
 	If $sModifier = Default Then $sModifier = "\uE008" ; shift
+	If $bScrollView = Default Then $bScrollView = True
 
 	If Not IsInt($iXOffset) Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(int) $iXOffset: " & $iXOffset), 0, "")
@@ -2503,22 +2553,26 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 
 		Case 'hide'
 			$iActionType = 2
-			$sJavascript = "arguments[0].style='display: none'; return true;"
+			$sJavaScript = "arguments[0].style='display: none'; return true;"
 
 		Case 'show'
 			$iActionType = 2
-			$sJavascript = "arguments[0].style='display: normal'; return true;"
+			$sJavaScript = "arguments[0].style='display: normal'; return true;"
 
 		Case 'childcount'
 			$iActionType = 2
-			$sJavascript = "return arguments[0].children.length;"
+			$sJavaScript = "return arguments[0].children.length;"
 
 		Case 'check', 'uncheck'
 			$iActionType = 2
-			$sJavascript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
+			$sJavaScript = "Object.getOwnPropertyDescriptor(arguments[0].__proto__, 'checked').set.call(arguments[0], " & ($sCommand = "check" ? 'true' : 'false') & ");arguments[0].dispatchEvent(new Event('change', { bubbles: true }));"
+
+		Case 'remove'
+			$iActionType = 2
+			$sJavaScript = "arguments[0].remove();"
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck) $sCommand=>" & $sCommand), 0, "")
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Hover|RightClick|DoubleClick|Click|ClickAndHold|Hide|Show|ChildCount|ModifierClick|Check|Uncheck|Remove) $sCommand=>" & $sCommand), 0, "")
 
 	EndSwitch
 
@@ -2554,6 +2608,11 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			'}', @TAB, '')
 	#EndRegion - JSON builder
 
+	If $bScrollView Then
+		_WD_ExecuteScript($sSession, "arguments[0].scrollIntoView(false);", __WD_JsonElement($sElement))
+		Sleep(500) ; short Sleep() outside of the loop so no need to use __WD_Sleep()
+	EndIf
+
 	Switch $iActionType
 		Case 1
 			$sAction = StringFormat($sActionTemplate, $sPreAction, $iXOffset, $iYOffset, $sElement, $sElement, $sPostHoverAction, $sPostAction)
@@ -2561,12 +2620,42 @@ Func _WD_ElementActionEx($sSession, $sElement, $sCommand, $iXOffset = Default, $
 			$iErr = @error
 
 		Case 2
-			$sResult = _WD_ExecuteScript($sSession, $sJavascript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
+			$sResult = _WD_ExecuteScript($sSession, $sJavaScript, __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 			$iErr = @error
 	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_ElementActionEx
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DispatchEvent
+; Description ...: Create and dispatch events
+; Syntax ........: _WD_DispatchEvent($sSession,  $sElement,  $sEvent[,  $sOptions = Default])
+; Parameters ....: $sSession - Session ID from _WD_CreateSession.
+;                  $sElement - Element ID from _WD_FindElement.
+;                  $sEvent   - The event type.
+;                  $sOptions  - [optional] Event options in JSON format. Default is "{bubbles: true}".
+; Return values .: None
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: _WD_ExecuteScript
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_DispatchEvent($sSession, $sElement, $sEvent, $sOptions = Default)
+	Local Const $sFuncName = "_WD_DispatchEvent"
+	Local $sScript, $sJsonElement, $sParameters
+
+	If $sOptions = Default Or Not IsString($sOptions) Then $sOptions = "{bubbles: true}"
+
+	$sScript = "arguments[0].dispatchEvent(new Event(arguments[1], arguments[2]));"
+	$sJsonElement = __WD_JsonElement($sElement)
+	$sParameters = '"' & $sJsonElement & '","' & $sEvent & '","' & $sOptions & '"'
+	_WD_ExecuteScript($sSession, $sScript, $sParameters)
+
+	Return SetError(__WD_Error($sFuncName, @error))
+EndFunc   ;==>_WD_DispatchEvent
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
@@ -2700,34 +2789,35 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 	_WD_Action($sSession, 'url')
 	Local $iErr = @error
 
-	If $iErr = $_WD_ERROR_Success Then
-		$iResult = $_WD_STATUS_Valid
+	Switch $iErr
+		Case $_WD_ERROR_Success
+			$iResult = $_WD_STATUS_Valid
 
-	ElseIf $iErr = $_WD_ERROR_Exception Then
-		If $bReconnect Then
-			If IsInt($vTarget) Then
-				; To recover, get an array of window handles and use one
-				Local $aHandles = _WD_Window($sSession, "handles")
+		Case $_WD_ERROR_Exception, $_WD_ERROR_ContextInvalid
+			If $bReconnect Then
+				If IsInt($vTarget) Then
+					; To recover, get an array of window handles and use one
+					Local $aHandles = _WD_Window($sSession, "handles")
 
-				If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
-					Select
-						Case $vTarget = $_WD_TARGET_FirstTab
-							$vTarget = $aHandles[0]
+					If @error = $_WD_ERROR_Success And IsArray($aHandles) Then
+						Select
+							Case $vTarget = $_WD_TARGET_FirstTab
+								$vTarget = $aHandles[0]
 
-						Case $vTarget = $_WD_TARGET_LastTab
-							$vTarget = $aHandles[UBound($aHandles) - 1]
+							Case $vTarget = $_WD_TARGET_LastTab
+								$vTarget = $aHandles[UBound($aHandles) - 1]
 
-					EndSelect
+						EndSelect
+					EndIf
+				EndIf
+
+				_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
+
+				If @error = $_WD_ERROR_Success Then
+					$iResult = $_WD_STATUS_Reconnect
 				EndIf
 			EndIf
-
-			_WD_Window($sSession, "switch", '{"handle":"' & $vTarget & '"}')
-
-			If @error = $_WD_ERROR_Success Then
-				$iResult = $_WD_STATUS_Reconnect
-			EndIf
-		EndIf
-	EndIf
+	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, ($iResult) ? $_WD_ERROR_Success : $_WD_ERROR_Exception), 0, $iResult)
 EndFunc   ;==>_WD_CheckContext
@@ -2741,7 +2831,7 @@ EndFunc   ;==>_WD_CheckContext
 ;                  $sRegExPattern       - JavaScript compatible regular expression
 ;                  $sRegExFlags         - [optional] RegEx Flags. Default is "".
 ;                  $bAll                - [optional] Return multiple matching elements? Default is False
-; Return values .: Success - Matched element(s) in the same format as the results from _WD_FindElement
+; Return values .: Success - Matching Element ID(s)
 ;                  Failure - @error set to $_WD_ERROR_NoMatch if there are no matches OR
 ;                            Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
 ; Author ........: TheDcoder
@@ -2830,37 +2920,37 @@ Func _WD_Storage($sSession, $vKey, $vValue = Default, $nType = Default)
 	Local $sParams, $vResult = '', $iErr = $_WD_ERROR_Success
 	Local Const $bIsKeyNull = (IsKeyword($vKey) = $KEYWORD_NULL), $bIsValueNull = (IsKeyword($vValue) = $KEYWORD_NULL)
 	Local Const $sParameters = 'Parameters:   Key=' & ($bIsKeyNull ? "Null" : $vKey) & '   Value=' & ($bIsValueNull ? "Null" : $vValue) & '   Type=' & $nType
-	
+
 	If $nType = Default Or $nType < $_WD_STORAGE_Local Or $nType > $_WD_STORAGE_Session Then $nType = $_WD_STORAGE_Local
 
 	Local $sTarget = ($nType = $_WD_STORAGE_Local) ? "window.localStorage" : "window.sessionStorage"
-	Local $sJavaScript = 'return ' & $sTarget 
+	Local $sJavaScript = 'return ' & $sTarget
 
 	Select
-	Case $bIsKeyNull ; Empty storage
-		If $vValue = Default Then
-			$sJavaScript &= '.clear()' 
-			$sParams = $_WD_EmptyDict
-		Else
-			$iErr = $_WD_ERROR_InvalidArgue			
-		EndIf
+		Case $bIsKeyNull ; Empty storage
+			If $vValue = Default Then
+				$sJavaScript &= '.clear()'
+				$sParams = $_WD_EmptyDict
+			Else
+				$iErr = $_WD_ERROR_InvalidArgue
+			EndIf
 
-	Case $vValue = Default ; Retrieve key
-		If IsNumber($vKey) Then
-			$sJavaScript &= '.key(arguments[0])'
-			$sParams = String($vKey)
-		Else
-			$sJavaScript &= '.getItem(arguments[0])'
+		Case $vValue = Default ; Retrieve key
+			If IsNumber($vKey) Then
+				$sJavaScript &= '.key(arguments[0])'
+				$sParams = String($vKey)
+			Else
+				$sJavaScript &= '.getItem(arguments[0])'
+				$sParams = '"' & $vKey & '"'
+			EndIf
+
+		Case $bIsValueNull ; Remove key
+			$sJavaScript &= '.removeItem(arguments[0])'
 			$sParams = '"' & $vKey & '"'
-		EndIf
 
-	Case $bIsValueNull ; Remove key
-		$sJavaScript &= '.removeItem(arguments[0])' 
-		$sParams = '"' & $vKey & '"'
-
-	Case $vKey And $vValue ; Set key
-		$sJavaScript &=  '.setItem(arguments[0], arguments[1])'
-		$sParams = '"' & $vKey & '","' & $vValue & '"'
+		Case $vKey And $vValue ; Set key
+			$sJavaScript &= '.setItem(arguments[0], arguments[1])'
+			$sParams = '"' & $vKey & '","' & $vValue & '"'
 	EndSelect
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -2869,7 +2959,7 @@ Func _WD_Storage($sSession, $vKey, $vValue = Default, $nType = Default)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
-EndFunc
+EndFunc   ;==>_WD_Storage
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionKey
@@ -2899,6 +2989,80 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Local $sJSON = Json_Encode($vData)
 	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionKey
+
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetFreePort
+; Description ...:  Locate and return an available TCP port within a defined range
+; Syntax ........: _WD_GetFreePort([$iMinPort = Default[,  $iMaxPort = Default]])
+; Parameters ....: $iMinPort - [optional] Starting port number. Default is 64000
+;                  $iMaxPort - [optional] Ending port number. Default is $iMinPort or 65000
+; Return values .: Success - Available TCP port number
+;                  Failure - 0 and @error set to $_WD_ERROR_NotFound
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
+	Local Const $sFuncName = "_WD_GetFreePort"
+	Local $iResult = 0, $iErr = $_WD_ERROR_NotFound
+
+	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
+	If $iMinPort = Default Then $iMinPort = 64000
+	Local $aPorts = __WinAPI_GetTcpTable()
+
+	If Not @error Then
+		For $iPort = $iMinPort To $iMaxPort
+			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
+			If @error = 6 Then
+				$iResult = $iPort
+				$iErr = $_WD_ERROR_Success
+				ExitLoop
+			EndIf
+		Next
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr, $iResult), 0, $iResult)
+EndFunc   ;==>_WD_GetFreePort
+
+Func __WinAPI_GetTcpTable()
+	;funkey 2012.12.14
+	;https://www.autoitscript.com/forum/topic/146671-getextendedtcptable-get-netstat-information/?tab=comments#comment-1038649
+	Local Const $aConnState[12] = ["CLOSED", "LISTENING", "SYN_SENT", "SYN_RCVD", "ESTABLISHED", "FIN_WAIT1", _
+			"FIN_WAIT2", "CLOSE_WAIT", "CLOSING", "LAST_ACK", "TIME_WAIT", "DELETE_TCB"]
+
+	Local $tMIB_TCPTABLE = DllStructCreate("dword[6]")
+	Local $aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", 0, "BOOL", True)
+	Local $dwSize = $aRet[2]
+	$tMIB_TCPTABLE = DllStructCreate("DWORD[" & $dwSize / 4 & "]")
+
+	$aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", $dwSize, "BOOL", True)
+	If $aRet[0] <> 0 Then Return SetError(1)
+	Local $iNumEntries = DllStructGetData($tMIB_TCPTABLE, 1, 1)
+	Local $aRes[$iNumEntries][6]
+
+	For $i = 0 To $iNumEntries - 1
+		$aRes[$i][0] = DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 0)
+		$aRes[$i][1] = $aConnState[$aRes[$i][0] - 1]
+		$aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 1)) ; local IP / translate
+		$aRes[$i][2] = $aRet[0]
+		$aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 2)) ; local port / translate
+		$aRes[$i][3] = $aRet[0]
+		$aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 3)) ; remote IP / translate
+		$aRes[$i][4] = $aRet[0]
+		If $aRes[$i][0] <= 2 Then
+			$aRes[$i][5] = 0
+		Else
+			$aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 4)) ; remote port / translate
+			$aRes[$i][5] = $aRet[0]
+		EndIf
+	Next
+
+	Return $aRes
+EndFunc   ;==>__WinAPI_GetTcpTable
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_JsonActionPointer
