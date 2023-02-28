@@ -455,7 +455,7 @@ EndFunc   ;==>_WD_WaitElement
 ; Syntax ........: _WD_DebugSwitch([$vMode = Default])
 ; Parameters ....: $vMode               - [optional] Set new $_WD_DEBUG level. When not specified (Default) restore saved debug level.
 ; Return values .: Success - current stack size
-;                  Failure - 0
+;                  Failure - -1
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......: Function saves debug level at first call.
@@ -466,24 +466,25 @@ EndFunc   ;==>_WD_WaitElement
 ; ===============================================================================================================================
 Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 	Local Const $sFuncName = "_WD_DebugSwitch"
-	Local Static $a_WD_DEBUG_SavedStack[1] = [$_WD_DEBUG] ; at first run save currently used debug level to the stack
+	Local Static $a_WD_DEBUG_SavedStack[0] ; first usage - empty stack array
 	Local $iStackSize = UBound($a_WD_DEBUG_SavedStack)
 	Local $sMessage = ''
 
 	If $vMode = Default Then ; restoring saved debug level
-		If $iStackSize > 1 Then ; check and do not delete stored debug level if this is the first one on the stack
-			$iStackSize -=1 ; change stack "current size"
-			ReDim $a_WD_DEBUG_SavedStack[$iStackSize]
+		If $iStackSize Then
+			$_WD_DEBUG = $a_WD_DEBUG_SavedStack[$iStackSize - 1] ; restore previous debug level from last element on the stack
+			$iStackSize -= 1 ; decrease stack size
+			ReDim $a_WD_DEBUG_SavedStack[$iStackSize] ; trim array - stack last element
+		Else
+			$sMessage = 'There are no saved debug levels'
 		EndIf
-		$_WD_DEBUG = $a_WD_DEBUG_SavedStack[$iStackSize - 1] ; restore "current last" element on the stack ; note that $iStackSize was not changed after ReDim
-
 	ElseIf IsInt($vMode) And $vMode >= $_WD_DEBUG_None And $vMode <= $_WD_DEBUG_Full Then ; setting new debug level
-		$iStackSize +=1 ; change stack "current size"
-		ReDim $a_WD_DEBUG_SavedStack[$iStackSize] ; resize / add new position to the stack
-		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $vMode ; set new value to "current last" stack element ; note that $iStackSize was not changed after ReDim
+		$iStackSize += 1 ; increase stack size
+		ReDim $a_WD_DEBUG_SavedStack[$iStackSize] ; resize array - add new position to the stack
+		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $_WD_DEBUG ; store current debug level to the stack
 		$_WD_DEBUG = $vMode ; set new debug level
 	Else
-		$iStackSize = 0
+		$iStackSize = -1
 		$sMessage = 'Invalid argument in function-call'
 	EndIf
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $iStackSize)
