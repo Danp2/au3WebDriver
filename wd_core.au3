@@ -229,6 +229,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 
 	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyCaps
 
+	$_WD_SESSION_DETAILS = '' ; resetinng saved response details before calling new http request
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
 	Local $oJSON = Json_Decode($sResponse)
