@@ -475,6 +475,7 @@ Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 			$iStackSize -= 1 ; decrease stack size
 			ReDim $a_WD_DEBUG_SavedStack[$iStackSize] ; trim array - stack last element
 		Else
+			$iStackSize = -1
 			$sMessage = 'There are no saved debug levels'
 		EndIf
 	ElseIf IsInt($vMode) And $vMode >= $_WD_DEBUG_None And $vMode <= $_WD_DEBUG_Full Then ; setting new debug level
