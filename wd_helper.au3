@@ -738,7 +738,7 @@ EndFunc   ;==>_WD_FrameLeave
 ; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $bReturnAsArray      - [optional] Return result as array? Default is True.
-; Return values .: Success - 2D array (with 6 cols) or string ( delimited with | and @CRLF )
+; Return values .: Success - 2D array (with 6 cols) or string ( delimited with | and @CRLF ) @extended contains information about frame count
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
 ;                  - $_WD_ERROR_Exception
@@ -754,7 +754,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 	Local Const $sFuncName = "_WD_FrameList"
 	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray
 	Local $a_Result[0][$_WD_FRAMELIST__COUNTER], $sStartLocation = '', $sMessage = ''
-	Local $vResult = '', $iErr = $_WD_ERROR_Success
+	Local $vResult = '', $iErr = $_WD_ERROR_Success, $iFrameCount = 0
 
 	; save current DEBUG level
 	Local $_WD_DEBUG_Saved = $_WD_DEBUG
@@ -789,6 +789,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 			$a_Result[$i][$_WD_FRAMELIST_Relative] = StringRegExpReplace($a_Result[$i][$_WD_FRAMELIST_Absolute], '\A' & $sStartLocation & '\/?', '')
 		Next
 
+		$iFrameCount = UBound($a_Result, $UBOUND_ROWS)
 		; select desired DataType for the $vResult - usually string is option for testing and asking support
 		If $bReturnAsArray Then
 			$vResult = $a_Result
@@ -818,7 +819,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 	$sMessage = ($sMessage And $_WD_DEBUG > $_WD_DEBUG_Error) ? (' Information: ' & $sMessage) : ("")
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage), 0, $vResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage, $iFrameCount), $iFrameCount, $vResult)
 EndFunc   ;==>_WD_FrameList
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
