@@ -109,6 +109,7 @@ Global Enum _
 		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
 		$_WD_ERROR_NotFound, _ ; File or registry key not found
 		$_WD_ERROR_ElementIssue, _ ; Problem interacting with element (click intercepted, etc)
+		$_WD_ERROR_SessionNotCreated, _ ; Session not created
 		$_WD_ERROR_SessionInvalid, _ ; Invalid session ID was submitted to webdriver
 		$_WD_ERROR_ContextInvalid, _ ; Invalid browsing context
 		$_WD_ERROR_UnknownCommand, _ ; Unknown command submitted to webdriver
@@ -135,6 +136,7 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
 		"No alert present", _
 		"Not found", _
 		"Element interaction issue", _
+		"Session not created", _
 		"Invalid session ID", _
 		"Invalid Browsing Context", _
 		"Unknown Command", _
@@ -157,6 +159,7 @@ Global Const $_WD_ErrorElementInvalid = "invalid argument"
 Global Const $_WD_ErrorElementIntercept = "element click intercepted"
 Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 Global Const $_WD_ErrorWindowNotFound = "no such window"
+Global Const $_WD_ErrorSessionNotCreated = "session not created"
 
 Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 
@@ -214,9 +217,11 @@ Global $_WD_HTTPContentType = "Content-Type: application/json"
 ; Syntax ........: _WD_CreateSession([$sCapabilities = Default])
 ; Parameters ....: $sCapabilities - [optional] Requested features in JSON format. Default is '{"capabilities":{}}'
 ; Return values .: Success - Session ID to be used in future requests to web driver session.
-;                  Failure - "" (empty string) and sets @error to $_WD_ERROR_Exception.
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_SessionNotCreated
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......: _WD_DeleteSession, _WD_LastHTTPResult
 ; Link ..........: https://www.w3.org/TR/webdriver#new-session
@@ -228,11 +233,12 @@ Func _WD_CreateSession($sCapabilities = Default)
 
 	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyCaps
 
+	$_WD_SESSION_DETAILS = '' ; resetting saved response details before making new request
 	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
 	Local $iErr = @error
+	Local $oJSON = Json_Decode($sResponse)
 
 	If $iErr = $_WD_ERROR_Success Then
-		Local $oJSON = Json_Decode($sResponse)
 		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
@@ -245,7 +251,11 @@ Func _WD_CreateSession($sCapabilities = Default)
 			$_WD_SESSION_DETAILS = $sResponse
 		EndIf
 	Else
-		$iErr = $_WD_ERROR_Exception
+		If $iErr = $_WD_ERROR_SessionNotCreated Then
+			$sMessage = Json_Get($oJSON, "[value][message]")
+		Else
+			$iErr = $_WD_ERROR_Exception
+		EndIf
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sSession)
@@ -1723,6 +1733,9 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 		Switch $vResult.item('error')
 			Case ""
+
+			Case $_WD_ErrorSessionNotCreated
+				$iErr = $_WD_ERROR_SessionNotCreated
 
 			Case $_WD_ErrorInvalidSession
 				$iErr = $_WD_ERROR_SessionInvalid
