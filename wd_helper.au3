@@ -453,12 +453,12 @@ EndFunc   ;==>_WD_WaitElement
 ; Name ..........: _WD_DebugSwitch
 ; Description ...: Switch to new debug level or switch back to saved debug level
 ; Syntax ........: _WD_DebugSwitch([$vMode = Default])
-; Parameters ....: $vMode               - [optional] Set new $_WD_DEBUG level. When not specified (Default) restore saved debug level.
+; Parameters ....: $vMode - [optional] Set new $_WD_DEBUG level. When not specified (Default) restore saved debug level.
 ; Return values .: Success - current stack size
 ;                  Failure - negative values indicate an error
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......: returned @error and @extended values are preserved and not belongs to this function
+; Remarks .......: @error and @extended values are preserved by this function and did not originate within it
 ; Related .......:
 ; Link ..........:
 ; Example .......: _WD_DebugSwitch($_WD_DEBUG_Full)
