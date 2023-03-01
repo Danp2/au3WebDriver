@@ -455,10 +455,10 @@ EndFunc   ;==>_WD_WaitElement
 ; Syntax ........: _WD_DebugSwitch([$vMode = Default])
 ; Parameters ....: $vMode               - [optional] Set new $_WD_DEBUG level. When not specified (Default) restore saved debug level.
 ; Return values .: Success - current stack size
-;                  Failure - -1
+;                  Failure - negative values indicate an error
 ; Author ........: mLipok
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: the returned @error and @extended are preserved and not belongs to this function
 ; Related .......:
 ; Link ..........:
 ; Example .......: _WD_DebugSwitch($_WD_DEBUG_Full)
@@ -484,7 +484,7 @@ Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 		$a_WD_DEBUG_SavedStack[$iStackSize - 1] = $_WD_DEBUG ; store current debug level to the stack
 		$_WD_DEBUG = $vMode ; set new debug level
 	Else
-		$iStackSize = -1
+		$iStackSize = -2
 		$sMessage = 'Invalid argument in function-call'
 	EndIf
 	__WD_ConsoleWrite($sFuncName & ": " & $sMessage & " stack size: " & $iStackSize, $_WD_DEBUG_Info)
