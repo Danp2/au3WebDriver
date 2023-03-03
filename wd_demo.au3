@@ -691,7 +691,7 @@ Func DemoFrames()
 	; check if document context location is Top Window
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; now lets try to check locataion of multiple elements on multiple frames
+	; now lets try to check location of multiple elements on multiple frames
 	; go to website
 	_WD_Navigate($sSession, 'https://www.tutorialspoint.com/html/html_frames.htm#')
 	_WD_LoadWait($sSession)
