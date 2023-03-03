@@ -575,6 +575,7 @@ EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
 	Local $sElement, $bIsWindowTop
+	Local Const $sArrayHeader = 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden'
 
 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
 	If @error Then Return SetError(@error, @extended)
@@ -635,7 +636,7 @@ Func DemoFrames()
 	; Example 2 - from 'https://www.w3schools.com' get frame list as array
 	Local $aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 2" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden')
+	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 
 	; check if document context location is Top Window - should be as we are after navigation
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
@@ -649,7 +650,7 @@ Func DemoFrames()
 	; Example 3 - from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 3" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/0"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden')
+	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/0"', 0, 0, Default, $sArrayHeader)
 
 	; go to another website
 	_WD_Navigate($sSession, 'https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom')
@@ -663,7 +664,7 @@ Func DemoFrames()
 	; Example 5 - from 'https://stackoverflow.com' get frame list as array
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 5" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 5 - stackoverflow.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden')
+	_ArrayDisplay($aFrameList, 'Example 5 - stackoverflow.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 
 	; check if document context location is Top Window - should be as we are after navigation
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
@@ -677,7 +678,7 @@ Func DemoFrames()
 	; Example 6v1 - from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v1" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 6v1 - stackoverflow.com - relative to "null/2"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden')
+	_ArrayDisplay($aFrameList, 'Example 6v1 - stackoverflow.com - relative to "null/2"', 0, 0, Default, $sArrayHeader)
 
 	; check if document context location is Top Window
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
@@ -685,7 +686,7 @@ Func DemoFrames()
 	; Example 6v2 - from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v2" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 6v2 - stackoverflow.com - check if it is still relative to "null/2"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden')
+	_ArrayDisplay($aFrameList, 'Example 6v2 - stackoverflow.com - check if it is still relative to "null/2"', 0, 0, Default, $sArrayHeader)
 
 	; check if document context location is Top Window
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
