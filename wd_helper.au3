@@ -826,11 +826,11 @@ EndFunc   ;==>_WD_FrameList
 ; Name ..........: __WD_FrameList_Internal
 ; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
 ; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iDebugLevel)
-; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sLevel              - frame location level ... path
-;                  $sFrameAttributes    - all <iframe ....> attributes
-;                  $bIsHidden  - information about visibility of frame - taken by WebDriver
-;                  $iDebugLevel   - log level taken from calling function
+; Parameters ....: $sSession         - Session ID from _WD_CreateSession
+;                  $sLevel           - frame location level ... path
+;                  $sFrameAttributes - all <iframe ....> attributes
+;                  $bIsHidden        - information about visibility of frame - taken by WebDriver
+;                  $iDebugLevel      - log level taken from calling function
 ; Return values .: Success - string
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -850,22 +850,22 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 	_WD_FrameEnter($sSession, $sLevel)
 	$iErr = @error
 	If @error Then
-		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
+		$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to entering frame'
 	Else
 		_WD_LoadWait($sSession, 100, 5000, Default, $_WD_READYSTATE_Complete)
 		$iErr = @error
 		If @error And @error <> $_WD_ERROR_Timeout Then
-			$sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
+			$sMessage = 'Error occurred on "' & $sLevel & '" level when waiting for a browser page load to complete'
 		Else
 			$sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 			$iErr = @error
 			If @error Then
-				$sMessage = 'Error occured on "' & $sLevel & '" level when checking "document.body" ElementID'
+				$sMessage = 'Error occurred on "' & $sLevel & '" level when checking "document.body" ElementID'
 			Else
 				$s_URL = _WD_ExecuteScript($sSession, "return window.location.href", Default, Default, $_WD_JSON_Value)
 				$iErr = @error
 				If @error Then
-					$sMessage = 'Error occured on "' & $sLevel & '" level when checking URL'
+					$sMessage = 'Error occurred on "' & $sLevel & '" level when checking URL'
 				Else
 					$vResult = $sLevel & '|' & $sLevel & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & '|' & $bIsHidden & @CRLF
 				EndIf
@@ -877,24 +877,24 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 		Local $iFrameCount = _WD_GetFrameCount($sSession)
 		$iErr = @error
 		If $iErr Then
-			$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check frames count'
+			$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check frames count'
 		Else
 			For $iFrame = 0 To $iFrameCount - 1
 				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
 				$iErr = @error
 				If @error Then
-					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
+					$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
 				Else
 					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
 					Local $sElementID_ToCheck = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "];", Default, Default, $_WD_JSON_Element)
 					$iErr = @error
 					If @error Then
-						$sMessage = 'Error occured on "' & $sLevel & '" level when trying to get ElementID of frames #' & $iFrame
+						$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to get ElementID of frames #' & $iFrame
 					Else
 						$bIsHidden = Not (_WD_ElementAction($sSession, $sElementID_ToCheck, 'DISPLAYED'))
 						$iErr = @error
 						If @error Then
-							$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
+							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
 						Else
 							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iDebugLevel)
 							$iErr = @error
@@ -902,7 +902,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 								_WD_FrameLeave($sSession)
 								$iErr = @error
 								If @error Then
-									$sMessage = 'Error occured on "' & $sLevel & '" level when trying to leave frames #' & $iFrame
+									$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to leave frames #' & $iFrame
 								EndIf
 							EndIf
 						EndIf
