@@ -450,15 +450,17 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_WaitScriptTrue
+; Name ..........: _WD_WaitScript
 ; Description ...: Wait for a JavaScript snippet to return true.
-; Syntax ........: _WD_WaitScriptTrue($sSession, $sJavaScript[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
+; Syntax ........: _WD_WaitScript($sSession, $sJavaScript[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
 ; Parameters ....: $sSession  - Session ID from _WD_CreateSession
 ;                  $sJavaScript - JavaScript to run
 ;                  $iDelay    - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout  - [optional] Period of time (in milliseconds) to wait before exiting function
 ; Return values .: Success - True.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidArgue
+;                  - $_WD_ERROR_RetValue
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_UserAbort
@@ -469,52 +471,54 @@ EndFunc   ;==>_WD_WaitElement
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_WaitScriptTrue($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Default)
-	Local Const $sFuncName = "_WD_WaitCallbackTrue"
+Func _WD_WaitScript($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Default)
+	Local Const $sFuncName = "_WD_WaitScript"
 	Local Const $sParameters = 'Parameters:   JavaScript=' & $sJavaScript & '   Delay=' & $iDelay & '   Timeout=' & $iTimeout
 	Local $iErr
-	$_WD_HTTPRESULT = 0
-	$_WD_HTTPRESPONSE = ''
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
 
-	__WD_Sleep($iDelay)
-	$iErr = @error
-
-	; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
-	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
-
-	; Prevent logging from _WD_FindElement if not in Full debug mode
-	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
-
-	Local $hWaitTimer = TimerInit()
-	While 1
-		If $iErr Then ExitLoop
-
-		$sValue = _WD_ExecuteScript($sSession, $sJavaScript, Default, Default, $_WD_JSON_Value)
+	If StringLeft($sJavaScript, 6) <> "return" Then
+		$iErr = $_WD_ERROR_InvalidArgue
+	Else
+		__WD_Sleep($iDelay)
 		$iErr = @error
 
-		If $iErr <> $_WD_ERROR_Success Then
-			; Exit loop if unexpected error occurs
-			ExitLoop
-		ElseIf $sValue = False Then
-			If (TimerDiff($hWaitTimer) > $iTimeout) Then
-				$iErr = $_WD_ERROR_Timeout
+		; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+		; Prevent logging from _WD_FindElement if not in Full debug mode
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
+		Local $hWaitTimer = TimerInit()
+		While 1
+			If $iErr Then ExitLoop
+
+			$sValue = _WD_ExecuteScript($sSession, $sJavaScript, Default, Default, $_WD_JSON_Value)
+			$iErr = @error
+
+			If $iErr <> $_WD_ERROR_Success Then
+				; Exit loop if unexpected error occurs
+				ExitLoop
+			ElseIf $sValue = False Then
+				If (TimerDiff($hWaitTimer) > $iTimeout) Then
+					$iErr = $_WD_ERROR_Timeout
+					ExitLoop
+				EndIf
+
+				__WD_Sleep(10)
+				$iErr = @error
+			Else
+				$iErr = $_WD_ERROR_Success
 				ExitLoop
 			EndIf
-
-			__WD_Sleep(10)
-			$iErr = @error
-		Else
-			$iErr = $_WD_ERROR_Success
-			ExitLoop
-		EndIf
-	WEnd
-	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+		WEnd
+		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sValue)
-EndFunc   ;==>_WD_WaitScriptTrue
+EndFunc   ;==>_WD_WaitScript
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DebugSwitch
