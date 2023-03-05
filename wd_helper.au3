@@ -475,6 +475,7 @@ Func _WD_WaitScript($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Defa
 	Local Const $sFuncName = "_WD_WaitScript"
 	Local Const $sParameters = 'Parameters:   JavaScript=' & $sJavaScript & '   Delay=' & $iDelay & '   Timeout=' & $iTimeout
 	Local $iErr
+	Local $sValue = False
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
