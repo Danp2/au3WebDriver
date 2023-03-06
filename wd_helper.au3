@@ -1103,6 +1103,99 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 EndFunc   ;==>_WD_LoadWait
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_LocateElement
+; Description ...: Search the current document (including frames) and return locations of matching elements
+; Syntax ........: _WD_LocateElement($sSession, $sStrategy, $sSelector[, $bShadowRoot = Default])
+;                  $iErr = @error[, $iExt = @extended]]]])
+; Parameters ....: $sSession     - Session ID from _WD_CreateSession
+;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector    - $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
+;                  $bShadowRoot  - [optional] Starting node is a shadow root? Default is False
+; Return values .: Success - array of matching frames (format like in _WD_FrameList)
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......: Returned location (path like 'null/2/0') can be used with _WD_FrameEnter before _WD_FindElement or _WD_WaitElement will be used.
+;                  In case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame,
+;                  	or some frames have become inaccessible during processing
+; Related .......: _Wd_FrameList, _WD_FindElement
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
+	Local Const $sFuncName = "_WD_LocateElement"
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   ShadowRoot=' & $bShadowRoot
+	Local $iErr = $_WD_ERROR_Success
+	Local $sStartLocation = '', $sMessage = ''
+
+	; https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+	; Prevent redundant logging from _Wd_FrameList and _WD_FrameEnter  and _WD_FindElement if not in Full debug mode
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
+	Local $aFrameList = _WD_FrameList($sSession, True)
+	$iErr = @error
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+		$sMessage = ' > Issue with getting list of frames'
+	Else
+		Local $iFrameCount = UBound($aFrameList, $UBOUND_ROWS)
+		For $i = 0 To $iFrameCount - 1
+			If $aFrameList[$i][$_WD_FRAMELIST_Relative] = '' Then $sStartLocation = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+		Next
+
+		For $i = $iFrameCount - 1 To 0 Step -1
+			_WD_FrameEnter($sSession, $aFrameList[$i][$_WD_FRAMELIST_Absolute])
+			If @error Then
+				$iErr = $_WD_ERROR_Exception
+				$sMessage = ' > Issue with entering frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+				ExitLoop
+			Else
+				_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
+				$iErr = @error
+				If $iErr = $_WD_ERROR_Success Then
+					ContinueLoop ; keep the frame in the list and continue searching in next frame
+				ElseIf $iErr = $_WD_ERROR_NoMatch Then ; element was not found on location: ' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+					_ArrayDelete($aFrameList, $i) ; delete frame from the list because the searched element do not exist within the frame
+					ContinueLoop
+				Else
+					$iErr = $_WD_ERROR_Exception
+					$sMessage = ' > Issue with finding element in frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+					ExitLoop
+				EndIf
+			EndIf
+		Next
+
+		If $i = -1 Then ; all frames was checked
+			If UBound($aFrameList) Then
+				$iErr = $_WD_ERROR_Success
+			Else
+				$iErr = $_WD_ERROR_NoMatch
+			EndIf
+		EndIf
+
+		If $sStartLocation Then ; Back to "calling frame"
+			_WD_FrameEnter($sSession, $sStartLocation)
+			If @error Then $iErr = $_WD_ERROR_Exception
+		EndIf
+
+		If $sStartLocation = '' Or $iErr Then
+			$sMessage = ' > Was not able to check / back to "calling frame" : StartLocatkon=' & $sStartLocation
+		EndIf
+	EndIf
+
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+	$sMessage = $sParameters & $sMessage
+
+	Local $iExt = UBound($aFrameList, $UBOUND_ROWS)
+	If $iErr Or $iExt = 0 Then $aFrameList = ''
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $aFrameList)
+EndFunc   ;==>_WD_LocateElement
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
 ; Description ...: Takes a screenshot of the Window or Element.
 ; Syntax ........: _WD_Screenshot($sSession[, $sElement = Default[, $iOutputType = Default]])
