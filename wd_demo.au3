@@ -696,23 +696,6 @@ Func DemoFrames()
 	_ArrayDisplay($aFrameList, 'Example 6v2 - stackoverflow.com - check if it is still relative to "null/2"', 0, 0, Default, $sArrayHeader)
 	#EndRegion - Example 6v2 ; from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 
-	#Region - Example 7 ; now lets try to check location of multiple elements on multiple frames
-	; check if document context location is Top Window
-	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
-
-	; go to website
-	_WD_Navigate($sSession, 'https://www.tutorialspoint.com/html/html_frames.htm#')
-	_WD_LoadWait($sSession)
-
-	MsgBox($MB_TOPMOST, "", 'Before Example 7' & @CRLF & 'now lets try to check location of multiple elements on multiple frames')
-
-	$aFrameList = _WD_FrameList($sSession, True)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 7" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 7 - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
-
-	MsgBox($MB_TOPMOST, "", 'After Example 7')
-	#EndRegion - Example 7 ; now lets try to check location of multiple elements on multiple frames
-
 	#EndRegion - Testing _WD_FrameList() usage
 EndFunc   ;==>DemoFrames
 
