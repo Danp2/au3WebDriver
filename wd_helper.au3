@@ -856,72 +856,72 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 
 	_WD_FrameEnter($sSession, $sLevel)
 	$iErr = @error
-	ConsoleWrite("! $sLevel = " & $sLevel & '  @error = ' & @error & @CRLF)
+	ConsoleWrite("! $sLevel = " & $sLevel & '  @error = ' & @error & @CRLF) ; for testing only should be removed before merge.
 	If $iErr Then
-		$sMessage = 'Error occured on "' & $sLevel & '" level when trying to entering frame'
+		$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to entering frame'
 	Else
 		_WD_LoadWait($sSession, 100, 5000, Default, $_WD_READYSTATE_Complete)
 		$iErr = @error
 		If $iErr And $iErr <> $_WD_ERROR_Timeout Then
-			$sMessage = 'Error occured on "' & $sLevel & '" level when waiting for a browser page load to complete'
+			$sMessage = 'Error occurred on "' & $sLevel & '" level when waiting for a browser page load to complete'
 		Else
 			$sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 			$iErr = @error
 			If @error Then
-				$sMessage = 'Error occured on "' & $sLevel & '" level when checking "document.body" ElementID'
+				$sMessage = 'Error occurred on "' & $sLevel & '" level when checking "document.body" ElementID'
 			Else
 				$s_URL = _WD_ExecuteScript($sSession, "return window.location.href", Default, Default, $_WD_JSON_Value)
 				$iErr = @error
 				If @error Then
-					$sMessage = 'Error occured on "' & $sLevel & '" level when checking URL'
+					$sMessage = 'Error occurred on "' & $sLevel & '" level when checking URL'
 				EndIf
 			EndIf
 		EndIf
 	EndIf
 	$vResult = $sLevel & '|' & $sLevel & '|' & $sFrameAttributes & '|' & $s_URL & '|' & $sCurrentBody_ElementID & '|' & $bIsHidden & '|' & @CRLF
-	ConsoleWrite("> " & $vResult & @CRLF)
+	ConsoleWrite("> " & $vResult & @CRLF) ; for testing only should be removed before merge.
 
 	If Not $iErr Then
 		Local $iFrameCount = _WD_GetFrameCount($sSession)
 		$iErr = @error
-		ConsoleWrite("- $iFrameCount = " & $iFrameCount & @CRLF)
+		ConsoleWrite("- $iFrameCount = " & $iFrameCount & @CRLF) ; for testing only should be removed before merge.
 		If $iErr Then
-			$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check frames count'
+			$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check frames count'
 		Else
 			For $iFrame = 0 To $iFrameCount - 1
 				_WD_DebugSwitch($_WD_DEBUG_Full)
 				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
 				_WD_DebugSwitch()
 				If @error Then
-					$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
+					$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
 					ContinueLoop
 				Else
 					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
 					Local $sElementID_ToCheck = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "];", Default, Default, $_WD_JSON_Element)
 					If @error Then
-						$sMessage = 'Error occured on "' & $sLevel & '" level when trying to get ElementID of frames #' & $iFrame
-						MsgBox($MB_TOPMOST, "", @ScriptLineNumber)
+						$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to get ElementID of frames #' & $iFrame
+						MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
 						ContinueLoop
 					Else
-						ConsoleWrite("- Testing DISPLAYED" & @CRLF)
+						ConsoleWrite("- Testing DISPLAYED" & @CRLF) ; for testing only should be removed before merge.
 						_WD_DebugSwitch($_WD_DEBUG_Full)
 						$bIsHidden = Not (_WD_ElementAction($sSession, $sElementID_ToCheck, 'DISPLAYED'))
 						_WD_DebugSwitch()
 						If @error Then
-							$sMessage = 'Error occured on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
-							MsgBox($MB_TOPMOST, "", @ScriptLineNumber)
+							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
+							MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
 							ContinueLoop
 						Else
 							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iDebugLevel)
 							If @error Then
-								MsgBox($MB_TOPMOST, "", @ScriptLineNumber)
+								MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
 								ContinueLoop
 							Else
 								_WD_FrameLeave($sSession)
 								$iErr = @error
 								If $iErr Then
-									$sMessage = 'Error occured on "' & $sLevel & '" level when trying to leave frames #' & $iFrame
-									MsgBox($MB_TOPMOST, "", @ScriptLineNumber)
+									$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to leave frames #' & $iFrame
+									MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
 									ExitLoop
 								EndIf
 							EndIf
