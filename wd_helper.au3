@@ -889,9 +889,9 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 			$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check frames count'
 		Else
 			For $iFrame = 0 To $iFrameCount - 1
-				_WD_DebugSwitch($_WD_DEBUG_Full)
+				_WD_DebugSwitch($_WD_DEBUG_Full) ; for testing only should be removed before merge.
 				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
-				_WD_DebugSwitch()
+				_WD_DebugSwitch() ; for testing only should be removed before merge.
 				If @error Then
 					$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
 					ContinueLoop
@@ -904,9 +904,9 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 						ContinueLoop
 					Else
 						ConsoleWrite("- Testing DISPLAYED" & @CRLF) ; for testing only should be removed before merge.
-						_WD_DebugSwitch($_WD_DEBUG_Full)
+						_WD_DebugSwitch($_WD_DEBUG_Full) ; for testing only should be removed before merge.
 						$bIsHidden = Not (_WD_ElementAction($sSession, $sElementID_ToCheck, 'DISPLAYED'))
-						_WD_DebugSwitch()
+						_WD_DebugSwitch() ; for testing only should be removed before merge.
 						If @error Then
 							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
 							MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
