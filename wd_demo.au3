@@ -43,8 +43,8 @@ Global $aDemoSuite[][3] = _
 		["DemoSleep", False, False], _
 		["DemoSelectOptions", False, False], _
 		["DemoStyles", False, False], _
-		["UserTesting1", False, False], _
-		["UserTesting2", False, False] _
+		["UserTesting", False, False], _
+		["UserFile", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -1083,8 +1083,8 @@ Func DemoStyles()
 
 EndFunc   ;==>DemoStyles
 
-#Region - UserTesting
-Func UserTesting1()
+#Region - User and File Testing
+Func UserTesting()
 	; if necessary, you can modify the following function content by replacing, adding any additional function required for testing within this function
 	Local $vResult
 	$vResult = _WD_Navigate($sSession, 'https://www.google.com')
@@ -1100,11 +1100,11 @@ Func UserTesting1()
 	ConsoleWrite("- Test 2:" & @CRLF)
 	$vResult = _WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 	If @error Then Return SetError(@error, @extended, $vResult)
-EndFunc   ;==>UserTesting1
+EndFunc   ;==>UserTesting
 
-Func UserTesting2()
-	Local Const $sFuncName = 'UserTesting2'
-	; Modify the contents of UserTesting.au3 to change the code being executed.
+Func UserFile()
+	Local Const $sFuncName = 'UserFile'
+	; Modify the contents of FileTesting.au3 (or create new one) to change the code being executed.
 	; Changes can be made and executed without restarting this script
 	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting2.au3', $__g_hGUIDemo)
 	If @error Then Return SetError(@error, @extended)
@@ -1121,13 +1121,13 @@ Func UserTesting2()
 
 	Local $iErrProtect = @error, $iExtProtect = @extended
 	Local $sMessage = 'Last processed line #' & $iLine & ' is: ' & $sCmd
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "Check results of UserTesting2")
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "Check results of file: " & @CRLF & $sScriptFileFullPath)
 	SetError($iErrProtect, $iExtProtect)
 
 	Return SetError(__WD_Error($sFuncName, $iErrProtect, $sMessage, $iExtProtect), $iExtProtect, '')
-EndFunc   ;==>UserTesting2
+EndFunc   ;==>UserFile
 
-#EndRegion - UserTesting
+#EndRegion - User and File Testing
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
