@@ -466,7 +466,7 @@ EndFunc   ;==>_WD_WaitElement
 ;                  - $_WD_ERROR_UserAbort
 ; Author ........: yehiaserag
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: The Javascript needs to return either True or False.
 ; Related .......: _WD_ExecuteScript
 ; Link ..........:
 ; Example .......: No
@@ -475,7 +475,7 @@ Func _WD_WaitScript($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Defa
 	Local Const $sFuncName = "_WD_WaitScript"
 	Local Const $sParameters = 'Parameters:   JavaScript=' & $sJavaScript & '   Delay=' & $iDelay & '   Timeout=' & $iTimeout
 	Local $iErr
-	Local $sValue = False
+	Local $bValue = False
 
 	If $iDelay = Default Then $iDelay = 0
 	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
@@ -496,13 +496,13 @@ Func _WD_WaitScript($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Defa
 		While 1
 			If $iErr Then ExitLoop
 
-			$sValue = _WD_ExecuteScript($sSession, $sJavaScript, Default, Default, $_WD_JSON_Value)
+			$bValue = _WD_ExecuteScript($sSession, 'return !!((function(){' & $sJavaScript & '})())', Default, Default, $_WD_JSON_Value)
 			$iErr = @error
 
 			If $iErr <> $_WD_ERROR_Success Then
 				; Exit loop if unexpected error occurs
 				ExitLoop
-			ElseIf $sValue = False Then
+			ElseIf $bValue = False Then
 				If (TimerDiff($hWaitTimer) > $iTimeout) Then
 					$iErr = $_WD_ERROR_Timeout
 					ExitLoop
@@ -518,7 +518,7 @@ Func _WD_WaitScript($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Defa
 		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sValue)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $bValue)
 EndFunc   ;==>_WD_WaitScript
 
 ; #FUNCTION# ====================================================================================================================
