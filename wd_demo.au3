@@ -43,7 +43,8 @@ Global $aDemoSuite[][3] = _
 		["DemoSleep", False, False], _
 		["DemoSelectOptions", False, False], _
 		["DemoStyles", False, False], _
-		["UserTesting", False, False] _
+		["UserTesting", False, False], _
+		["UserFile", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -1084,27 +1085,25 @@ EndFunc   ;==>DemoStyles
 
 #Region - UserTesting
 Func UserTesting()
-	Local $bStyle = True ; Change to false to use older style
+	_WD_Navigate($sSession, 'https://www.google.com')
+	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
 
-	If $bStyle Then ; New style
-		; Modify the contents of usertesting.txt to change the code being executed.
-		; Changes can be made and executed without restarting this script
-		Local $aCmds = FileReadToArray("usertesting.txt")
+	ConsoleWrite("- Test 1:" & @CRLF)
+	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
 
-		For $sCmd In $aCmds
-			Execute($sCmd)
-		Next
-	Else ; Old style
-		_WD_Navigate($sSession, 'https://www.google.com')
-		_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
-
-		ConsoleWrite("- Test 1:" & @CRLF)
-		_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
-
-		ConsoleWrite("- Test 2:" & @CRLF)
-		_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
-	EndIf	
+	ConsoleWrite("- Test 2:" & @CRLF)
+	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 EndFunc   ;==>UserTesting
+
+Func UserFile()
+	; Modify the contents of usertesting.au3 to change the code being executed.
+	; Changes can be made and executed without restarting this script
+	Local $aCmds = FileReadToArray("usertesting.au3")
+
+	For $sCmd In $aCmds
+		Execute($sCmd)
+	Next
+EndFunc
 
 ; if necessary, add any additional function required for testing within this region here
 
