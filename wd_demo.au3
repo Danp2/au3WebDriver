@@ -1083,7 +1083,7 @@ Func DemoStyles()
 
 EndFunc   ;==>DemoStyles
 
-#Region - User and File Testing
+#Region - UserTesting
 Func UserTesting()
 	; if necessary, you can modify the following function content by replacing, adding any additional function required for testing within this function
 	Local $vResult
@@ -1101,6 +1101,9 @@ Func UserTesting()
 	$vResult = _WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 	If @error Then Return SetError(@error, @extended, $vResult)
 EndFunc   ;==>UserTesting
+
+; if necessary, add any additional function required for testing within this region here
+#EndRegion - UserTesting
 
 Func UserFile()
 	Local Const $sFuncName = 'UserFile'
@@ -1126,8 +1129,6 @@ Func UserFile()
 
 	Return SetError(__WD_Error($sFuncName, $iErrProtect, $sMessage, $iExtProtect), $iExtProtect, '')
 EndFunc   ;==>UserFile
-
-#EndRegion - User and File Testing
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
