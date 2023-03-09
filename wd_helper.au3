@@ -457,8 +457,8 @@ EndFunc   ;==>_WD_WaitElement
 ;                  $sJavaScript - JavaScript to run
 ;                  $iDelay    - [optional] Milliseconds to wait before initially checking status
 ;                  $iTimeout  - [optional] Period of time (in milliseconds) to wait before exiting function
-; Return values .: Success - True.
-;                  Failure - "" (empty string) and sets @error to one of the following values:
+; Return values .: Success - True
+;                  Failure - False and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidArgue
 ;                  - $_WD_ERROR_RetValue
 ;                  - $_WD_ERROR_Exception
@@ -489,7 +489,7 @@ Func _WD_WaitScript($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Defa
 		; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
 		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 
-		; Prevent logging from _WD_FindElement if not in Full debug mode
+		; Prevent logging from _WD_ExecuteScript if not in Full debug mode
 		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 		Local $hWaitTimer = TimerInit()
