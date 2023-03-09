@@ -575,7 +575,7 @@ EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
 	Local $sElement, $bIsWindowTop
-	Local Const $sArrayHeader = 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden'
+	Local Const $sArrayHeader = 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden|MatchedElements'
 
 	#Region - Testing how to manage frames
 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
