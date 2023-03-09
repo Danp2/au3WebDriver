@@ -1085,29 +1085,50 @@ EndFunc   ;==>DemoStyles
 
 #Region - UserTesting
 Func UserTesting()
-	_WD_Navigate($sSession, 'https://www.google.com')
-	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+	; if necessary, you can modify the following function content by replacing, adding any additional function required for testing within this function
+	Local $vResult
+	$vResult = _WD_Navigate($sSession, 'https://www.google.com')
+	If @error Then Return SetError(@error, @extended, $vResult)
+
+	$vResult = _WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 2:" & @CRLF)
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
+	$vResult = _WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
+	If @error Then Return SetError(@error, @extended, $vResult)
 EndFunc   ;==>UserTesting
 
-Func UserFile()
-	; Modify the contents of usertesting.au3 to change the code being executed.
-	; Changes can be made and executed without restarting this script
-	Local $aCmds = FileReadToArray("usertesting.au3")
-
-	For $sCmd In $aCmds
-		Execute($sCmd)
-	Next
-EndFunc
-
 ; if necessary, add any additional function required for testing within this region here
-
 #EndRegion - UserTesting
+
+Func UserFile()
+	Local Const $sFuncName = 'UserFile'
+	; Modify the contents of FileTesting.au3 (or create new one) to change the code being executed.
+	; Changes can be made and executed without restarting this script
+	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting2.au3', $__g_hGUIDemo)
+	If @error Then Return SetError(@error, @extended)
+
+	Local $aCmds = FileReadToArray($sScriptFileFullPath)
+	If @error Then Return SetError(@error, @extended)
+
+	Local $iLine = 0
+	For $sCmd In $aCmds
+		$iLine += 1
+		Execute($sCmd)
+		If @error Then ExitLoop
+	Next
+
+	Local $iErrProtect = @error, $iExtProtect = @extended
+	Local $sMessage = 'Last processed line #' & $iLine & ' is: ' & $sCmd
+	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "Check results of file: " & @CRLF & $sScriptFileFullPath)
+	SetError($iErrProtect, $iExtProtect)
+
+	Return SetError(__WD_Error($sFuncName, $iErrProtect, $sMessage, $iExtProtect), $iExtProtect, '')
+EndFunc   ;==>UserFile
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
