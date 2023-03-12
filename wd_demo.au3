@@ -1122,7 +1122,6 @@ Func UserFile()
 		; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
 		$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
 		If $sCmd Then Execute($sCmd)
-		If @error Then ExitLoop
 	Next
 
 	Local $iErrProtect = @error, $iExtProtect = @extended
