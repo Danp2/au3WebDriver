@@ -2,6 +2,8 @@
 ;
 ; Changes can be made to this file and quickly tested without having to exit and 
 ; relaunch wd_demo.au3
+ConsoleWrite("! Code now executing from usertesting.au3" & @CRLF)
+
 _WD_Navigate($sSession, 'https://www.google.com')
 _WD_LoadWait($sSession)
 
