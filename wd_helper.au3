@@ -889,17 +889,20 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 			$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check frames count'
 		Else
 			For $iFrame = 0 To $iFrameCount - 1
+				$sMessage = ''
 				_WD_DebugSwitch($_WD_DEBUG_Full) ; for testing only should be removed before merge.
 				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
 				_WD_DebugSwitch() ; for testing only should be removed before merge.
 				If @error Then
 					$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
+					__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 					ContinueLoop
 				Else
 					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
 					Local $sElementID_ToCheck = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "];", Default, Default, $_WD_JSON_Element)
 					If @error Then
 						$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to get ElementID of frames #' & $iFrame
+						__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 						MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
 						ContinueLoop
 					Else
@@ -909,12 +912,15 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 						_WD_DebugSwitch() ; for testing only should be removed before merge.
 						If @error Then
 							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
+							__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 							MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
 							ContinueLoop
 						Else
 							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iDebugLevel)
 							If @error Then
 								MsgBox($MB_TOPMOST, "", @ScriptLineNumber) ; for testing only should be removed before merge.
+								$sMessage = 'Error occurred on "' & $sLevel & '" level after processing frame subframe #' & $iFrame
+								__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 								ContinueLoop
 							Else
 								_WD_FrameLeave($sSession)
