@@ -1123,13 +1123,6 @@ Func UserFile()
 		$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
 		If $sCmd Then Execute($sCmd)
 	Next
-
-	Local $iErrProtect = @error, $iExtProtect = @extended
-	Local $sMessage = 'Last processed line #' & $iLine & ' is: ' & $sCmd
-	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information #" & @ScriptLineNumber, "Check results of file: " & @CRLF & $sScriptFileFullPath)
-	SetError($iErrProtect, $iExtProtect)
-
-	Return SetError(__WD_Error($sFuncName, $iErrProtect, $sMessage, $iExtProtect), $iExtProtect, '')
 EndFunc   ;==>UserFile
 
 Func _USER_WD_Sleep($iDelay)
