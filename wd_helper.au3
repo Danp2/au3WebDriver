@@ -8,7 +8,6 @@
 ; WebDriver related UDF's
 #include "wd_core.au3"
 
-#Region Copyright
 #cs
 	* WD_Helper.au3
 	*
@@ -949,11 +948,9 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 
 	If $iErr Then
 		$iErr = $_WD_ERROR_Exception
-		If $_WD_DEBUG = $_WD_DEBUG_None Then ; @error occurs in current __WD_FrameList_Internal() runtime
-			$_WD_DEBUG = $iDebugLevel
-		Else ; @error occurs in previous __WD_FrameList_Internal() runtime
-			$_WD_DEBUG = $_WD_DEBUG_None
-		EndIf
+	EndIf
+	If $sLevel = 'null' Then ; scirpt is on processing main (top level) __WD_FrameList_Internal() runtime
+		$_WD_DEBUG = $iDebugLevel ; restore $_WD_DEBUG_Saved log level to display proper error message
 	EndIf
 
 	$sMessage = ($sMessage And $_WD_DEBUG > $_WD_DEBUG_Error) ? (' Information: ' & $sMessage) : ("")
