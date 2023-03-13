@@ -8,6 +8,7 @@
 ; WebDriver related UDF's
 #include "wd_core.au3"
 
+#Region Copyright
 #cs
 	* WD_Helper.au3
 	*
