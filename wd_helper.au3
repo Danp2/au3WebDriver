@@ -888,22 +888,20 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 		If $iErr Then
 			$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check frames count'
 		Else
+			Local $sElementID_ToCheck
+			Local Const $sJavaScript_OuterHTML = "let nodes = document.querySelectorAll('iframe');    if (nodes.length)   { return nodes[%s].outerHTML; }   else   { return window.frames[%s].frameElement.outerHTML; }"
 			For $iFrame = 0 To $iFrameCount - 1
 				$sMessage = ''
 				_WD_DebugSwitch($_WD_DEBUG_Full) ; for testing only should be removed before merge.
-				$sFrameAttributes = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "].outerHTML;", Default, Default, $_WD_JSON_Value)
-				if @error then
-					$sFrameAttributes = _WD_ExecuteScript($sSession, "return window.frames[" & $iFrame & "].frameElement.outerHTML;", Default, Default, $_WD_JSON_Value)
-				EndIf
+				$sFrameAttributes = _WD_ExecuteScript($sSession, StringFormat($sJavaScript_OuterHTML, $iFrame, $iFrame), Default, Default, $_WD_JSON_Value)
 				_WD_DebugSwitch() ; for testing only should be removed before merge.
 				If @error Then
 					$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
-					ConsoleWrite("- " & $sMessage & @CRLF) ; for testing only should be removed before merge.
 					__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
+					ConsoleWrite("- " & $sMessage & @CRLF) ; for testing only should be removed before merge.
 					ContinueLoop
 				Else
 					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
-					Local $sElementID_ToCheck
 					if StringInStr($sFrameAttributes, '<iframe') then
 						$sElementID_ToCheck = _WD_ExecuteScript($sSession, "return document.querySelectorAll('iframe')[" & $iFrame & "];", Default, Default, $_WD_JSON_Element)
 					Else
