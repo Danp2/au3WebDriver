@@ -86,6 +86,7 @@ Global Const $_WD_JSON_Value = "[value]"
 Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
 Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
+Global Const $_WD_JSON_Message = "[value][message]"
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
@@ -242,7 +243,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
-			$sMessage = Json_Get($oJSON, "[value][message]")
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 			$iErr = $_WD_ERROR_Exception
 		Else
 			$sMessage = $sSession
@@ -252,7 +253,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 		EndIf
 	Else
 		If $iErr = $_WD_ERROR_SessionNotCreated Then
-			$sMessage = Json_Get($oJSON, "[value][message]")
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 		Else
 			$iErr = $_WD_ERROR_Exception
 		EndIf
