@@ -834,8 +834,8 @@ EndFunc   ;==>_WD_FrameList
 ; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
 ; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iDebugLevel)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
-;                  $sLevel              - frame location level ... path
-;                  $sFrameAttributes    - all <iframe ....> attributes
+;                  $sLevel              - frame location level path
+;                  $sFrameAttributes    - all <iframe ....> and <frame ....> attributes
 ;                  $bIsHidden           - information about visibility of frame - taken by WebDriver
 ;                  $iDebugLevel         - log level taken from calling function
 ; Return values .: Success - string
