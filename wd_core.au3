@@ -839,7 +839,7 @@ EndFunc   ;==>_WD_ElementAction
 ; ===============================================================================================================================
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
-	Local $sResponse, $sData, $sCmd
+	Local $sResponse, $sData, $sCmd, $sMessage = ""
 	$_WD_HTTPRESULT = 0
 
 	If $sArguments = Default Then $sArguments = ""
@@ -855,22 +855,24 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 		Local $iErr = @error
+		Local $oJSON = Json_Decode($sResponse)
 
 		If $iErr = $_WD_ERROR_Success Then
 			If StringLen($vSubNode) Then
-				Local $oJSON = Json_Decode($sResponse)
 				$sResponse = Json_Get($oJSON, $vSubNode)
 				If @error Then
 					$iErr = $_WD_ERROR_RetValue
+					$sMessage = "Subnode '" & $vSubNode & "' not found."
 				EndIf
 			EndIf
+		Else
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_InvalidArgue
 		$sResponse = ""
 	EndIf
 
-	Local $sMessage = ($iErr) ? ("Error occurred when trying to ExecuteScript") : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
