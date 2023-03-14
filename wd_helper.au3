@@ -835,7 +835,7 @@ EndFunc   ;==>_WD_FrameList
 ; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iDebugLevel)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sLevel              - frame location level path
-;                  $sFrameAttributes    - all <iframe ....> and <frame ....> attributes
+;                  $sFrameAttributes    - frame attributes in HTML format
 ;                  $bIsHidden           - information about visibility of frame - taken by WebDriver
 ;                  $iDebugLevel         - log level taken from calling function
 ; Return values .: Success - string
