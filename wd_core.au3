@@ -86,6 +86,7 @@ Global Const $_WD_JSON_Value = "[value]"
 Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
 Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
+Global Const $_WD_JSON_Message = "[value][message]"
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
@@ -242,7 +243,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
-			$sMessage = Json_Get($oJSON, "[value][message]")
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 			$iErr = $_WD_ERROR_Exception
 		Else
 			$sMessage = $sSession
@@ -252,7 +253,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 		EndIf
 	Else
 		If $iErr = $_WD_ERROR_SessionNotCreated Then
-			$sMessage = Json_Get($oJSON, "[value][message]")
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 		Else
 			$iErr = $_WD_ERROR_Exception
 		EndIf
@@ -824,9 +825,9 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
+;                  $vSubNode   - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
 ; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
-;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
+;                  Failure - Response from web driver in JSON format and maintains @error value originally set by __WD_Post()
 ;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
 ;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
 ; Author ........: Danp2
@@ -838,7 +839,7 @@ EndFunc   ;==>_WD_ElementAction
 ; ===============================================================================================================================
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
-	Local $sResponse, $sData, $sCmd
+	Local $sResponse, $sData, $sCmd, $sMessage = ""
 	$_WD_HTTPRESULT = 0
 
 	If $sArguments = Default Then $sArguments = ""
@@ -854,22 +855,24 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 		Local $iErr = @error
+		Local $oJSON = Json_Decode($sResponse)
 
 		If $iErr = $_WD_ERROR_Success Then
 			If StringLen($vSubNode) Then
-				Local $oJSON = Json_Decode($sResponse)
 				$sResponse = Json_Get($oJSON, $vSubNode)
 				If @error Then
 					$iErr = $_WD_ERROR_RetValue
+					$sMessage = "Subnode '" & $vSubNode & "' not found."
 				EndIf
 			EndIf
+		Else
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_InvalidArgue
 		$sResponse = ""
 	EndIf
 
-	Local $sMessage = ($iErr) ? ("Error occurred when trying to ExecuteScript") : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
