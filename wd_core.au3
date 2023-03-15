@@ -1292,8 +1292,9 @@ EndFunc   ;==>_WD_Startup
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Shutdown
 ; Description ...: Kill the web driver console app.
-; Syntax ........: _WD_Shutdown([$vDriver = Default])
+; Syntax ........: _WD_Shutdown([$vDriver = Default[,  $iPa$iDelayuse = Default]])
 ; Parameters ....: $vDriver - [optional] The name or PID of Web driver console to shutdown
+;                  $iDelay  - [optional] Time (in milliseconds) to pause before beginning console shutdown
 ; Return values .: None
 ; Author ........: Danp2
 ; Modified ......:
@@ -1302,7 +1303,13 @@ EndFunc   ;==>_WD_Startup
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Shutdown($vDriver = Default)
+Func _WD_Shutdown($vDriver = Default, $iDelay = Default)
+	If $iDelay = Default Then $iDelay = 2000
+	If $iDelay Then __WD_Sleep($iDelay)
+
+	; Not checking @error here because we aren't concerned
+	; with user abort during execution of shutdown
+
 	__WD_CloseDriver($vDriver)
 EndFunc   ;==>_WD_Shutdown
 
