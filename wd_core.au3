@@ -155,6 +155,7 @@ Global Const $_WD_ErrorJavascript = "javascript error"
 Global Const $_WD_ErrorNoSuchAlert = "no such alert"
 Global Const $_WD_ErrorInvalidSelector = "invalid selector"
 Global Const $_WD_ErrorElementNotFound = "no such element"
+Global Const $_WD_ErrorShadowRootNotFound = "no such shadow root"
 Global Const $_WD_ErrorElementStale = "stale element reference"
 Global Const $_WD_ErrorElementInvalid = "invalid argument"
 Global Const $_WD_ErrorElementIntercept = "element click intercepted"
@@ -1749,7 +1750,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 			Case $_WD_ErrorTimeout
 				$iErr = $_WD_ERROR_Timeout
 
-			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale
+			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale, $_WD_ErrorShadowRootNotFound
 				$iErr = $_WD_ERROR_NoMatch
 
 			Case $_WD_ErrorElementInvalid
