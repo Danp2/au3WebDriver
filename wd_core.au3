@@ -825,9 +825,9 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
+;                  $vSubNode   - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
 ; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
-;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
+;                  Failure - Response from web driver in JSON format and maintains @error value originally set by __WD_Post()
 ;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
 ;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
 ; Author ........: Danp2
