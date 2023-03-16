@@ -932,7 +932,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 	If $iErr Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
-	If $sLevel = 'null' Then ; scirpt is on processing main (top level) __WD_FrameList_Internal() runtime
+	If $sLevel = 'null' Then ; script is on processing main (top level) __WD_FrameList_Internal() runtime
 		$_WD_DEBUG = $iDebugLevel ; restore $_WD_DEBUG_Saved log level to display error message
 	EndIf
 
