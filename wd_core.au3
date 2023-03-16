@@ -86,6 +86,7 @@ Global Const $_WD_JSON_Value = "[value]"
 Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
 Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
+Global Const $_WD_JSON_Message = "[value][message]"
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
@@ -154,11 +155,13 @@ Global Const $_WD_ErrorJavascript = "javascript error"
 Global Const $_WD_ErrorNoSuchAlert = "no such alert"
 Global Const $_WD_ErrorInvalidSelector = "invalid selector"
 Global Const $_WD_ErrorElementNotFound = "no such element"
+Global Const $_WD_ErrorShadowRootNotFound = "no such shadow root"
 Global Const $_WD_ErrorElementStale = "stale element reference"
 Global Const $_WD_ErrorElementInvalid = "invalid argument"
 Global Const $_WD_ErrorElementIntercept = "element click intercepted"
 Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 Global Const $_WD_ErrorWindowNotFound = "no such window"
+Global Const $_WD_ErrorFrameNotFound = "no such frame"
 Global Const $_WD_ErrorSessionNotCreated = "session not created"
 
 Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
@@ -242,7 +245,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 		$sSession = Json_Get($oJSON, "[value][sessionId]")
 
 		If @error Then
-			$sMessage = Json_Get($oJSON, "[value][message]")
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 			$iErr = $_WD_ERROR_Exception
 		Else
 			$sMessage = $sSession
@@ -252,7 +255,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 		EndIf
 	Else
 		If $iErr = $_WD_ERROR_SessionNotCreated Then
-			$sMessage = Json_Get($oJSON, "[value][message]")
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 		Else
 			$iErr = $_WD_ERROR_Exception
 		EndIf
@@ -824,9 +827,9 @@ EndFunc   ;==>_WD_ElementAction
 ;                  $sScript    - Javascript command(s) to run
 ;                  $sArguments - [optional] String of arguments in JSON format
 ;                  $bAsync     - [optional] Perform request asyncronously? Default is False
-;                  $vSubNode  - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
+;                  $vSubNode   - [optional] Return the designated JSON node instead of the entire JSON string. Default is "" (entire response is returned)
 ; Return values .: Success - Response from web driver in JSON format or value requested by given $vSubNode
-;                  Failure - Response from web driver in JSON format and sets @error to value returned from __WD_Post()
+;                  Failure - Response from web driver in JSON format and maintains @error value originally set by __WD_Post()
 ;                            If script is executed successfully but $vSubNode isn't found, then "" (empty string) and sets @error to $_WD_ERROR_RetValue
 ;                            If $vSubNode isn't valid, then "" (empty string) and sets @error to _WD_ERROR_InvalidArgue
 ; Author ........: Danp2
@@ -838,7 +841,7 @@ EndFunc   ;==>_WD_ElementAction
 ; ===============================================================================================================================
 Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Default, $vSubNode = Default)
 	Local Const $sFuncName = "_WD_ExecuteScript"
-	Local $sResponse, $sData, $sCmd
+	Local $sResponse, $sData, $sCmd, $sMessage = ""
 	$_WD_HTTPRESULT = 0
 
 	If $sArguments = Default Then $sArguments = ""
@@ -854,22 +857,24 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 
 		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/execute/" & $sCmd, $sData)
 		Local $iErr = @error
+		Local $oJSON = Json_Decode($sResponse)
 
 		If $iErr = $_WD_ERROR_Success Then
 			If StringLen($vSubNode) Then
-				Local $oJSON = Json_Decode($sResponse)
 				$sResponse = Json_Get($oJSON, $vSubNode)
 				If @error Then
 					$iErr = $_WD_ERROR_RetValue
+					$sMessage = "Subnode '" & $vSubNode & "' not found."
 				EndIf
 			EndIf
+		Else
+			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
 		EndIf
 	Else
 		$iErr = $_WD_ERROR_InvalidArgue
 		$sResponse = ""
 	EndIf
 
-	Local $sMessage = ($iErr) ? ("Error occurred when trying to ExecuteScript") : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sResponse)
 EndFunc   ;==>_WD_ExecuteScript
 
@@ -1289,8 +1294,9 @@ EndFunc   ;==>_WD_Startup
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Shutdown
 ; Description ...: Kill the web driver console app.
-; Syntax ........: _WD_Shutdown([$vDriver = Default])
+; Syntax ........: _WD_Shutdown([$vDriver = Default[,  $iDelay = Default]])
 ; Parameters ....: $vDriver - [optional] The name or PID of Web driver console to shutdown
+;                  $iDelay  - [optional] Time (in milliseconds) to pause before beginning console shutdown
 ; Return values .: None
 ; Author ........: Danp2
 ; Modified ......:
@@ -1299,7 +1305,13 @@ EndFunc   ;==>_WD_Startup
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Shutdown($vDriver = Default)
+Func _WD_Shutdown($vDriver = Default, $iDelay = Default)
+	If $iDelay = Default Then $iDelay = 2000
+	If IsInt($iDelay) And $iDelay > 0 Then __WD_Sleep($iDelay)
+
+	; Not checking @error here because we aren't concerned
+	; with user abort during execution of shutdown
+
 	__WD_CloseDriver($vDriver)
 EndFunc   ;==>_WD_Shutdown
 
@@ -1746,7 +1758,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 			Case $_WD_ErrorTimeout
 				$iErr = $_WD_ERROR_Timeout
 
-			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale
+			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale, $_WD_ErrorShadowRootNotFound, $_WD_ErrorFrameNotFound
 				$iErr = $_WD_ERROR_NoMatch
 
 			Case $_WD_ErrorElementInvalid
