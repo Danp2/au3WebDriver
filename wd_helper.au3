@@ -766,15 +766,9 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 	Local $a_Result[0][$_WD_FRAMELIST__COUNTER], $sStartLocation = '', $sMessage = ''
 	Local $vResult = '', $iErr = $_WD_ERROR_Success, $iFrameCount = 0
 
-	; save current DEBUG level
-	Local $_WD_DEBUG_Saved = $_WD_DEBUG
-
-	; Prevent logging multiple errors from _WD_FrameList and __WD_FrameList_Internal if not in Full debug mode - https://github.com/Danp2/au3WebDriver/pull/362#issuecomment-1220962556
-	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
-
 	Local Const $sElement_CallingFrameBody = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 	If Not @error Then
-		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False, $_WD_DEBUG_Saved)
+		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False)
 	EndIf
 	#Region - post processing
 	If @error Then
@@ -823,7 +817,6 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 
 	#EndRegion - post processing
 
-	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 	$sMessage = ($sMessage And $_WD_DEBUG > $_WD_DEBUG_Error) ? (' Information: ' & $sMessage) : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage, $iFrameCount), $iFrameCount, $vResult)
@@ -832,12 +825,11 @@ EndFunc   ;==>_WD_FrameList
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_FrameList_Internal
 ; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
-; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iDebugLevel)
+; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sLevel              - frame location level path
 ;                  $sFrameAttributes    - frame attributes in HTML format
 ;                  $bIsHidden           - information about visibility of frame - taken by WebDriver
-;                  $iDebugLevel         - log level taken from calling function
 ; Return values .: Success - string
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -848,11 +840,16 @@ EndFunc   ;==>_WD_FrameList
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iDebugLevel)
+Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
 	Local Const $sFuncName = "__WD_FrameList_Internal"
 	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
-	Local $iErr = $_WD_ERROR_Success
-	Local $vResult = '', $s_URL = '', $sMessage = '', $sCurrentBody_ElementID = ''
+	Local $iErr = $_WD_ERROR_Success, $sMessage = '', $vResult = ''
+	Local $s_URL = '', $sCurrentBody_ElementID = ''
+
+	#Region ; this region is prevented from redundant logging if not in Full debug mode - https://github.com/Danp2/au3WebDriver/pull/362#issuecomment-1220962556
+	Local Static $_WD_DEBUG_Saved = Null ; this is static because this function will be run recurently and we need to keep outer debug level
+	If $_WD_DEBUG_Saved = Null Then $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; Prevent logging multiple errors from __WD_FrameList_Internal
 
 	_WD_FrameEnter($sSession, $sLevel)
 	$iErr = @error
@@ -866,12 +863,12 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 		Else
 			$sCurrentBody_ElementID = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 			$iErr = @error
-			If @error Then
+			If $iErr Then
 				$sMessage = 'Error occurred on "' & $sLevel & '" level when checking "document.body" ElementID'
 			Else
 				$s_URL = _WD_ExecuteScript($sSession, "return window.location.href", Default, Default, $_WD_JSON_Value)
 				$iErr = @error
-				If @error Then
+				If $iErr Then
 					$sMessage = 'Error occurred on "' & $sLevel & '" level when checking URL'
 				EndIf
 			EndIf
@@ -889,30 +886,31 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 			Local Const $sJavaScript_FrameAttributes = "function FrameAttributes(FrameIDX) { let nodes = document.querySelectorAll('iframe');    if (nodes.length)   { return nodes[FrameIDX].outerHTML; }   else   { return window.frames[FrameIDX].frameElement.outerHTML; } }; return FrameAttributes(%s);"
 			Local Const $sJavaScript_FrameElementID = "function FrameElementID(FrameIDX) { let nodes = document.querySelectorAll('iframe');    if (nodes.length)   { return nodes[FrameIDX]; }   else   { return document.querySelectorAll('frame')[FrameIDX]; } }; return FrameElementID(%s);"
 			For $iFrame = 0 To $iFrameCount - 1
-				$sMessage = ''
+				If $sMessage Then __WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Saved, $iErr) ; log messages which comes from loop processing
+				$sMessage = '' ; clear recent/previous message
 				$sFrameAttributes = _WD_ExecuteScript($sSession, StringFormat($sJavaScript_FrameAttributes, $iFrame), Default, Default, $_WD_JSON_Value)
-				If @error Then
+				$iErr = @error
+				If $iErr Then
 					$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check attributes child frames #' & $iFrame
-					__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 					ContinueLoop
 				Else
 					$sFrameAttributes = StringRegExpReplace($sFrameAttributes, '\R', '')
 					$sFrameElementID = _WD_ExecuteScript($sSession, StringFormat($sJavaScript_FrameElementID, $iFrame), Default, Default, $_WD_JSON_Element)
-					If @error Then
+					$iErr = @error
+					If $iErr Then
 						$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to get ElementID of frames #' & $iFrame
-						__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 						ContinueLoop
 					Else
 						$bIsHidden = Not (_WD_ElementAction($sSession, $sFrameElementID, 'DISPLAYED'))
-						If @error Then
+						$iErr = @error
+						If $iErr Then
 							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of frames #' & $iFrame
-							__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 							ContinueLoop
 						Else
-							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iDebugLevel)
-							If @error Then
+							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden)
+							$iErr = @error
+							If $iErr Then
 								$sMessage = 'Error occurred on "' & $sLevel & '" level after processing frame subframe #' & $iFrame
-								__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 								ContinueLoop
 							Else
 								_WD_FrameLeave($sSession)
@@ -929,11 +927,12 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 		EndIf
 	EndIf
 
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+	$_WD_DEBUG_Saved = Null ; reset staticly defined saved debug level in order to get new one when function will be called from user script
+	#EndRegion ; this region is prevented from redundant logging if not in Full debug mode - https://github.com/Danp2/au3WebDriver/pull/362#issuecomment-1220962556
+
 	If $iErr Then
 		$iErr = $_WD_ERROR_Exception
-	EndIf
-	If $sLevel = 'null' Then ; script is on processing main (top level) __WD_FrameList_Internal() runtime
-		$_WD_DEBUG = $iDebugLevel ; restore $_WD_DEBUG_Saved log level to display error message
 	EndIf
 
 	$sMessage = ($sMessage And $_WD_DEBUG > $_WD_DEBUG_Error) ? (' Information: ' & $sMessage) : ("")
