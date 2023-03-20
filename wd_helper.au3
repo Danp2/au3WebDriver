@@ -844,7 +844,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
 	Local $s_URL = '', $sCurrentBody_ElementID = ''
 
 	#Region ; this region is prevented from redundant logging if not in Full debug mode - https://github.com/Danp2/au3WebDriver/pull/362#issuecomment-1220962556
-	Local Static $_WD_DEBUG_Saved = Null ; this is static because this function will be run recurently and we need to keep outer debug level
+	Local Static $_WD_DEBUG_Saved = Null ; this is static because this function will be run recurrently and we need to keep outer debug level
 	If $_WD_DEBUG_Saved = Null Then
 		$_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 		If $_WD_DEBUG_Saved <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; Prevent logging multiple errors from __WD_FrameList_Internal
