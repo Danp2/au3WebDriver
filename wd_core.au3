@@ -594,23 +594,18 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	EndSwitch
 
 	If $iErr = $_WD_ERROR_Success Then
-		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
+		Switch $sCommand
+			Case 'close', 'frame', 'fullscreen', 'maximize', 'minimize', 'parent', 'switch'
+				$sResult = $sResponse
 
-			Switch $sCommand
-				Case 'close', 'frame', 'fullscreen', 'maximize', 'minimize', 'parent', 'switch'
-					$sResult = $sResponse
+			Case 'new'
+				$oJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($oJSON, "[value][handle]")
 
-				Case 'new'
-					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, "[value][handle]")
-
-				Case Else
-					$oJSON = Json_Decode($sResponse)
-					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
-			EndSwitch
-		Else
-			$iErr = $_WD_ERROR_Exception
-		EndIf
+			Case Else
+				$oJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
+		EndSwitch
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
@@ -670,32 +665,27 @@ Func _WD_FindElement($sSession, $sStrategy, $sSelector, $sStartNodeID = Default,
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
-		If $_WD_HTTPRESULT = $HTTP_STATUS_OK Then
-			If $bMultiple Then
+		If $bMultiple Then
 
-				$oJSON = Json_Decode($sResponse)
-				$oValues = Json_Get($oJSON, $_WD_JSON_Value)
+			$oJSON = Json_Decode($sResponse)
+			$oValues = Json_Get($oJSON, $_WD_JSON_Value)
 
-				If UBound($oValues) > 0 Then
-					$sKey = "[" & $_WD_ELEMENT_ID & "]"
+			If UBound($oValues) > 0 Then
+				$sKey = "[" & $_WD_ELEMENT_ID & "]"
 
-					Dim $aElements[UBound($oValues)]
+				Dim $aElements[UBound($oValues)]
 
-					For $oValue In $oValues
-						$aElements[$iRow] = Json_Get($oValue, $sKey)
-						$iRow += 1
-					Next
-				Else
-					$iErr = $_WD_ERROR_NoMatch
-				EndIf
+				For $oValue In $oValues
+					$aElements[$iRow] = Json_Get($oValue, $sKey)
+					$iRow += 1
+				Next
 			Else
-				$oJSON = Json_Decode($sResponse)
-
-				$sResult = Json_Get($oJSON, $_WD_JSON_Element)
+				$iErr = $_WD_ERROR_NoMatch
 			EndIf
-
 		Else
-			$iErr = $_WD_ERROR_Exception
+			$oJSON = Json_Decode($sResponse)
+
+			$sResult = Json_Get($oJSON, $_WD_JSON_Element)
 		EndIf
 	EndIf
 
@@ -791,27 +781,21 @@ Func _WD_ElementAction($sSession, $sElement, $sCommand, $sOption = Default)
 	EndSwitch
 
 	If $iErr = $_WD_ERROR_Success Then
-		Switch $_WD_HTTPRESULT
-			Case $HTTP_STATUS_OK
-				Switch $sCommand
-					Case 'clear', 'click', 'shadow'
-						$sResult = $sResponse
+		Switch $sCommand
+			Case 'clear', 'click', 'shadow'
+				$sResult = $sResponse
 
-					Case 'value'
-						If $sOption Then
-							$sResult = $sResponse
-						Else
-							$oJSON = Json_Decode($sResponse)
-							$sResult = Json_Get($oJSON, $_WD_JSON_Value)
-						EndIf
-
-					Case Else
-						$oJSON = Json_Decode($sResponse)
-						$sResult = Json_Get($oJSON, $_WD_JSON_Value)
-				EndSwitch
+			Case 'value'
+				If $sOption Then
+					$sResult = $sResponse
+				Else
+					$oJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
+				EndIf
 
 			Case Else
-				$iErr = $_WD_ERROR_Exception
+				$oJSON = Json_Decode($sResponse)
+				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 		EndSwitch
 	EndIf
 
