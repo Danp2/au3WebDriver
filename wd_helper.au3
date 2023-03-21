@@ -320,7 +320,7 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartNodeID =
 		_WD_ElementAction($sSession, $sElement, 'click')
 		$iErr = @error
 
-		If $iErr <> $_WD_ERROR_Success Then
+		If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then
 			$iErr = $_WD_ERROR_Exception
 		EndIf
 	Else
@@ -695,7 +695,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
-	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue And Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
@@ -734,7 +734,7 @@ Func _WD_FrameLeave($sSession)
 		Else
 			$sValue = True
 		EndIf
-	Else
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
