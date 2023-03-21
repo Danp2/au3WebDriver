@@ -257,7 +257,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Else
 		If $iErr = $_WD_ERROR_SessionNotCreated Then
 			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
-		Else
+		ElseIf Not $_WD_DetailedErrors Then
 			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
