@@ -791,7 +791,17 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 		$iFrameCount = UBound($a_Result, $UBOUND_ROWS)
 		If $iFrameCount < 1 Then $sMessage &= 'List of frames is empty. '
 
-		If $bReturnAsArray Then $vResult = $a_Result ; select desired DataType for the $vResult - usually string is option for testing and asking support
+		; select desired DataType for the $vResult - usually string is option for testing and asking support, thus Array is returned by default
+		If $bReturnAsArray Then
+			$vResult = $a_Result
+		Else
+			$vResult = _ArrayToString($a_Result) ; getting string with recalculated locations (relative path)
+			If @error Then
+				$iErr = $_WD_ERROR_RetValue
+				$sMessage = 'ArrayToString conversion failed. '
+				$vResult = ''
+			EndIf
+		EndIf
 
 	ElseIf $iErr <> $_WD_ERROR_Timeout Then
 		$iErr = $_WD_ERROR_GeneralError
