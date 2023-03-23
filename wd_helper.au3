@@ -825,11 +825,11 @@ EndFunc   ;==>_WD_FrameList
 ;                  $sFrameAttributes    - frame attributes in HTML format
 ;                  $bIsHidden           - information about visibility of frame - taken by WebDriver
 ; Return values .: Success - string
-;                  Failure - "" (empty string) and sets @error returned from _WD_FrameEnter(), _WD_LoadWait(), _WD_ExecuteScript(), _WD_GetFrameCount(), _WD_ElementAction(), _WD_FrameLeave()
+;                  Failure - "" (empty string) and sets @error returned from related functions
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; Remarks .......:
-; Related .......: _WD_FrameList, _WD_GetFrameCount, _WD_FrameEnter, _WD_FrameLeave
+; Related .......: _WD_FrameEnter, _WD_LoadWait, _WD_ExecuteScript, _WD_GetFrameCount, _WD_ElementAction, _WD_FrameLeave
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
