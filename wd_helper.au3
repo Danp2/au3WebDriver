@@ -754,6 +754,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  - $_WD_ERROR_Timeout
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_RetValue
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; Remarks .......: The returned list of frames can depend on many factors, including geolocation, as well as problems with the local Internet
