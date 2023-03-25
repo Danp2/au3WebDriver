@@ -244,8 +244,9 @@ Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 	If $sMode = Default Then $sMode = 'title'
 
 	$aHandles = _WD_Window($sSession, 'handles')
+	$iErr = @error
 
-	If @error = $_WD_ERROR_Success Then
+	If $iErr = $_WD_ERROR_Success Then
 		$sCurrentTab = _WD_Window($sSession, 'window')
 
 		For $sHandle In $aHandles
@@ -280,7 +281,7 @@ Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 
 			$iErr = $_WD_ERROR_NoMatch
 		EndIf
-	Else
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
