@@ -489,7 +489,7 @@ Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 		$iStackSize = -2
 		$sMessage = 'Invalid argument in function-call'
 	EndIf
-	
+
 	$sMessage &= " / " & (($iStackSize < 0) ? (" error code: ") : (" stack size: ")) & $iStackSize
 	__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 	Return SetError($iErr, $iExt, $iStackSize) ; do not use __WD_Error() here as $iErr and $iExt are preserved and not belongs to this function
