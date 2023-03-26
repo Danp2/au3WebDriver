@@ -25,7 +25,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | :---:                                                                                                                | :---                                                          | :---                                                                                                   |
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/W3C_icon.svg/212px-W3C_icon.svg.png" width="20"> | [W3C WebDriver]             | Official W3C WebDriver standard/specification.                                                         |
 | 📚                                                                                                                   | [WebDriver Wiki] | Further information about this UDF (project) like big picture, capabilities, troubleshooting and more. |
-| 📖                                                                                                                   | Webdriver.chm                                                 | Function CHM help file that comes with this UDF (project) download.                                    |
+| 📖                                                                                                                   | au3WebDriver.chm                                              | Help file that comes with this UDF (project) download.                                    |
 
 ## Features
 
