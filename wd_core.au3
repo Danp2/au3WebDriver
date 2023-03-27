@@ -95,31 +95,31 @@ Global Enum _
 		$_WD_DEBUG_Full        ; logging with full details for developers
 
 Global Enum _
-		$_WD_ERROR_Success = 0, _ ; No error
-		$_WD_ERROR_GeneralError, _ ; General error
-		$_WD_ERROR_SocketError, _ ; No socket
-		$_WD_ERROR_InvalidDataType, _ ; Invalid data type (IP, URL, Port ...)
-		$_WD_ERROR_InvalidValue, _ ; Invalid value in function-call
-		$_WD_ERROR_InvalidArgue, _ ; Invalid argument in function-call
-		$_WD_ERROR_SendRecv, _ ; Send / Recv Error
-		$_WD_ERROR_Timeout, _ ; Connection / Send / Recv timeout
-		$_WD_ERROR_NoMatch, _ ; No match for _WDAction-find/search _WDGetElement...
-		$_WD_ERROR_RetValue, _ ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
-		$_WD_ERROR_Exception, _ ; Exception from web driver
-		$_WD_ERROR_InvalidExpression, _ ; Invalid expression in XPath query, CSSSelector query or RegEx
-		$_WD_ERROR_NoAlert, _ ; No alert present when calling _WD_Alert
-		$_WD_ERROR_NotFound, _ ; File or registry key not found
-		$_WD_ERROR_ElementIssue, _ ; Problem interacting with element (click intercepted, etc)
-		$_WD_ERROR_SessionNotCreated, _ ; Session not created
-		$_WD_ERROR_SessionInvalid, _ ; Invalid session ID was submitted to webdriver
-		$_WD_ERROR_ContextInvalid, _ ; Invalid browsing context
-		$_WD_ERROR_UnknownCommand, _ ; Unknown command submitted to webdriver
-		$_WD_ERROR_UserAbort, _ ; In case when user abort when @error occurs and $_WD_ERROR_MSGBOX was set
-		$_WD_ERROR_FileIssue, _ ; Errors related to WebDriver EXE File
-		$_WD_ERROR_NotSupported, _ ; When user try to use unsupported browser or capability
-		$_WD_ERROR_AlreadyDefined, _ ; Capability previously defined
-		$_WD_ERROR_Javascript, _ ; Javascript error
-		$_WD_ERROR__COUNTER ; Defines row count for $aWD_ERROR_DESC
+		$_WD_ERROR_Success = 0, _        ; No error
+		$_WD_ERROR_GeneralError, _       ; General error
+		$_WD_ERROR_SocketError, _        ; No socket
+		$_WD_ERROR_InvalidDataType, _    ; Invalid data type (IP, URL, Port ...)
+		$_WD_ERROR_InvalidValue, _       ; Invalid value in function-call
+		$_WD_ERROR_InvalidArgue, _       ; Invalid argument in function-call
+		$_WD_ERROR_SendRecv, _           ; Send / Recv Error
+		$_WD_ERROR_Timeout, _            ; Connection / Send / Recv timeout
+		$_WD_ERROR_NoMatch, _            ; No match for _WDAction-find/search _WDGetElement...
+		$_WD_ERROR_RetValue, _           ; Error echo from Repl e.g. _WDAction("fullscreen","true") <> "true"
+		$_WD_ERROR_Exception, _          ; Exception from web driver
+		$_WD_ERROR_InvalidExpression, _  ; Invalid expression in XPath query, CSSSelector query or RegEx
+		$_WD_ERROR_NoAlert, _            ; No alert present when calling _WD_Alert
+		$_WD_ERROR_NotFound, _           ; File or registry key not found
+		$_WD_ERROR_ElementIssue, _       ; Problem interacting with element (click intercepted, etc)
+		$_WD_ERROR_SessionNotCreated, _  ; Session not created
+		$_WD_ERROR_SessionInvalid, _     ; Invalid session ID was submitted to webdriver
+		$_WD_ERROR_ContextInvalid, _     ; Invalid browsing context
+		$_WD_ERROR_UnknownCommand, _     ; Unknown command submitted to webdriver
+		$_WD_ERROR_UserAbort, _          ; In case when user abort when @error occurs and $_WD_ERROR_MSGBOX was set
+		$_WD_ERROR_FileIssue, _          ; Errors related to WebDriver EXE File
+		$_WD_ERROR_NotSupported, _       ; When user try to use unsupported browser or capability
+		$_WD_ERROR_AlreadyDefined, _     ; Capability previously defined
+		$_WD_ERROR_Javascript, _         ; Javascript error
+		$_WD_ERROR__COUNTER              ; Defines row count for $aWD_ERROR_DESC
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
 		"Success", _
@@ -188,26 +188,26 @@ Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 #EndRegion Global Constants
 
 #Region Global Variables
-Global $_WD_DRIVER = "" ; Path to web driver executable
-Global $_WD_DRIVER_PARAMS = "" ; Parameters to pass to web driver executable
+Global $_WD_DRIVER = ""                    ; Path to web driver executable
+Global $_WD_DRIVER_PARAMS = ""             ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
-Global $_WD_PORT = 0 ; Port used for web driver communication
-Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
-Global $_WD_HTTPRESPONSE = '' ; Response of last WinHTTP request
-Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
-Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
-Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
-Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching new one
-Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one already exists
-Global $_WD_RESPONSE_TRIM = -1 ; Trim response string to given value for debug output
-Global $_WD_ERROR_MSGBOX = False ; Shows in compiled scripts error messages in msgboxes
-Global $_WD_ERROR_OUTPUTDEBUG = False ; Log errors to "OutputDebugString"
-Global $_WD_DEBUG = $_WD_DEBUG_Info ; Trace to console and show web driver app
-Global $_WD_CONSOLE = ConsoleWrite ; Destination for console output
-Global $_WD_CONSOLE_Suffix = @CRLF ; Suffix added to the end of Message in $_WD_CONSOLE function
-Global $_WD_IFILTER = 16 ; Passed to _HtmlTableGetWriteToArray to control filtering
-Global $_WD_Sleep = Sleep ; Default to calling standard Sleep function
-Global $_WD_DefaultTimeout = 10000 ; 10 seconds
+Global $_WD_PORT = 0                       ; Port used for web driver communication
+Global $_WD_HTTPRESULT = 0                 ; Result of last WinHTTP request
+Global $_WD_HTTPRESPONSE = ''              ; Response of last WinHTTP request
+Global $_WD_SESSION_DETAILS = ""           ; Response from _WD_CreateSession
+Global $_WD_BFORMAT = $SB_UTF8             ; Binary format
+Global $_WD_ESCAPE_CHARS = '\\"'           ; Characters to escape
+Global $_WD_DRIVER_CLOSE = True            ; Close prior driver instances before launching new one
+Global $_WD_DRIVER_DETECT = True           ; Don't launch new driver instance if one already exists
+Global $_WD_RESPONSE_TRIM = -1             ; Trim response string to given value for debug output
+Global $_WD_ERROR_MSGBOX = False           ; Shows in compiled scripts error messages in msgboxes
+Global $_WD_ERROR_OUTPUTDEBUG = False      ; Log errors to "OutputDebugString"
+Global $_WD_DEBUG = $_WD_DEBUG_Info        ; Trace to console and show web driver app
+Global $_WD_CONSOLE = ConsoleWrite         ; Destination for console output
+Global $_WD_CONSOLE_Suffix = @CRLF         ; Suffix added to the end of Message in $_WD_CONSOLE function
+Global $_WD_IFILTER = 16                   ; Passed to _HtmlTableGetWriteToArray to control filtering
+Global $_WD_Sleep = Sleep                  ; Default to calling standard Sleep function
+Global $_WD_DefaultTimeout = 10000         ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
