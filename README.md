@@ -25,7 +25,8 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | :---:                                                                                                                | :---                                                          | :---                                                                                                   |
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/W3C_icon.svg/212px-W3C_icon.svg.png" width="20"> | [W3C WebDriver]             | Official W3C WebDriver standard/specification.                                                         |
 | 📚                                                                                                                   | [WebDriver Wiki] | Further information about this UDF (project) like big picture, capabilities, troubleshooting and more. |
-| 📖                                                                                                                   | Webdriver.chm                                                 | Function CHM help file that comes with this UDF (project) download.                                    |
+| 📖                                                                                                                   | au3WebDriver.chm                                              | Help file that comes with this UDF (project) download.                                    |
+| 📙                                                                                                                   | [Change Log]                                              | Record of all notable changes to the project                                |
 
 ## Features
 
@@ -276,3 +277,4 @@ Distributed under the MIT License. See [LICENSE] for more information.
 [HtmlTable2Array UDF]: https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/
 [WinHttp_WebSocket UDF]: https://github.com/Danp2/autoit-websocket
 [CONTRIBUTING]: https://github.com/Danp2/au3WebDriver/blob/master/docs/CONTRIBUTING.md
+[Change Log]: https://github.com/Danp2/au3WebDriver/blob/master/CHANGELOG.md
