@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Added
+
+- _WD_WaitScript (@ye7iaserag)
+- _WD_Option: Support for `DetailErrors` option
+
+### Changed
+- Enable optional detailed error reporting
+	- _WD_Attach
+	- _WD_CreateSession
+	- _WD_DeleteSession
+	- _WD_FrameEnter
+	- _WD_FrameLeave
+	- _WD_LinkClickByText
+
 ## [ 0.13.0]
 
 ### Added

@@ -211,6 +211,7 @@ Global $_WD_DefaultTimeout = 10000 ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
+Global $_WD_DetailedErrors = False
 
 #EndRegion Global Variables
 
@@ -256,7 +257,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Else
 		If $iErr = $_WD_ERROR_SessionNotCreated Then
 			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
-		Else
+		ElseIf Not $_WD_DetailedErrors Then
 			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
@@ -281,7 +282,9 @@ EndFunc   ;==>_WD_CreateSession
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
 	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
-	Local $iErr = (@error) ? ($_WD_ERROR_Exception) : ($_WD_ERROR_Success)
+	Local $iErr = @error 
+	
+	If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
 
 	Local $sMessage = ($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted')
 	Local $iReturn = ($iErr) ? (0) : (1)
@@ -1041,6 +1044,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  |CONSOLESUFFIX  - Suffix for console output
 ;                  |DEBUGTRIM      - Length of response text written to the debug cocnsole
 ;                  |DEFAULTTIMEOUT - Default timeout (in miliseconds) used by other functions if no other value is supplied
+;                  |DETAILERRORS   - Return detailed error codes? (Boolean)
 ;                  |DRIVER         - Full path name to web driver executable
 ;                  |DRIVERCLOSE    - Close prior driver instances before launching new one (Boolean)
 ;                  |DRIVERDETECT   - Use existing driver instance if it exists (Boolean)
@@ -1106,6 +1110,13 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: int)"), 0, 0)
 			EndIf
 			$_WD_DefaultTimeout = $vValue
+
+			Case "detailerrors"
+				If $vValue == "" Then Return $_WD_DetailedErrors
+				If Not IsBool($vValue) Then
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: bool)"), 0, 0)
+				EndIf
+				$_WD_DetailedErrors = $vValue
 
 		Case "driver"
 			If $vValue == "" Then Return $_WD_DRIVER
@@ -1175,7 +1186,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: none)"), 0, 0)
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $sOption: BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version)"), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $sOption: BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|DetailErrors|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version)"), 0, 0)
 	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sParameters), 0, 1)

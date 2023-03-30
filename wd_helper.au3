@@ -244,8 +244,9 @@ Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 	If $sMode = Default Then $sMode = 'title'
 
 	$aHandles = _WD_Window($sSession, 'handles')
+	$iErr = @error
 
-	If @error = $_WD_ERROR_Success Then
+	If $iErr = $_WD_ERROR_Success Then
 		$sCurrentTab = _WD_Window($sSession, 'window')
 
 		For $sHandle In $aHandles
@@ -280,7 +281,7 @@ Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 
 			$iErr = $_WD_ERROR_NoMatch
 		EndIf
-	Else
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
@@ -320,7 +321,7 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartNodeID =
 		_WD_ElementAction($sSession, $sElement, 'click')
 		$iErr = @error
 
-		If $iErr <> $_WD_ERROR_Success Then
+		If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then
 			$iErr = $_WD_ERROR_Exception
 		EndIf
 	Else
@@ -767,7 +768,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
-	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue And Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
@@ -806,7 +807,7 @@ Func _WD_FrameLeave($sSession)
 		Else
 			$sValue = True
 		EndIf
-	Else
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
