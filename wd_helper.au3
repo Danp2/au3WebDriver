@@ -245,8 +245,9 @@ Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 	If $sMode = Default Then $sMode = 'title'
 
 	$aHandles = _WD_Window($sSession, 'handles')
+	$iErr = @error
 
-	If @error = $_WD_ERROR_Success Then
+	If $iErr = $_WD_ERROR_Success Then
 		$sCurrentTab = _WD_Window($sSession, 'window')
 
 		For $sHandle In $aHandles
@@ -281,7 +282,7 @@ Func _WD_Attach($sSession, $sSearch, $sMode = Default)
 
 			$iErr = $_WD_ERROR_NoMatch
 		EndIf
-	Else
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
@@ -321,7 +322,7 @@ Func _WD_LinkClickByText($sSession, $sText, $bPartial = Default, $sStartNodeID =
 		_WD_ElementAction($sSession, $sElement, 'click')
 		$iErr = @error
 
-		If $iErr <> $_WD_ERROR_Success Then
+		If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then
 			$iErr = $_WD_ERROR_Exception
 		EndIf
 	Else
@@ -453,6 +454,78 @@ Func _WD_WaitElement($sSession, $sStrategy, $sSelector, $iDelay = Default, $iTim
 EndFunc   ;==>_WD_WaitElement
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_WaitScript
+; Description ...: Wait for a JavaScript snippet to return true.
+; Syntax ........: _WD_WaitScript($sSession, $sJavaScript[, $iDelay = Default[, $iTimeout = Default[, $iOptions = Default]]])
+; Parameters ....: $sSession  - Session ID from _WD_CreateSession
+;                  $sJavaScript - JavaScript to run
+;                  $iDelay    - [optional] Milliseconds to wait before initially checking status
+;                  $iTimeout  - [optional] Period of time (in milliseconds) to wait before exiting function
+; Return values .: Success - True
+;                  Failure - False and sets @error to one of the following values:
+;                  - $_WD_ERROR_InvalidArgue
+;                  - $_WD_ERROR_RetValue
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_UserAbort
+; Author ........: yehiaserag
+; Modified ......:
+; Remarks .......: The Javascript needs to return either True or False.
+; Related .......: _WD_ExecuteScript
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_WaitScript($sSession, $sJavaScript, $iDelay = Default, $iTimeout = Default)
+	Local Const $sFuncName = "_WD_WaitScript"
+	Local Const $sParameters = 'Parameters:   JavaScript=' & $sJavaScript & '   Delay=' & $iDelay & '   Timeout=' & $iTimeout
+	Local $iErr
+	Local $bValue = False
+
+	If $iDelay = Default Then $iDelay = 0
+	If $iTimeout = Default Then $iTimeout = $_WD_DefaultTimeout
+
+	If StringLeft($sJavaScript, 6) <> "return" Then
+		$iErr = $_WD_ERROR_InvalidArgue
+	Else
+		__WD_Sleep($iDelay)
+		$iErr = @error
+
+		; prevent multiple errors https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+		; Prevent logging from _WD_ExecuteScript if not in Full debug mode
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
+		Local $hWaitTimer = TimerInit()
+		While 1
+			If $iErr Then ExitLoop
+
+			$bValue = _WD_ExecuteScript($sSession, 'return !!((function(){' & $sJavaScript & '})())', Default, Default, $_WD_JSON_Value)
+			$iErr = @error
+
+			If $iErr <> $_WD_ERROR_Success Then
+				; Exit loop if unexpected error occurs
+				ExitLoop
+			ElseIf $bValue = False Then
+				If (TimerDiff($hWaitTimer) > $iTimeout) Then
+					$iErr = $_WD_ERROR_Timeout
+					ExitLoop
+				EndIf
+
+				__WD_Sleep(10)
+				$iErr = @error
+			Else
+				$iErr = $_WD_ERROR_Success
+				ExitLoop
+			EndIf
+		WEnd
+		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+	EndIf
+
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $bValue)
+EndFunc   ;==>_WD_WaitScript
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_DebugSwitch
 ; Description ...: Switch to new debug level or switch back to saved debug level
 ; Syntax ........: _WD_DebugSwitch([$vMode = Default])
@@ -490,7 +563,7 @@ Func _WD_DebugSwitch($vMode = Default, $iErr = @error, $iExt = @extended)
 		$iStackSize = -2
 		$sMessage = 'Invalid argument in function-call'
 	EndIf
-	
+
 	$sMessage &= " / " & (($iStackSize < 0) ? (" error code: ") : (" stack size: ")) & $iStackSize
 	__WD_ConsoleWrite($sFuncName & ": " & $sMessage, $_WD_DEBUG_Info)
 	Return SetError($iErr, $iExt, $iStackSize) ; do not use __WD_Error() here as $iErr and $iExt are preserved and not belongs to this function
@@ -696,7 +769,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
-	ElseIf $iErr <> $_WD_ERROR_InvalidArgue Then
+	ElseIf $iErr <> $_WD_ERROR_InvalidArgue And Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
@@ -735,7 +808,7 @@ Func _WD_FrameLeave($sSession)
 		Else
 			$sValue = True
 		EndIf
-	Else
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 

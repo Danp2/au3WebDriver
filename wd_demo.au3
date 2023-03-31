@@ -43,7 +43,8 @@ Global $aDemoSuite[][3] = _
 		["DemoSleep", False, False], _
 		["DemoSelectOptions", False, False], _
 		["DemoStyles", False, False], _
-		["UserTesting", False, False] _
+		["UserTesting", False, False], _
+		["UserFile", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -1091,21 +1092,46 @@ Func DemoStyles()
 EndFunc   ;==>DemoStyles
 
 #Region - UserTesting
-Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
-	_WD_Navigate($sSession, 'https://www.google.com')
-	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+Func UserTesting()
+	; if necessary, you can modify the following function content by replacing, adding any additional function required for testing within this function
+	Local $vResult
+	$vResult = _WD_Navigate($sSession, 'https://www.google.com')
+	If @error Then Return SetError(@error, @extended, $vResult)
+
+	$vResult = _WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 2:" & @CRLF)
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
-;~ 	Exit
+	$vResult = _WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
+	If @error Then Return SetError(@error, @extended, $vResult)
 EndFunc   ;==>UserTesting
 
 ; if necessary, add any additional function required for testing within this region here
-
 #EndRegion - UserTesting
+
+Func UserFile()
+	Local Const $sFuncName = 'UserFile'
+	; Modify the contents of UserTesting.au3 (or create new one) to change the code being executed.
+	; Changes can be made and executed without restarting this script
+	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting.au3')
+	If @error Then Return SetError(@error, @extended)
+
+	Local $aCmds = FileReadToArray($sScriptFileFullPath)
+	If @error Then Return SetError(@error, @extended)
+
+	Local $iLine = 0
+	For $sCmd In $aCmds
+		$iLine += 1
+		; Strip comments
+		; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
+		$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
+		If $sCmd Then Execute($sCmd)
+	Next
+EndFunc   ;==>UserFile
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.

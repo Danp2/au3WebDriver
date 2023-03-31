@@ -9,6 +9,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Added
+
+- _WD_WaitScript (@ye7iaserag)
+- _WD_Option: Support for `DetailErrors` option
+
+### Changed
+- Enable optional detailed error reporting
+	- _WD_Attach
+	- _WD_CreateSession
+	- _WD_DeleteSession
+	- _WD_FrameEnter
+	- _WD_FrameLeave
+	- _WD_LinkClickByText
+
+## [ 0.13.0]
+
+### Added
+
+- _WD_ElementActionEx: Support for `remove` command (@Sven-Seyfert)
+
+### Changed
+
+- _WD_LoadWait: Invalid context detection
+- _WD_CheckContext: Invalid context detection
+- _WD_Window: Accept unformatted handles (@seadoggie01)
+- _WD_CreateSession: Improved error handling (@mlipok)
+- __WD_DetectError
+	- Detect session not created errors
+	- Detect shadow root not found errors
+	- Detect frame not found errors
+- _WD_DebugSwitch: Refactored to allow returning current stack size (@mlipok)
+- _WD_FrameList: Added frame visibility information (@mlipok)
+- _WD_ExecuteScript: Improved logging messages
+- _WD_Shutdown: Add delay before closing webdriver
+- wd_demo
+	- Set `binary` capability for geckodriver & operadriver
+	- Added UserFile demo to allow execution of code from file
+
+### Fixed
+
+- _WD_FrameLeave: Error reporting (@mlipok)
+- Remove leftover $_WD_HTTPRESULT checks (_WD_Window, _WD_ElementAction, _WD_FindElement)
+
 ## [ 0.12.0]
 
 ### Added
@@ -1019,7 +1064,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.12.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.13.0...HEAD
+[0.13.0]:     https://github.com/Danp2/au3WebDriver/compare/0.12.0...0.13.0
 [0.12.0]:     https://github.com/Danp2/au3WebDriver/compare/0.11.0...0.12.0
 [0.11.0]:     https://github.com/Danp2/au3WebDriver/compare/0.10.1...0.11.0
 [0.10.1]:     https://github.com/Danp2/au3WebDriver/compare/0.10.0...0.10.1
