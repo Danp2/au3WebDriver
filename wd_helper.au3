@@ -877,7 +877,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 			EndIf
 		EndIf
 
-	ElseIf $iErr <> $_WD_ERROR_Timeout Then
+	ElseIf $iErr <> $_WD_ERROR_Timeout And Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
