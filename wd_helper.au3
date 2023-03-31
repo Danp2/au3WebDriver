@@ -887,7 +887,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 		$iErr = @error
 		If $iErr Then
 			$sMessage &= 'Was not able back to "calling frame".'
-			$iErr = $_WD_ERROR_Exception
+			If $iErr And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
 		EndIf
 	Else
 		$sMessage &= 'Was not able to check "calling frame".'
