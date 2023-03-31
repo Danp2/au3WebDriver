@@ -17,6 +17,10 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 - _WD_Option: Support for `DetailErrors` option
 
 ### Changed
+- _WD_FrameList
+	- Refactored for better performance
+	- Improved frame support
+	- Improved logging
 - Enable optional detailed error reporting
 	- _WD_Attach
 	- _WD_CreateSession
