@@ -1216,30 +1216,31 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 	Local $iErr = $_WD_ERROR_Success
 	Local $sStartLocation = '', $sMessage = ''
 
-	; https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
-	; Prevent redundant logging from _Wd_FrameList and _WD_FrameEnter  and _WD_FindElement if not in Full debug mode
-	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
-	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
-
 	Local $aFrameList = _WD_FrameList($sSession, True)
 	$iErr = @error
-	If @error Then
+	If $iErr Then
 		$iErr = $_WD_ERROR_GeneralError
 		$sMessage = ' > Issue with getting list of frames'
 	Else
 		Local $iFrameCount = UBound($aFrameList, $UBOUND_ROWS)
+
 		For $i = 0 To $iFrameCount - 1
 			If $aFrameList[$i][$_WD_FRAMELIST_Relative] = '' Then $sStartLocation = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
 		Next
 
+		#Region ; this region is prevented from redundant logging ( _WD_FrameEnter and _WD_FindElement ) if not in Full debug mode > https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
 		For $i = $iFrameCount - 1 To 0 Step -1
 			_WD_FrameEnter($sSession, $aFrameList[$i][$_WD_FRAMELIST_Absolute])
-			If @error Then
-				$iErr = $_WD_ERROR_Exception
-				$sMessage = ' > Issue with entering frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+			$iErr = @error
+			If $iErr Then
+				If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+				$sMessage = ' > Issue with entering frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute] & '  URL=' & $aFrameList[$i][$_WD_FRAMELIST_URL]
 				ExitLoop
 			Else
-				_WD_FindElement($sSession, $sStrategy, $sSelector, Default, Default, $bShadowRoot)
+				$aFrameList[$i][$_WD_FRAMELIST_MatchedElements] = _WD_FindElement($sSession, $sStrategy, $sSelector, Default, True, $bShadowRoot)
 				$iErr = @error
 				If $iErr = $_WD_ERROR_Success Then
 					ContinueLoop ; keep the frame in the list and continue searching in next frame
@@ -1247,8 +1248,9 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 					_ArrayDelete($aFrameList, $i) ; delete frame from the list because the searched element do not exist within the frame
 					ContinueLoop
 				Else
-					$iErr = $_WD_ERROR_Exception
-					$sMessage = ' > Issue with finding element in frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+					If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+					$sMessage = ' > Issue with finding element in frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute] & '  URL=' & $aFrameList[$i][$_WD_FRAMELIST_URL]
+					$aFrameList[$i][$_WD_FRAMELIST_MatchedElements] = ''
 					ExitLoop
 				EndIf
 			EndIf
@@ -1264,16 +1266,19 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 
 		If $sStartLocation Then ; Back to "calling frame"
 			_WD_FrameEnter($sSession, $sStartLocation)
-			If @error Then $iErr = $_WD_ERROR_Exception
+			$iErr = @error
+			If $iErr And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+			#TODO @error REFACTORING NEEDED HERE
 		EndIf
 
-		If $sStartLocation = '' Or $iErr Then
-			$sMessage = ' > Was not able to check / back to "calling frame" : StartLocatkon=' & $sStartLocation
+		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+		$sMessage = $sParameters & $sMessage
+		#EndRegion ; this region is prevented from redundant logging ( _WD_FrameEnter and _WD_FindElement ) if not in Full debug mode > https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+
+		If $sStartLocation = '' Or ($iErr And $iErr <> $_WD_ERROR_NoMatch) Then
+			$sMessage = ' > Was not able to check / back to "calling frame" : StartLocation=' & $sStartLocation
 		EndIf
 	EndIf
-
-	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
-	$sMessage = $sParameters & $sMessage
 
 	Local $iExt = UBound($aFrameList, $UBOUND_ROWS)
 	If $iErr Or $iExt = 0 Then $aFrameList = ''
