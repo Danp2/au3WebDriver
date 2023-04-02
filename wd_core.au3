@@ -1272,7 +1272,7 @@ Func _WD_Startup()
 		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
 				$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
-		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
+		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSArch & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
 		__WD_ConsoleWrite($sFuncName & ": Webdriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
