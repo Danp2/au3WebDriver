@@ -1190,12 +1190,10 @@ EndFunc   ;==>_WD_LoadWait
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LocateElement
 ; Description ...: Search the current document (including frames) and return locations of matching elements
-; Syntax ........: _WD_LocateElement($sSession, $sStrategy, $sSelector[, $bShadowRoot = Default])
-;                  $iErr = @error[, $iExt = @extended]]]])
+; Syntax ........: _WD_LocateElement($sSession, $sStrategy, $sSelector)
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector    - $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
-;                  $bShadowRoot  - [optional] Starting node is a shadow root? Default is False
 ; Return values .: Success - array of matching frames (format like in _WD_FrameList)
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
@@ -1210,9 +1208,9 @@ EndFunc   ;==>_WD_LoadWait
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default)
+Func _WD_LocateElement($sSession, $sStrategy, $sSelector)
 	Local Const $sFuncName = "_WD_LocateElement"
-	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   ShadowRoot=' & $bShadowRoot
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector
 	Local $iErr = $_WD_ERROR_Success
 	Local $sStartLocation = '', $sMessage = ''
 
@@ -1223,7 +1221,6 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 		$sMessage = ' > Issue with getting list of frames'
 	Else
 		Local $iFrameCount = UBound($aFrameList, $UBOUND_ROWS)
-
 		For $i = 0 To $iFrameCount - 1
 			If $aFrameList[$i][$_WD_FRAMELIST_Relative] = '' Then $sStartLocation = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
 		Next
@@ -1240,7 +1237,7 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 				$sMessage = ' > Issue with entering frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute] & '  URL=' & $aFrameList[$i][$_WD_FRAMELIST_URL]
 				ExitLoop
 			Else
-				$aFrameList[$i][$_WD_FRAMELIST_MatchedElements] = _WD_FindElement($sSession, $sStrategy, $sSelector, Default, True, $bShadowRoot)
+				$aFrameList[$i][$_WD_FRAMELIST_MatchedElements] = _WD_FindElement($sSession, $sStrategy, $sSelector, Default, True, Default)
 				$iErr = @error
 				If $iErr = $_WD_ERROR_Success Then
 					ContinueLoop ; keep the frame in the list and continue searching in next frame
