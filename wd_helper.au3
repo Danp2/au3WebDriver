@@ -881,8 +881,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
-	; Back to "calling frame"
-	If $sStartLocation Then
+	If $sStartLocation Then ; Back to "calling frame"
 		_WD_FrameEnter($sSession, $sStartLocation)
 		$iErr = @error
 		If $iErr Then
@@ -1264,16 +1263,15 @@ Func _WD_FrameListFindElement($sSession, $sStrategy, $sSelector)
 		If $sStartLocation Then ; Back to "calling frame"
 			_WD_FrameEnter($sSession, $sStartLocation)
 			$iErr = @error
-			If $iErr And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+			If $iErr Then
+				$sMessage &= ' > Was not able to back to "calling frame" : StartLocation=' & $sStartLocation
+				If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+			EndIf
 		EndIf
 
 		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 		$sMessage = $sParameters & $sMessage
 		#EndRegion ; this region is prevented from redundant logging ( _WD_FrameEnter and _WD_FindElement ) if not in Full debug mode > https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
-
-		If $sStartLocation = '' Or ($iErr And $iErr <> $_WD_ERROR_NoMatch) Then
-			$sMessage &= ' > Was not able to check / back to "calling frame" : StartLocation=' & $sStartLocation
-		EndIf
 	EndIf
 
 	Local $iExt = UBound($aFrameList, $UBOUND_ROWS)
