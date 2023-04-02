@@ -77,14 +77,14 @@ Global Enum _
 		$_WD_STORAGE_Local = 0, _
 		$_WD_STORAGE_Session = 1
 
-Global Enum _ ; _WD_FrameList() , _WD_LocateElement()
+Global Enum _ ; _WD_FrameList() , _WD_FrameListFindElement()
 		$_WD_FRAMELIST_Absolute = 0, _
 		$_WD_FRAMELIST_Relative = 1, _
 		$_WD_FRAMELIST_Attributes = 2, _
 		$_WD_FRAMELIST_URL = 3, _
 		$_WD_FRAMELIST_BodyID = 4, _
 		$_WD_FRAMELIST_FrameVisibility = 5, _
-		$_WD_FRAMELIST_MatchedElements = 6, _ ; array of matched element from _WD_LocateElement()
+		$_WD_FRAMELIST_MatchedElements = 6, _ ; array of matched element from _WD_FrameListFindElement()
 		$_WD_FRAMELIST__COUNTER
 
 Global Enum _ ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
@@ -1188,9 +1188,9 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 EndFunc   ;==>_WD_LoadWait
 
 ; #FUNCTION# ====================================================================================================================
-; Name ..........: _WD_LocateElement
+; Name ..........: _WD_FrameListFindElement
 ; Description ...: Search the current document (including frames) and return locations of matching elements
-; Syntax ........: _WD_LocateElement($sSession, $sStrategy, $sSelector)
+; Syntax ........: _WD_FrameListFindElement($sSession, $sStrategy, $sSelector)
 ; Parameters ....: $sSession     - Session ID from _WD_CreateSession
 ;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
 ;                  $sSelector    - $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
@@ -1208,8 +1208,8 @@ EndFunc   ;==>_WD_LoadWait
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_LocateElement($sSession, $sStrategy, $sSelector)
-	Local Const $sFuncName = "_WD_LocateElement"
+Func _WD_FrameListFindElement($sSession, $sStrategy, $sSelector)
+	Local Const $sFuncName = "_WD_FrameListFindElement"
 	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector
 	Local $iErr = $_WD_ERROR_Success
 	Local $sStartLocation = '', $sMessage = ''
@@ -1279,7 +1279,7 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector)
 	Local $iExt = UBound($aFrameList, $UBOUND_ROWS)
 	If $iErr Or $iExt = 0 Then $aFrameList = ''
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $aFrameList)
-EndFunc   ;==>_WD_LocateElement
+EndFunc   ;==>_WD_FrameListFindElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
