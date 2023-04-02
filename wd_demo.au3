@@ -711,9 +711,9 @@ Func DemoFrames()
 
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example : Testing element location in frame set - after pre-checking list of frames" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Before _WD_LocateElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
+	_ArrayDisplay($aFrameList, 'Before _WD_FrameListFindElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 
-	Local $aLocationOfElement = _WD_LocateElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
+	Local $aLocationOfElement = _WD_FrameListFindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $aLocationOfElement (" & UBound($aLocationOfElement) & ")=" & @CRLF & _ArrayToString($aLocationOfElement) & @CRLF)
 	_ArrayDisplay($aLocationOfElement, '$aLocationOfElement', 0, 0, Default, $sArrayHeader)
 
