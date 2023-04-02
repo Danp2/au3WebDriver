@@ -1276,7 +1276,7 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 		#EndRegion ; this region is prevented from redundant logging ( _WD_FrameEnter and _WD_FindElement ) if not in Full debug mode > https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
 
 		If $sStartLocation = '' Or ($iErr And $iErr <> $_WD_ERROR_NoMatch) Then
-			$sMessage = ' > Was not able to check / back to "calling frame" : StartLocation=' & $sStartLocation
+			$sMessage &= ' > Was not able to check / back to "calling frame" : StartLocation=' & $sStartLocation
 		EndIf
 	EndIf
 
