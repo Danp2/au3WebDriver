@@ -1268,7 +1268,6 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 			_WD_FrameEnter($sSession, $sStartLocation)
 			$iErr = @error
 			If $iErr And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
-			#TODO @error REFACTORING NEEDED HERE
 		EndIf
 
 		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
