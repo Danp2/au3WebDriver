@@ -1219,7 +1219,7 @@ Func _WD_LocateElement($sSession, $sStrategy, $sSelector, $bShadowRoot = Default
 	Local $aFrameList = _WD_FrameList($sSession, True)
 	$iErr = @error
 	If $iErr Then
-		$iErr = $_WD_ERROR_GeneralError
+		If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_GeneralError
 		$sMessage = ' > Issue with getting list of frames'
 	Else
 		Local $iFrameCount = UBound($aFrameList, $UBOUND_ROWS)
