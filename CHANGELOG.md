@@ -30,6 +30,10 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- _WD_FrameList
 	- _WD_LinkClickByText
 
+### Fixed
+
+_WD_GetElementFromPoint: Frame support
+
 ## [ 0.13.0]
 
 ### Added
