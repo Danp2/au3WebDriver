@@ -2918,6 +2918,29 @@ Func _WD_CheckContext($sSession, $bReconnect = Default, $vTarget = Default)
 EndFunc   ;==>_WD_CheckContext
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_GetContext
+; Description ...: Retrieve the element ID of the current browsing context
+; Syntax ........: _WD_GetContext($sSession)
+; Parameters ....: $sSession - Session ID from _WD_CreateSession
+; Return values .: Success - Element ID of current frame / document
+;                  Failure - "" and sets @error to value returned from _WD_ExecuteScript()
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......: 
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_GetContext($sSession)
+	Local Const $sFuncName = "_WD_GetContext"
+	Local $sElement = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
+	Local $iErr = @error
+
+	If $iErr Then $sElement = ""
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetElementByRegEx
 ; Description ...: Find element by matching attributes values using Javascript regular expression
 ; Syntax ........: _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern[, $sRegExFlags = ""[, $bAll = False]])
