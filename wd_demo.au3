@@ -698,6 +698,26 @@ Func DemoFrames()
 	#EndRegion - Example 6v2 ; from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 
 	#EndRegion - Testing _WD_FrameList() usage
+
+	#Region - Testing element location in frame set and iframe collecion
+	; go to website
+	_WD_Navigate($sSession, 'https://www.tutorialspoint.com/html/html_frames.htm#')
+	_WD_LoadWait($sSession)
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	MsgBox($MB_TOPMOST, "", 'Before checking location of multiple elements on multiple frames' & @CRLF & 'Try the same example with and without waiting about 30 seconds in order to see that many frames should be fully loaded, and to check the differences')
+
+	$aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example : Testing element location in frame set - after pre-checking list of frames" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Before _WD_FrameListFindElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
+
+	Local $aLocationOfElement = _WD_FrameListFindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $aLocationOfElement (" & UBound($aLocationOfElement) & ")=" & @CRLF & _ArrayToString($aLocationOfElement) & @CRLF)
+	_ArrayDisplay($aLocationOfElement, '$aLocationOfElement', 0, 0, Default, $sArrayHeader)
+
+	#EndRegion - Testing element location in frame set and iframe collecion
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()

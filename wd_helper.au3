@@ -77,14 +77,14 @@ Global Enum _
 		$_WD_STORAGE_Local = 0, _
 		$_WD_STORAGE_Session = 1
 
-Global Enum _ ; _WD_FrameList() , _WD_LocateElement()
+Global Enum _ ; _WD_FrameList() , _WD_FrameListFindElement()
 		$_WD_FRAMELIST_Absolute = 0, _
 		$_WD_FRAMELIST_Relative = 1, _
 		$_WD_FRAMELIST_Attributes = 2, _
 		$_WD_FRAMELIST_URL = 3, _
 		$_WD_FRAMELIST_BodyID = 4, _
 		$_WD_FRAMELIST_FrameVisibility = 5, _
-		$_WD_FRAMELIST_MatchedElements = 6, _ ; array of matched element from _WD_LocateElement()
+		$_WD_FRAMELIST_MatchedElements = 6, _ ; array of matched element from _WD_FrameListFindElement()
 		$_WD_FRAMELIST__COUNTER
 
 Global Enum _ ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
@@ -881,8 +881,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
-	; Back to "calling frame"
-	If $sStartLocation Then
+	If $sStartLocation Then ; Back to "calling frame"
 		_WD_FrameEnter($sSession, $sStartLocation)
 		$iErr = @error
 		If $iErr Then
@@ -1186,6 +1185,99 @@ Func _WD_LoadWait($sSession, $iDelay = Default, $iTimeout = Default, $sElement =
 	Local $sMessage = $sParameters & '    : ReadyState= ' & $sReadyState
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $iReturn)
 EndFunc   ;==>_WD_LoadWait
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_FrameListFindElement
+; Description ...: Search the current document (including frames) and return locations of matching elements
+; Syntax ........: _WD_FrameListFindElement($sSession, $sStrategy, $sSelector)
+; Parameters ....: $sSession     - Session ID from _WD_CreateSession
+;                  $sStrategy    - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector    - $sSelector - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired element(s).
+; Return values .: Success - array of matching frames (format like in _WD_FrameList)
+;                  Failure - "" (empty string) and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_Exception
+;                  - $_WD_ERROR_NoMatch
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......: Returned location (path like 'null/2/0') can be used with _WD_FrameEnter before _WD_FindElement or _WD_WaitElement will be used.
+;                  In case when $_WD_ERROR_Exception is set returned location is valid, but was not able back to calling frame,
+;                  	or some frames have become inaccessible during processing
+; Related .......: _Wd_FrameList, _WD_FindElement
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_FrameListFindElement($sSession, $sStrategy, $sSelector)
+	Local Const $sFuncName = "_WD_FrameListFindElement"
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector
+	Local $iErr = $_WD_ERROR_Success
+	Local $sStartLocation = '', $sMessage = ''
+
+	Local $aFrameList = _WD_FrameList($sSession, True)
+	$iErr = @error
+	If $iErr Then
+		If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_GeneralError
+		$sMessage = ' > Issue with getting list of frames'
+	Else
+		Local $iFrameCount = UBound($aFrameList, $UBOUND_ROWS)
+		For $i = 0 To $iFrameCount - 1
+			If $aFrameList[$i][$_WD_FRAMELIST_Relative] = '' Then $sStartLocation = $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+		Next
+
+		#Region ; this region is prevented from redundant logging ( _WD_FrameEnter and _WD_FindElement ) if not in Full debug mode > https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+		Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
+
+		For $i = $iFrameCount - 1 To 0 Step -1
+			_WD_FrameEnter($sSession, $aFrameList[$i][$_WD_FRAMELIST_Absolute])
+			$iErr = @error
+			If $iErr Then
+				If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+				$sMessage = ' > Issue with entering frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute] & '  URL=' & $aFrameList[$i][$_WD_FRAMELIST_URL]
+				ExitLoop
+			Else
+				$aFrameList[$i][$_WD_FRAMELIST_MatchedElements] = _WD_FindElement($sSession, $sStrategy, $sSelector, Default, True, Default)
+				$iErr = @error
+				If $iErr = $_WD_ERROR_Success Then
+					ContinueLoop ; keep the frame in the list and continue searching in next frame
+				ElseIf $iErr = $_WD_ERROR_NoMatch Then ; element was not found on location: ' & $aFrameList[$i][$_WD_FRAMELIST_Absolute]
+					_ArrayDelete($aFrameList, $i) ; delete frame from the list because the searched element do not exist within the frame
+					ContinueLoop
+				Else
+					If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+					$sMessage = ' > Issue with finding element in frame=' & $aFrameList[$i][$_WD_FRAMELIST_Absolute] & '  URL=' & $aFrameList[$i][$_WD_FRAMELIST_URL]
+					$aFrameList[$i][$_WD_FRAMELIST_MatchedElements] = ''
+					ExitLoop
+				EndIf
+			EndIf
+		Next
+
+		If $i = -1 Then ; all frames was checked
+			If UBound($aFrameList) Then
+				$iErr = $_WD_ERROR_Success
+			Else
+				$iErr = $_WD_ERROR_NoMatch
+			EndIf
+		EndIf
+
+		If $sStartLocation Then ; Back to "calling frame"
+			_WD_FrameEnter($sSession, $sStartLocation)
+			$iErr = @error
+			If $iErr Then
+				$sMessage &= ' > Was not able to back to "calling frame" : StartLocation=' & $sStartLocation
+				If Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
+			EndIf
+		EndIf
+
+		$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
+		$sMessage = $sParameters & $sMessage
+		#EndRegion ; this region is prevented from redundant logging ( _WD_FrameEnter and _WD_FindElement ) if not in Full debug mode > https://github.com/Danp2/au3WebDriver/pull/290#issuecomment-1100707095
+	EndIf
+
+	Local $iExt = UBound($aFrameList, $UBOUND_ROWS)
+	If $iErr Or $iExt = 0 Then $aFrameList = ''
+	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $aFrameList)
+EndFunc   ;==>_WD_FrameListFindElement
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Screenshot
