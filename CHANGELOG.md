@@ -13,9 +13,10 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
-- _WD_WaitScript (@ye7iaserag)
 - _WD_FrameListFindElement (@mlipok)
+- _WD_GetContext
 - _WD_Option: Support for `DetailErrors` option
+- _WD_WaitScript (@ye7iaserag)
 
 ### Changed
 - _WD_FrameList (@mlipok)
