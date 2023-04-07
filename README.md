@@ -84,8 +84,10 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_FrameEnter          | Enter the specified frame.                                                      |
 | _WD_FrameLeave          | Leave the current frame, to its parent.                                         |
 | _WD_FrameList           | Retrieves a detailed list of the main document and all associated frames.       |
+| _WD_FrameListFindElement| Search the current document and return locations of matching elements.          |
 | _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                              |
 | _WD_GetBrowserVersion   | Get version number of specified browser.                                        |
+| _WD_GetContext          | Retrieve the element ID of the current browsing context.                        |
 | _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                             |
 | _WD_GetElementById      | Locate element by id.                                                           |
 | _WD_GetElementByName    | Locate element by name.                                                         |
@@ -118,6 +120,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_Storage             | Provide access to the browser's localStorage and sessionStorage objects.        |
 | _WD_UpdateDriver        | Replace web driver with newer version, if available.                            |
 | _WD_WaitElement         | Wait for an element in the current tab before returning.                        |
+| _WD_WaitScript          | Wait for a JavaScript snippet to return true.                                   |
 | _WD_jQuerify            | Inject jQuery library into current session.                                     |
 
 <p>
