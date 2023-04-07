@@ -2,6 +2,7 @@
 
 ; WebDriver related UDF's
 #include "wd_core.au3"
+#include "wd_helper.au3"
 #include "jq.au3"
 
 #Region Copyright
@@ -119,6 +120,7 @@ Func _WD_BidiConnect($sSession)
 
 	__WD_BidiActions('close', $sSession)
 	__WD_BidiActions('open', $sSession)
+	
 	If @error Then
 		$iErr = $_WD_ERROR_Exception
 	Else
@@ -378,7 +380,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 				; Prevent logging if not in Full debug mode
 				If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
-				If $iPort = 0 Then $iPort = __WD_GetFreePort(60000, 65000) ; Port used for the connection.
+				If $iPort = 0 Then $iPort = _WD_GetFreePort(60000, 65000) ; Port used for the connection.
 
 				Local $sWSUrl = _WD_BidiGetWebsocketURL($sArgument)
 
@@ -617,51 +619,3 @@ Func __WD_BidiSendData($iSocket, $sData)
 
 	TCPSend($iSocket, $sData)
 EndFunc   ;==>__WD_BidiSendData
-
-Func __WD_GetFreePort($iMinPort, $iMaxPort)
-	Local $aPorts = _WinAPI_GetTcpTable()
-
-	If Not @error Then
-		For $iPort = $iMinPort To $iMaxPort
-			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
-			If @error = 6 Then Return $iPort
-		Next
-	Endif
-
-	Return 0
-EndFunc   ;==>__WD_GetFreePort
-
-Func _WinAPI_GetTcpTable()
-    ;funkey 2012.12.14
-    Local Const $aConnState[12] = ["CLOSED", "LISTENING", "SYN_SENT", "SYN_RCVD", "ESTABLISHED", "FIN_WAIT1", _
-            "FIN_WAIT2", "CLOSE_WAIT", "CLOSING", "LAST_ACK", "TIME_WAIT", "DELETE_TCB"]
-
-    Local $tMIB_TCPTABLE = DllStructCreate("dword[6]")
-    Local $aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", 0, "BOOL", True)
-    Local $dwSize = $aRet[2]
-    $tMIB_TCPTABLE = DllStructCreate("DWORD[" & $dwSize / 4 & "]")
-
-    $aRet = DllCall("Iphlpapi.dll", "DWORD", "GetTcpTable", "struct*", $tMIB_TCPTABLE, "DWORD*", $dwSize, "BOOL", True)
-    If $aRet[0] <> 0 Then Return SetError(1)
-    Local $iNumEntries = DllStructGetData($tMIB_TCPTABLE, 1, 1)
-    Local $aRes[$iNumEntries][6]
-
-    For $i = 0 To $iNumEntries - 1
-        $aRes[$i][0] = DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 0)
-        $aRes[$i][1] = $aConnState[$aRes[$i][0] - 1]
-        $aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 1)) ; local IP / translate
-        $aRes[$i][2] = $aRet[0]
-        $aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 2)) ; local port / translate
-        $aRes[$i][3] = $aRet[0]
-        $aRet = DllCall("ws2_32.dll", "str", "inet_ntoa", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 3)) ; remote IP / translate
-        $aRes[$i][4] = $aRet[0]
-        If $aRes[$i][0] <= 2 Then
-            $aRes[$i][5] = 0
-        Else
-            $aRet = DllCall("ws2_32.dll", "ushort", "ntohs", "uint", DllStructGetData($tMIB_TCPTABLE, 1, 2 + $i * 5 + 4)) ; remote port / translate
-            $aRes[$i][5] = $aRet[0]
-        EndIf
-    Next
-
-    Return $aRes
-EndFunc   ;==>_WinAPI_GetTcpTable
