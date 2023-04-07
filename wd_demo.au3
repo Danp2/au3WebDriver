@@ -43,7 +43,8 @@ Global $aDemoSuite[][3] = _
 		["DemoSleep", False, False], _
 		["DemoSelectOptions", False, False], _
 		["DemoStyles", False, False], _
-		["UserTesting", False, False] _
+		["UserTesting", False, False], _
+		["UserFile", False, False] _
 		]
 
 Global Const $aDebugLevel[][2] = _
@@ -575,7 +576,9 @@ EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
 	Local $sElement, $bIsWindowTop
+	Local Const $sArrayHeader = 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|FRAME attributes|URL|Body ElementID|IsHidden|MatchedElements'
 
+	#Region - Testing how to manage frames
 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
 	If @error Then Return SetError(@error, @extended)
 
@@ -597,12 +600,10 @@ Func DemoFrames()
 	; after changing context to first frame the current context is not on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
+	; changing context to first sub frame using iframe element specified ByXPath
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
-	; changing context to first sub frame
 	_WD_FrameEnter($sSession, $sElement)
 	If @error Then Return SetError(@error, @extended)
-
-	_WD_LinkClickByText($sSession, "Not Sure Where")
 
 	; Leaving sub frame
 	_WD_FrameLeave($sSession)
@@ -615,80 +616,108 @@ Func DemoFrames()
 	; Leaving first frame
 	_WD_FrameLeave($sSession)
 	If @error Then Return SetError(@error, @extended)
+	#EndRegion - Testing how to manage frames
 
+	#Region - Testing _WD_FrameList() usage
+
+	#Region - Example 1 ; from 'https://www.w3schools.com' get frame list as string
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after leaving first frame, the current context should back on top level Window
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
-	; now lets try to check frame list and using locations as path:
-	; go to website
+	; now lets try to check frame list and using locations as path 'null/0'
+	; firstly go to website
 	_WD_Navigate($sSession, 'https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe')
 	_WD_LoadWait($sSession)
 
-	; Example 1 - from 'https://www.w3schools.com' get frame list as string
 	Local $sResult = _WD_FrameList($sSession, False)
-	#forceref $sResult
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 1" & @CRLF)
 	ConsoleWrite($sResult & @CRLF)
+	#EndRegion - Example 1 ; from 'https://www.w3schools.com' get frame list as string
 
-	; Example 2 - from 'https://www.w3schools.com' get frame list as array
+	#Region - Example 2 ; from 'https://www.w3schools.com' get frame list as array
 	Local $aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 2" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array, with HTML content of each document', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 
-	; check if document context location is Top Window
+	#EndRegion - Example 2 ; from 'https://www.w3schools.com' get frame list as array
+
+	#Region - Example 3 ; from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
+	; check if document context location is Top Window - should be as we are after navigation
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; change document context location
+	; change document context location by path 'null/0'
 	_WD_FrameEnter($sSession, 'null/0')
 
-	; check if document context location is Top Window
+	; check if document context location is Top Window - should not be as we enter to frame 'null/0'
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; Example 3 - from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 3" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/0"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/0"', 0, 0, Default, $sArrayHeader)
+	#EndRegion - Example 3 ; from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
 
+	#Region - Example 4 ; from 'https://stackoverflow.com' get frame list as string
 	; go to another website
 	_WD_Navigate($sSession, 'https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom')
 	_WD_LoadWait($sSession)
 
-	; Example 4 - from 'https://stackoverflow.com' get frame list as string
 	$sResult = _WD_FrameList($sSession, False)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 4" & @CRLF)
 	ConsoleWrite($sResult & @CRLF)
+	#EndRegion - Example 4 ; from 'https://stackoverflow.com' get frame list as string
 
-	; Example 5 - from 'https://stackoverflow.com' get frame list as array
+	#Region - Example 5 ; from 'https://stackoverflow.com' get frame list as array
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 5" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 5 - stackoverflow.com - get frame list as array', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+	_ArrayDisplay($aFrameList, 'Example 5 - stackoverflow.com - get frame list as array', 0, 0, Default, $sArrayHeader)
+	#EndRegion - Example 5 ; from 'https://stackoverflow.com' get frame list as array
 
-	; check if document context location is Top Window
+	#Region - Example 6v1 ; from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
+	; check if document context location is Top Window - should be as we are after navigation
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; change document context location
+	; change document context location by path 'null/2'
 	_WD_FrameEnter($sSession, 'null/2')
 
-	; check if document context location is Top Window
+	; check if document context location is Top Window - should not be as we enter to frame 'null/2'
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; Example 6v1 - from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v1" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 6v1 - stackoverflow.com - relative to "null/2"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+	_ArrayDisplay($aFrameList, 'Example 6v1 - stackoverflow.com - relative to "null/2"', 0, 0, Default, $sArrayHeader)
+	#EndRegion - Example 6v1 ; from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
 
+	#Region - Example 6v2 ; from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 	; check if document context location is Top Window
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
-	; Example 6v2 - from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 	$aFrameList = _WD_FrameList($sSession, True)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v2" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Example 6v2 - stackoverflow.com - check if it is still relative to "null/2"', 0, 0, Default, 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID')
+	_ArrayDisplay($aFrameList, 'Example 6v2 - stackoverflow.com - check if it is still relative to "null/2"', 0, 0, Default, $sArrayHeader)
+	#EndRegion - Example 6v2 ; from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
+
+	#EndRegion - Testing _WD_FrameList() usage
+
+	#Region - Testing element location in frame set and iframe collecion
+	; go to website
+	_WD_Navigate($sSession, 'https://www.tutorialspoint.com/html/html_frames.htm#')
+	_WD_LoadWait($sSession)
 
 	; check if document context location is Top Window
 	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
+	MsgBox($MB_TOPMOST, "", 'Before checking location of multiple elements on multiple frames' & @CRLF & 'Try the same example with and without waiting about 30 seconds in order to see that many frames should be fully loaded, and to check the differences')
+
+	$aFrameList = _WD_FrameList($sSession, True)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example : Testing element location in frame set - after pre-checking list of frames" & @CRLF)
+	_ArrayDisplay($aFrameList, 'Before _WD_FrameListFindElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
+
+	Local $aLocationOfElement = _WD_FrameListFindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $aLocationOfElement (" & UBound($aLocationOfElement) & ")=" & @CRLF & _ArrayToString($aLocationOfElement) & @CRLF)
+	_ArrayDisplay($aLocationOfElement, '$aLocationOfElement', 0, 0, Default, $sArrayHeader)
+
+	#EndRegion - Testing element location in frame set and iframe collecion
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
@@ -1083,21 +1112,46 @@ Func DemoStyles()
 EndFunc   ;==>DemoStyles
 
 #Region - UserTesting
-Func UserTesting() ; here you can replace the code to test your stuff before you ask on the forum
-	_WD_Navigate($sSession, 'https://www.google.com')
-	_WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+Func UserTesting()
+	; if necessary, you can modify the following function content by replacing, adding any additional function required for testing within this function
+	Local $vResult
+	$vResult = _WD_Navigate($sSession, 'https://www.google.com')
+	If @error Then Return SetError(@error, @extended, $vResult)
+
+	$vResult = _WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
+	If @error Then Return SetError(@error, @extended, $vResult)
 
 	ConsoleWrite("- Test 2:" & @CRLF)
-	_WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
-;~ 	Exit
+	$vResult = _WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
+	If @error Then Return SetError(@error, @extended, $vResult)
 EndFunc   ;==>UserTesting
 
 ; if necessary, add any additional function required for testing within this region here
-
 #EndRegion - UserTesting
+
+Func UserFile()
+	Local Const $sFuncName = 'UserFile'
+	; Modify the contents of UserTesting.au3 (or create new one) to change the code being executed.
+	; Changes can be made and executed without restarting this script
+	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting.au3')
+	If @error Then Return SetError(@error, @extended)
+
+	Local $aCmds = FileReadToArray($sScriptFileFullPath)
+	If @error Then Return SetError(@error, @extended)
+
+	Local $iLine = 0
+	For $sCmd In $aCmds
+		$iLine += 1
+		; Strip comments
+		; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
+		$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
+		If $sCmd Then Execute($sCmd)
+	Next
+EndFunc   ;==>UserFile
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
@@ -1137,6 +1191,16 @@ Func SetupGecko($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'firefox')
 	_WD_CapabilitiesAdd('browserName', 'firefox')
 	_WD_CapabilitiesAdd('acceptInsecureCerts', True)
+	; REMARKS
+	; When using 32bit geckodriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit geckodriver.exe,
+	;  but at the same time setting it is not affecting the script.
+	Local $sPath = _WD_GetBrowserPath("firefox")
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
+
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
@@ -1184,12 +1248,15 @@ Func SetupOpera($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'opera')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
-	; REMARK
-	; using 32bit operadriver.exe requires to set 'binary' capabilities,
-	; using 64bit operadriver.exe dosen't require to set this capability, but at the same time setting is not affecting the script
-	; So this is good habit to setup for any case.
-	_WD_CapabilitiesAdd('binary', _WD_GetBrowserPath("opera"))
-	ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & _WD_GetBrowserPath("opera") & @CRLF)
+	; REMARKS
+	; When using 32bit operadriver.exe, you may need to set 'binary' option.
+	; This shouldn't be needed when using 64bit operadriver.exe,
+	;  but at the same time setting it is not affecting the script.
+	Local $sPath = _WD_GetBrowserPath("opera")
+	If Not @error Then
+		_WD_CapabilitiesAdd('binary', $sPath)
+		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+	EndIf
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
