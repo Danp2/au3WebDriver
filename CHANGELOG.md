@@ -35,7 +35,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 _WD_GetElementFromPoint: Frame support
 
-## [ 0.13.0]
+## [ 0.13.0] - 2023-03-26
 
 ### Added
 
@@ -64,7 +64,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_FrameLeave: Error reporting (@mlipok)
 - Remove leftover $_WD_HTTPRESULT checks (_WD_Window, _WD_ElementAction, _WD_FindElement)
 
-## [ 0.12.0]
+## [ 0.12.0] - 2023-02-15
 
 ### Added
 
@@ -76,7 +76,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_CreateSession: Revise default capabilities
 - _WD_ElementActionEx: Scroll element into view by default
 
-## [ 0.11.0]
+## [ 0.11.0] - 2022-10-03
 
 ### Added
 
@@ -102,7 +102,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_Alert: Set correct error code when 'status' no alert present
 - Improved error detection in winhttp routines
 
-## [0.10.1]
+## [0.10.1] - 2022-07-29
 
 ### Added
 
@@ -118,7 +118,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_CapabilitiesAdd: Support keys containing colons
 - _WD_ElementSelectAction: Altering selection now triggers Change event
 
-## [0.10.0]
+## [0.10.0] - 2022-07-13
 
 ### Added
 
@@ -147,7 +147,7 @@ _WD_GetElementFromPoint: Frame support
 
 - _WD_HighlightElement
 
-## [0.9.1]
+## [0.9.1] - 2022-06-04
 
 ### Fixed
 
@@ -155,7 +155,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_GetWebDriverVersion: Update regex for extracting version number
 - Help file search functionality
 
-## [0.9.0]
+## [0.9.0] - 2022-05-02
 
 ### Added
 
