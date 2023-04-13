@@ -1233,6 +1233,7 @@ Func SetupEdge($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'msedge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
+	_WD_CapabilitiesAdd('args', 'user-data-dir', @LocalAppDataDir & '\Microsoft\Edge\User Data\WD_Testing_Profile')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
