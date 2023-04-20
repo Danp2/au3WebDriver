@@ -1266,6 +1266,8 @@ Func SetupOpera($bHeadless)
 EndFunc   ;==>SetupOpera
 
 Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
+	#REMARK In order to properly use MS Edge In IE Mode you need To Do some settings - Set the "Internet, Local intranet, Trusted sites, Restricted sites" to protected mode, enabling or disabling it is not a matter
+	; https://www.edureka.co/community/1690/problem-using-internetexplorerdriver-selenium-webdriver
 	Local $sTimeStamp = @YEAR & '-' & @MON & '-' & @MDAY & '_' & @HOUR & @MIN & @SEC
 	; https://www.selenium.dev/documentation/ie_driver_server/#required-configuration
 	_WD_Option('Driver', 'IEDriverServer.exe') ;
