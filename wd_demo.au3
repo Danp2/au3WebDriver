@@ -1292,7 +1292,6 @@ Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	ConsoleWrite("! $sCapabilities (by hand) = " & @CRLF & $sCapabilities & @CRLF)
 #ce
 
-	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ie.edgepath")
 	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ie.edgechromium")
 	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ignoreProtectedModeSettings")
 	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "initialBrowserUrl")
@@ -1300,8 +1299,6 @@ Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'msedgeie')
 	_WD_CapabilitiesAdd('w3c', True)
-	Local $sPath = _WD_GetBrowserPath("msedge")
-	If $sPath Then _WD_CapabilitiesAdd("ie.edgepath", $sPath)
 	_WD_CapabilitiesAdd("ie.edgechromium", True)
 	_WD_CapabilitiesAdd("ignoreProtectedModeSettings", True)
 	_WD_CapabilitiesAdd("initialBrowserUrl", "https://google.com")
