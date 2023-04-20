@@ -21,7 +21,7 @@ Global Const $aBrowsers[][2] = _
 		["Chrome", SetupChrome], _
 		["MSEdge", SetupEdge], _
 		["Opera", SetupOpera], _
-		["MSEdgeIEMode", SetupIEMode] _
+		["IEMode", SetupIEMode] _
 		]
 
 ; Column 0 - Function Name
