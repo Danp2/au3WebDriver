@@ -21,7 +21,7 @@ Global Const $aBrowsers[][2] = _
 		["Chrome", SetupChrome], _
 		["MSEdge", SetupEdge], _
 		["Opera", SetupOpera], _
-		["IEMode", SetupIEMode] _
+		["MSEdgeIE", SetupEdgeIEMode] _
 		]
 
 ; Column 0 - Function Name
@@ -1265,7 +1265,7 @@ Func SetupOpera($bHeadless)
 	Return $sCapabilities
 EndFunc   ;==>SetupOpera
 
-Func SetupIEMode() ; this is for MS Edge IE Mode
+Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	Local $sTimeStamp = @YEAR & '-' & @MON & '-' & @MDAY & '_' & @HOUR & @MIN & @SEC
 	; https://www.selenium.dev/documentation/ie_driver_server/#required-configuration
 	_WD_Option('Driver', 'IEDriverServer.exe') ;
@@ -1295,7 +1295,7 @@ Func SetupIEMode() ; this is for MS Edge IE Mode
 	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ignoreProtectedModeSettings")
 
 	_WD_CapabilitiesStartup()
-	_WD_CapabilitiesAdd('alwaysMatch', 'iemode')
+	_WD_CapabilitiesAdd('alwaysMatch', 'msedgeie')
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd("ie.edgepath", "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
 	_WD_CapabilitiesAdd("ie.edgechromium", True)
@@ -1305,4 +1305,4 @@ Func SetupIEMode() ; this is for MS Edge IE Mode
 	Local $sCapabilities = _WD_CapabilitiesGet()
 ;~ 	ConsoleWrite("! $sCapabilities (by UDF) = " & @CRLF & $sCapabilities & @CRLF)
 	Return $sCapabilities
-EndFunc   ;==>SetupIEMode
+EndFunc   ;==>SetupEdgeIEMode
