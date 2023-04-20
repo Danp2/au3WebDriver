@@ -20,7 +20,8 @@ Global Const $aBrowsers[][2] = _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
 		["MSEdge", SetupEdge], _
-		["Opera", SetupOpera] _
+		["Opera", SetupOpera], _
+		["MSEdgeIEMode", SetupIEMode] _
 		]
 
 ; Column 0 - Function Name
@@ -1263,3 +1264,45 @@ Func SetupOpera($bHeadless)
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
 EndFunc   ;==>SetupOpera
+
+Func SetupIEMode() ; this is for MS Edge IE Mode
+	Local $sTimeStamp = @YEAR & '-' & @MON & '-' & @MDAY & '_' & @HOUR & @MIN & @SEC
+	; https://www.selenium.dev/documentation/ie_driver_server/#required-configuration
+	_WD_Option('Driver', 'IEDriverServer.exe') ;
+	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\' & $sTimeStamp & ' EdgeIEDriver.log" --log trace')
+	_WD_Option('Port', 5555)
+#cs
+	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
+	Local $sCapabilities = _
+			'{' & @CRLF & _
+			'    "capabilities": {' & @CRLF & _
+			'        "alwaysMatch": {' & @CRLF & _
+			'            "se:ieOptions": {' & @CRLF & _
+			'                "ie.edgepath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",' & @CRLF & _
+			'                "ie.edgechromium":true,' & @CRLF & _
+			'                "ignoreProtectedModeSettings":true,' & @CRLF & _
+			'                "excludeSwitches": ["enable-automation"]' & @CRLF & _
+			'            }' & @CRLF & _
+			'        }' & @CRLF & _
+			'    }' & @CRLF & _
+			'}' & @CRLF & _
+			''
+	ConsoleWrite("! $sCapabilities (by hand) = " & @CRLF & $sCapabilities & @CRLF)
+#ce
+
+	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ie.edgepath")
+	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ie.edgechromium")
+	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ignoreProtectedModeSettings")
+
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'iemode')
+	_WD_CapabilitiesAdd('w3c', True)
+	_WD_CapabilitiesAdd("ie.edgepath", "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
+	_WD_CapabilitiesAdd("ie.edgechromium", True)
+	_WD_CapabilitiesAdd("ignoreProtectedModeSettings", True)
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesDump(@ScriptLineNumber)
+	Local $sCapabilities = _WD_CapabilitiesGet()
+;~ 	ConsoleWrite("! $sCapabilities (by UDF) = " & @CRLF & $sCapabilities & @CRLF)
+	Return $sCapabilities
+EndFunc   ;==>SetupIEMode
