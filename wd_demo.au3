@@ -285,6 +285,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		Case Else
 			ConsoleWrite("! Error = " & $iError & " occurred on: " & $sDemoName & @CRLF)
 			ConsoleWrite("! _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+			ConsoleWrite("! _WD_LastHTTPResponse = " & _WD_LastHTTPResponse() & @CRLF)
 			ConsoleWrite("! _WD_GetSession = " & _WD_GetSession($sSession) & @CRLF)
 			MsgBox($MB_ICONERROR + $MB_TOPMOST, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
@@ -1169,16 +1170,21 @@ EndFunc   ;==>_USER_WD_Sleep
 
 Func _Demo_NavigateCheckBanner($sSession, $sURL, $sXpath)
 	_WD_Navigate($sSession, $sURL)
+	If @error Then Return SetError(@error, @extended, 0)
+
 	_WD_LoadWait($sSession)
+	If @error Then Return SetError(@error, @extended, 0)
 
 	; Check if designated element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath, 0, 1000 * 60, $_WD_OPTION_NoMatch)
 	If @error Then
+		Local $iErr = @error, $iExt = @extended
 		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
-		Return SetError(@error, @extended)
+		Return SetError($iErr, $iExt)
 	EndIf
 
 	_WD_LoadWait($sSession)
+	Return SetError(@error, @extended, 0)
 EndFunc   ;==>_Demo_NavigateCheckBanner
 
 Func SetupGecko($bHeadless)
