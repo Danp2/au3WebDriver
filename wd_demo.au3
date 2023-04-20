@@ -1290,10 +1290,6 @@ Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	ConsoleWrite("! $sCapabilities (by hand) = " & @CRLF & $sCapabilities & @CRLF)
 #ce
 
-	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ie.edgechromium")
-	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "ignoreProtectedModeSettings")
-	_WD_CapabilitiesDefine($_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, "initialBrowserUrl")
-
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'msedgeie')
 	_WD_CapabilitiesAdd('w3c', True)
