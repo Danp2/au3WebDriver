@@ -1270,35 +1270,19 @@ Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	Local $sTimeStamp = @YEAR & '-' & @MON & '-' & @MDAY & '_' & @HOUR & @MIN & @SEC
 	_WD_Option('Driver', 'IEDriverServer.exe') ;
 	_WD_Option('Port', 5555)
-	_WD_Option('DriverParams', '-log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $_WD_PORT & " -host=127.0.0.1" )
-#cs
-	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
-	Local $sCapabilities = _
-			'{' & @CRLF & _
-			'    "capabilities": {' & @CRLF & _
-			'        "alwaysMatch": {' & @CRLF & _
-			'            "se:ieOptions": {' & @CRLF & _
-			'                "ie.edgepath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",' & @CRLF & _
-			'                "ie.edgechromium":true,' & @CRLF & _
-			'                "ignoreProtectedModeSettings":true,' & @CRLF & _
-			'                "excludeSwitches": ["enable-automation"]' & @CRLF & _
-			'            }' & @CRLF & _
-			'        }' & @CRLF & _
-			'    }' & @CRLF & _
-			'}' & @CRLF & _
-			''
-	ConsoleWrite("! $sCapabilities (by hand) = " & @CRLF & $sCapabilities & @CRLF)
-#ce
+	_WD_Option('DriverParams', '-log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $_WD_PORT & " -host=127.0.0.1")
 
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
 	_WD_CapabilitiesAdd('alwaysMatch', 'msedgeie')
 	_WD_CapabilitiesAdd('w3c', True)
+	Local $sPath = _WD_GetBrowserPath("msedge")
+	If $sPath Then _WD_CapabilitiesAdd("ie.edgepath", $sPath)
 	_WD_CapabilitiesAdd("ie.edgechromium", True)
 	_WD_CapabilitiesAdd("ignoreProtectedModeSettings", True)
 	_WD_CapabilitiesAdd("initialBrowserUrl", "https://google.com")
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	_WD_CapabilitiesDump(@ScriptLineNumber)
 	Local $sCapabilities = _WD_CapabilitiesGet()
-;~ 	ConsoleWrite("! $sCapabilities (by UDF) = " & @CRLF & $sCapabilities & @CRLF)
 	Return $sCapabilities
 EndFunc   ;==>SetupEdgeIEMode
