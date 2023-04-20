@@ -188,6 +188,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 
 	; Execute browser setup routine for user's browser selection
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
+	If @error Then Return SetError(@error, @extended, 0)
 
 	ConsoleWrite("> wd_demo.au3: _WD_Startup" & @CRLF)
 	Local $iWebDriver_PID = _WD_Startup()
