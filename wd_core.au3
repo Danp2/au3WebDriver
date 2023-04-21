@@ -1229,7 +1229,10 @@ Func _WD_Startup()
 		Case @error = 0xDEAD And @extended = 0xBEEF
 			; function not available
 
-		Case @error
+		Case @error = $_WD_ERROR_GeneralError
+			$sPortAvailable = " (Unknown)"
+
+		Case @error = $_WD_ERROR_NotFound
 			$sPortAvailable = " (Unavailable)"
 	EndSelect
 
