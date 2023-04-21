@@ -818,9 +818,11 @@ EndFunc   ;==>_WD_FrameLeave
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameList
 ; Description ...: Retrieves a detailed list of the main document and all associated frames
-; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True])
+; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True[, $iDelay = 1000[, $iTimeout = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $bReturnAsArray      - [optional] Return result as array? Default is True.
+;                  $iDelay              - [optional] Single delay before checking first frame. Default is 1000 ms
+;                  $iTimeout            - [optional] Timeout for _WD_LoadWait() calls for each frame. Default is $_WD_DefaultTimeout
 ; Return values .: Success - 2D array (with 7 cols) or string ( delimited with | and @CRLF ) @extended contains information about frame count
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
@@ -835,15 +837,15 @@ EndFunc   ;==>_WD_FrameLeave
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_FrameList($sSession, $bReturnAsArray = True)
+Func _WD_FrameList($sSession, $bReturnAsArray = True, $iDelay = 1000, $iTimeout = Default)
 	Local Const $sFuncName = "_WD_FrameList"
-	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray
+	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray & '    iDelay=' & $iDelay & '    iTimeout=' & $iTimeout
 	Local $a_Result[0][$_WD_FRAMELIST__COUNTER], $sStartLocation = '', $sMessage = ''
 	Local $vResult = '', $iErr = $_WD_ERROR_Success, $iFrameCount = 0
 
 	Local Const $sElement_CallingFrameBody = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 	If Not @error Then
-		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False)
+		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False, $iDelay, $iTimeout)
 	EndIf
 	$iErr = @error
 	#Region - post processing
@@ -902,11 +904,13 @@ EndFunc   ;==>_WD_FrameList
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_FrameList_Internal
 ; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
-; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
+; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden[, $iDelay = Default[, $iTimeout = Default]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sLevel              - frame location level path
 ;                  $sFrameAttributes    - frame attributes in HTML format
 ;                  $bIsHidden           - information about visibility of frame - taken by WebDriver
+;                  $iDelay              - [optional] Single delay before checking first frame. Default is 1000 ms
+;                  $iTimeout            - [optional] Timeout for _WD_LoadWait() calls for each frame. Default is $_WD_DefaultTimeout
 ; Return values .: Success - string
 ;                  Failure - "" (empty string) and sets @error returned from related functions
 ; Author ........: mLipok
@@ -916,9 +920,9 @@ EndFunc   ;==>_WD_FrameList
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
+Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iDelay = 1000, $iTimeout = Default)
 	Local Const $sFuncName = "__WD_FrameList_Internal"
-	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
+	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden & '    iDelay=' & $iDelay & '    iTimeout=' & $iTimeout ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
 	Local $iErr = $_WD_ERROR_Success, $sMessage = '', $vResult = ''
 	Local $s_URL = '', $sCurrentBody_ElementID = ''
 
@@ -929,12 +933,14 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
 		If $_WD_DEBUG_Saved <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None ; Prevent logging multiple errors from __WD_FrameList_Internal
 	EndIf
 
+	If $sLevel <> 'null' Then $iDelay = 0 ; checking if current context is main (top level) __WD_FrameList_Internal() call
+	
 	_WD_FrameEnter($sSession, $sLevel)
 	$iErr = @error
 	If $iErr Then
 		$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to entering frame'
 	Else
-		_WD_LoadWait($sSession, 100, 5000, Default, $_WD_READYSTATE_Complete)
+		_WD_LoadWait($sSession, $iDelay, $iTimeout, Default, $_WD_READYSTATE_Complete)
 		$iErr = @error
 		If $iErr And $iErr <> $_WD_ERROR_Timeout Then
 			$sMessage = 'Error occurred on "' & $sLevel & '" level when waiting for a browser page load to complete'
@@ -989,7 +995,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
 							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of subframe "' & $sLevel & '/' & $iFrame & '"'
 							ContinueLoop
 						Else
-							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden)
+							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iDelay, $iTimeout)
 							$iErr = @error
 							If $iErr Then
 								$sMessage = 'Error occurred on "' & $sLevel & '" level after processing subframe "' & $sLevel & '/' & $iFrame & '"'
