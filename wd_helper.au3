@@ -3221,11 +3221,11 @@ EndFunc   ;==>_WD_JsonActionKey
 Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 	Local Const $sFuncName = "_WD_GetFreePort"
 	Local Const $sParameters = 'Parameters:   MinPort=' & $iMinPort & '   MaxPort=' & $iMaxPort
-	Local $iResult = $iMinPort, $iErr = $_WD_ERROR_NotFound
 	Local $sMessage = 'No available ports found'
-
+	
 	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
 	If $iMinPort = Default Then $iMinPort = 64000
+	Local $iResult = $iMinPort, $iErr = $_WD_ERROR_NotFound
 	Local $aPorts = __WinAPI_GetTcpTable()
 
 	If @error Then
