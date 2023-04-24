@@ -3208,7 +3208,7 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Parameters ....: $iMinPort - [optional] Starting port number. Default is 64000
 ;                  $iMaxPort - [optional] Ending port number. Default is $iMinPort or 65000
 ; Return values .: Success - Available TCP port number
-;                  Failure - $iMinPort and sets @error to one of the following values:
+;                  Failure - Value from $iMinPort and sets @error to one of the following values:
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danp2
