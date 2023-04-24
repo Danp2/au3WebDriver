@@ -939,7 +939,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 	If $iErr Then
 		$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to entering frame'
 	Else
-		_WD_LoadWait($sSession, 0, $iTimeout, Default, $_WD_READYSTATE_Complete) ; checking if current context is main (top level) __WD_FrameList_Internal() call
+		_WD_LoadWait($sSession, 0, $iTimeout, Default, $_WD_READYSTATE_Complete) ; wait until current frame is fully loaded
 		$iErr = @error
 		If $iErr And $iErr <> $_WD_ERROR_Timeout Then
 			$sMessage = 'Error occurred on "' & $sLevel & '" level when waiting for a browser page load to complete'
