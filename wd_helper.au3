@@ -847,7 +847,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $iDelay = 1000, $iTimeout 
 
 	Local Const $sElement_CallingFrameBody = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 	If Not @error Then
-		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False, $iDelay, $iTimeout)
+		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False, $iTimeout)
 	EndIf
 	$iErr = @error
 	#Region - post processing
@@ -923,7 +923,7 @@ EndFunc   ;==>_WD_FrameList
 ; ===============================================================================================================================
 Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iTimeout = Default)
 	Local Const $sFuncName = "__WD_FrameList_Internal"
-	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden & '    iDelay=' & $iDelay & '    iTimeout=' & $iTimeout ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
+	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden & '    Timeout=' & $iTimeout ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
 	Local $iErr = $_WD_ERROR_Success, $sMessage = '', $vResult = ''
 	Local $s_URL = '', $sCurrentBody_ElementID = ''
 
@@ -994,7 +994,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, 
 							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of subframe "' & $sLevel & '/' & $iFrame & '"'
 							ContinueLoop
 						Else
-							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iDelay, $iTimeout)
+							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iTimeout)
 							$iErr = @error
 							If $iErr Then
 								$sMessage = 'Error occurred on "' & $sLevel & '" level after processing subframe "' & $sLevel & '/' & $iFrame & '"'
