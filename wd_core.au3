@@ -1212,7 +1212,7 @@ EndFunc   ;==>_WD_Option
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
 	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iErr = $_WD_ERROR_Success
-	Local $sDriverBitness = "", $sExistingDriver = "", $sPortAvailable = ""
+	Local $sDriverBitness = "", $sExistingDriver = "", $iPortAvailable = "", $sMessage = ""
 
 	If $_WD_DRIVER = "" Then
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
@@ -1223,17 +1223,22 @@ Func _WD_Startup()
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
 
 	$sFunction = "_WD_GetFreePort"
-	Call($sFunction, $_WD_PORT)
+	$iPortAvailable = Call($sFunction, $_WD_PORT, Int($_WD_PORT) + 1000)
 
 	Select
 		Case @error = 0xDEAD And @extended = 0xBEEF
 			; function not available
 
 		Case @error = $_WD_ERROR_GeneralError
-			$sPortAvailable = " (Unknown)"
+			$sMessage = " (Unknown error when tried to get free port)"
 
-		Case @error = $_WD_ERROR_NotFound
-			$sPortAvailable = " (Unavailable)"
+		Case @error
+			$sMessage = " (Unavailable free port between " & $_WD_PORT & " and " & (Int($_WD_PORT) + 1000) & ")"
+
+		Case Int($_WD_PORT) <> Int($iPortAvailable)
+			$sMessage = " (Using free port " & $iPortAvailable & " instead " & $_WD_PORT & ")"
+			$_WD_PORT = $iPortAvailable
+
 	EndSelect
 
 	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
@@ -1275,17 +1280,17 @@ Func _WD_Startup()
 		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
 				$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
-		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSArch & " " & @OSBuild & " " & @OSServicePack)
+		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
 		__WD_ConsoleWrite($sFuncName & ": Webdriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
 		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
 		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
-		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & $sPortAvailable)
+		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & " " & $sMessage)
 		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & (($sExistingDriver) ? $sExistingDriver : $sCommand))
 	EndIf
 
-	Local $sMessage = ($iErr) ? ("Error launching WebDriver!") : ("")
+	$sMessage = ($iErr) ? ("Error launching WebDriver!") : ("")
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $iPID)
 EndFunc   ;==>_WD_Startup
 
