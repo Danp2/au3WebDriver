@@ -3215,7 +3215,9 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Parameters ....: $iMinPort - [optional] Starting port number. Default is 64000
 ;                  $iMaxPort - [optional] Ending port number. Default is $iMinPort or 65000
 ; Return values .: Success - Available TCP port number
-;                  Failure - 0 and @error set to $_WD_ERROR_NotFound
+;                  Failure - Value from $iMinPort and sets @error to one of the following values:
+;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -3225,24 +3227,30 @@ EndFunc   ;==>_WD_JsonActionKey
 ; ===============================================================================================================================
 Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 	Local Const $sFuncName = "_WD_GetFreePort"
-	Local $iResult = 0, $iErr = $_WD_ERROR_NotFound
-
+	Local Const $sParameters = 'Parameters:   MinPort=' & $iMinPort & '   MaxPort=' & $iMaxPort
+	Local $sMessage = ' > No available ports found'
+	
 	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
 	If $iMinPort = Default Then $iMinPort = 64000
+	Local $iResult = $iMinPort, $iErr = $_WD_ERROR_NotFound
 	Local $aPorts = __WinAPI_GetTcpTable()
 
-	If Not @error Then
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+		$sMessage = ' > Error occurred in __WinAPI_GetTcpTable'
+	Else
 		For $iPort = $iMinPort To $iMaxPort
 			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
 			If @error = 6 Then
 				$iResult = $iPort
 				$iErr = $_WD_ERROR_Success
+				$sMessage = ''
 				ExitLoop
 			EndIf
 		Next
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $iResult), 0, $iResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage, $iResult), 0, $iResult)
 EndFunc   ;==>_WD_GetFreePort
 
 Func __WinAPI_GetTcpTable()
