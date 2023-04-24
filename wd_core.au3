@@ -1223,6 +1223,8 @@ Func _WD_Startup()
 
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
 
+	; Attempt to determine the availability of designated port
+	; so that this information can be shown in the logs
 	$sFunction = "_WD_GetFreePort"
 	Call($sFunction, $_WD_PORT)
 
@@ -1230,7 +1232,12 @@ Func _WD_Startup()
 		Case @error = 0xDEAD And @extended = 0xBEEF
 			; function not available
 
-		Case @error
+		Case @error = $_WD_ERROR_GeneralError
+			; unable to obtain port status
+			$sPortAvailable = " (Unknown)"
+
+		Case @error = $_WD_ERROR_NotFound
+			; requested port is unavailable
 			$sPortAvailable = " (Unavailable)"
 	EndSelect
 

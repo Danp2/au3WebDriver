@@ -818,9 +818,11 @@ EndFunc   ;==>_WD_FrameLeave
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_FrameList
 ; Description ...: Retrieves a detailed list of the main document and all associated frames
-; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True])
+; Syntax ........: _WD_FrameList($sSession[, $bReturnAsArray = True[, $iDelay = 1000[, $iTimeout = Default]]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $bReturnAsArray      - [optional] Return result as array? Default is True.
+;                  $iDelay              - [optional] Single delay before checking first frame. Default is 1000 ms
+;                  $iTimeout            - [optional] Timeout for _WD_LoadWait() calls for each frame. Default is $_WD_DefaultTimeout
 ; Return values .: Success - 2D array (with 7 cols) or string ( delimited with | and @CRLF ) @extended contains information about frame count
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_GeneralError
@@ -828,6 +830,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_RetValue
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; Remarks .......: The returned list of frames can depend on many factors, including geolocation, as well as problems with the local Internet
@@ -835,15 +838,18 @@ EndFunc   ;==>_WD_FrameLeave
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_FrameList($sSession, $bReturnAsArray = True)
+Func _WD_FrameList($sSession, $bReturnAsArray = True, $iDelay = 1000, $iTimeout = Default)
 	Local Const $sFuncName = "_WD_FrameList"
-	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray
+	Local Const $sParameters = 'Parameters:    ReturnAsArray=' & $bReturnAsArray & '    iDelay=' & $iDelay & '    iTimeout=' & $iTimeout
 	Local $a_Result[0][$_WD_FRAMELIST__COUNTER], $sStartLocation = '', $sMessage = ''
 	Local $vResult = '', $iErr = $_WD_ERROR_Success, $iFrameCount = 0
 
 	Local Const $sElement_CallingFrameBody = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
 	If Not @error Then
-		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False)
+		__WD_Sleep($iDelay)
+	EndIf
+	If Not @error Then
+		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False, $iTimeout)
 	EndIf
 	$iErr = @error
 	#Region - post processing
@@ -877,7 +883,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True)
 			EndIf
 		EndIf
 
-	ElseIf $iErr <> $_WD_ERROR_Timeout And Not $_WD_DetailedErrors Then
+	ElseIf $iErr <> $_WD_ERROR_Timeout And $iErr <> $_WD_ERROR_UserAbort And Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
@@ -902,11 +908,12 @@ EndFunc   ;==>_WD_FrameList
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_FrameList_Internal
 ; Description ...: function that is used internally in _WD_FrameList, even recursively when nested frames are available
-; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
+; Syntax ........: __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iTimeout)
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $sLevel              - frame location level path
 ;                  $sFrameAttributes    - frame attributes in HTML format
 ;                  $bIsHidden           - information about visibility of frame - taken by WebDriver
+;                  $iTimeout            - Timeout for _WD_LoadWait() calls for each frame
 ; Return values .: Success - string
 ;                  Failure - "" (empty string) and sets @error returned from related functions
 ; Author ........: mLipok
@@ -916,9 +923,9 @@ EndFunc   ;==>_WD_FrameList
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
+Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden, $iTimeout)
 	Local Const $sFuncName = "__WD_FrameList_Internal"
-	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
+	Local Const $sParameters = 'Parameters:    Level=' & $sLevel & '    IsHidden=' & $bIsHidden & '    Timeout=' & $iTimeout ; intentionally $sFrameAttributes is not listed here to not put too many data into the log
 	Local $iErr = $_WD_ERROR_Success, $sMessage = '', $vResult = ''
 	Local $s_URL = '', $sCurrentBody_ElementID = ''
 
@@ -934,7 +941,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
 	If $iErr Then
 		$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to entering frame'
 	Else
-		_WD_LoadWait($sSession, 100, 5000, Default, $_WD_READYSTATE_Complete)
+		_WD_LoadWait($sSession, 0, $iTimeout, Default, $_WD_READYSTATE_Complete) ; wait until current frame is fully loaded
 		$iErr = @error
 		If $iErr And $iErr <> $_WD_ERROR_Timeout Then
 			$sMessage = 'Error occurred on "' & $sLevel & '" level when waiting for a browser page load to complete'
@@ -989,7 +996,7 @@ Func __WD_FrameList_Internal($sSession, $sLevel, $sFrameAttributes, $bIsHidden)
 							$sMessage = 'Error occurred on "' & $sLevel & '" level when trying to check visibility of subframe "' & $sLevel & '/' & $iFrame & '"'
 							ContinueLoop
 						Else
-							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden)
+							$vResult &= __WD_FrameList_Internal($sSession, $sLevel & '/' & $iFrame, $sFrameAttributes, $bIsHidden, $iTimeout)
 							$iErr = @error
 							If $iErr Then
 								$sMessage = 'Error occurred on "' & $sLevel & '" level after processing subframe "' & $sLevel & '/' & $iFrame & '"'
@@ -3208,7 +3215,9 @@ EndFunc   ;==>_WD_JsonActionKey
 ; Parameters ....: $iMinPort - [optional] Starting port number. Default is 64000
 ;                  $iMaxPort - [optional] Ending port number. Default is $iMinPort or 65000
 ; Return values .: Success - Available TCP port number
-;                  Failure - 0 and @error set to $_WD_ERROR_NotFound
+;                  Failure - Value from $iMinPort and sets @error to one of the following values:
+;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -3218,24 +3227,30 @@ EndFunc   ;==>_WD_JsonActionKey
 ; ===============================================================================================================================
 Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 	Local Const $sFuncName = "_WD_GetFreePort"
-	Local $iResult = 0, $iErr = $_WD_ERROR_NotFound
-
+	Local Const $sParameters = 'Parameters:   MinPort=' & $iMinPort & '   MaxPort=' & $iMaxPort
+	Local $sMessage = ' > No available ports found'
+	
 	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
 	If $iMinPort = Default Then $iMinPort = 64000
+	Local $iResult = $iMinPort, $iErr = $_WD_ERROR_NotFound
 	Local $aPorts = __WinAPI_GetTcpTable()
 
-	If Not @error Then
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+		$sMessage = ' > Error occurred in __WinAPI_GetTcpTable'
+	Else
 		For $iPort = $iMinPort To $iMaxPort
 			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
 			If @error = 6 Then
 				$iResult = $iPort
 				$iErr = $_WD_ERROR_Success
+				$sMessage = ''
 				ExitLoop
 			EndIf
 		Next
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $iResult), 0, $iResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage, $iResult), 0, $iResult)
 EndFunc   ;==>_WD_GetFreePort
 
 Func __WinAPI_GetTcpTable()
