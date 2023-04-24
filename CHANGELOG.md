@@ -23,6 +23,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- Refactored for better performance
 	- Improved frame support
 	- Improved logging
+	- Optional parameters to control initial delay and timeout
 - Enable optional detailed error reporting
 	- _WD_Attach
 	- _WD_CreateSession
