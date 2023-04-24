@@ -1222,6 +1222,8 @@ Func _WD_Startup()
 
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
 
+	; Attempt to determine the availability of designated port
+	; so that this information can be shown in the logs
 	$sFunction = "_WD_GetFreePort"
 	Call($sFunction, $_WD_PORT)
 

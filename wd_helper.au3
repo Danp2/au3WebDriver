@@ -3221,7 +3221,7 @@ EndFunc   ;==>_WD_JsonActionKey
 Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 	Local Const $sFuncName = "_WD_GetFreePort"
 	Local Const $sParameters = 'Parameters:   MinPort=' & $iMinPort & '   MaxPort=' & $iMaxPort
-	Local $sMessage = 'No available ports found'
+	Local $sMessage = ' > No available ports found'
 	
 	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
 	If $iMinPort = Default Then $iMinPort = 64000
@@ -3230,7 +3230,7 @@ Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 
 	If @error Then
 		$iErr = $_WD_ERROR_GeneralError
-		$sMessage = 'Error occurred in __WinAPI_GetTcpTable'
+		$sMessage = ' > Error occurred in __WinAPI_GetTcpTable'
 	Else
 		For $iPort = $iMinPort To $iMaxPort
 			_ArraySearch($aPorts, $iPort, Default, Default, Default, Default, Default, 3)
@@ -3243,7 +3243,7 @@ Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 		Next
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iResult), 0, $iResult)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters & $sMessage, $iResult), 0, $iResult)
 EndFunc   ;==>_WD_GetFreePort
 
 Func __WinAPI_GetTcpTable()
