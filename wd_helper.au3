@@ -830,6 +830,7 @@ EndFunc   ;==>_WD_FrameLeave
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_RetValue
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: mLipok
 ; Modified ......: Danp2
 ; Remarks .......: The returned list of frames can depend on many factors, including geolocation, as well as problems with the local Internet
@@ -843,9 +844,10 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $iDelay = 1000, $iTimeout 
 	Local $a_Result[0][$_WD_FRAMELIST__COUNTER], $sStartLocation = '', $sMessage = ''
 	Local $vResult = '', $iErr = $_WD_ERROR_Success, $iFrameCount = 0
 
-	_WD_LoadWait($sSession, $iDelay, $iTimeout, Default, $_WD_READYSTATE_Complete) ; first _WD_LoadWait with declared $iDelay
-
 	Local Const $sElement_CallingFrameBody = _WD_ExecuteScript($sSession, "return window.document.body;", Default, Default, $_WD_JSON_Element)
+	If Not @error Then
+		__WD_Sleep($iDelay)
+	EndIf
 	If Not @error Then
 		$vResult = __WD_FrameList_Internal($sSession, 'null', '', False, $iTimeout)
 	EndIf
@@ -881,7 +883,7 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $iDelay = 1000, $iTimeout 
 			EndIf
 		EndIf
 
-	ElseIf $iErr <> $_WD_ERROR_Timeout And Not $_WD_DetailedErrors Then
+	ElseIf $iErr <> $_WD_ERROR_Timeout And $iErr <> $_WD_ERROR_UserAbort And Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_GeneralError
 	EndIf
 
