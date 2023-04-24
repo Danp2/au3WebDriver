@@ -13,6 +13,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Added
 
+- Support for MSEdge browser in IE mode (@mlipok)
 - _WD_FrameListFindElement (@mlipok)
 - _WD_GetContext
 - _WD_Option: Support for `DetailErrors` option

@@ -20,7 +20,8 @@ Global Const $aBrowsers[][2] = _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
 		["MSEdge", SetupEdge], _
-		["Opera", SetupOpera] _
+		["Opera", SetupOpera], _
+		["MSEdgeIE", SetupEdgeIEMode] _
 		]
 
 ; Column 0 - Function Name
@@ -187,6 +188,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 
 	; Execute browser setup routine for user's browser selection
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
+	If @error Then Return SetError(@error, @extended, 0)
 
 	ConsoleWrite("> wd_demo.au3: _WD_Startup" & @CRLF)
 	Local $iWebDriver_PID = _WD_Startup()
@@ -1269,3 +1271,27 @@ Func SetupOpera($bHeadless)
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
 EndFunc   ;==>SetupOpera
+
+Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
+	; https://www.selenium.dev/documentation/ie_driver_server/#required-configuration
+	Local $sTimeStamp = @YEAR & '-' & @MON & '-' & @MDAY & '_' & @HOUR & @MIN & @SEC
+	_WD_Option('Driver', 'IEDriverServer.exe') ;
+	Local $iPort = _WD_GetFreePort(5555, 5600)
+	If @error Then Return SetError(@error, @extended, 0)
+	_WD_Option('Port', $iPort)
+	_WD_Option('DriverParams', '-log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $_WD_PORT & " -host=127.0.0.1")
+
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'msedgeie')
+	_WD_CapabilitiesAdd('w3c', True)
+	Local $sPath = _WD_GetBrowserPath("msedge")
+	If $sPath Then _WD_CapabilitiesAdd("ie.edgepath", $sPath)
+	_WD_CapabilitiesAdd("ie.edgechromium", True)
+	_WD_CapabilitiesAdd("ignoreProtectedModeSettings", True)
+	_WD_CapabilitiesAdd("initialBrowserUrl", "https://google.com")
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesDump(@ScriptLineNumber)
+	Local $sCapabilities = _WD_CapabilitiesGet()
+	Return $sCapabilities
+EndFunc   ;==>SetupEdgeIEMode
