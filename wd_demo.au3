@@ -710,13 +710,13 @@ Func DemoFrames()
 
 	MsgBox($MB_TOPMOST, "", 'Before checking location of multiple elements on multiple frames' & @CRLF & 'Try the same example with and without waiting about 30 seconds in order to see that many frames should be fully loaded, and to check the differences')
 
-	$aFrameList = _WD_FrameList($sSession, True)
+	$aFrameList = _WD_FrameList($sSession, True, 5000, Default)
 	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example : Testing element location in frame set - after pre-checking list of frames" & @CRLF)
-	_ArrayDisplay($aFrameList, 'Before _WD_FrameListFindElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
+	_ArrayDisplay($aFrameList, @ScriptLineNumber & ' Before _WD_FrameListFindElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 
-	Local $aLocationOfElement = _WD_FrameListFindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
+	Local $aLocationOfElement = _WD_FrameListFindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']", 5000, Default)
 	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $aLocationOfElement (" & UBound($aLocationOfElement) & ")=" & @CRLF & _ArrayToString($aLocationOfElement) & @CRLF)
-	_ArrayDisplay($aLocationOfElement, '$aLocationOfElement', 0, 0, Default, $sArrayHeader)
+	_ArrayDisplay($aLocationOfElement, @ScriptLineNumber & ' $aLocationOfElement', 0, 0, Default, $sArrayHeader)
 
 	#EndRegion - Testing element location in frame set and iframe collecion
 EndFunc   ;==>DemoFrames
