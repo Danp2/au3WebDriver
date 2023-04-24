@@ -23,6 +23,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- Refactored for better performance
 	- Improved frame support
 	- Improved logging
+	- Optional parameters to control initial delay and timeout
 - _WD_GetFreePort
 	- New error code to indicate internal error
 	- Returns starting port number instead of 0 when an error occurs
