@@ -1232,9 +1232,11 @@ Func _WD_Startup()
 			; function not available
 
 		Case @error = $_WD_ERROR_GeneralError
+			; unable to obtain port status
 			$sPortAvailable = " (Unknown)"
 
 		Case @error = $_WD_ERROR_NotFound
+			; requested port is unavailable
 			$sPortAvailable = " (Unavailable)"
 	EndSelect
 
