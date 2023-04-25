@@ -1146,9 +1146,8 @@ Func UserFile()
 	Local $aCmds = FileReadToArray($sScriptFileFullPath)
 	If @error Then Return SetError(@error, @extended)
 
-	Local Const $_VAR_SIZE = UBound($_VAR)
-	ReDim $_VAR[0] ; delete content
-	ReDim $_VAR[$_VAR_SIZE] ; reinitialize size
+	Local $aEmpty1D[UBound($_VAR)]
+	$_VAR = $aEmpty1D ; CleanUp
 
 	For $sCmd In $aCmds
 		; Strip comments
