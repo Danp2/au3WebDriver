@@ -58,7 +58,7 @@ Global Const $aDebugLevel[][2] = _
 
 Global $sSession
 Global $__g_idButton_Abort
-Global $_VAR[50] ; used in UserFile(),__UserAssign()
+Global $_VAR[50] ; used in UserFile(), __SetVAR()
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -1139,27 +1139,34 @@ EndFunc   ;==>UserTesting
 
 Func UserFile()
 	; Modify the contents of UserTesting.au3 (or create new one) to change the code being executed.
-	; Changes can be made and executed without restarting this script
-	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting.au3')
-	If @error Then Return SetError(@error, @extended)
-
-	Local $aCmds = FileReadToArray($sScriptFileFullPath)
-	If @error Then Return SetError(@error, @extended)
-
+	; Changes can be made and executed without restarting this script,
+	;	you can even repeat "UserFile" processing without closing browser
 	Local Const $aEmpty1D[UBound($_VAR)] = []
-	$_VAR = $aEmpty1D ; clean up the globally declared $_VAR to ensure repeatable test conditions
+	Local $sScriptFileFullPath, $aCmds
 
-	For $sCmd In $aCmds
-		; Strip comments
-		; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
-		$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
-		If $sCmd Then Execute($sCmd)
-	Next
+	Do
+		$_VAR = $aEmpty1D ; clean up the globally declared $_VAR to ensure repeatable test conditions
+		$sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting.au3')
+		If @error Then Return SetError(@error, @extended)
+
+		$aCmds = FileReadToArray($sScriptFileFullPath)
+		If @error Then Return SetError(@error, @extended)
+
+		For $sCmd In $aCmds
+			; Strip comments
+			; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
+			$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
+			If $sCmd Then Execute($sCmd)
+		Next
+
+	Until $IDNO = MsgBox($MB_YESNO + $MB_TOPMOST + $MB_ICONQUESTION + $MB_DEFBUTTON2, 'Question', 'Do you want to repeat "UserFile" processing ?')
+
 EndFunc   ;==>UserFile
 
-Func __UserAssign($IDX_VAR, $value)
+Func __SetVAR($IDX_VAR, $value)
 	$_VAR[$IDX_VAR] = $value
-EndFunc   ;==>__UserAssign
+	ConsoleWrite('- Setting $_VAR[' & $IDX_VAR & '] = ' & ((IsArray($value)) ? ('{array}') : ($value)) & @CRLF)
+EndFunc   ;==>__SetVAR
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
