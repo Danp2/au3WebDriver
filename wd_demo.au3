@@ -1146,7 +1146,7 @@ Func UserFile()
 	Local $aCmds = FileReadToArray($sScriptFileFullPath)
 	If @error Then Return SetError(@error, @extended)
 
-	Local Const $aCleanUP[UBound($_VAR)]
+	Local Const $aCleanUP[UBound($_VAR)] = []
 	$_VAR = $aCleanUP
 
 	For $sCmd In $aCmds
