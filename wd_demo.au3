@@ -1137,7 +1137,6 @@ EndFunc   ;==>UserTesting
 #EndRegion - UserTesting
 
 Func UserFile()
-	Local Const $sFuncName = 'UserFile'
 	; Modify the contents of UserTesting.au3 (or create new one) to change the code being executed.
 	; Changes can be made and executed without restarting this script
 	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting.au3')
@@ -1146,9 +1145,7 @@ Func UserFile()
 	Local $aCmds = FileReadToArray($sScriptFileFullPath)
 	If @error Then Return SetError(@error, @extended)
 
-	Local $iLine = 0
 	For $sCmd In $aCmds
-		$iLine += 1
 		; Strip comments
 		; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
 		$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
