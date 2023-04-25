@@ -58,6 +58,7 @@ Global Const $aDebugLevel[][2] = _
 
 Global $sSession
 Global $__g_idButton_Abort
+Global $_VAR[50] ; used in UserFile(),__UserAssign()
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -1145,6 +1146,9 @@ Func UserFile()
 	Local $aCmds = FileReadToArray($sScriptFileFullPath)
 	If @error Then Return SetError(@error, @extended)
 
+	Local Const $aEmpty1D[UBound($_VAR)] = []
+	$_VAR = $aEmpty1D ; clean up the globally declared $_VAR to ensure repeatable test conditions
+
 	For $sCmd In $aCmds
 		; Strip comments
 		; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
@@ -1152,6 +1156,10 @@ Func UserFile()
 		If $sCmd Then Execute($sCmd)
 	Next
 EndFunc   ;==>UserFile
+
+Func __UserAssign($IDX_VAR, $value)
+	$_VAR[$IDX_VAR] = $value
+EndFunc   ;==>__UserAssign
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
