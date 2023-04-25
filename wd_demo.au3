@@ -1159,7 +1159,7 @@ Func UserFile()
 			If $sCmd Then Execute($sCmd)
 		Next
 
-	Until $IDNO = MsgBox($MB_YESNO + $MB_TOPMOST + $MB_ICONQUESTION + $MB_DEFBUTTON2, 'Question', 'Do you want to repeat "UserFile" processing ?')
+	Until $IDNO = MsgBox($MB_YESNO + $MB_TOPMOST + $MB_ICONQUESTION + $MB_DEFBUTTON2, 'Question', 'Do you want to process another file?')
 
 EndFunc   ;==>UserFile
 
