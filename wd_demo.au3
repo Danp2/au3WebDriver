@@ -1146,8 +1146,8 @@ Func UserFile()
 	Local $aCmds = FileReadToArray($sScriptFileFullPath)
 	If @error Then Return SetError(@error, @extended)
 
-	Local Const $aCleanUP[UBound($_VAR)] = []
-	$_VAR = $aCleanUP
+	Local Const $aEmpty1D[UBound($_VAR)] = []
+	$_VAR = $aEmpty1D ; clean up the globally declared $_VAR to ensure repeatable test conditions
 
 	For $sCmd In $aCmds
 		; Strip comments
