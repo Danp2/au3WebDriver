@@ -58,7 +58,7 @@ Global Const $aDebugLevel[][2] = _
 
 Global $sSession
 Global $__g_idButton_Abort
-Global $_VAR[50] ; used in UserFile(),__UserAssing()
+Global $_VAR[50] ; used in UserFile(),__UserAssign()
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -1158,9 +1158,9 @@ Func UserFile()
 	Next
 EndFunc   ;==>UserFile
 
-Func __UserAssing($IDX_VAR, $value)
+Func __UserAssign($IDX_VAR, $value)
 	$_VAR[$IDX_VAR] = $value
-EndFunc   ;==>__UserAssing
+EndFunc   ;==>__UserAssign
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
