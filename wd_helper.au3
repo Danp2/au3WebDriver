@@ -868,23 +868,24 @@ Func _WD_FrameList($sSession, $bReturnAsArray = True, $iDelay = 1000, $iTimeout 
 			; recalculate locations from absolute path on COL0 to relative path on COL1
 			$a_Result[$i][$_WD_FRAMELIST_Relative] = StringRegExpReplace($a_Result[$i][$_WD_FRAMELIST_Absolute], '\A' & $sStartLocation & '\/?', '')
 		Next
-		$iFrameCount = UBound($a_Result, $UBOUND_ROWS)
-		If $iFrameCount < 1 Then $sMessage &= 'List of frames is empty. '
-
-		; select desired DataType for the $vResult - usually string is option for testing and asking support, thus Array is returned by default
-		If $bReturnAsArray Then
-			$vResult = $a_Result
-		Else
-			$vResult = _ArrayToString($a_Result) ; getting string with recalculated locations (relative path)
-			If @error Then
-				$iErr = $_WD_ERROR_RetValue
-				$sMessage = 'ArrayToString conversion failed. '
-				$vResult = ''
-			EndIf
-		EndIf
 
 	ElseIf $iErr <> $_WD_ERROR_Timeout And $iErr <> $_WD_ERROR_UserAbort And Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_GeneralError
+	EndIf
+
+	$iFrameCount = UBound($a_Result, $UBOUND_ROWS)
+	If $iFrameCount < 1 Then $sMessage &= 'List of frames is empty. '
+
+	; select desired DataType for the $vResult - usually string is option for testing and asking support, thus Array is returned by default
+	If $bReturnAsArray Then
+		$vResult = $a_Result
+	Else
+		$vResult = _ArrayToString($a_Result) ; getting string with recalculated locations (relative path)
+		If @error Then
+			$iErr = $_WD_ERROR_RetValue
+			$sMessage = 'ArrayToString conversion failed. '
+			$vResult = ''
+		EndIf
 	EndIf
 
 	If $sStartLocation Then ; Back to "calling frame"
