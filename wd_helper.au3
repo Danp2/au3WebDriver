@@ -2603,7 +2603,8 @@ EndFunc   ;==>_WD_GetElementByName
 ; ===============================================================================================================================
 Func _WD_SetElementValue($sSession, $sElement, $sValue, $iStyle = Default)
 	Local Const $sFuncName = "_WD_SetElementValue"
-	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Value=' & '<masked>' & '    Style=' & $iStyle
+	Local Const $bParameters_Value = (($_WD_DEBUG = $_WD_DEBUG_Full) ? ($sValue) : ("<masked>"))
+	Local Const $sParameters = 'Parameters:    Element=' & $sElement & '    Value=' & $bParameters_Value & '    Style=' & $iStyle
 	Local $sResult, $iErr, $sScript
 
 	If $iStyle = Default Then $iStyle = $_WD_OPTION_Standard
