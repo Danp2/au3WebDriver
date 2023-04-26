@@ -29,6 +29,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- New error code to indicate internal error
 	- Returns starting port number instead of 0 when an error occurs
 	- Improved logging
+- _WD_SetElementValue: Masking value in $sParameters
 - _WD_Startup: Improve logging when error occurs in _WD_GetFreePort
 - Enable optional detailed error reporting
 	- _WD_Attach
@@ -38,6 +39,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- _WD_FrameLeave
 	- _WD_FrameList
 	- _WD_LinkClickByText
+- wd_demo: Improvements to "userfile" option
 
 ### Fixed
 
