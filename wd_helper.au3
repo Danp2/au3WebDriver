@@ -3028,7 +3028,7 @@ EndFunc   ;==>_WD_CheckContext
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
-; Related .......: 
+; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
@@ -3039,7 +3039,7 @@ Func _WD_GetContext($sSession)
 
 	If $iErr Then $sElement = ""
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $sElement)
-EndFunc
+EndFunc   ;==>_WD_GetContext
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetElementByRegEx
@@ -3231,7 +3231,7 @@ Func _WD_GetFreePort($iMinPort = Default, $iMaxPort = Default)
 	Local Const $sFuncName = "_WD_GetFreePort"
 	Local Const $sParameters = 'Parameters:   MinPort=' & $iMinPort & '   MaxPort=' & $iMaxPort
 	Local $sMessage = ' > No available ports found'
-	
+
 	If $iMaxPort = Default Then $iMaxPort = ($iMinPort = Default) ? 65000 : $iMinPort
 	If $iMinPort = Default Then $iMinPort = 64000
 	Local $iResult = $iMinPort, $iErr = $_WD_ERROR_NotFound
