@@ -69,7 +69,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.13.0"
+Global Const $__WDVERSION = "1.0.0"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -283,8 +283,8 @@ EndFunc   ;==>_WD_CreateSession
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
 	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
-	Local $iErr = @error 
-	
+	Local $iErr = @error
+
 	If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
 
 	Local $sMessage = ($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted')
@@ -1112,12 +1112,12 @@ Func _WD_Option($sOption, $vValue = Default)
 			EndIf
 			$_WD_DefaultTimeout = $vValue
 
-			Case "detailerrors"
-				If $vValue == "" Then Return $_WD_DetailedErrors
-				If Not IsBool($vValue) Then
-					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: bool)"), 0, 0)
-				EndIf
-				$_WD_DetailedErrors = $vValue
+		Case "detailerrors"
+			If $vValue == "" Then Return $_WD_DetailedErrors
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: bool)"), 0, 0)
+			EndIf
+			$_WD_DetailedErrors = $vValue
 
 		Case "driver"
 			If $vValue == "" Then Return $_WD_DRIVER
