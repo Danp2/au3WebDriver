@@ -840,7 +840,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; True = the JSON value node is returned , False = entire JSON response is returned
 
 	If IsString($vSubNode) Then
-		$sScript = __WD_EscapeString($sScript)
+		$sScript = __WD_EscapeString($sScript, $JSON_MLREFORMAT)
 
 		$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
 		$sCmd = ($bAsync) ? 'async' : 'sync'
