@@ -1956,15 +1956,8 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 
 	If $iErr = $_WD_ERROR_Success Then
 		If $sFilename <> "" Then
-			$sSavedEscape = $_WD_ESCAPE_CHARS
-			; Convert file string into proper format
-			$sFilename = StringReplace(__WD_EscapeString($sFilename), @LF, "\n")
-			; Prevent further string escaping
-			$_WD_ESCAPE_CHARS = ""
 			_WD_ElementAction($sSession, $sElement, 'value', $sFilename)
 			$iErr = @error
-			; Restore setting
-			$_WD_ESCAPE_CHARS = $sSavedEscape
 		Else
 			_WD_ElementAction($sSession, $sElement, 'clear')
 			$iErr = @error
