@@ -199,7 +199,6 @@ Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
 Global $_WD_HTTPRESPONSE = '' ; Response of last WinHTTP request
 Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
-Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
 Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching new one
 Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one already exists
 Global $_WD_RESPONSE_TRIM = -1 ; Trim response string to given value for debug output
