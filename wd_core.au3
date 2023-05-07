@@ -88,7 +88,7 @@ Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
 
-Global Const $JSON_MLREFORMAT = 1024 ; Addition to constants from json.au3
+Global Const $JSON_MLREFORMAT = 1048576 ; Addition to constants from json.au3
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
@@ -1689,7 +1689,7 @@ EndFunc   ;==>__WD_CloseDriver
 ; ===============================================================================================================================
 Func __WD_EscapeString($sData, $iOption = 0)
 	If BitAND($iOption, $JSON_MLREFORMAT) Then
-		$sData = StringRegExpReplace($sData, '(?m)[\R\t]','') ; Strip tabs and CR/LFs
+		$sData = StringRegExpReplace($sData, '[\v\t]', '') ; Strip tabs and CR/LFs
 	Endif
 
 	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
