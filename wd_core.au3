@@ -1678,11 +1678,11 @@ EndFunc   ;==>__WD_CloseDriver
 ; Description ...: Escapes designated characters in string.
 ; Syntax ........: __WD_EscapeString($sData[, $iOption = 0])
 ; Parameters ....: $sData   - the string to be escaped
-;                  $iOption - [optional] Default is 0.
-; Return values .: Escaped string.
+;                  $iOption - [optional] Any combination of $JSON_* constants. Default is 0.
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: See $JSON_* constants in json.au3 for $iOption possibilities
+; Remarks .......: $JSON_MLREFORMAT will strip tabs and CR/LFs from a multiline string.
+;                  See $JSON_* constants in json.au3 for other $iOption possibilities.
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
