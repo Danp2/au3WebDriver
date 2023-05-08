@@ -88,6 +88,8 @@ Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
 
+Global Const $JSON_MLREFORMAT = 1048576 ; Addition to constants from json.au3
+
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
 		$_WD_DEBUG_Error, _    ; logging in case of Error
@@ -197,7 +199,6 @@ Global $_WD_HTTPRESULT = 0 ; Result of last WinHTTP request
 Global $_WD_HTTPRESPONSE = '' ; Response of last WinHTTP request
 Global $_WD_SESSION_DETAILS = "" ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8 ; Binary format
-Global $_WD_ESCAPE_CHARS = '\\"' ; Characters to escape
 Global $_WD_DRIVER_CLOSE = True ; Close prior driver instances before launching new one
 Global $_WD_DRIVER_DETECT = True ; Don't launch new driver instance if one already exists
 Global $_WD_RESPONSE_TRIM = -1 ; Trim response string to given value for debug output
@@ -838,7 +839,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; True = the JSON value node is returned , False = entire JSON response is returned
 
 	If IsString($vSubNode) Then
-		$sScript = __WD_EscapeString($sScript)
+		$sScript = __WD_EscapeString($sScript, $JSON_MLREFORMAT)
 
 		$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
 		$sCmd = ($bAsync) ? 'async' : 'sync'
@@ -1675,20 +1676,26 @@ EndFunc   ;==>__WD_CloseDriver
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_EscapeString
 ; Description ...: Escapes designated characters in string.
-; Syntax ........: __WD_EscapeString($sData)
-; Parameters ....: $sData - the string to be escaped
-; Return values..: Escaped string.
+; Syntax ........: __WD_EscapeString($sData[, $iOption = 0])
+; Parameters ....: $sData   - the string to be escaped
+;                  $iOption - [optional] Any combination of $JSON_* constants. Default is 0.
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: $JSON_MLREFORMAT will strip tabs and CR/LFs from a multiline string.
+;                  See $JSON_* constants in json.au3 for other $iOption possibilities.
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_EscapeString($sData)
-	Local $sRegEx = "([" & $_WD_ESCAPE_CHARS & "])"
-	Local $sEscaped = StringRegExpReplace($sData, $sRegEx, "\\$1")
-	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
+Func __WD_EscapeString($sData, $iOption = 0)
+	If BitAND($iOption, $JSON_MLREFORMAT) Then
+		$sData = StringRegExpReplace($sData, '[\v\t]', '') ; Strip tabs and CR/LFs
+		$iOption = BitXOR($iOption, $JSON_MLREFORMAT)      ; Flip bit off
+	Endif
+
+	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
+
+	Return SetError($_WD_ERROR_Success, 0, $sData)
 EndFunc   ;==>__WD_EscapeString
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================

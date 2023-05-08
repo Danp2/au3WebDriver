@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Project
+
+- Improve string encoding by using existing function from JSON UDF
+
 ## [1.0.0] - 2023-04-28
 
 ### Added
