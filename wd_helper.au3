@@ -3071,7 +3071,6 @@ Func _WD_GetElementByRegEx($sSession, $sMode, $sRegExPattern, $sRegExFlags = "",
 			"}" & _
 			""
 
-	$sRegExPattern = StringReplace($sRegExPattern, '\', '\\')
 	Local $sJavaScript = StringFormat($sJS_Static, $sMode, $sRegExPattern, $sRegExFlags, StringLower($bAll))
 	Local $oValues = _WD_ExecuteScript($sSession, $sJavaScript, Default, False, $_WD_JSON_Value)
 	$iErr = @error
@@ -3105,7 +3104,7 @@ EndFunc   ;==>_WD_GetElementByRegEx
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Storage
-; Description ...: Provide access to the broswer's localStorage and sessionStorage objects
+; Description ...: Provide access to the browser's localStorage and sessionStorage objects
 ; Syntax ........: _WD_Storage($sSession,  $sKey[,  $vValue = Default[,  $nType = Default]])
 ; Parameters ....: $sSession            - Session ID from _WD_CreateSession
 ;                  $vKey                - Key to manipulate.
@@ -3116,7 +3115,10 @@ EndFunc   ;==>_WD_GetElementByRegEx
 ;                            Response from _WD_ExecuteScript() and sets @error to value returned from _WD_ExecuteScript()
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:	See below for special conditions --
+; Remarks .......:	Data is stored and retrieved without modification. Translations or string
+;					encoding / decoding should occur outside of this function.
+;
+;					See below for special conditions --
 ;
 ;					| Parameter | Condition | Action                     |
 ;					|-----------|-----------|----------------------------|
