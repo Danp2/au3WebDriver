@@ -2589,7 +2589,8 @@ EndFunc   ;==>_WD_GetElementByName
 ;                  - $_WD_ERROR_InvalidExpression
 ; Author ........: Danp2
 ; Modified ......: mLipok, TheDcoder
-; Remarks .......:
+; Remarks .......: When using Advanced mode, translations or string encoding should occur prior to
+;                  calling this function because the supplied value is used without modification.
 ; Related .......: _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
