@@ -47,7 +47,7 @@
 ;                  https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 ;
 ;                  WebDriver for desired browser
-;                  Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
+;                  Chrome WebDriver https://sites.google.com/chromium.org/driver/
 ;                  FireFox WebDriver https://github.com/mozilla/geckodriver/releases
 ;                  Edge WebDriver https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 ;
