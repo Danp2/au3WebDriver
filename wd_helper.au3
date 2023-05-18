@@ -703,7 +703,6 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Return values .: Success - True.
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
 ; Modified ......: Danp2, mLipok, jchd
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly or use identifier like 'null/2/0'
@@ -729,34 +728,27 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
-		If @error Then
-			$iErr = $_WD_ERROR_InvalidArgue
-		Else
-			$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
-		EndIf
+		$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
 	EndIf
 
-	If $iErr = $_WD_ERROR_Success Then ; check if $vIdentifier was succesfully validated
-		If Not $bIdentifierAsPath Then
-			$sResponse = _WD_Window($sSession, "frame", $sOption)
-			$iErr = @error
-		Else
-			Local $aIdentifiers = StringSplit($vIdentifier, '/')
-			For $i = 1 To $aIdentifiers[0]
-				If String($aIdentifiers[$i]) = 'null' Then
-					$aIdentifiers[$i] = '{"id":null}'
-				Else
-					$aIdentifiers[$i] = '{"id":' & $aIdentifiers[$i] & '}'
-				EndIf
-				$sResponse = _WD_Window($sSession, "frame", $aIdentifiers[$i])
-				If Not @error Then ContinueLoop
+	If Not $bIdentifierAsPath Then
+		$sResponse = _WD_Window($sSession, "frame", $sOption)
+		$iErr = @error
+	Else
+		Local $aIdentifiers = StringSplit($vIdentifier, '/')
+		For $i = 1 To $aIdentifiers[0]
+			If String($aIdentifiers[$i]) = 'null' Then
+				$aIdentifiers[$i] = '{"id":null}'
+			Else
+				$aIdentifiers[$i] = '{"id":' & $aIdentifiers[$i] & '}'
+			EndIf
+			$sResponse = _WD_Window($sSession, "frame", $aIdentifiers[$i])
+			If Not @error Then ContinueLoop
 
-				$iErr = @error
-				$sMessage = ' Error on ID#' & $i & ' > ' & $aIdentifiers[$i]
-				ExitLoop
-			Next
-		EndIf
+			$iErr = @error
+			$sMessage = ' Error on ID#' & $i & ' > ' & $aIdentifiers[$i]
+			ExitLoop
+		Next
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -769,7 +761,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
-	ElseIf $iErr <> $_WD_ERROR_InvalidArgue And Not $_WD_DetailedErrors Then
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
