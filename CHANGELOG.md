@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [1.0.1] 2023-05-23
+
+### Fixed
+
+- _WD_FrameEnter: Remove GUID validation
 
 ### Project
 
@@ -1090,7 +1094,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.0.1...HEAD
+[1.0.1]:     https://github.com/Danp2/au3WebDriver/compare/1.0.0...1.0.1
 [1.0.0]:     https://github.com/Danp2/au3WebDriver/compare/0.13.0...1.0.0
 [0.13.0]:     https://github.com/Danp2/au3WebDriver/compare/0.12.0...0.13.0
 [0.12.0]:     https://github.com/Danp2/au3WebDriver/compare/0.11.0...0.12.0
