@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [1.0.2] 2023-05-24
+
+### Fixed
+
+- Correct UDF version number
+
 ## [1.0.1] 2023-05-23
 
 ### Fixed
@@ -1094,7 +1100,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.0.1...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.0.2...HEAD
+[1.0.2]:     https://github.com/Danp2/au3WebDriver/compare/1.0.1...1.0.2
 [1.0.1]:     https://github.com/Danp2/au3WebDriver/compare/1.0.0...1.0.1
 [1.0.0]:     https://github.com/Danp2/au3WebDriver/compare/0.13.0...1.0.0
 [0.13.0]:     https://github.com/Danp2/au3WebDriver/compare/0.12.0...0.13.0
