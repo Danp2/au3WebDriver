@@ -639,7 +639,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			ExitLoop
 		Else
 			$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
-			If Not StringInStr("frame", $sTagName) Then ; check <iframe> and <frame> element
+			If Not StringInStr($sTagName, "frame") Then ; check <iframe> and <frame> element
 				ExitLoop
 			EndIf
 			
