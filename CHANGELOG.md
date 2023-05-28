@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Fixed
+
+- _WD_GetElementFromPoint
+	- Correct frame identification
+	- Handle Null result from `document.elementFromPoint`
+
 ## [1.0.2] 2023-05-24
 
 ### Fixed
