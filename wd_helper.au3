@@ -633,7 +633,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			$bIsNull = (IsKeyword($sResult) = $KEYWORD_NULL)
 
 			If Not $bIsNull Then
-				$iErr = $_WD_ERROR_RetValue			
+				$iErr = $_WD_ERROR_RetValue
 			EndIf
 
 			ExitLoop
@@ -642,22 +642,22 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			If Not StringInStr($sTagName, "frame") Then ; check <iframe> and <frame> element
 				ExitLoop
 			EndIf
-			
+
 			$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, $_WD_JSON_Value)
 			If @error Then
 				$iErr = $_WD_ERROR_RetValue
 				ExitLoop
 			EndIf
-			
+
 			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
-			
+
 			; changing the coordinates in relation to left top corner of frame
 			$iX -= ($oERect.Item('x') - Int($aCoords[0]))
 			$iY -= ($oERect.Item('y') - Int($aCoords[1]))
-			
+
 			_WD_FrameEnter($sSession, $sElement)
 			$iFrame = 1
-		Endif
+		EndIf
 	WEnd
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iFrame), $iFrame, $sElement)
@@ -1957,7 +1957,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
 	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    Filename=' & $sFilename
-	Local $sResult = "0", $sSavedEscape
+	Local $sResult = "0"
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
