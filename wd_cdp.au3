@@ -245,7 +245,7 @@ EndFunc   ;==>_WD_CDPExecuteCommand
 ;                  $sOption  - one of the following:
 ;                  |DEBUGGER - Returns the Websocket target originally returned by _WD_CreateSession
 ;                  |LIST - Lists websocket targets
-;                  |VERSION - Reurns an array containing version metadata
+;                  |VERSION - Returns an array containing version metadata
 ; Return values .: Success - The returned value depends on the selected $sOption.
 ;                  |DEBUGGER: Websocket target originally returned by _WD_CreateSession
 ;                  |LIST: Array containing websocket targets
