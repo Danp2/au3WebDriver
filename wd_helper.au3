@@ -2031,12 +2031,13 @@ EndFunc   ;==>_WD_IsLatestRelease
 ;                  $bDowngrade  - [optional] Downgrade to match browser version if needed? Default is False
 ; Return values .: Success - True (Driver was updated).
 ;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
-;                  - $_WD_ERROR_InvalidValue
-;                  - $_WD_ERROR_GeneralError
-;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_FileIssue
-;                  - $_WD_ERROR_UserAbort
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_Mismatch
+;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_NotSupported
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
@@ -2127,6 +2128,9 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						If Not @error Then $bResult = True
 					EndIf
 					FileDelete($sTempFile)
+
+				ElseIf $bDowngradable Then
+					$iErr = $_WD_ERROR_Mismatch
 				EndIf
 			EndIf
 		EndIf
