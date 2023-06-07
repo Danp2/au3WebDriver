@@ -2023,11 +2023,12 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_UpdateDriver
 ; Description ...: Replace web driver with newer version, if available.
-; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default]]])
+; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default[, $bDowngrade = Default]]]])
 ; Parameters ....: $sBrowser    - Browser name or full path to browser executable
 ;                  $sInstallDir - [optional] Install directory. Default is @ScriptDir
 ;                  $bFlag64     - [optional] Install 64bit version? Default is current driver architecture or False
 ;                  $bForce      - [optional] Force update? Default is False
+;                  $bDowngrade  - [optional] Downgrade to match browser version if needed? Default is False
 ; Return values .: Success - True (Driver was updated).
 ;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_InvalidValue
@@ -2039,12 +2040,13 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
-;                  In this scenario, the return value indicates if an update is available.
+;                  This can be used in conjunction with $bDowngrade to determine if the existing webdriver is too new for the browser.
+;                  In this scenario, the return value indicates if an update / downgrade is available.
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
 ; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
 ; ===============================================================================================================================
-Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
+Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default, $bDowngrade = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $sBrowserVersion, $bResult = False
 	Local $sDriverCurrent, $sDriverLatest, $sURLNewDriver
@@ -2057,6 +2059,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$bFlag64 = False
 		$bKeepArch = True
 	EndIf
+	If $bDowngrade = Default Then $bDowngrade = False
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 	Local Const $bNoUpdate = (IsKeyword($bForce) = $KEYWORD_NULL) ; Flag to track if updates should be performed
@@ -2098,12 +2101,15 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			$sURLNewDriver = $aDriverInfo[0]
 
 			If $iErr = $_WD_ERROR_Success Then
-				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
+				Local $nStatus = _VersionCompare($sDriverCurrent, $sDriverLatest)  ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
+				Local $bUpdateAvail = ($nStatus < 0)
+				Local $bDowngradable = ($nStatus > 0)
 
 				If $bNoUpdate Then
-					; Set return value to indicate if newer driver is available
-					$bResult = $bUpdateAvail
-				ElseIf $bUpdateAvail Or $bForce Then
+					; Set return value to indicate if newer / downgradable driver is available
+					$bResult = ($bDowngrade) ? $bDowngradable : $bUpdateAvail
+
+				ElseIf $bUpdateAvail Or $bForce Or ($bDowngrade And $bDowngradable) Then
 					; @TempDir should be used to avoid potential AV problems, for example by downloading stuff to @DesktopDir
 					$sTempFile = _TempFile(@TempDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
