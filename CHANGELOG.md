@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Changed
+
+- _WD_UpdateDriver
+	- Added ability to downgrade the webdriver to the correct version
+	- Added ability to check if webdriver downgrade is needed
+	- Added error code to indicate a version mismatch between the browser and webdriver
+
 ## [1.0.3] 2023-05-29
 
 ### Fixed
