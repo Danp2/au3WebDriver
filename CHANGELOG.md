@@ -11,6 +11,33 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
+### Changed
+
+- _WD_UpdateDriver
+	- Added ability to downgrade the webdriver to the correct version
+	- Added ability to check if webdriver downgrade is needed
+	- Added error code to indicate a version mismatch between the browser and webdriver
+
+## [1.0.3] 2023-05-29
+
+### Fixed
+
+- _WD_GetElementFromPoint
+	- Correct frame identification
+	- Handle Null result from `document.elementFromPoint`
+
+## [1.0.2] 2023-05-24
+
+### Fixed
+
+- Correct UDF version number
+
+## [1.0.1] 2023-05-23
+
+### Fixed
+
+- _WD_FrameEnter: Remove GUID validation
+
 ### Project
 
 - Improve string encoding by using existing function from JSON UDF
@@ -1090,7 +1117,10 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.0.3...HEAD
+[1.0.3]:     https://github.com/Danp2/au3WebDriver/compare/1.0.2...1.0.3
+[1.0.2]:     https://github.com/Danp2/au3WebDriver/compare/1.0.1...1.0.2
+[1.0.1]:     https://github.com/Danp2/au3WebDriver/compare/1.0.0...1.0.1
 [1.0.0]:     https://github.com/Danp2/au3WebDriver/compare/0.13.0...1.0.0
 [0.13.0]:     https://github.com/Danp2/au3WebDriver/compare/0.12.0...0.13.0
 [0.12.0]:     https://github.com/Danp2/au3WebDriver/compare/0.11.0...0.12.0

@@ -611,41 +611,56 @@ EndFunc   ;==>_WD_GetMouseElement
 Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local Const $sFuncName = "_WD_GetElementFromPoint"
 	Local Const $sParameters = 'Parameters:    X=' & $iX & '    Y=' & $iY
-	Local $sElement, $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
+	Local $sResponse, $oJSON, $sElement = ""
+	Local $sTagName, $sParams, $aCoords, $iFrame = 0, $oERect
 	Local $sScript1 = "return document.elementFromPoint(arguments[0], arguments[1]);"
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
-	Local $iErr = $_WD_ERROR_Success
+	Local $iErr = $_WD_ERROR_Success, $sResult, $bIsNull
 
 	While True
 		$sParams = $iX & ", " & $iY
-		$sElement = _WD_ExecuteScript($sSession, $sScript1, $sParams, Default, $_WD_JSON_Element)
+		$sResponse = _WD_ExecuteScript($sSession, $sScript1, $sParams)
 		If @error Then
 			$iErr = $_WD_ERROR_RetValue
 			ExitLoop
 		EndIf
 
-		$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
-		If Not StringInStr("frame", $sTagName) Then ; check <iframe> and <frame> element
-			ExitLoop
-		EndIf
+		$oJSON = Json_Decode($sResponse)
+		$sElement = Json_Get($oJSON, $_WD_JSON_Element)
 
-		$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, $_WD_JSON_Value)
 		If @error Then
-			$iErr = $_WD_ERROR_RetValue
+			$sResult = Json_Get($oJSON, $_WD_JSON_Value)
+			$bIsNull = (IsKeyword($sResult) = $KEYWORD_NULL)
+
+			If Not $bIsNull Then
+				$iErr = $_WD_ERROR_RetValue
+			EndIf
+
 			ExitLoop
+		Else
+			$sTagName = _WD_ElementAction($sSession, $sElement, "Name")
+			If Not StringInStr($sTagName, "frame") Then ; check <iframe> and <frame> element
+				ExitLoop
+			EndIf
+
+			$aCoords = _WD_ExecuteScript($sSession, $sScript2, $_WD_EmptyDict, Default, $_WD_JSON_Value)
+			If @error Then
+				$iErr = $_WD_ERROR_RetValue
+				ExitLoop
+			EndIf
+
+			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
+
+			; changing the coordinates in relation to left top corner of frame
+			$iX -= ($oERect.Item('x') - Int($aCoords[0]))
+			$iY -= ($oERect.Item('y') - Int($aCoords[1]))
+
+			_WD_FrameEnter($sSession, $sElement)
+			$iFrame = 1
 		EndIf
-
-		$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
-
-		; changing the coordinates in relation to left top corner of frame
-		$iX -= ($oERect.Item('x') - Int($aCoords[0]))
-		$iY -= ($oERect.Item('y') - Int($aCoords[1]))
-
-		_WD_FrameEnter($sSession, $sElement)
-		$iFrame = 1
 	WEnd
 
-	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), $iFrame, $sElement)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iFrame), $iFrame, $sElement)
 EndFunc   ;==>_WD_GetElementFromPoint
 
 ; #FUNCTION# ====================================================================================================================
@@ -703,7 +718,6 @@ EndFunc   ;==>_WD_IsWindowTop
 ; Return values .: Success - True.
 ;                  Failure - WD Response error message (E.g. "no such frame") and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
-;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Decibel
 ; Modified ......: Danp2, mLipok, jchd
 ; Remarks .......: You can drill-down into nested frames by calling this function repeatedly or use identifier like 'null/2/0'
@@ -729,34 +743,27 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 	ElseIf IsInt($vIdentifier) Then
 		$sOption = '{"id":' & $vIdentifier & '}'
 	Else
-		_WinAPI_GUIDFromString("{" & $vIdentifier & "}")
-		If @error Then
-			$iErr = $_WD_ERROR_InvalidArgue
-		Else
-			$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
-		EndIf
+		$sOption = '{"id":' & __WD_JsonElement($vIdentifier) & '}'
 	EndIf
 
-	If $iErr = $_WD_ERROR_Success Then ; check if $vIdentifier was succesfully validated
-		If Not $bIdentifierAsPath Then
-			$sResponse = _WD_Window($sSession, "frame", $sOption)
-			$iErr = @error
-		Else
-			Local $aIdentifiers = StringSplit($vIdentifier, '/')
-			For $i = 1 To $aIdentifiers[0]
-				If String($aIdentifiers[$i]) = 'null' Then
-					$aIdentifiers[$i] = '{"id":null}'
-				Else
-					$aIdentifiers[$i] = '{"id":' & $aIdentifiers[$i] & '}'
-				EndIf
-				$sResponse = _WD_Window($sSession, "frame", $aIdentifiers[$i])
-				If Not @error Then ContinueLoop
+	If Not $bIdentifierAsPath Then
+		$sResponse = _WD_Window($sSession, "frame", $sOption)
+		$iErr = @error
+	Else
+		Local $aIdentifiers = StringSplit($vIdentifier, '/')
+		For $i = 1 To $aIdentifiers[0]
+			If String($aIdentifiers[$i]) = 'null' Then
+				$aIdentifiers[$i] = '{"id":null}'
+			Else
+				$aIdentifiers[$i] = '{"id":' & $aIdentifiers[$i] & '}'
+			EndIf
+			$sResponse = _WD_Window($sSession, "frame", $aIdentifiers[$i])
+			If Not @error Then ContinueLoop
 
-				$iErr = @error
-				$sMessage = ' Error on ID#' & $i & ' > ' & $aIdentifiers[$i]
-				ExitLoop
-			Next
-		EndIf
+			$iErr = @error
+			$sMessage = ' Error on ID#' & $i & ' > ' & $aIdentifiers[$i]
+			ExitLoop
+		Next
 	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -769,7 +776,7 @@ Func _WD_FrameEnter($sSession, $vIdentifier)
 		Else
 			$sValue = True
 		EndIf
-	ElseIf $iErr <> $_WD_ERROR_InvalidArgue And Not $_WD_DetailedErrors Then
+	ElseIf Not $_WD_DetailedErrors Then
 		$iErr = $_WD_ERROR_Exception
 	EndIf
 
@@ -1950,7 +1957,7 @@ EndFunc   ;==>_WD_GetShadowRoot
 Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 	Local Const $sFuncName = "_WD_SelectFiles"
 	Local Const $sParameters = 'Parameters:    Strategy=' & $sStrategy & '    Selector=' & $sSelector & '    Filename=' & $sFilename
-	Local $sResult = "0", $sSavedEscape
+	Local $sResult = "0"
 	Local $sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
@@ -2016,28 +2023,31 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_UpdateDriver
 ; Description ...: Replace web driver with newer version, if available.
-; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default]]])
+; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default[, $bDowngrade = Default]]]])
 ; Parameters ....: $sBrowser    - Browser name or full path to browser executable
 ;                  $sInstallDir - [optional] Install directory. Default is @ScriptDir
 ;                  $bFlag64     - [optional] Install 64bit version? Default is current driver architecture or False
 ;                  $bForce      - [optional] Force update? Default is False
+;                  $bDowngrade  - [optional] Downgrade to match browser version if needed? Default is False
 ; Return values .: Success - True (Driver was updated).
 ;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
-;                  - $_WD_ERROR_InvalidValue
-;                  - $_WD_ERROR_GeneralError
-;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_FileIssue
-;                  - $_WD_ERROR_UserAbort
+;                  - $_WD_ERROR_GeneralError
+;                  - $_WD_ERROR_InvalidValue
+;                  - $_WD_ERROR_Mismatch
+;                  - $_WD_ERROR_NotFound
 ;                  - $_WD_ERROR_NotSupported
+;                  - $_WD_ERROR_UserAbort
 ; Author ........: Danp2, CyCho
 ; Modified ......: mLipok
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
-;                  In this scenario, the return value indicates if an update is available.
+;                  This can be used in conjunction with $bDowngrade to determine if the existing webdriver is too new for the browser.
+;                  In this scenario, the return value indicates if an update / downgrade is available.
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
 ; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
 ; ===============================================================================================================================
-Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default)
+Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default, $bDowngrade = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $sBrowserVersion, $bResult = False
 	Local $sDriverCurrent, $sDriverLatest, $sURLNewDriver
@@ -2050,6 +2060,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$bFlag64 = False
 		$bKeepArch = True
 	EndIf
+	If $bDowngrade = Default Then $bDowngrade = False
 
 	$sInstallDir = StringRegExpReplace($sInstallDir, '(?i)(\\)\Z', '') & '\' ; prevent double \\ on the end of directory
 	Local Const $bNoUpdate = (IsKeyword($bForce) = $KEYWORD_NULL) ; Flag to track if updates should be performed
@@ -2091,12 +2102,15 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			$sURLNewDriver = $aDriverInfo[0]
 
 			If $iErr = $_WD_ERROR_Success Then
-				Local $bUpdateAvail = (_VersionCompare($sDriverCurrent, $sDriverLatest) < 0) ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
+				Local $nStatus = _VersionCompare($sDriverCurrent, $sDriverLatest)  ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
+				Local $bUpdateAvail = ($nStatus < 0)
+				Local $bDowngradable = ($nStatus > 0)
 
 				If $bNoUpdate Then
-					; Set return value to indicate if newer driver is available
-					$bResult = $bUpdateAvail
-				ElseIf $bUpdateAvail Or $bForce Then
+					; Set return value to indicate if newer / downgradable driver is available
+					$bResult = ($bDowngrade) ? $bDowngradable : $bUpdateAvail
+
+				ElseIf $bUpdateAvail Or $bForce Or ($bDowngrade And $bDowngradable) Then
 					; @TempDir should be used to avoid potential AV problems, for example by downloading stuff to @DesktopDir
 					$sTempFile = _TempFile(@TempDir, "webdriver_", ".zip")
 					_WD_DownloadFile($sURLNewDriver, $sTempFile)
@@ -2114,6 +2128,9 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 						If Not @error Then $bResult = True
 					EndIf
 					FileDelete($sTempFile)
+
+				ElseIf $bDowngradable Then
+					$iErr = $_WD_ERROR_Mismatch
 				EndIf
 			EndIf
 		EndIf

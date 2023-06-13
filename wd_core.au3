@@ -69,7 +69,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "1.0.0"
+Global Const $__WDVERSION = "1.0.3"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -121,6 +121,7 @@ Global Enum _
 		$_WD_ERROR_NotSupported, _ ; When user try to use unsupported browser or capability
 		$_WD_ERROR_AlreadyDefined, _ ; Capability previously defined
 		$_WD_ERROR_Javascript, _ ; Javascript error
+		$_WD_ERROR_Mismatch, _ ; Version mismatch
 		$_WD_ERROR__COUNTER ; Defines row count for $aWD_ERROR_DESC
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
@@ -147,7 +148,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
 		"File issue", _
 		"Browser or feature not supported", _
 		"Capability or value already defined", _
-		"Javascript Exception" _
+		"Javascript Exception", _
+		"Version mismatch" _
 		]
 
 Global Const $_WD_ErrorInvalidSession = "invalid session id"
