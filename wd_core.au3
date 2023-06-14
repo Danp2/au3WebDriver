@@ -194,7 +194,7 @@ Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 				'"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" & $sDriverLatest & (($bFlag64) ? "/win64/chromedriver-win64.zip" : "/win32/chromedriver-win32.zip")' _
 			], _
 			[ _
-				"chrome_deprecated", _ ; Prior to v115
+				"chrome_legacy", _ ; Prior to v115
 				"chrome.exe", _
 				"chromedriver.exe", _
 				False, _

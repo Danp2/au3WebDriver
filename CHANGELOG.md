@@ -23,7 +23,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 -  Enhanced chromedriver support
 	- New download location
 	- Enable 64 bit support
-	- Temporarily added `chrome_deprecated` to support older versions
+	- Temporarily added `chrome_legacy` to support older versions
 
 ## [1.0.3] 2023-05-29
 
