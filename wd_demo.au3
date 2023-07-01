@@ -19,6 +19,7 @@ Global Const $aBrowsers[][2] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
+		["Chrome_Legacy", SetupChrome], _
 		["MSEdge", SetupEdge], _
 		["Opera", SetupOpera], _
 		["MSEdgeIE", SetupEdgeIEMode] _

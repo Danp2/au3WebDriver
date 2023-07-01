@@ -18,6 +18,13 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- Added ability to check if webdriver downgrade is needed
 	- Added error code to indicate a version mismatch between the browser and webdriver
 
+### Project
+
+-  Enhanced chromedriver support
+	- New download location
+	- Enable 64 bit support
+	- Temporarily added `chrome_legacy` to support older versions
+
 ## [1.0.3] 2023-05-29
 
 ### Fixed

@@ -2233,7 +2233,7 @@ EndFunc   ;==>__WD_UpdateExtractor
 ; Description ...: Get version number of specified browser.
 ; Syntax ........: _WD_GetBrowserVersion($sBrowser)
 ; Parameters ....: $sBrowser - Browser name or full path to browser executable
-; Return values .: Success - Version number ("#.#.#.#" format) returned by FileGetVersion for the browser exe
+; Return values .: Success - Version number ("#.#.#.#" format) and sets @extended to index of $_WD_SupportedBrowsers
 ;                  Failure - "0" and sets @error to one of the following values:
 ;                  - $_WD_ERROR_FileIssue
 ;                  - $_WD_ERROR_NotSupported
@@ -3563,6 +3563,8 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 		$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
 
 		If StringLen($sRegex) Then
+			; Incorporate major version number into regex 
+			$sRegex = StringFormat($sRegex, StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1))
 			Local $aResults = StringRegExp($sDriverLatest, $sRegex, $STR_REGEXPARRAYMATCH)
 
 			If @error Then
