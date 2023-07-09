@@ -47,7 +47,7 @@
 ;                  https://www.autoitscript.com/forum/topic/84133-winhttp-functions/
 ;
 ;                  WebDriver for desired browser
-;                  Chrome WebDriver https://sites.google.com/a/chromium.org/chromedriver/downloads
+;                  Chrome WebDriver https://sites.google.com/chromium.org/driver/
 ;                  FireFox WebDriver https://github.com/mozilla/geckodriver/releases
 ;                  Edge WebDriver https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 ;
@@ -69,7 +69,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "0.13.0"
+Global Const $__WDVERSION = "1.0.3"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -87,6 +87,8 @@ Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
 Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
+
+Global Const $JSON_MLREFORMAT = 1048576 ; Addition to constants from json.au3
 
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
@@ -146,7 +148,8 @@ Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
 		"File issue", _
 		"Browser or feature not supported", _
 		"Capability or value already defined", _
-		"Javascript Exception" _
+		"Javascript Exception", _
+		"Version mismatch" _
 		]
 
 Global Const $_WD_ErrorInvalidSession = "invalid session id"
@@ -180,10 +183,66 @@ Global Enum _ ; Column positions of $_WD_SupportedBrowsers
 
 Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 		[ _
-		["chrome", "chrome.exe", "chromedriver.exe", False, "goog:chromeOptions", "'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", "", '"https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"'], _
-		["firefox", "firefox.exe", "geckodriver.exe", True, "moz:firefoxOptions", "https://github.com/mozilla/geckodriver/releases/latest", '<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(?:v)(.*?)"', '"https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest & (($bFlag64) ? "-win64.zip" : "-win32.zip")'], _
-		["msedge", "msedge.exe", "msedgedriver.exe", True, "ms:edgeOptions", "'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1) & '_WINDOWS'", "", '"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'], _
-		["opera", "opera.exe", "operadriver.exe", True, "goog:chromeOptions", "https://github.com/operasoftware/operachromiumdriver/releases/latest", '<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(?:v\.)(.*?)"', '"https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")'] _
+			[ _
+				"chrome", _
+				"chrome.exe", _
+				"chromedriver.exe", _
+				True,  _
+				"goog:chromeOptions", _
+				"https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json", _
+				'{"milestone":"%s","version":"(\d+.\d+.\d+.\d+)"', _
+				'"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" & $sDriverLatest & (($bFlag64) ? "/win64/chromedriver-win64.zip" : "/win32/chromedriver-win32.zip")' _
+			], _
+			[ _
+				"chrome_legacy", _ ; Prior to v115
+				"chrome.exe", _
+				"chromedriver.exe", _
+				False, _
+				"goog:chromeOptions", _
+				"'https://chromedriver.storage.googleapis.com/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1)", _
+				"", _
+				'"https://chromedriver.storage.googleapis.com/" & $sDriverLatest & "/chromedriver_win32.zip"' _
+			], _
+			[ _
+				"firefox", _
+				"firefox.exe", _
+				"geckodriver.exe", _
+				True,  _
+				"moz:firefoxOptions", _
+				"https://github.com/mozilla/geckodriver/releases/latest", _
+				'<a.*href="\/mozilla\/geckodriver\/releases\/tag\/(?:v)(.*?)"', _
+				'"https://github.com/mozilla/geckodriver/releases/download/v" & $sDriverLatest & "/geckodriver-v" & $sDriverLatest & (($bFlag64) ? "-win64.zip" : "-win32.zip")' _
+			], _
+			[ _
+				"msedge", _
+				"msedge.exe", _
+				"msedgedriver.exe", _
+				True,  _
+				"ms:edgeOptions", _
+				"'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1) & '_WINDOWS'", _
+				"", _
+				'"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")' _
+			], _
+			[ _
+				"opera", _
+				"opera.exe", _
+				"operadriver.exe", _
+				True,  _
+				"goog:chromeOptions", _
+				"https://github.com/operasoftware/operachromiumdriver/releases/latest", _
+				'<a.*href="\/operasoftware\/operachromiumdriver\/releases\/tag\/(?:v\.)(.*?)"',  _
+				'"https://github.com/operasoftware/operachromiumdriver/releases/download/v." & $sDriverLatest & "/operadriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")' _
+			], _
+			[ _
+				"msedgeie", _
+				"msedge.exe", _
+				"IEDriverServer.exe", _
+				True,  _
+				"se:ieOptions", _
+				"https://github.com/SeleniumHQ/selenium/blob/trunk/cpp/iedriverserver/CHANGELOG", _
+				'(?s)(?:major.minor.build.revision.*?v)(\d+\.\d+\.\d+)', _
+				'"https://github.com/SeleniumHQ/selenium/releases/download/selenium-" & StringRegExpReplace($sDriverLatest, "(\d+\.\d+)(\.\d+)", "$1") & ".0/IEDriverServer_" & (($bFlag64) ? "x64" : "Win32") & "_" & $sDriverLatest & ".zip"' _
+			] _
 		]
 
 #EndRegion Global Constants
@@ -197,7 +256,6 @@ Global $_WD_HTTPRESULT = 0                 ; Result of last WinHTTP request
 Global $_WD_HTTPRESPONSE = ''              ; Response of last WinHTTP request
 Global $_WD_SESSION_DETAILS = ""           ; Response from _WD_CreateSession
 Global $_WD_BFORMAT = $SB_UTF8             ; Binary format
-Global $_WD_ESCAPE_CHARS = '\\"'           ; Characters to escape
 Global $_WD_DRIVER_CLOSE = True            ; Close prior driver instances before launching new one
 Global $_WD_DRIVER_DETECT = True           ; Don't launch new driver instance if one already exists
 Global $_WD_RESPONSE_TRIM = -1             ; Trim response string to given value for debug output
@@ -212,6 +270,7 @@ Global $_WD_DefaultTimeout = 10000         ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
+Global $_WD_DetailedErrors = False
 
 #EndRegion Global Variables
 
@@ -257,7 +316,7 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Else
 		If $iErr = $_WD_ERROR_SessionNotCreated Then
 			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
-		Else
+		ElseIf Not $_WD_DetailedErrors Then
 			$iErr = $_WD_ERROR_Exception
 		EndIf
 	EndIf
@@ -282,7 +341,9 @@ EndFunc   ;==>_WD_CreateSession
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
 	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
-	Local $iErr = (@error) ? ($_WD_ERROR_Exception) : ($_WD_ERROR_Success)
+	Local $iErr = @error
+
+	If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
 
 	Local $sMessage = ($iErr) ? ('Error occurs when trying to delete session') : ('WebDriver session deleted')
 	Local $iReturn = ($iErr) ? (0) : (1)
@@ -835,7 +896,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; True = the JSON value node is returned , False = entire JSON response is returned
 
 	If IsString($vSubNode) Then
-		$sScript = __WD_EscapeString($sScript)
+		$sScript = __WD_EscapeString($sScript, $JSON_MLREFORMAT)
 
 		$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
 		$sCmd = ($bAsync) ? 'async' : 'sync'
@@ -1042,6 +1103,7 @@ EndFunc   ;==>_WD_Cookies
 ;                  |CONSOLESUFFIX  - Suffix for console output
 ;                  |DEBUGTRIM      - Length of response text written to the debug cocnsole
 ;                  |DEFAULTTIMEOUT - Default timeout (in miliseconds) used by other functions if no other value is supplied
+;                  |DETAILERRORS   - Return detailed error codes? (Boolean)
 ;                  |DRIVER         - Full path name to web driver executable
 ;                  |DRIVERCLOSE    - Close prior driver instances before launching new one (Boolean)
 ;                  |DRIVERDETECT   - Use existing driver instance if it exists (Boolean)
@@ -1107,6 +1169,13 @@ Func _WD_Option($sOption, $vValue = Default)
 				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: int)"), 0, 0)
 			EndIf
 			$_WD_DefaultTimeout = $vValue
+
+		Case "detailerrors"
+			If $vValue == "" Then Return $_WD_DetailedErrors
+			If Not IsBool($vValue) Then
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: bool)"), 0, 0)
+			EndIf
+			$_WD_DetailedErrors = $vValue
 
 		Case "driver"
 			If $vValue == "" Then Return $_WD_DRIVER
@@ -1176,7 +1245,7 @@ Func _WD_Option($sOption, $vValue = Default)
 			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $vValue type: none)"), 0, 0)
 
 		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $sOption: BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version)"), 0, 0)
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sParameters & " (Required $sOption: BaseURL|BinaryFormat|Console|ConsoleSuffix|DebugTrim|DefaultTimeout|DetailErrors|Driver|DriverClose|DriverDetect|DriverParams|ErrorMsgBox|HTTPTimeouts|OutputDebug|Port|Sleep|Version)"), 0, 0)
 	EndSwitch
 
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sParameters), 0, 1)
@@ -1212,6 +1281,8 @@ Func _WD_Startup()
 
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
 
+	; Attempt to determine the availability of designated port
+	; so that this information can be shown in the logs
 	$sFunction = "_WD_GetFreePort"
 	Call($sFunction, $_WD_PORT)
 
@@ -1219,7 +1290,12 @@ Func _WD_Startup()
 		Case @error = 0xDEAD And @extended = 0xBEEF
 			; function not available
 
-		Case @error
+		Case @error = $_WD_ERROR_GeneralError
+			; unable to obtain port status
+			$sPortAvailable = " (Unknown)"
+
+		Case @error = $_WD_ERROR_NotFound
+			; requested port is unavailable
 			$sPortAvailable = " (Unavailable)"
 	EndSelect
 
@@ -1262,7 +1338,7 @@ Func _WD_Startup()
 		If _WinAPI_GetBinaryType($_WD_DRIVER) Then _
 				$sDriverBitness = ((@extended = $SCS_64BIT_BINARY) ? (" (64 Bit)") : (" (32 Bit)"))
 
-		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSType & " " & @OSBuild & " " & @OSServicePack)
+		__WD_ConsoleWrite($sFuncName & ": OS:" & @TAB & @OSVersion & " " & @OSArch & " " & @OSBuild & " " & @OSServicePack)
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
 		__WD_ConsoleWrite($sFuncName & ": Webdriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
@@ -1657,20 +1733,26 @@ EndFunc   ;==>__WD_CloseDriver
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_EscapeString
 ; Description ...: Escapes designated characters in string.
-; Syntax ........: __WD_EscapeString($sData)
-; Parameters ....: $sData - the string to be escaped
-; Return values..: Escaped string.
+; Syntax ........: __WD_EscapeString($sData[, $iOption = 0])
+; Parameters ....: $sData   - the string to be escaped
+;                  $iOption - [optional] Any combination of $JSON_* constants. Default is 0.
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......: $JSON_MLREFORMAT will strip tabs and CR/LFs from a multiline string.
+;                  See $JSON_* constants in json.au3 for other $iOption possibilities.
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_EscapeString($sData)
-	Local $sRegEx = "([" & $_WD_ESCAPE_CHARS & "])"
-	Local $sEscaped = StringRegExpReplace($sData, $sRegEx, "\\$1")
-	Return SetError($_WD_ERROR_Success, 0, $sEscaped)
+Func __WD_EscapeString($sData, $iOption = 0)
+	If BitAND($iOption, $JSON_MLREFORMAT) Then
+		$sData = StringRegExpReplace($sData, '[\v\t]', '') ; Strip tabs and CR/LFs
+		$iOption = BitXOR($iOption, $JSON_MLREFORMAT)      ; Flip bit off
+	Endif
+
+	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
+
+	Return SetError($_WD_ERROR_Success, 0, $sData)
 EndFunc   ;==>__WD_EscapeString
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================

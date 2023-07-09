@@ -19,8 +19,10 @@ Global Const $aBrowsers[][2] = _
 		[ _
 		["Firefox", SetupGecko], _
 		["Chrome", SetupChrome], _
+		["Chrome_Legacy", SetupChrome], _
 		["MSEdge", SetupEdge], _
-		["Opera", SetupOpera] _
+		["Opera", SetupOpera], _
+		["MSEdgeIE", SetupEdgeIEMode] _
 		]
 
 ; Column 0 - Function Name
@@ -57,6 +59,7 @@ Global Const $aDebugLevel[][2] = _
 
 Global $sSession
 Global $__g_idButton_Abort
+Global $_VAR[50] ; used in UserFile(), __SetVAR()
 #EndRegion - Global's declarations
 
 _WD_Demo()
@@ -187,6 +190,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 
 	; Execute browser setup routine for user's browser selection
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
+	If @error Then Return SetError(@error, @extended, 0)
 
 	ConsoleWrite("> wd_demo.au3: _WD_Startup" & @CRLF)
 	Local $iWebDriver_PID = _WD_Startup()
@@ -285,6 +289,7 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		Case Else
 			ConsoleWrite("! Error = " & $iError & " occurred on: " & $sDemoName & @CRLF)
 			ConsoleWrite("! _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+			ConsoleWrite("! _WD_LastHTTPResponse = " & _WD_LastHTTPResponse() & @CRLF)
 			ConsoleWrite("! _WD_GetSession = " & _WD_GetSession($sSession) & @CRLF)
 			MsgBox($MB_ICONERROR + $MB_TOPMOST, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
@@ -576,7 +581,7 @@ EndFunc   ;==>DemoAlerts
 
 Func DemoFrames()
 	Local $sElement, $bIsWindowTop
-	Local Const $sArrayHeader = 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|IFRAME attributes|URL|Body ElementID|IsHidden'
+	Local Const $sArrayHeader = 'Absolute Identifiers > _WD_FrameEnter|Relative Identifiers > _WD_FrameEnter|FRAME attributes|URL|Body ElementID|IsHidden|MatchedElements'
 
 	#Region - Testing how to manage frames
 	_Demo_NavigateCheckBanner($sSession, "https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_iframe", '//*[@id="snigel-cmp-framework" and @class="snigel-cmp-framework"]')
@@ -698,6 +703,26 @@ Func DemoFrames()
 	#EndRegion - Example 6v2 ; from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 
 	#EndRegion - Testing _WD_FrameList() usage
+
+	#Region - Testing element location in frame set and iframe collecion
+	; go to website
+	_WD_Navigate($sSession, 'https://www.tutorialspoint.com/html/html_frames.htm#')
+	_WD_LoadWait($sSession)
+
+	; check if document context location is Top Window
+	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+
+	MsgBox($MB_TOPMOST, "", 'Before checking location of multiple elements on multiple frames' & @CRLF & 'Try the same example with and without waiting about 30 seconds in order to see that many frames should be fully loaded, and to check the differences')
+
+	$aFrameList = _WD_FrameList($sSession, True, 5000, Default)
+	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example : Testing element location in frame set - after pre-checking list of frames" & @CRLF)
+	_ArrayDisplay($aFrameList, @ScriptLineNumber & ' Before _WD_FrameListFindElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
+
+	Local $aLocationOfElement = _WD_FrameListFindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
+	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $aLocationOfElement (" & UBound($aLocationOfElement) & ")=" & @CRLF & _ArrayToString($aLocationOfElement) & @CRLF)
+	_ArrayDisplay($aLocationOfElement, @ScriptLineNumber & ' $aLocationOfElement', 0, 0, Default, $sArrayHeader)
+
+	#EndRegion - Testing element location in frame set and iframe collecion
 EndFunc   ;==>DemoFrames
 
 Func DemoActions()
@@ -1114,24 +1139,35 @@ EndFunc   ;==>UserTesting
 #EndRegion - UserTesting
 
 Func UserFile()
-	Local Const $sFuncName = 'UserFile'
 	; Modify the contents of UserTesting.au3 (or create new one) to change the code being executed.
-	; Changes can be made and executed without restarting this script
-	Local $sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting.au3')
-	If @error Then Return SetError(@error, @extended)
+	; Changes can be made and executed without restarting this script,
+	;	you can even repeat "UserFile" processing without closing browser
+	Local Const $aEmpty1D[UBound($_VAR)] = []
+	Local $sScriptFileFullPath, $aCmds
 
-	Local $aCmds = FileReadToArray($sScriptFileFullPath)
-	If @error Then Return SetError(@error, @extended)
+	Do
+		$_VAR = $aEmpty1D ; clean up the globally declared $_VAR to ensure repeatable test conditions
+		$sScriptFileFullPath = FileOpenDialog('Choose testing script', @ScriptDir, 'AutoIt script file (*.au3)', $FD_FILEMUSTEXIST, 'UserTesting.au3')
+		If @error Then Return SetError(@error, @extended)
 
-	Local $iLine = 0
-	For $sCmd In $aCmds
-		$iLine += 1
-		; Strip comments
-		; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
-		$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
-		If $sCmd Then Execute($sCmd)
-	Next
+		$aCmds = FileReadToArray($sScriptFileFullPath)
+		If @error Then Return SetError(@error, @extended)
+
+		For $sCmd In $aCmds
+			; Strip comments
+			; https://www.autoitscript.com/forum/topic/157255-regular-expression-challenge-for-stripping-single-comments/?do=findComment&comment=1138896
+			$sCmd = StringRegExpReplace($sCmd, '(?m)^(?:[^;"'']|''[^'']*''|"[^"]*")*\K;.*', "")
+			If $sCmd Then Execute($sCmd)
+		Next
+
+	Until $IDNO = MsgBox($MB_YESNO + $MB_TOPMOST + $MB_ICONQUESTION + $MB_DEFBUTTON2, 'Question', 'Do you want to process another file?')
+
 EndFunc   ;==>UserFile
+
+Func __SetVAR($IDX_VAR, $value)
+	$_VAR[$IDX_VAR] = $value
+	ConsoleWrite('- Setting $_VAR[' & $IDX_VAR & '] = ' & ((IsArray($value)) ? ('{array}') : ($value)) & @CRLF)
+EndFunc   ;==>__SetVAR
 
 Func _USER_WD_Sleep($iDelay)
 	Local $hTimer = TimerInit() ; Begin the timer and store the handle in a variable.
@@ -1149,16 +1185,21 @@ EndFunc   ;==>_USER_WD_Sleep
 
 Func _Demo_NavigateCheckBanner($sSession, $sURL, $sXpath)
 	_WD_Navigate($sSession, $sURL)
+	If @error Then Return SetError(@error, @extended, 0)
+
 	_WD_LoadWait($sSession)
+	If @error Then Return SetError(@error, @extended, 0)
 
 	; Check if designated element is visible, as it can hide all sub elements in case when COOKIE aproval message is visible
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath, 0, 1000 * 60, $_WD_OPTION_NoMatch)
 	If @error Then
+		Local $iErr = @error, $iExt = @extended
 		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
-		Return SetError(@error, @extended)
+		Return SetError($iErr, $iExt)
 	EndIf
 
 	_WD_LoadWait($sSession)
+	Return SetError(@error, @extended, 0)
 EndFunc   ;==>_Demo_NavigateCheckBanner
 
 Func SetupGecko($bHeadless)
@@ -1243,3 +1284,27 @@ Func SetupOpera($bHeadless)
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
 EndFunc   ;==>SetupOpera
+
+Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
+	; https://www.selenium.dev/documentation/ie_driver_server/#required-configuration
+	Local $sTimeStamp = @YEAR & '-' & @MON & '-' & @MDAY & '_' & @HOUR & @MIN & @SEC
+	_WD_Option('Driver', 'IEDriverServer.exe') ;
+	Local $iPort = _WD_GetFreePort(5555, 5600)
+	If @error Then Return SetError(@error, @extended, 0)
+	_WD_Option('Port', $iPort)
+	_WD_Option('DriverParams', '-log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $_WD_PORT & " -host=127.0.0.1")
+
+;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
+	_WD_CapabilitiesStartup()
+	_WD_CapabilitiesAdd('alwaysMatch', 'msedgeie')
+	_WD_CapabilitiesAdd('w3c', True)
+	Local $sPath = _WD_GetBrowserPath("msedge")
+	If $sPath Then _WD_CapabilitiesAdd("ie.edgepath", $sPath)
+	_WD_CapabilitiesAdd("ie.edgechromium", True)
+	_WD_CapabilitiesAdd("ignoreProtectedModeSettings", True)
+	_WD_CapabilitiesAdd("initialBrowserUrl", "https://google.com")
+	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
+	_WD_CapabilitiesDump(@ScriptLineNumber)
+	Local $sCapabilities = _WD_CapabilitiesGet()
+	Return $sCapabilities
+EndFunc   ;==>SetupEdgeIEMode
