@@ -3,6 +3,7 @@
 ; WebDriver related UDF's
 #include "wd_core.au3"
 #include "wd_helper.au3"
+#include "wd_capabilities.au3"
 #include "jq.au3"
 
 #Region Copyright
@@ -11,7 +12,7 @@
 	*
 	* MIT License
 	*
-	* Copyright (c) 2022 Dan Pollak (@Danp2)
+	* Copyright (c) 2023 Dan Pollak (@Danp2)
 	*
 	* Permission is hereby granted, free of charge, to any person obtaining a copy
 	* of this software and associated documentation files (the "Software"), to deal
@@ -71,6 +72,10 @@ Global $_WD_BidiClients[][$_WD_BIDICLIENT__COUNTER] = _
 		["websocat", "websocat.exe", " -tv -E tcp-l:%s:%s %s", '', '%s'] _
 		]
 #EndRegion Global Constants
+
+; Firefox specific capability
+; https://firefox-source-docs.mozilla.org/testing/geckodriver/Capabilities.html#moz-debuggeraddress
+_WD_CapabilitiesDefine($_WD_KEYS__STANDARD_PRIMITIVE, 'moz:debuggerAddress')
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetWebsocketURL
