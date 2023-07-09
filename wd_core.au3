@@ -119,6 +119,7 @@ Global Enum _
 		$_WD_ERROR_NotSupported, _       ; When user try to use unsupported browser or capability
 		$_WD_ERROR_AlreadyDefined, _     ; Capability previously defined
 		$_WD_ERROR_Javascript, _         ; Javascript error
+		$_WD_ERROR_Mismatch, _           ; Version mismatch
 		$_WD_ERROR__COUNTER              ; Defines row count for $aWD_ERROR_DESC
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
