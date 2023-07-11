@@ -203,7 +203,7 @@ Func _WD_BidiConfig($sClient = Default, $sIPAddress = Default, $iPort = Default)
 	If $sIPAddress <> Default Then Json_ObjPut($oParams, 'ip', $sIPAddress)
 	If $iPort <> Default Then Json_ObjPut($oParams, 'port', $iPort)
 
-	__WD_BidiActions('init', Default, $oParams)
+	__WD_BidiActions('config', Default, $oParams)
 	Local $iErr = @error
 
 	Return SetError(__WD_Error($sFuncName, $iErr))
@@ -337,7 +337,9 @@ EndFunc   ;==>_WD_BidiGetContextID
 ; Parameters ....: $sAction - One of the following actions:
 ;                  |
 ;                  |CLOSE       - Close the current websocket connection
+;                  |CONFIG      - Adjust BiDi configuration
 ;                  |COUNT       - Get count of pending results / events
+;                  |MAPS        - Retrieve pending results / events
 ;                  |OPEN        - Open a websocket connection
 ;                  |RECEIVE     - Receive results / events via websocket
 ;                  |SEND        - Send Bidi command via websocket
@@ -498,7 +500,7 @@ Func __WD_BidiActions($sAction, $sArgument = Default, $oParams = Default)
 		Case 'status'
 			$vResult = ($iSocket And $iPID And ProcessExists($iPID))
 
-		Case 'init'
+		Case 'config'
 			Local $sTemp = Json_ObjGet($oParams, 'client')
 			If Not @error Then 
 				Local $iIndex = _ArraySearch($_WD_BidiClients, StringLower($sTemp), Default, Default, Default, Default, Default, $_WD_BIDICLIENT_Name)
