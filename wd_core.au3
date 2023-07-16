@@ -1748,7 +1748,7 @@ Func __WD_EscapeString($sData, $iOption = 0)
 	If BitAND($iOption, $JSON_MLREFORMAT) Then
 		$sData = StringRegExpReplace($sData, '[\v\t]', '') ; Strip tabs and CR/LFs
 		$iOption = BitXOR($iOption, $JSON_MLREFORMAT)      ; Flip bit off
-	Endif
+	EndIf
 
 	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
 
