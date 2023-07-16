@@ -195,26 +195,6 @@ To automate your browser, follow the following steps.
 
 Run `wd_demo.au3`, choose your "Browser" from the dropdown and press the "Run Demo!" button that will perform the "DemoNavigation" demo to validate your installation.
 
-<details>
-<summary><i>Result example</i></summary>
-
-In case you use Firefox, the result should look similar to this:
-
-``` log
-1577745813519   geckodriver     DEBUG   Listening on 127.0.0.1:4444
-1577745813744   webdriver::server       DEBUG   -> POST /session {"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}
-1577745813746   geckodriver::capabilities       DEBUG   Trying to read firefox version from ini files
-1577745813747   geckodriver::capabilities       DEBUG   Found version 71.0
-1577745813757   mozrunner::runner       INFO    Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\ ...
-1577745813783   geckodriver::marionette DEBUG   Waiting 60s to connect to browser on 127.0.0.1:55184
-1577745817392   geckodriver::marionette DEBUG   Connection to Marionette established on 127.0.0.1:55184.
-1577745817464   webdriver::server       DEBUG   <- 200 OK {"value":{"sessionId":"925641bf-6c5d-4fe2-a985-02de9b1c7c74","capabilities":"acceptInsecureCerts":true,"browserName":"firefox", ...
-```
-
-</details>
-
-More useful information following soon.
-
 ## Configuration
 
 Useful information about possible configurations following soon.<br>
