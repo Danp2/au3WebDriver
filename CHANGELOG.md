@@ -18,6 +18,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- Added ability to check if webdriver downgrade is needed
 	- Added error code to indicate a version mismatch between the browser and webdriver
 - _WD_IsLatestRelease: Use _VersionCompare()
+
 ### Project
 
 -  Enhanced chromedriver support
