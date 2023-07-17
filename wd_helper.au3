@@ -2011,7 +2011,8 @@ Func _WD_IsLatestRelease()
 
 		If Not @error Then
 			Local $sLatestWDVersion = $aLatestWDVersion[0]
-			$bResult = ($__WDVERSION == $sLatestWDVersion)
+			Local $nStatus = _VersionCompare($__WDVERSION, $sLatestWDVersion)  ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
+			$bResult = ($nStatus >= 0)
 		Else
 			$iErr = $_WD_ERROR_Exception
 		EndIf
@@ -3563,7 +3564,7 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 		$sDriverLatest = StringStripWS(BinaryToString(BinaryMid($sDriverLatest, $iStartPos), $iConversion), $STR_STRIPTRAILING)
 
 		If StringLen($sRegex) Then
-			; Incorporate major version number into regex 
+			; Incorporate major version number into regex
 			$sRegex = StringFormat($sRegex, StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1))
 			Local $aResults = StringRegExp($sDriverLatest, $sRegex, $STR_REGEXPARRAYMATCH)
 

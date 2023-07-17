@@ -69,7 +69,7 @@
 #EndRegion Many thanks to:
 
 #Region Global Constants
-Global Const $__WDVERSION = "1.0.3"
+Global Const $__WDVERSION = "1.1.0"
 
 Global Const $_WD_ELEMENT_ID = "element-6066-11e4-a52e-4f735466cecf"
 Global Const $_WD_SHADOW_ID = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -1748,7 +1748,7 @@ Func __WD_EscapeString($sData, $iOption = 0)
 	If BitAND($iOption, $JSON_MLREFORMAT) Then
 		$sData = StringRegExpReplace($sData, '[\v\t]', '') ; Strip tabs and CR/LFs
 		$iOption = BitXOR($iOption, $JSON_MLREFORMAT)      ; Flip bit off
-	Endif
+	EndIf
 
 	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
 

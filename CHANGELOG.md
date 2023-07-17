@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [1.1.0] 2023-07-17
 
 ### Changed
 
@@ -17,13 +17,13 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- Added ability to downgrade the webdriver to the correct version
 	- Added ability to check if webdriver downgrade is needed
 	- Added error code to indicate a version mismatch between the browser and webdriver
-
+- _WD_IsLatestRelease: Use _VersionCompare()
 ### Project
 
 -  Enhanced chromedriver support
 	- New download location
 	- Enable 64 bit support
-	- Temporarily added `chrome_legacy` to support older versions
+	- Temporarily added `chrome_legacy` to support older versions (pre v115) of Chrome
 
 ## [1.0.3] 2023-05-29
 
@@ -1124,7 +1124,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.0.3...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.1.0...HEAD
+[1.1.0]:     https://github.com/Danp2/au3WebDriver/compare/1.0.3...1.1.0
 [1.0.3]:     https://github.com/Danp2/au3WebDriver/compare/1.0.2...1.0.3
 [1.0.2]:     https://github.com/Danp2/au3WebDriver/compare/1.0.1...1.0.2
 [1.0.1]:     https://github.com/Danp2/au3WebDriver/compare/1.0.0...1.0.1
