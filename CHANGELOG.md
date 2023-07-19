@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Fixed
+
+- _WD_GetTable: Revise existing xpaths to include header elements in results
+
 ## [1.1.0] 2023-07-17
 
 ### Changed
