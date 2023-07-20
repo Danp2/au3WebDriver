@@ -2077,13 +2077,16 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 		$iErr = @error
 		$iExt = @extended
+		If $sBrowser = "chrome" Then
+			Local $i_Check = _VersionCompare("115.0.0.0", $sBrowserVersion)
+			If Not @error And $i_Check = 1 Then $sBrowser = "chrome_legacy"
+			$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
+			$iErr = @error
+			$iExt = @extended
+		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
 			Local $iIndex = @extended
-			If $sBrowser = "chrome" Then
-				Local $i_Check = _VersionCompare("115.0.0.0", $sBrowserVersion)
-				If Not @error And $i_Check = 1 Then $sBrowser = "chrome_legacy"
-			EndIf
 			; Match exe file name in list of supported browsers
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
