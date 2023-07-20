@@ -2075,15 +2075,13 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
 		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
-		$iErr = @error
-		$iExt = @extended
-		If $sBrowser = "chrome" Then
+		If Not @error And $sBrowser = "chrome" Then
 			Local $i_Check = _VersionCompare("115.0.0.0", $sBrowserVersion)
 			If Not @error And $i_Check = 1 Then $sBrowser = "chrome_legacy"
 			$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
-			$iErr = @error
-			$iExt = @extended
 		EndIf
+		$iErr = @error
+		$iExt = @extended
 
 		If $iErr = $_WD_ERROR_Success Then
 			Local $iIndex = @extended
