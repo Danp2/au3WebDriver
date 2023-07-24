@@ -2869,68 +2869,59 @@ EndFunc   ;==>_WD_DispatchEvent
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table.
 ; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsXpath = Default[, $sColsXpath = Default[, $sCellsXpath = Default]]])
-; Parameters ....: $sSession     - Session ID from _WD_CreateSession
-;                  $sBaseElement - XPath of the table to return
-;                  $sRowsXpath   - [optional] Rows partial xpath. Default is "/tbody/tr".
-;                  $sColsXpath   - [optional] Columns partial xpath. Default is "/tbody/tr[1]/*[self::td or self::th]".
-;                  $sCellsXpath  - [optional] Cells partial xpath. Default is "/tbody/tr/*[self::td or self::th]".
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sBaseElement  - XPath of the table to return
+;                  $sRowsSelector - [optional] Rows CSS selector. Default is "tr".
+;                  $sColsSelector - [optional] Columns CSS selector. Default is "td, th".
 ; Return values .: Success - 2D array.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
 ; Modified ......: water, danp2
-; Remarks .......:  The optional xpaths are appended to the base element xpath to obtain the full xpath of the target elements.
+; Remarks .......:  
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
-Func _WD_GetTable($sSession, $sBaseElement, $sRowsXpath = Default, $sColsXpath = Default, $sCellsXpath = Default)
+Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSelector = Default)
 	Local Const $sFuncName = "_WD_GetTable"
-	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML
+	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML, $aTable = ''
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
-	If $sRowsXpath = Default Then $sRowsXpath = "/tbody/tr"
-	If $sColsXpath = Default Then $sColsXpath = "/tbody/tr[1]/*[self::td or self::th]"
-	If $sCellsXpath = Default Then $sCellsXpath = "/tbody/tr/*[self::td or self::th]"
+	If $sRowsSelector = Default Then $sRowsSelector = "tr"
+	If $sColsSelector = Default Then $sColsSelector = "td, th"
 
-	; Determine if optional UDF is available
-	Call("_HtmlTableGetWriteToArray", "")
+	; Get the table element
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
+	Local $iErr = @error
 
-	If @error = 0xDEAD And @extended = 0xBEEF Then
-		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & $sRowsXpath, Default, True) ; Retrieve the number of table rows
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
+	If $iErr = $_WD_ERROR_Success Then
+		; https://stackoverflow.com/questions/64842157
+		Local $sScript = "return [...arguments[0].querySelectorAll(arguments[1])]" & _
+			".map(row => [...row.querySelectorAll(arguments[2])]" & _
+			".map(cell => cell.textContent));"
+		Local $sArgs = __WD_JsonElement($sElement) & ', "' & $sRowsSelector & '", "' & $sColsSelector & '"'
+		Local $oResult = _WD_ExecuteScript($sSession, $sScript, $sArgs, Default, $_WD_JSON_Value)
+		$iErr = @error
 
-		$iLines = UBound($aElements)
-		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & $sColsXpath, Default, True) ; Retrieve the number of table columns by checking the first table row
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
+		If $iErr = $_WD_ERROR_Success Then
+			If IsArray($oResult) And UBound($oResult, $UBOUND_ROWS) Then
+				Local $iRows = UBound($oResult, $UBOUND_ROWS)
+				Local $iCols = UBound($oResult[0], $UBOUND_ROWS)
+				Dim $aTable[0][$iCols]
 
-		$iColumns = UBound($aElements)
-		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
-		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & $sCellsXpath, Default, True) ; Retrieve all table cells
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		For $i = 0 To UBound($aElements) - 1
-			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
-			$iColumn = Mod($i, $iColumns)
-			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
-			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		Next
-	Else
-		; Get the table element
-		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		; Retrieve its HTML
-		$sHTML = _WD_ElementAction($sSession, $sElement, "Property", "outerHTML")
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		; Convert to array
-		$aTable = _HtmlTableGetWriteToArray($sHTML, 1, False, $_WD_IFILTER)
+				For $i = 0 To $iRows - 1 Step +1
+					_ArrayTranspose($oResult[$i])
+					_ArrayAdd($aTable, $oResult[$i])
+				Next
+			Else
+				$iErr = $_WD_ERROR_NoMatch
+			EndIf
+		EndIf
 	EndIf
 
-	Return $aTable
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $aTable)
 EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
