@@ -11,9 +11,19 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
+### Changed
+
+- _WD_GetTable
+	- Support for non-standard table markers
+	- Improve performance
+
 ### Fixed
 
 - _WD_GetTable: Revise existing xpaths to include header elements in results
+
+### Project
+
+- Eliminate usage of _HtmlTableGetWriteToArray
 
 ## [1.1.0] 2023-07-17
 
