@@ -2879,7 +2879,7 @@ EndFunc   ;==>_WD_DispatchEvent
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
 ; Modified ......: water, danp2
-; Remarks .......:  
+; Remarks .......:
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
@@ -2899,8 +2899,8 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 	If $iErr = $_WD_ERROR_Success Then
 		; https://stackoverflow.com/questions/64842157
 		Local $sScript = "return [...arguments[0].querySelectorAll(arguments[1])]" & _
-			".map(row => [...row.querySelectorAll(arguments[2])]" & _
-			".map(cell => cell.textContent));"
+				".map(row => [...row.querySelectorAll(arguments[2])]" & _
+				".map(cell => cell.textContent));"
 		Local $sArgs = __WD_JsonElement($sElement) & ', "' & $sRowsSelector & '", "' & $sColsSelector & '"'
 		Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sArgs)
 		$iErr = @error
@@ -3590,16 +3590,16 @@ EndFunc   ;==>__WD_GetLatestWebdriverInfo
 ; Example .......: No
 ; ===============================================================================================================================
 Func __Make2Array($s)
-    Local $aLines = StringRegExp($s, "(?<=[\[,])\s*\[(.*?)\]\s*[,\]]", 3), $iCountCols = 0
-    For $i = 0 To UBound($aLines) - 1
-        $aLines[$i] = StringRegExp($aLines[$i], "(?:^|,)\s*(?|'([^']*)'|""([^""]*)""|(.*?))(?=\s*(?:,|$))", 3)
-        If UBound($aLines[$i]) > $iCountCols Then $iCountCols = UBound($aLines[$i])
-    Next
-    Local $aRet[UBound($aLines)][$iCountCols]
-    For $y = 0 To UBound($aLines) - 1
-        For $x = 0 To UBound($aLines[$y]) - 1
-            $aRet[$y][$x] = ($aLines[$y])[$x]
-        Next
-    Next
-    Return $aRet
-EndFunc
+	Local $aLines = StringRegExp($s, "(?<=[\[,])\s*\[(.*?)\]\s*[,\]]", 3), $iCountCols = 0
+	For $i = 0 To UBound($aLines) - 1
+		$aLines[$i] = StringRegExp($aLines[$i], "(?:^|,)\s*(?|'([^']*)'|""([^""]*)""|(.*?))(?=\s*(?:,|$))", 3)
+		If UBound($aLines[$i]) > $iCountCols Then $iCountCols = UBound($aLines[$i])
+	Next
+	Local $aRet[UBound($aLines)][$iCountCols]
+	For $y = 0 To UBound($aLines) - 1
+		For $x = 0 To UBound($aLines[$y]) - 1
+			$aRet[$y][$x] = ($aLines[$y])[$x]
+		Next
+	Next
+	Return $aRet
+EndFunc   ;==>__Make2Array
