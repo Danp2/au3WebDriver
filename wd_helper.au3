@@ -2902,22 +2902,13 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 			".map(row => [...row.querySelectorAll(arguments[2])]" & _
 			".map(cell => cell.textContent));"
 		Local $sArgs = __WD_JsonElement($sElement) & ', "' & $sRowsSelector & '", "' & $sColsSelector & '"'
-		Local $oResult = _WD_ExecuteScript($sSession, $sScript, $sArgs, Default, $_WD_JSON_Value)
+		Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sArgs)
 		$iErr = @error
 
 		If $iErr = $_WD_ERROR_Success Then
-			If IsArray($oResult) And UBound($oResult, $UBOUND_ROWS) Then
-				Local $iRows = UBound($oResult, $UBOUND_ROWS)
-				Local $iCols = UBound($oResult[0], $UBOUND_ROWS)
-				Dim $aTable[0][$iCols]
-
-				For $i = 0 To $iRows - 1 Step +1
-					_ArrayTranspose($oResult[$i])
-					_ArrayAdd($aTable, $oResult[$i])
-				Next
-			Else
-				$iErr = $_WD_ERROR_NoMatch
-			EndIf
+			; Extract target data from results and convert to array
+			Local $sStr = StringMid($sResult, 10, StringLen($sResult) - 11)
+			$aTable = __Make2Array($sStr)
 		EndIf
 	EndIf
 
@@ -3584,3 +3575,31 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 
 	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $aInfo)
 EndFunc   ;==>__WD_GetLatestWebdriverInfo
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __Make2Array
+; Description ...: Parse string to array
+; Syntax ........: __Make2Array($s)
+; Parameters ....: $s - String to be parsed
+; Return values .: Generated array
+; Author ........: jguinch
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/179113-is-there-a-easy-way-to-parse-string-to-array
+; Example .......: No
+; ===============================================================================================================================
+Func __Make2Array($s)
+    Local $aLines = StringRegExp($s, "(?<=[\[,])\s*\[(.*?)\]\s*[,\]]", 3), $iCountCols = 0
+    For $i = 0 To UBound($aLines) - 1
+        $aLines[$i] = StringRegExp($aLines[$i], "(?:^|,)\s*(?|'([^']*)'|""([^""]*)""|(.*?))(?=\s*(?:,|$))", 3)
+        If UBound($aLines[$i]) > $iCountCols Then $iCountCols = UBound($aLines[$i])
+    Next
+    Local $aRet[UBound($aLines)][$iCountCols]
+    For $y = 0 To UBound($aLines) - 1
+        For $x = 0 To UBound($aLines[$y]) - 1
+            $aRet[$y][$x] = ($aLines[$y])[$x]
+        Next
+    Next
+    Return $aRet
+EndFunc
