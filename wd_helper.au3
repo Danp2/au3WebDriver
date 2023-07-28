@@ -2868,9 +2868,11 @@ EndFunc   ;==>_WD_DispatchEvent
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table.
-; Syntax ........: _WD_GetTable($sSession, $sBaseElement)
-; Parameters ....: $sSession     - Session ID from _WD_CreateSession
-;                  $sBaseElement - XPath of the table to return
+; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsXpath = Default[, $sColsXpath = Default[, $sCellsXpath = Default]]])
+; Parameters ....: $sSession      - Session ID from _WD_CreateSession
+;                  $sBaseElement  - XPath of the table to return
+;                  $sRowsSelector - [optional] Rows CSS selector. Default is "tr".
+;                  $sColsSelector - [optional] Columns CSS selector. Default is "td, th".
 ; Return values .: Success - 2D array.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -2881,50 +2883,36 @@ EndFunc   ;==>_WD_DispatchEvent
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
-; ===============================================================================================================================
-Func _WD_GetTable($sSession, $sBaseElement)
+Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSelector = Default)
 	Local Const $sFuncName = "_WD_GetTable"
-	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML
+	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML, $aTable = ''
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
 
-	; Determine if optional UDF is available
-	Call("_HtmlTableGetWriteToArray", "")
+	If $sRowsSelector = Default Then $sRowsSelector = "tr"
+	If $sColsSelector = Default Then $sColsSelector = "td, th"
 
-	If @error = 0xDEAD And @extended = 0xBEEF Then
-		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr", "", True) ; Retrieve the number of table rows
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
+	; Get the table element
+	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
+	Local $iErr = @error
 
-		$iLines = UBound($aElements)
-		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr[1]/*[self::td or self::th]", "", True) ; Retrieve the number of table columns by checking the first table row
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
+	If $iErr = $_WD_ERROR_Success Then
+		; https://stackoverflow.com/questions/64842157
+		Local $sScript = "return [...arguments[0].querySelectorAll(arguments[1])]" & _
+				".map(row => [...row.querySelectorAll(arguments[2])]" & _
+				".map(cell => cell.textContent));"
+		Local $sArgs = __WD_JsonElement($sElement) & ', "' & $sRowsSelector & '", "' & $sColsSelector & '"'
+		Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sArgs)
+		$iErr = @error
 
-		$iColumns = UBound($aElements)
-		Local $aTable[$iLines][$iColumns] ; Create the AutoIt array to hold all cells of the table
-		$aElements = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement & "/tbody/tr/*[self::td or self::th]", "", True) ; Retrieve all table cells
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		For $i = 0 To UBound($aElements) - 1
-			$iRow = Int($i / $iColumns) ; Calculate row/column of the AutoIt array where to store the cells value
-			$iColumn = Mod($i, $iColumns)
-			$aTable[$iRow][$iColumn] = _WD_ElementAction($sSession, $aElements[$i], "Text") ; Retrieve text of each table cell
-			If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		Next
-	Else
-		; Get the table element
-		$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		; Retrieve its HTML
-		$sHTML = _WD_ElementAction($sSession, $sElement, "Property", "outerHTML")
-		If @error <> $_WD_ERROR_Success Then Return SetError(__WD_Error($sFuncName, @error), 0, "")
-
-		; Convert to array
-		$aTable = _HtmlTableGetWriteToArray($sHTML, 1, False, $_WD_IFILTER)
+		If $iErr = $_WD_ERROR_Success Then
+			; Extract target data from results and convert to array
+			Local $sStr = StringMid($sResult, 10, StringLen($sResult) - 11)
+			$aTable = __Make2Array($sStr)
+		EndIf
 	EndIf
 
-	Return $aTable
+	Return SetError(__WD_Error($sFuncName, $iErr), 0, $aTable)
 EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
@@ -3587,3 +3575,31 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 
 	Return SetError(__WD_Error($sFuncName, $iErr, Default, $iExt), $iExt, $aInfo)
 EndFunc   ;==>__WD_GetLatestWebdriverInfo
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __Make2Array
+; Description ...: Parse string to array
+; Syntax ........: __Make2Array($s)
+; Parameters ....: $s - String to be parsed
+; Return values .: Generated array
+; Author ........: jguinch
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/179113-is-there-a-easy-way-to-parse-string-to-array
+; Example .......: No
+; ===============================================================================================================================
+Func __Make2Array($s)
+	Local $aLines = StringRegExp($s, "(?<=[\[,])\s*\[(.*?)\]\s*[,\]]", 3), $iCountCols = 0
+	For $i = 0 To UBound($aLines) - 1
+		$aLines[$i] = StringRegExp($aLines[$i], "(?:^|,)\s*(?|'([^']*)'|""([^""]*)""|(.*?))(?=\s*(?:,|$))", 3)
+		If UBound($aLines[$i]) > $iCountCols Then $iCountCols = UBound($aLines[$i])
+	Next
+	Local $aRet[UBound($aLines)][$iCountCols]
+	For $y = 0 To UBound($aLines) - 1
+		For $x = 0 To UBound($aLines[$y]) - 1
+			$aRet[$y][$x] = ($aLines[$y])[$x]
+		Next
+	Next
+	Return $aRet
+EndFunc   ;==>__Make2Array

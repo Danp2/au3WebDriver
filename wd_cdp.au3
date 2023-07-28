@@ -45,7 +45,7 @@
 ; Modified ......: Danp2
 ; Remarks .......: The original version of this function is specific to ChromeDriver, you can execute "Chrome DevTools Protocol"
 ;                  commands by using this function, for all available commands see: https://chromedevtools.github.io/devtools-protocol/tot/
-;+
+;
 ;                  The revised version uses websockets to provide CDP access for all compatible browsers. However, it
 ;                  will only work with an OS that natively supports WebSockets (Windows 8, Windows Server 2012, or newer)
 ; Related .......: _WD_LastHTTPResult

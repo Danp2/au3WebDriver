@@ -163,7 +163,6 @@ Download and add the following mandatory Third-Party UDFs to your project folder
   - [Json UDF] - Archive includes *Json.au3* & *BinaryCall.au3*.
   - [WinHTTP UDF] - Archive includes *WinHttp.au3* & *WinHttpConstants.au3*.
 - Optional ⚠
-  - [HtmlTable2Array UDF] - Extraction of data from HTML tables to an array.
   - [WinHttp_WebSocket UDF] - Needed for websocket CDP functionality.
 
 Download and install one of the following WebDrivers (depending on the browser type and version you want to automate).
