@@ -2907,7 +2907,7 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 
 		If $iErr = $_WD_ERROR_Success Then
 			; Extract target data from results and convert to array
-			Local $sStr = StringMid($sResult, 10, StringLen($sResult) - 11)
+			Local $sStr = StringMid($sResult, 10, StringLen($sResult) - 10)
 			$aTable = __Make2Array($sStr)
 		EndIf
 	EndIf
