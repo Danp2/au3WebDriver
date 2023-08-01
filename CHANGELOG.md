@@ -13,7 +13,7 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ### Fixed
 
-_WD_ExecuteScript: Eliminate reformatting of JS code
+- _WD_ExecuteScript: Eliminate reformatting of JS code
 
 ## [1.1.0] 2023-07-17
 
