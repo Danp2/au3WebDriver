@@ -11,10 +11,6 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
-### Fixed
-
-_WD_ExecuteScript: Eliminate reformatting of JS code
-
 ### Changed
 
 - _WD_GetTable
@@ -28,6 +24,12 @@ _WD_ExecuteScript: Eliminate reformatting of JS code
 ### Project
 
 - Eliminate usage of _HtmlTableGetWriteToArray
+
+## [1.1.1] 2023-08-01
+
+### Fixed
+
+- _WD_ExecuteScript: Eliminate reformatting of JS code
 
 ## [1.1.0] 2023-07-17
 
@@ -1145,7 +1147,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.1.1...HEAD
+[1.1.1]:     https://github.com/Danp2/au3WebDriver/compare/1.1.0...1.1.1
 [1.1.0]:     https://github.com/Danp2/au3WebDriver/compare/1.0.3...1.1.0
 [1.0.3]:     https://github.com/Danp2/au3WebDriver/compare/1.0.2...1.0.3
 [1.0.2]:     https://github.com/Danp2/au3WebDriver/compare/1.0.1...1.0.2
