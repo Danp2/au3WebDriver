@@ -88,8 +88,6 @@ Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
 
-Global Const $JSON_MLREFORMAT = 1048576 ; Addition to constants from json.au3
-
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
 		$_WD_DEBUG_Error, _    ; logging in case of Error
@@ -1738,18 +1736,12 @@ EndFunc   ;==>__WD_CloseDriver
 ;                  $iOption - [optional] Any combination of $JSON_* constants. Default is 0.
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: $JSON_MLREFORMAT will strip tabs and CR/LFs from a multiline string.
-;                  See $JSON_* constants in json.au3 for other $iOption possibilities.
+; Remarks .......:
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_EscapeString($sData, $iOption = 0)
-	If BitAND($iOption, $JSON_MLREFORMAT) Then
-		$sData = StringRegExpReplace($sData, '[\v\t]', '') ; Strip tabs and CR/LFs
-		$iOption = BitXOR($iOption, $JSON_MLREFORMAT)      ; Flip bit off
-	EndIf
-
 	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
 
 	Return SetError($_WD_ERROR_Success, 0, $sData)
