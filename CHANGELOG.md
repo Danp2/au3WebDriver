@@ -11,6 +11,10 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 
 ## [Unreleased]
 
+### Fixed
+
+_WD_ExecuteScript: Eliminate reformatting of JS code
+
 ### Changed
 
 - _WD_GetTable

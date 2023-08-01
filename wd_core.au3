@@ -88,8 +88,6 @@ Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
 
-Global Const $JSON_MLREFORMAT = 1048576 ; Addition to constants from json.au3
-
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
 		$_WD_DEBUG_Error, _    ; logging in case of Error
@@ -896,7 +894,7 @@ Func _WD_ExecuteScript($sSession, $sScript, $sArguments = Default, $bAsync = Def
 	If IsBool($vSubNode) Then $vSubNode = ($vSubNode) ? $_WD_JSON_Value : "" ; True = the JSON value node is returned , False = entire JSON response is returned
 
 	If IsString($vSubNode) Then
-		$sScript = __WD_EscapeString($sScript, $JSON_MLREFORMAT)
+		$sScript = __WD_EscapeString($sScript)
 
 		$sData = '{"script":"' & $sScript & '", "args":[' & $sArguments & ']}'
 		$sCmd = ($bAsync) ? 'async' : 'sync'
@@ -1736,23 +1734,21 @@ EndFunc   ;==>__WD_CloseDriver
 ; Syntax ........: __WD_EscapeString($sData[, $iOption = 0])
 ; Parameters ....: $sData   - the string to be escaped
 ;                  $iOption - [optional] Any combination of $JSON_* constants. Default is 0.
+; Return values..: Success - Escaped string
+;                  Failure - Response from JSON UDF and sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......: $JSON_MLREFORMAT will strip tabs and CR/LFs from a multiline string.
-;                  See $JSON_* constants in json.au3 for other $iOption possibilities.
+; Remarks .......:  See $JSON_* constants in json.au3 for the possible $iOption combinations.
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_EscapeString($sData, $iOption = 0)
-	If BitAND($iOption, $JSON_MLREFORMAT) Then
-		$sData = StringRegExpReplace($sData, '[\v\t]', '') ; Strip tabs and CR/LFs
-		$iOption = BitXOR($iOption, $JSON_MLREFORMAT)      ; Flip bit off
-	EndIf
-
+	Local $iErr = $_WD_ERROR_Success
 	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
 
-	Return SetError($_WD_ERROR_Success, 0, $sData)
+	If @error Then $iErr = $_WD_ERROR_GeneralError
+	Return SetError($iErr, 0, $sData)
 EndFunc   ;==>__WD_EscapeString
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
