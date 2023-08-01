@@ -1734,6 +1734,8 @@ EndFunc   ;==>__WD_CloseDriver
 ; Syntax ........: __WD_EscapeString($sData[, $iOption = 0])
 ; Parameters ....: $sData   - the string to be escaped
 ;                  $iOption - [optional] Any combination of $JSON_* constants. Default is 0.
+; Return values..: Success - Escaped string
+;                  Failure - Response from JSON UDF and sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:  See $JSON_* constants in json.au3 for the possible $iOption combinations.
@@ -1742,9 +1744,11 @@ EndFunc   ;==>__WD_CloseDriver
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_EscapeString($sData, $iOption = 0)
+	Local $iErr = $_WD_ERROR_Success
 	$sData = Json_StringEncode($sData, $iOption) ; Escape JSON Strings
 
-	Return SetError($_WD_ERROR_Success, 0, $sData)
+	If @error Then $iErr = $_WD_ERROR_GeneralError
+	Return SetError($iErr, 0, $sData)
 EndFunc   ;==>__WD_EscapeString
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
