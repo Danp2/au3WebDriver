@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Fixed
+
+_WD_ExecuteScript: Eliminate reformatting of JS code
+
 ## [1.1.0] 2023-07-17
 
 ### Changed
