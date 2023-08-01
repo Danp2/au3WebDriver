@@ -1736,7 +1736,7 @@ EndFunc   ;==>__WD_CloseDriver
 ;                  $iOption - [optional] Any combination of $JSON_* constants. Default is 0.
 ; Author ........: Danp2
 ; Modified ......:
-; Remarks .......:
+; Remarks .......:  See $JSON_* constants in json.au3 for the possible $iOption combinations.
 ; Related .......:
 ; Link ..........:
 ; Example .......: No
