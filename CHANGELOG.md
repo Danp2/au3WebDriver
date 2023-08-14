@@ -17,6 +17,8 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- Support for non-standard table markers
 	- Improve performance
 
+- _WD_GetElementFromPoint: Added error checking for negative coordinates
+
 ### Fixed
 
 - _WD_GetTable: Revise existing xpaths to include header elements in results
