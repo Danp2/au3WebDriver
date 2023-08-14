@@ -600,7 +600,9 @@ EndFunc   ;==>_WD_GetMouseElement
 ;                  $iX       - an integer value
 ;                  $iY       - an integer value
 ; Return values .: Success - Element ID returned by web driver.
-;                  Failure - "" (empty string) and @error is set to $_WD_ERROR_RetValue
+;                  Failure - "" (empty string) and @error is set to one of the following values:
+;                  - $_WD_ERROR_RetValue
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......: mLipok
 ; Remarks .......: @extended is set to 1 if the browsing context changed during the function call
@@ -617,7 +619,14 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local $sScript2 = "return new Array(window.pageXOffset, window.pageYOffset);"
 	Local $iErr = $_WD_ERROR_Success, $sResult, $bIsNull
 
-	While True
+	; https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint
+	; If the specified point is outside the visible bounds of the document or either 
+	; coordinate is negative, the result is null
+	If $iX < 0 Or $iY < 0 Then
+		$iErr = $_WD_ERROR_InvalidArgue
+	EndIf
+
+	While $iErr = $_WD_ERROR_Success
 		$sParams = $iX & ", " & $iY
 		$sResponse = _WD_ExecuteScript($sSession, $sScript1, $sParams)
 		If @error Then
