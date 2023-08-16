@@ -618,7 +618,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local $iErr = $_WD_ERROR_Success, $sResult, $bIsNull
 
 	; https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint
-	; If the specified point is outside the visible bounds of the document or either 
+	; If the specified point is outside the visible bounds of the document or either
 	; coordinate is negative, the result is null
 	If $iX < 0 Or $iY < 0 Then
 		$iErr = $_WD_ERROR_InvalidArgue
