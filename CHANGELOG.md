@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [1.2.0] 2023-08-17
 
 ### Changed
 
@@ -1149,7 +1149,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.1.1...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.2.0...HEAD
+[1.2.0]:     https://github.com/Danp2/au3WebDriver/compare/1.1.1...1.2.0
 [1.1.1]:     https://github.com/Danp2/au3WebDriver/compare/1.1.0...1.1.1
 [1.1.0]:     https://github.com/Danp2/au3WebDriver/compare/1.0.3...1.1.0
 [1.0.3]:     https://github.com/Danp2/au3WebDriver/compare/1.0.2...1.0.3
