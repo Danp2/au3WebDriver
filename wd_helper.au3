@@ -2879,7 +2879,7 @@ EndFunc   ;==>_WD_DispatchEvent
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sBaseElement  - XPath of the table to return
 ;                  $sRowsSelector - [optional] Rows CSS selector. Default is "tr".
-;                  $sColsSelector - [optional]  Columns CSS selector. Default is "td, th".
+;                  $sColsSelector - [optional] Columns CSS selector. Default is "td, th".
 ; Return values .: Success - 2D array.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
