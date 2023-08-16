@@ -2877,11 +2877,11 @@ EndFunc   ;==>_WD_DispatchEvent
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table.
-; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsXpath = Default[, $sColsXpath = Default[, $sCellsXpath = Default]]])
+; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsSelector = Default[, $sColsSelector = Default]])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sBaseElement  - XPath of the table to return
 ;                  $sRowsSelector - [optional] Rows CSS selector. Default is "tr".
-;                  $sColsSelector - [optional] Columns CSS selector. Default is "td, th".
+;                  $sColsSelector - [optional]  Columns CSS selector. Default is "td, th".
 ; Return values .: Success - 2D array.
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -2892,6 +2892,7 @@ EndFunc   ;==>_WD_DispatchEvent
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
+; ===============================================================================================================================
 Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSelector = Default)
 	Local Const $sFuncName = "_WD_GetTable"
 	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML, $aTable = ''
