@@ -44,8 +44,6 @@
 #ce
 #EndRegion Many thanks to:
 
-#ignorefunc _HtmlTableGetWriteToArray
-
 #Region Global Constants
 Global Enum _
 		$_WD_OPTION_None = 0, _
