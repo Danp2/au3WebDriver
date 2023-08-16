@@ -222,7 +222,6 @@ Distributed under the MIT License. See [LICENSE] for more information.
 - Thanks to the authors of the Third-Party UDFs
   - *Json UDF* by @Ward and @Jos
   - *WinHTTP UDF* by @trancexx/[@dragana-r](https://github.com/dragana-r)
-  - *HtmlTable2Array UDF* by @Chimp
   - *WinHttp_WebSocket UDF* by @Danp2
 - Thanks to the maintainers
   - Thanks to [@Danp2](https://github.com/Danp2) for the project idea, creation and maintenance
@@ -256,7 +255,6 @@ Distributed under the MIT License. See [LICENSE] for more information.
 [Opera ReadMe]: https://github.com/operasoftware/operachromiumdriver/blob/master/README.md
 [Json UDF]: https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 [WinHTTP UDF]: https://github.com/dragana-r/autoit-winhttp/releases/latest
-[HtmlTable2Array UDF]: https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/
 [WinHttp_WebSocket UDF]: https://github.com/Danp2/autoit-websocket
 [CONTRIBUTING]: https://github.com/Danp2/au3WebDriver/blob/master/docs/CONTRIBUTING.md
 [Change Log]: https://github.com/Danp2/au3WebDriver/blob/master/CHANGELOG.md
