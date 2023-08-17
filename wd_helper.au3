@@ -44,8 +44,6 @@
 #ce
 #EndRegion Many thanks to:
 
-#ignorefunc _HtmlTableGetWriteToArray
-
 #Region Global Constants
 Global Enum _
 		$_WD_OPTION_None = 0, _
@@ -620,7 +618,7 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 	Local $iErr = $_WD_ERROR_Success, $sResult, $bIsNull
 
 	; https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint
-	; If the specified point is outside the visible bounds of the document or either 
+	; If the specified point is outside the visible bounds of the document or either
 	; coordinate is negative, the result is null
 	If $iX < 0 Or $iY < 0 Then
 		$iErr = $_WD_ERROR_InvalidArgue
@@ -2877,7 +2875,7 @@ EndFunc   ;==>_WD_DispatchEvent
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table.
-; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsXpath = Default[, $sColsXpath = Default[, $sCellsXpath = Default]]])
+; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsSelector = Default[, $sColsSelector = Default]])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sBaseElement  - XPath of the table to return
 ;                  $sRowsSelector - [optional] Rows CSS selector. Default is "tr".
@@ -2892,6 +2890,7 @@ EndFunc   ;==>_WD_DispatchEvent
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
+; ===============================================================================================================================
 Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSelector = Default)
 	Local Const $sFuncName = "_WD_GetTable"
 	Local $aElements, $sElement, $iLines, $iRow, $iColumns, $iColumn, $sHTML, $aTable = ''
