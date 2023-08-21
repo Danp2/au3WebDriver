@@ -13,6 +13,8 @@
 #include "wd_capabilities.au3"
 #EndRegion - include files
 
+#Tidy_Parameters=/tcb=-1
+
 #Region - Global's declarations
 Global Const $sElementSelector = "//input[@name='q']"
 Global Const $aBrowsers[][2] = _
