@@ -294,7 +294,7 @@ EndFunc   ;==>_WD_Attach
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_LinkClickByText
 ; Description ...: Simulate a mouse click on a link with text matching the provided string.
-; Syntax ........: _WD_LinkClickByText($sSession,  $sText[,  $bPartial = Default[,  $sStartNodeID = Default]])
+; Syntax ........: _WD_LinkClickByText($sSession, $sText[, $bPartial = Default[, $sStartNodeID = Default]])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sText         - Text to find in link
 ;                  $bPartial      - [optional] Search by partial text? Default is True
