@@ -90,6 +90,7 @@ Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
 
+#Tidy_ILC_Pos=32
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
 		$_WD_DEBUG_Error, _    ; logging in case of Error
