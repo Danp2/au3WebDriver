@@ -44,6 +44,8 @@
 #ce
 #EndRegion Many thanks to:
 
+#Tidy_Parameters=/tcb=-1
+
 #Region Global Constants
 Global Enum _
 		$_WD_OPTION_None = 0, _
@@ -85,13 +87,15 @@ Global Enum _ ; _WD_FrameList() , _WD_FrameListFindElement()
 		$_WD_FRAMELIST_MatchedElements = 6, _ ; array of matched element from _WD_FrameListFindElement()
 		$_WD_FRAMELIST__COUNTER
 
-Global Enum _ ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
+#Tidy_ILC_Pos=42
+Global Enum _                            ; https://www.w3schools.com/jsref/prop_doc_readystate.asp
 		$_WD_READYSTATE_Uninitialized, _ ; Has not started loading
 		$_WD_READYSTATE_Loading, _       ; Is loading
 		$_WD_READYSTATE_Loaded, _        ; Has been loaded
 		$_WD_READYSTATE_Interactive, _   ; Has loaded enough to interact with
 		$_WD_READYSTATE_Complete, _      ; Fully loaded
 		$_WD_READYSTATE__COUNTER
+#Tidy_ILC_Pos=0
 
 Global Const $aWD_READYSTATE[$_WD_READYSTATE__COUNTER][2] = [ _
 		["uninitialized", "Has not started loading"], _
