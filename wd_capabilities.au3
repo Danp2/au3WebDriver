@@ -7,6 +7,8 @@
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include "wd_core.au3"
 
+#Tidy_Parameters=/tcb=-1
+
 #Region wd_capabilities.au3 - UDF Header
 ; #INDEX# ========================================================================
 ; Title .........: wd_capabilities.au3
