@@ -269,7 +269,6 @@ Global $_WD_ERROR_OUTPUTDEBUG = False      ; Log errors to "OutputDebugString"
 Global $_WD_DEBUG = $_WD_DEBUG_Info        ; Trace to console and show web driver app
 Global $_WD_CONSOLE = ConsoleWrite         ; Destination for console output
 Global $_WD_CONSOLE_Suffix = @CRLF         ; Suffix added to the end of Message in $_WD_CONSOLE function
-Global $_WD_IFILTER = 16                   ; Passed to _HtmlTableGetWriteToArray to control filtering
 Global $_WD_Sleep = Sleep                  ; Default to calling standard Sleep function
 Global $_WD_DefaultTimeout = 10000         ; 10 seconds
 Global $_WD_WINHTTP_TIMEOUTS = True
