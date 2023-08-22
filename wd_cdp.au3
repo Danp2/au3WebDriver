@@ -3,6 +3,8 @@
 #include "WinHttp_WebSocket.au3" ; https://github.com/Danp2/autoit-websocket
 #include <APIErrorsConstants.au3>
 
+#Tidy_Parameters=/tcb=-1
+
 #Region Copyright
 #cs
 	* WD_CDP.au3

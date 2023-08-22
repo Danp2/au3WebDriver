@@ -37,6 +37,8 @@
 #EndRegion Copyright
 
 #ignorefunc _WD_IsLatestRelease
+#Tidy_Parameters=/tcb=-1
+
 #Region Description
 ; ==============================================================================
 ; UDF ...........: WD_Core.au3
@@ -88,12 +90,14 @@ Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
 
+#Tidy_ILC_Pos=32
 Global Enum _
 		$_WD_DEBUG_None = 0, _ ; No logging
 		$_WD_DEBUG_Error, _    ; logging in case of Error
 		$_WD_DEBUG_Info, _     ; logging with additional information
 		$_WD_DEBUG_Full        ; logging with full details for developers
 
+#Tidy_ILC_Pos=42
 Global Enum _
 		$_WD_ERROR_Success = 0, _        ; No error
 		$_WD_ERROR_GeneralError, _       ; General error
@@ -121,6 +125,7 @@ Global Enum _
 		$_WD_ERROR_Javascript, _         ; Javascript error
 		$_WD_ERROR_Mismatch, _           ; Version mismatch
 		$_WD_ERROR__COUNTER              ; Defines row count for $aWD_ERROR_DESC
+#Tidy_ILC_Pos=0
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
 		"Success", _
@@ -179,6 +184,7 @@ Global Enum _ ; Column positions of $_WD_SupportedBrowsers
 		$_WD_BROWSER_NewDriverURL, _
 		$_WD_BROWSER__COUNTER
 
+#Tidy_Off
 Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 		[ _
 			[ _
@@ -242,10 +248,12 @@ Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 				'"https://github.com/SeleniumHQ/selenium/releases/download/selenium-" & StringRegExpReplace($sDriverLatest, "(\d+\.\d+)(\.\d+)", "$1") & ".0/IEDriverServer_" & (($bFlag64) ? "x64" : "Win32") & "_" & $sDriverLatest & ".zip"' _
 			] _
 		]
+#Tidy_On
 
 #EndRegion Global Constants
 
 #Region Global Variables
+#Tidy_ILC_Pos=44
 Global $_WD_DRIVER = ""                    ; Path to web driver executable
 Global $_WD_DRIVER_PARAMS = ""             ; Parameters to pass to web driver executable
 Global $_WD_BASE_URL = "HTTP://127.0.0.1"
@@ -268,6 +276,7 @@ Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
 Global $_WD_DetailedErrors = False
+#Tidy_ILC_Pos=0
 
 #EndRegion Global Variables
 
