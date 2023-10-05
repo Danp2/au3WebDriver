@@ -84,8 +84,10 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_FrameEnter          | Enter the specified frame.                                                      |
 | _WD_FrameLeave          | Leave the current frame, to its parent.                                         |
 | _WD_FrameList           | Retrieves a detailed list of the main document and all associated frames.       |
+| _WD_FrameListFindElement| Search the current document and return locations of matching elements.          |
 | _WD_GetBrowserPath      | Retrieve path to browser executable from registry.                              |
 | _WD_GetBrowserVersion   | Get version number of specified browser.                                        |
+| _WD_GetContext          | Retrieve the element ID of the current browsing context.                        |
 | _WD_GetDevicePixelRatio | Returns an integer indicating the DevicePixelRatio.                             |
 | _WD_GetElementById      | Locate element by id.                                                           |
 | _WD_GetElementByName    | Locate element by name.                                                         |
@@ -118,6 +120,7 @@ This au3WebDriver UDF (project) allows to interact with any browser that support
 | _WD_Storage             | Provide access to the browser's localStorage and sessionStorage objects.        |
 | _WD_UpdateDriver        | Replace web driver with newer version, if available.                            |
 | _WD_WaitElement         | Wait for an element in the current tab before returning.                        |
+| _WD_WaitScript          | Wait for a JavaScript snippet to return true.                                   |
 | _WD_jQuerify            | Inject jQuery library into current session.                                     |
 
 <p>
@@ -160,7 +163,6 @@ Download and add the following mandatory Third-Party UDFs to your project folder
   - [Json UDF] - Archive includes *Json.au3* & *BinaryCall.au3*.
   - [WinHTTP UDF] - Archive includes *WinHttp.au3* & *WinHttpConstants.au3*.
 - Optional ⚠
-  - [HtmlTable2Array UDF] - Extraction of data from HTML tables to an array.
   - [WinHttp_WebSocket UDF] - Needed for websocket CDP functionality.
 
 Download and install one of the following WebDrivers (depending on the browser type and version you want to automate).
@@ -192,26 +194,6 @@ To automate your browser, follow the following steps.
 
 Run `wd_demo.au3`, choose your "Browser" from the dropdown and press the "Run Demo!" button that will perform the "DemoNavigation" demo to validate your installation.
 
-<details>
-<summary><i>Result example</i></summary>
-
-In case you use Firefox, the result should look similar to this:
-
-``` log
-1577745813519   geckodriver     DEBUG   Listening on 127.0.0.1:4444
-1577745813744   webdriver::server       DEBUG   -> POST /session {"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}
-1577745813746   geckodriver::capabilities       DEBUG   Trying to read firefox version from ini files
-1577745813747   geckodriver::capabilities       DEBUG   Found version 71.0
-1577745813757   mozrunner::runner       INFO    Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\ ...
-1577745813783   geckodriver::marionette DEBUG   Waiting 60s to connect to browser on 127.0.0.1:55184
-1577745817392   geckodriver::marionette DEBUG   Connection to Marionette established on 127.0.0.1:55184.
-1577745817464   webdriver::server       DEBUG   <- 200 OK {"value":{"sessionId":"925641bf-6c5d-4fe2-a985-02de9b1c7c74","capabilities":"acceptInsecureCerts":true,"browserName":"firefox", ...
-```
-
-</details>
-
-More useful information following soon.
-
 ## Configuration
 
 Useful information about possible configurations following soon.<br>
@@ -240,7 +222,6 @@ Distributed under the MIT License. See [LICENSE] for more information.
 - Thanks to the authors of the Third-Party UDFs
   - *Json UDF* by @Ward and @Jos
   - *WinHTTP UDF* by @trancexx/[@dragana-r](https://github.com/dragana-r)
-  - *HtmlTable2Array UDF* by @Chimp
   - *WinHttp_WebSocket UDF* by @Danp2
 - Thanks to the maintainers
   - Thanks to [@Danp2](https://github.com/Danp2) for the project idea, creation and maintenance
@@ -274,7 +255,6 @@ Distributed under the MIT License. See [LICENSE] for more information.
 [Opera ReadMe]: https://github.com/operasoftware/operachromiumdriver/blob/master/README.md
 [Json UDF]: https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 [WinHTTP UDF]: https://github.com/dragana-r/autoit-winhttp/releases/latest
-[HtmlTable2Array UDF]: https://www.autoitscript.com/forum/topic/167679-read-data-from-html-tables-from-raw-html-source/
 [WinHttp_WebSocket UDF]: https://github.com/Danp2/autoit-websocket
 [CONTRIBUTING]: https://github.com/Danp2/au3WebDriver/blob/master/docs/CONTRIBUTING.md
 [Change Log]: https://github.com/Danp2/au3WebDriver/blob/master/CHANGELOG.md

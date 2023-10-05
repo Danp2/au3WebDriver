@@ -3,6 +3,8 @@
 #include "WinHttp_WebSocket.au3" ; https://github.com/Danp2/autoit-websocket
 #include <APIErrorsConstants.au3>
 
+#Tidy_Parameters=/tcb=-1
+
 #Region Copyright
 #cs
 	* WD_CDP.au3
@@ -45,9 +47,9 @@
 ; Modified ......: Danp2
 ; Remarks .......: The original version of this function is specific to ChromeDriver, you can execute "Chrome DevTools Protocol"
 ;                  commands by using this function, for all available commands see: https://chromedevtools.github.io/devtools-protocol/tot/
-;+
+;
 ;                  The revised version uses websockets to provide CDP access for all compatible browsers. However, it
-;                  will only with an OS that natively supports WebSockets (Windows 8, Windows Server 2012, or newer)
+;                  will only work with an OS that natively supports WebSockets (Windows 8, Windows Server 2012, or newer)
 ; Related .......: _WD_LastHTTPResult
 ; Link ..........:
 ; Example .......: No
@@ -245,7 +247,7 @@ EndFunc   ;==>_WD_CDPExecuteCommand
 ;                  $sOption  - one of the following:
 ;                  |DEBUGGER - Returns the Websocket target originally returned by _WD_CreateSession
 ;                  |LIST - Lists websocket targets
-;                  |VERSION - Reurns an array containing version metadata
+;                  |VERSION - Returns an array containing version metadata
 ; Return values .: Success - The returned value depends on the selected $sOption.
 ;                  |DEBUGGER: Websocket target originally returned by _WD_CreateSession
 ;                  |LIST: Array containing websocket targets

@@ -7,6 +7,8 @@
 #include "JSON.au3" ; https://www.autoitscript.com/forum/topic/148114-a-non-strict-json-udf-jsmn
 #include "wd_core.au3"
 
+#Tidy_Parameters=/tcb=-1
+
 #Region wd_capabilities.au3 - UDF Header
 ; #INDEX# ========================================================================
 ; Title .........: wd_capabilities.au3
@@ -110,7 +112,7 @@ Global $_WD_KEYS__STANDARD_OBJECT_ARRAY = _
 ; $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE should be RegExpPattern of "JSON_PRIMITIVE" - "a boolean/string/number/null element" that
 ; should be placed in SPECIFICVENDOR part of Capabilities JSON structure
 Global $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE = _
-		'\A(binary|debuggerAddress|detach|minidumpPath|w3c)\Z'
+		'\A(binary|debuggerAddress|detach|minidumpPath|w3c|ie.edgepath|ie.edgechromium|ignoreProtectedModeSettings|initialBrowserUrl)\Z'
 
 ; $_WD_KEYS__SPECIFICVENDOR_ARRAY should be RegExpPattern of "JSON_ARRAY" - "a list of primitive elements" that
 ; should be placed in SPECIFICVENDOR part of Capabilities JSON structure

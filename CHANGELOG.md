@@ -9,19 +9,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [1.2.0] 2023-08-17
+
+### Changed
+
+- _WD_GetTable
+	- Support for non-standard table markers
+	- Improve performance
+
+- _WD_GetElementFromPoint: Added error checking for negative coordinates
+
+### Fixed
+
+- _WD_GetTable: Revise existing xpaths to include header elements in results
+
+### Project
+
+- Eliminate usage of _HtmlTableGetWriteToArray
+
+## [1.1.1] 2023-08-01
+
+### Fixed
+
+- _WD_ExecuteScript: Eliminate reformatting of JS code
+
+## [1.1.0] 2023-07-17
+
+### Changed
+
+- _WD_UpdateDriver
+	- Added ability to downgrade the webdriver to the correct version
+	- Added ability to check if webdriver downgrade is needed
+	- Added error code to indicate a version mismatch between the browser and webdriver
+- _WD_IsLatestRelease: Use _VersionCompare()
+
+### Project
+
+-  Enhanced chromedriver support
+	- New download location
+	- Enable 64 bit support
+	- Temporarily added `chrome_legacy` to support older versions (pre v115) of Chrome
+
+## [1.0.3] 2023-05-29
+
+### Fixed
+
+- _WD_GetElementFromPoint
+	- Correct frame identification
+	- Handle Null result from `document.elementFromPoint`
+
+## [1.0.2] 2023-05-24
+
+### Fixed
+
+- Correct UDF version number
+
+## [1.0.1] 2023-05-23
+
+### Fixed
+
+- _WD_FrameEnter: Remove GUID validation
+
+### Project
+
+- Improve string encoding by using existing function from JSON UDF
+
+## [1.0.0] - 2023-04-28
 
 ### Added
 
-- _WD_WaitScript (@ye7iaserag)
+- Support for MSEdge browser in IE mode (@mlipok)
 - _WD_FrameListFindElement (@mlipok)
+- _WD_GetContext
 - _WD_Option: Support for `DetailErrors` option
+- _WD_WaitScript (@ye7iaserag)
 
 ### Changed
 - _WD_FrameList (@mlipok)
 	- Refactored for better performance
 	- Improved frame support
 	- Improved logging
+	- Optional parameters to control initial delay and timeout
+- _WD_GetFreePort
+	- New error code to indicate internal error
+	- Returns starting port number instead of 0 when an error occurs
+	- Improved logging
+- _WD_SetElementValue: Masking value in $sParameters
+- _WD_Startup: Improve logging when error occurs in _WD_GetFreePort
 - Enable optional detailed error reporting
 	- _WD_Attach
 	- _WD_CreateSession
@@ -30,12 +104,13 @@ Go to [legend](#legend---types-of-changes) for further information about the typ
 	- _WD_FrameLeave
 	- _WD_FrameList
 	- _WD_LinkClickByText
+- wd_demo: Improvements to "userfile" option
 
 ### Fixed
 
 _WD_GetElementFromPoint: Frame support
 
-## [ 0.13.0]
+## [ 0.13.0] - 2023-03-26
 
 ### Added
 
@@ -64,7 +139,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_FrameLeave: Error reporting (@mlipok)
 - Remove leftover $_WD_HTTPRESULT checks (_WD_Window, _WD_ElementAction, _WD_FindElement)
 
-## [ 0.12.0]
+## [ 0.12.0] - 2023-02-15
 
 ### Added
 
@@ -76,7 +151,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_CreateSession: Revise default capabilities
 - _WD_ElementActionEx: Scroll element into view by default
 
-## [ 0.11.0]
+## [ 0.11.0] - 2022-10-03
 
 ### Added
 
@@ -102,7 +177,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_Alert: Set correct error code when 'status' no alert present
 - Improved error detection in winhttp routines
 
-## [0.10.1]
+## [0.10.1] - 2022-07-29
 
 ### Added
 
@@ -118,7 +193,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_CapabilitiesAdd: Support keys containing colons
 - _WD_ElementSelectAction: Altering selection now triggers Change event
 
-## [0.10.0]
+## [0.10.0] - 2022-07-13
 
 ### Added
 
@@ -147,7 +222,7 @@ _WD_GetElementFromPoint: Frame support
 
 - _WD_HighlightElement
 
-## [0.9.1]
+## [0.9.1] - 2022-06-04
 
 ### Fixed
 
@@ -155,7 +230,7 @@ _WD_GetElementFromPoint: Frame support
 - _WD_GetWebDriverVersion: Update regex for extracting version number
 - Help file search functionality
 
-## [0.9.0]
+## [0.9.0] - 2022-05-02
 
 ### Added
 
@@ -1074,7 +1149,14 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/0.13.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.2.0...HEAD
+[1.2.0]:     https://github.com/Danp2/au3WebDriver/compare/1.1.1...1.2.0
+[1.1.1]:     https://github.com/Danp2/au3WebDriver/compare/1.1.0...1.1.1
+[1.1.0]:     https://github.com/Danp2/au3WebDriver/compare/1.0.3...1.1.0
+[1.0.3]:     https://github.com/Danp2/au3WebDriver/compare/1.0.2...1.0.3
+[1.0.2]:     https://github.com/Danp2/au3WebDriver/compare/1.0.1...1.0.2
+[1.0.1]:     https://github.com/Danp2/au3WebDriver/compare/1.0.0...1.0.1
+[1.0.0]:     https://github.com/Danp2/au3WebDriver/compare/0.13.0...1.0.0
 [0.13.0]:     https://github.com/Danp2/au3WebDriver/compare/0.12.0...0.13.0
 [0.12.0]:     https://github.com/Danp2/au3WebDriver/compare/0.11.0...0.12.0
 [0.11.0]:     https://github.com/Danp2/au3WebDriver/compare/0.10.1...0.11.0
