@@ -2920,7 +2920,7 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 		If $iErr = $_WD_ERROR_Success Then
 			; Extract target data from results and convert to array
 			Local $sStr = StringMid($sResult, 10, StringLen($sResult) - 10)
-			$aTable = __Make2Array($sStr)
+			$aTable = __WD_Make2Array($sStr)
 		EndIf
 	EndIf
 
@@ -3589,9 +3589,9 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 EndFunc   ;==>__WD_GetLatestWebdriverInfo
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __Make2Array
+; Name ..........: __WD_Make2Array
 ; Description ...: Parse string to array
-; Syntax ........: __Make2Array($s)
+; Syntax ........: __WD_Make2Array($s)
 ; Parameters ....: $s - String to be parsed
 ; Return values .: Generated array
 ; Author ........: jguinch
@@ -3601,7 +3601,7 @@ EndFunc   ;==>__WD_GetLatestWebdriverInfo
 ; Link ..........: https://www.autoitscript.com/forum/topic/179113-is-there-a-easy-way-to-parse-string-to-array
 ; Example .......: No
 ; ===============================================================================================================================
-Func __Make2Array($s)
+Func __WD_Make2Array($s)
 	Local $aLines = StringRegExp($s, "(?<=[\[,])\s*\[(.*?)\]\s*[,\]]", 3), $iCountCols = 0
 	For $i = 0 To UBound($aLines) - 1
 		$aLines[$i] = StringRegExp($aLines[$i], "(?:^|,)\s*(?|'([^']*)'|""([^""]*)""|(.*?))(?=\s*(?:,|$))", 3)
@@ -3614,4 +3614,4 @@ Func __Make2Array($s)
 		Next
 	Next
 	Return $aRet
-EndFunc   ;==>__Make2Array
+EndFunc   ;==>__WD_Make2Array
