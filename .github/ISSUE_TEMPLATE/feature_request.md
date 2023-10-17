@@ -24,3 +24,8 @@ A clear and concise description of any alternative solutions or features you've 
 ### Additional context
 
 Add any other context or screenshots about the feature request here.
+
+### Impact
+
+Describe how the changes will affect other functions or, for example, SCRIPT BREAKING CHANGES
+
