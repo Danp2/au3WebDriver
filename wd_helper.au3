@@ -2891,7 +2891,7 @@ EndFunc   ;==>_WD_DispatchEvent
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
 ; Modified ......: water, danp2, mLipok
-; Remarks .......: This function also returns nested table rows. If you want to prevent this, modified $sRowsSelector can be used e.g. ":scope > tbody > tr"
+; Remarks .......: The CSS selectors can be overridden to control the included elements. For example, a modified $sRowsSelector of ":scope > tbody > tr" can be used to bypass nested tables.
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
