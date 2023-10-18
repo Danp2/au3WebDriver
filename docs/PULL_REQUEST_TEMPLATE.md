@@ -33,6 +33,10 @@ Please describe the current behavior that you are modifying, or link to a releva
 
 Please describe the behavior or changes that are being added by this PR.
 
+### Influences and relationship to other functionality
+
+Describe how the changes will affect other functions, potential script breaking changes, etc.
+
 ### Additional context
 
 Add any other context about the problem here.
@@ -45,3 +49,4 @@ Please complete the following information.
 - OS Arch.: [e.g. X64]
 - Browser [e.g. firefox]
 - Browser version [e.g. 96.0.3]
+

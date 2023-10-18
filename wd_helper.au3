@@ -2879,9 +2879,10 @@ EndFunc   ;==>_WD_DispatchEvent
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
 ; Description ...: Return all elements of a table.
-; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsSelector = Default[, $sColsSelector = Default]])
+; Syntax ........: _WD_GetTable($sSession, $sStrategy, $sSelector[, $sRowsSelector = Default[, $sColsSelector = Default]])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
-;                  $sBaseElement  - XPath of the table to return
+;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired <table> element.
 ;                  $sRowsSelector - [optional] Rows CSS selector. Default is "tr".
 ;                  $sColsSelector - [optional] Columns CSS selector. Default is "td, th".
 ; Return values .: Success - 2D array.
@@ -2889,14 +2890,15 @@ EndFunc   ;==>_WD_DispatchEvent
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
-; Modified ......: water, danp2
+; Modified ......: water, danp2, mLipok
 ; Remarks .......: This function also returns nested table rows. If you want to prevent this, modified $sRowsSelector can be used e.g. ":scope > tbody > tr"
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSelector = Default)
+Func _WD_GetTable($sSession, $sStrategy, $sSelector, $sRowsSelector = Default, $sColsSelector = Default)
 	Local Const $sFuncName = "_WD_GetTable"
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   RowsSelector=' & $sRowsSelector & '   ColsSelector=' & $sColsSelector
 	Local $sElement, $aTable = ''
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -2905,7 +2907,7 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 	If $sColsSelector = Default Then $sColsSelector = "td, th"
 
 	; Get the table element
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
+	$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -2924,7 +2926,7 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $aTable)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $aTable)
 EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
