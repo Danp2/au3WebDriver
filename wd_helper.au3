@@ -2878,7 +2878,7 @@ EndFunc   ;==>_WD_DispatchEvent
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
-; Description ...: Return all elements of a table.
+; Description ...: Retrieve text from all matching elements of a table.
 ; Syntax ........: _WD_GetTable($sSession, $sStrategy, $sSelector[, $sRowsSelector = Default[, $sColsSelector = Default]])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
 ;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
