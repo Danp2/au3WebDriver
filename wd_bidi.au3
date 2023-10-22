@@ -107,7 +107,7 @@ EndFunc   ;==>_WD_BidiGetWebsocketURL
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiConnect
 ; Description ...: Open connection to bidirectional websocket
-; Syntax ........: _WD_BidiConnect($sWebSocketURL)
+; Syntax ........: _WD_BidiConnect($sSession)
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ; Return values .: Success - None
 ;                  Failure - Sets @error
@@ -183,11 +183,13 @@ EndFunc   ;==>_WD_BidiIsConnected
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiConfig
 ; Description ...: Override default BiDi configuration
-; Syntax ........: _WD_BidiConfig([$sClient = Default[,  $sIPAddress = Default[,  $iPort = Default]]])
+; Syntax ........: _WD_BidiConfig([$sClient = Default[, $sBrowser = Default[, $sIPAddress = Default[, $iPort = Default[, $bBidiOnly = Default]]]]])
 ; Parameters ....: $sClient             - [optional] Name of desired websocket client
+;                  $sBrowser            - [optional] Name of web browser to target.
 ;                  $sIPAddress          - [optional] TCP server IP address
 ;                  $iPort               - [optional] TCP server port
-; Return values .: None
+;                  $bBidiOnly           - [optional] Bidi only connection?
+; Return values .: Object containing Bidi configuration
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......: Supported clients are defined in $_WD_BidiClients
@@ -195,19 +197,28 @@ EndFunc   ;==>_WD_BidiIsConnected
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_BidiConfig($sClient = Default, $sIPAddress = Default, $iPort = Default)
+Func _WD_BidiConfig($sClient = Default, $sBrowser = Default, $sIPAddress = Default, $iPort = Default, $bBidiOnly = Default)
 	Local Const $sFuncName = "_WD_BidiConfig"
+	Local Const $sParameters = 'Parameters:   Client=' & $sClient & '   Browser=' & $sBrowser & '   IP=' & $sIPAddress & '   Port=' & $iPort & '   BidiOnly=' & $bBidiOnly
 
 	Local $oParams = Json_ObjCreate()
+	Local $bDefault = ($sClient = Default And $sBrowser = Default And $sIPAddress = Default And $iPort = Default And $bBidiOnly = Default)
+
+	If $bDefault Then
+		$oParams = __WD_BidiActions('config', 'get')
+	Else
 		If $sClient <> Default Then Json_ObjPut($oParams, 'client', $sClient)
+		If $sBrowser <> Default Then Json_ObjPut($oParams, 'browser', $sBrowser)
 		If $sIPAddress <> Default Then Json_ObjPut($oParams, 'ip', $sIPAddress)
 		If $iPort <> Default Then Json_ObjPut($oParams, 'port', $iPort)
+		If $bBidiOnly <> Default Then Json_ObjPut($oParams, 'bidionly', $bBidiOnly)
 
-	__WD_BidiActions('config', Default, $oParams)
+		__WD_BidiActions('config', 'set', $oParams)
+	EndIf
 	Local $iErr = @error
 
-	Return SetError(__WD_Error($sFuncName, $iErr))
-EndFunc
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), Default, $oParams)
+EndFunc   ;==>_WD_BidiConfig
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiExecute
@@ -594,11 +605,11 @@ EndFunc   ;==>__WD_BidiActions
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_BidiGetData($iSocket, $iTimeout = 500)
-	Local $sReceived = ""    ; Buffer for received data
+	Local $sReceived = ""                  ; Buffer for received data
 	Local $iPrevDataLen = 0
 	Local $aEventQueue[0][$_WD_JQ__COUNTER]
 	Local $sResult
-	Local $hTimeoutTimer = TimerInit()    ; Initialize timeout timer
+	Local $hTimeoutTimer = TimerInit()     ; Initialize timeout timer
 
 	; Receive until timeout or data received
 	Do
