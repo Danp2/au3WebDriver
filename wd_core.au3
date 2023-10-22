@@ -1276,65 +1276,78 @@ EndFunc   ;==>_WD_Option
 ; ===============================================================================================================================
 Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
-	Local $sFunction, $bLatest, $sUpdate, $sFile, $iPID, $iErr = $_WD_ERROR_Success
+	Local $sFunction, $bLatest, $sUpdate = "", $sFile, $iPID, $iErr = $_WD_ERROR_Success
 	Local $sDriverBitness = "", $sExistingDriver = "", $sPortAvailable = ""
+	Local $oBidiConfig, $bBidiAvail = False, $bBidiOnly = False
 
-	If $_WD_DRIVER = "" Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
-	ElseIf Not FileExists($_WD_DRIVER) Then
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_FileIssue, "Non-existent Web Driver: " & $_WD_DRIVER), 0, 0)
+	; Determine if Bidi UDFs are available
+	$sFunction = "_WD_BidiConfig"
+	$bBidiAvail = __WD_IsFunc($sFunction)
+
+	If $bBidiAvail Then
+		; Retrieve BidiOnly setting
+		$oBidiConfig = Call($sFunction)
+		$bBidiOnly = Json_ObjGet($oBidiConfig, 'bidionly')
+	EndIf
+
+	If Not $bBidiOnly Then
+		If $_WD_DRIVER = "" Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, "Location for Web Driver not set."), 0, 0)
+		ElseIf Not FileExists($_WD_DRIVER) Then
+			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_FileIssue, "Non-existent Web Driver: " & $_WD_DRIVER), 0, 0)
+		EndIf
 	EndIf
 
 	If $_WD_DRIVER_CLOSE Then __WD_CloseDriver()
 
 	; Attempt to determine the availability of designated port
 	; so that this information can be shown in the logs
-	$sFunction = "_WD_GetFreePort"
-	Call($sFunction, $_WD_PORT)
+		$sFunction = "_WD_GetFreePort"
+	If __WD_IsFunc($sFunction) Then
+		Call($sFunction, $_WD_PORT)
 
-	Select
-		Case @error = 0xDEAD And @extended = 0xBEEF
-			; function not available
+		Select
+			Case @error = $_WD_ERROR_GeneralError
+				; unable to obtain port status
+				$sPortAvailable = " (Unknown)"
 
-		Case @error = $_WD_ERROR_GeneralError
-			; unable to obtain port status
-			$sPortAvailable = " (Unknown)"
+			Case @error = $_WD_ERROR_NotFound
+				; requested port is unavailable
+				$sPortAvailable = " (Unavailable)"
+		EndSelect
+	EndIf
 
-		Case @error = $_WD_ERROR_NotFound
-			; requested port is unavailable
-			$sPortAvailable = " (Unavailable)"
-	EndSelect
+	If Not $bBidiOnly Then
+		Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
 
-	Local $sCommand = StringFormat('"%s" %s ', $_WD_DRIVER, $_WD_DRIVER_PARAMS)
+		$sFile = __WD_StripPath($_WD_DRIVER)
+		$iPID = ProcessExists($sFile)
 
-	$sFile = __WD_StripPath($_WD_DRIVER)
-	$iPID = ProcessExists($sFile)
-
-	If $_WD_DRIVER_DETECT And $iPID Then
-		$sExistingDriver = "Existing instance of " & $sFile & " detected! (PID=" & $iPID & ")"
-	Else
-		$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
-		If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
+		If $_WD_DRIVER_DETECT And $iPID Then
+			$sExistingDriver = "Existing instance of " & $sFile & " detected! (PID=" & $iPID & ")"
+		Else
+			$iPID = Run($sCommand, "", ($_WD_DEBUG >= $_WD_DEBUG_Info) ? @SW_SHOW : @SW_HIDE)
+			If @error Or ProcessWaitClose($iPID, 1) Then $iErr = $_WD_ERROR_GeneralError
+		EndIf
 	EndIf
 
 	If $_WD_DEBUG >= $_WD_DEBUG_Info Or ($iErr <> $_WD_ERROR_Success And $_WD_DEBUG = $_WD_DEBUG_Error) Then
 		$sFunction = "_WD_IsLatestRelease"
-		$bLatest = Call($sFunction)
+		If __WD_IsFunc($sFunction) Then
+			$bLatest = Call($sFunction)
 
-		Select
-			Case @error = 0xDEAD And @extended = 0xBEEF
-				$sUpdate = "" ; update check not performed
+			Select
+				Case @error
+					$sUpdate = " (Update status unknown [" & @error & "])"
 
-			Case @error
-				$sUpdate = " (Update status unknown [" & @error & "])"
+				Case $bLatest
+					$sUpdate = " (Up to date)"
 
-			Case $bLatest
-				$sUpdate = " (Up to date)"
+				Case Not $bLatest
+					$sUpdate = " (Update available)"
 
-			Case Not $bLatest
-				$sUpdate = " (Update available)"
-
-		EndSelect
+			EndSelect
+		EndIf
 
 		Local $sWinHttpVer = __WinHttpVer()
 		If $sWinHttpVer < "1.6.4.2" Then
@@ -1348,10 +1361,17 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
 		__WD_ConsoleWrite($sFuncName & ": Webdriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
-		__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
-		__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
+		If Not $bBidiOnly Then		
+			__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
+			__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
+		EndIf
 		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & $sPortAvailable)
-		__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & (($sExistingDriver) ? $sExistingDriver : $sCommand))
+		If Not $bBidiOnly Then		
+			__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & (($sExistingDriver) ? $sExistingDriver : $sCommand))
+		EndIf
+		If $bBidiAvail Then
+			__WD_ConsoleWrite($sFuncName & ": Bidi Enabled" & (($bBidiOnly) ? " (Bidi only)" : ""))
+		EndIf
 	EndIf
 
 	Local $sMessage = ($iErr) ? ("Error launching WebDriver!") : ("")
@@ -1978,3 +1998,20 @@ EndFunc   ;==>__WD_Sleep
 Func __WD_JsonHandle($sHandle)
 	Return (StringLeft($sHandle, 1) <> '{') ? ('{"handle":"' & $sHandle & '"}') : ($sHandle)
 EndFunc   ;==>__WD_JsonHandle
+
+; #INTERNAL_USE_ONLY# ===========================================================================================================
+; Name ..........: __WD_IsFunc
+; Description ...: Test for existence of a function
+; Syntax ........: __WD_IsFunc($sFunction)
+; Parameters ....: $sFunction           - Function name to check
+; Return values .: True if function exists
+; Author ........: Danp2
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: https://www.autoitscript.com/forum/topic/170487-isdeclared-to-detect-functions/?do=findComment&comment=1246642
+; Example .......: No
+; ===============================================================================================================================
+Func __WD_IsFunc($sFunction)
+	Return IsFunc(Execute($sFunction))
+EndFunc   ;==>__WD_IsFunc
