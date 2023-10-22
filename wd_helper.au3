@@ -2878,10 +2878,11 @@ EndFunc   ;==>_WD_DispatchEvent
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_GetTable
-; Description ...: Return all elements of a table.
-; Syntax ........: _WD_GetTable($sSession, $sBaseElement[, $sRowsSelector = Default[, $sColsSelector = Default]])
+; Description ...: Retrieve text from all matching elements of a table.
+; Syntax ........: _WD_GetTable($sSession, $sStrategy, $sSelector[, $sRowsSelector = Default[, $sColsSelector = Default]])
 ; Parameters ....: $sSession      - Session ID from _WD_CreateSession
-;                  $sBaseElement  - XPath of the table to return
+;                  $sStrategy     - Locator strategy. See defined constant $_WD_LOCATOR_* for allowed values
+;                  $sSelector     - Indicates how the WebDriver should traverse through the HTML DOM to locate the desired <table> element.
 ;                  $sRowsSelector - [optional] Rows CSS selector. Default is "tr".
 ;                  $sColsSelector - [optional] Columns CSS selector. Default is "td, th".
 ; Return values .: Success - 2D array.
@@ -2889,14 +2890,15 @@ EndFunc   ;==>_WD_DispatchEvent
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_NoMatch
 ; Author ........: danylarson
-; Modified ......: water, danp2
-; Remarks .......:
+; Modified ......: water, danp2, mLipok
+; Remarks .......: The CSS selectors can be overridden to control the included elements. For example, a modified $sRowsSelector of ":scope > tbody > tr" can be used to bypass nested tables.
 ; Related .......: _WD_FindElement, _WD_ElementAction, _WD_LastHTTPResult
 ; Link ..........: https://www.autoitscript.com/forum/topic/191990-webdriver-udf-w3c-compliant-version-01182020/page/18/?tab=comments#comment-1415164
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSelector = Default)
+Func _WD_GetTable($sSession, $sStrategy, $sSelector, $sRowsSelector = Default, $sColsSelector = Default)
 	Local Const $sFuncName = "_WD_GetTable"
+	Local Const $sParameters = 'Parameters:   Strategy=' & $sStrategy & '   Selector=' & $sSelector & '   RowsSelector=' & $sRowsSelector & '   ColsSelector=' & $sColsSelector
 	Local $sElement, $aTable = ''
 	$_WD_HTTPRESULT = 0
 	$_WD_HTTPRESPONSE = ''
@@ -2905,7 +2907,7 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 	If $sColsSelector = Default Then $sColsSelector = "td, th"
 
 	; Get the table element
-	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sBaseElement)
+	$sElement = _WD_FindElement($sSession, $sStrategy, $sSelector)
 	Local $iErr = @error
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -2920,11 +2922,11 @@ Func _WD_GetTable($sSession, $sBaseElement, $sRowsSelector = Default, $sColsSele
 		If $iErr = $_WD_ERROR_Success Then
 			; Extract target data from results and convert to array
 			Local $sStr = StringMid($sResult, 10, StringLen($sResult) - 10)
-			$aTable = __Make2Array($sStr)
+			$aTable = __WD_Make2Array($sStr)
 		EndIf
 	EndIf
 
-	Return SetError(__WD_Error($sFuncName, $iErr), 0, $aTable)
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $aTable)
 EndFunc   ;==>_WD_GetTable
 
 ; #FUNCTION# ====================================================================================================================
@@ -3589,9 +3591,9 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 EndFunc   ;==>__WD_GetLatestWebdriverInfo
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
-; Name ..........: __Make2Array
+; Name ..........: __WD_Make2Array
 ; Description ...: Parse string to array
-; Syntax ........: __Make2Array($s)
+; Syntax ........: __WD_Make2Array($s)
 ; Parameters ....: $s - String to be parsed
 ; Return values .: Generated array
 ; Author ........: jguinch
@@ -3601,7 +3603,7 @@ EndFunc   ;==>__WD_GetLatestWebdriverInfo
 ; Link ..........: https://www.autoitscript.com/forum/topic/179113-is-there-a-easy-way-to-parse-string-to-array
 ; Example .......: No
 ; ===============================================================================================================================
-Func __Make2Array($s)
+Func __WD_Make2Array($s)
 	Local $aLines = StringRegExp($s, "(?<=[\[,])\s*\[(.*?)\]\s*[,\]]", 3), $iCountCols = 0
 	For $i = 0 To UBound($aLines) - 1
 		$aLines[$i] = StringRegExp($aLines[$i], "(?:^|,)\s*(?|'([^']*)'|""([^""]*)""|(.*?))(?=\s*(?:,|$))", 3)
@@ -3614,4 +3616,4 @@ Func __Make2Array($s)
 		Next
 	Next
 	Return $aRet
-EndFunc   ;==>__Make2Array
+EndFunc   ;==>__WD_Make2Array
