@@ -123,7 +123,6 @@ Func _WD_BidiConnect($sSession)
 	Local Const $sParameters = 'Parameters:   Session=' & $sSession
 	Local $iErr = $_WD_ERROR_Success
 
-	__WD_BidiActions('close', $sSession)
 	__WD_BidiActions('open', $sSession)
 
 	If @error Then
