@@ -421,12 +421,24 @@ EndFunc   ;==>_WD_DeleteSession
 ; ===============================================================================================================================
 Func _WD_Status()
 	Local Const $sFuncName = "_WD_Status"
-	Local $sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
-	Local $iErr = @error, $oResult = ""
+	Local $sResponse, $iErr, $sKey, $oResult = ""
+
+	; BiDi session
+	If $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
+		$sCommand = 'session.status'
+		$oParams = Json_ObjCreate()
+		$sResponse = _WD_BidiExecute($sCommand, $oParams)
+		$iErr = @error
+		$sKey = $_WD_JSON_Result
+	Else
+		$sResponse = __WD_Get($_WD_BASE_URL & ":" & $_WD_PORT & "/status")
+		$iErr = @error
+		$sKey = $_WD_JSON_Value
+	EndIf
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $oJSON = Json_Decode($sResponse)
-		$oResult = Json_Get($oJSON, $_WD_JSON_Value)
+		$oResult = Json_Get($oJSON, $sKey)
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, $oResult)
