@@ -382,8 +382,21 @@ EndFunc   ;==>_WD_CreateSession
 ; ===============================================================================================================================
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
+	Local $sCommand, $oParams, $iErr
+
+	; BiDi session
+	If $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
+		$sCommand = 'session.close'
+		$oParams = Json_ObjCreate()
+		_WD_BidiExecute($sCommand, $oParams)
+		$iErr = @error
+	EndIf
+
+	If $_WD_BiDiStatus <> $_WD_BiDiStatus_BiDiOnly Then
 		__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
-	Local $iErr = @error
+		$iErr = @error
+	EndIf
+
 
 	If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
 
