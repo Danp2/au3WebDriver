@@ -280,6 +280,7 @@ Func _WD_BidiGetResult($iID)
 
 	Local $vResult = __WD_BidiActions('receive', 'result', $oParams)
 	Local $iErr = @error
+	__WD_DetectError($iErr, $vResult)
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $vResult)
 EndFunc   ;==>_WD_BidiGetResult
@@ -604,6 +605,7 @@ EndFunc   ;==>__WD_BidiActions
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_BidiGetData($iSocket, $iTimeout = 500)
+	Local Const $sFuncName = "__WD_BidiGetData"
 	Local $sReceived = ""                  ; Buffer for received data
 	Local $iPrevDataLen = 0
 	Local $aEventQueue[0][$_WD_JQ__COUNTER]
@@ -660,6 +662,8 @@ Func __WD_BidiGetData($iSocket, $iTimeout = 500)
 	_ArrayAdd($aEventQueue, $sResult, 0, @TAB)
 	If @error Then Return SetError(3, 0, @error)
 
+	__WD_ConsoleWrite($sFuncName & ': ' & $sResult, $_WD_DEBUG_Full)
+
 	Return $aEventQueue
 EndFunc   ;==>__WD_BidiGetData
 
@@ -678,9 +682,13 @@ EndFunc   ;==>__WD_BidiGetData
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_BidiSendData($iSocket, $sData)
+	Local Const $sFuncName = "__WD_BidiSendData"
+
 	If StringRight($sData, 2) <> @CRLF Then
 		$sData &= @CRLF
 	EndIf
+
+	__WD_ConsoleWrite($sFuncName & ': ' & $sData, $_WD_DEBUG_Full)
 
 	TCPSend($iSocket, $sData)
 EndFunc   ;==>__WD_BidiSendData
