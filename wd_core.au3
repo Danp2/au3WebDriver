@@ -36,7 +36,7 @@
 #ce
 #EndRegion Copyright
 
-#ignorefunc _WD_IsLatestRelease
+#ignorefunc _WD_BidiIsConnected, _WD_BidiConnect, _WD_BidiExecute
 #Tidy_Parameters=/tcb=-1
 
 #Region Description
@@ -89,15 +89,15 @@ Global Const $_WD_JSON_Element = "[value][" & $_WD_ELEMENT_ID & "]"
 Global Const $_WD_JSON_Shadow = "[value][" & $_WD_SHADOW_ID & "]"
 Global Const $_WD_JSON_Error = "[value][error]"
 Global Const $_WD_JSON_Message = "[value][message]"
-
-#Tidy_ILC_Pos=32
-Global Enum _
-		$_WD_DEBUG_None = 0, _ ; No logging
-		$_WD_DEBUG_Error, _    ; logging in case of Error
-		$_WD_DEBUG_Info, _     ; logging with additional information
-		$_WD_DEBUG_Full        ; logging with full details for developers
+Global Const $_WD_JSON_Result = "[result]"
 
 #Tidy_ILC_Pos=42
+Global Enum _
+		$_WD_DEBUG_None = 0, _           ; No logging
+		$_WD_DEBUG_Error, _              ; logging in case of Error
+		$_WD_DEBUG_Info, _               ; logging with additional information
+		$_WD_DEBUG_Full                  ; logging with full details for developers
+
 Global Enum _
 		$_WD_ERROR_Success = 0, _        ; No error
 		$_WD_ERROR_GeneralError, _       ; General error
@@ -125,6 +125,11 @@ Global Enum _
 		$_WD_ERROR_Javascript, _         ; Javascript error
 		$_WD_ERROR_Mismatch, _           ; Version mismatch
 		$_WD_ERROR__COUNTER              ; Defines row count for $aWD_ERROR_DESC
+
+Global Enum _
+		$_WD_BiDiStatus_None = 0, _      ; BiDi not included
+		$_WD_BiDiStatus_BiDiAvail, _     ; BiDi included
+		$_WD_BiDiStatus_BiDiOnly         ; BiDi only
 #Tidy_ILC_Pos=0
 
 Global Const $aWD_ERROR_DESC[$_WD_ERROR__COUNTER] = [ _
@@ -170,6 +175,7 @@ Global Const $_WD_ErrorElementNotInteract = "element not interactable"
 Global Const $_WD_ErrorWindowNotFound = "no such window"
 Global Const $_WD_ErrorFrameNotFound = "no such frame"
 Global Const $_WD_ErrorSessionNotCreated = "session not created"
+Global Const $_WD_ErrorUnsupported = "unsupported operation"
 
 Global Const $_WD_WinHTTPTimeoutMsg = "WinHTTP request timed out before Webdriver"
 
@@ -276,6 +282,7 @@ Global $_WD_WINHTTP_TIMEOUTS = True
 Global $_WD_HTTPTimeOuts[4] = [0, 60000, 30000, 30000]
 Global $_WD_HTTPContentType = "Content-Type: application/json"
 Global $_WD_DetailedErrors = False
+Global $_WD_BiDiStatus = 0
 #Tidy_ILC_Pos=0
 
 #EndRegion Global Variables
@@ -307,25 +314,25 @@ Func _WD_CreateSession($sCapabilities = Default)
 	Local $iErr = @error
 	Local $oJSON = Json_Decode($sResponse)
 
-	If $iErr = $_WD_ERROR_Success Then
-		$sSession = Json_Get($oJSON, "[value][sessionId]")
+		If $iErr = $_WD_ERROR_Success Then
+			$sSession = Json_Get($oJSON, "[value][sessionId]")
 
-		If @error Then
-			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
-			$iErr = $_WD_ERROR_Exception
+			If @error Then
+				$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
+				$iErr = $_WD_ERROR_Exception
+			Else
+				$sMessage = $sSession
+
+				; Save response details for future use
+				$_WD_SESSION_DETAILS = $sResponse
+			EndIf
 		Else
-			$sMessage = $sSession
-
-			; Save response details for future use
-			$_WD_SESSION_DETAILS = $sResponse
+			If $iErr = $_WD_ERROR_SessionNotCreated Then
+				$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
+			ElseIf Not $_WD_DetailedErrors Then
+				$iErr = $_WD_ERROR_Exception
+			EndIf
 		EndIf
-	Else
-		If $iErr = $_WD_ERROR_SessionNotCreated Then
-			$sMessage = Json_Get($oJSON, $_WD_JSON_Message)
-		ElseIf Not $_WD_DetailedErrors Then
-			$iErr = $_WD_ERROR_Exception
-		EndIf
-	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sSession)
 EndFunc   ;==>_WD_CreateSession
@@ -346,7 +353,7 @@ EndFunc   ;==>_WD_CreateSession
 ; ===============================================================================================================================
 Func _WD_DeleteSession($sSession)
 	Local Const $sFuncName = "_WD_DeleteSession"
-	__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
+		__WD_Delete($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession)
 	Local $iErr = @error
 
 	If $iErr <> $_WD_ERROR_Success And Not $_WD_DetailedErrors Then $iErr = $_WD_ERROR_Exception
@@ -1278,16 +1285,18 @@ Func _WD_Startup()
 	Local Const $sFuncName = "_WD_Startup"
 	Local $sFunction, $bLatest, $sUpdate = "", $sFile, $iPID, $iErr = $_WD_ERROR_Success
 	Local $sDriverBitness = "", $sExistingDriver = "", $sPortAvailable = ""
-	Local $oBidiConfig, $bBidiAvail = False, $bBidiOnly = False
+	Local $oBidiConfig, $bBidiOnly = False
 
 	; Determine if Bidi UDFs are available
 	$sFunction = "_WD_BidiConfig"
-	$bBidiAvail = __WD_IsFunc($sFunction)
+	$_WD_BiDiStatus = (__WD_IsFunc($sFunction)) ? $_WD_BiDiStatus_BiDiAvail : $_WD_BiDiStatus_None
 
-	If $bBidiAvail Then
+	If $_WD_BiDiStatus Then
 		; Retrieve BidiOnly setting
 		$oBidiConfig = Call($sFunction)
 		$bBidiOnly = Json_ObjGet($oBidiConfig, 'bidionly')
+
+		If $bBidiOnly Then $_WD_BiDiStatus = $_WD_BiDiStatus_BiDiOnly
 	EndIf
 
 	If Not $bBidiOnly Then
@@ -1302,7 +1311,7 @@ Func _WD_Startup()
 
 	; Attempt to determine the availability of designated port
 	; so that this information can be shown in the logs
-		$sFunction = "_WD_GetFreePort"
+	$sFunction = "_WD_GetFreePort"
 	If __WD_IsFunc($sFunction) Then
 		Call($sFunction, $_WD_PORT)
 
@@ -1361,15 +1370,15 @@ Func _WD_Startup()
 		__WD_ConsoleWrite($sFuncName & ": AutoIt:" & @TAB & @AutoItVersion)
 		__WD_ConsoleWrite($sFuncName & ": Webdriver UDF:" & @TAB & $__WDVERSION & $sUpdate)
 		__WD_ConsoleWrite($sFuncName & ": WinHTTP:" & @TAB & $sWinHttpVer)
-		If Not $bBidiOnly Then		
+		If Not $bBidiOnly Then
 			__WD_ConsoleWrite($sFuncName & ": Driver:" & @TAB & $_WD_DRIVER & $sDriverBitness)
 			__WD_ConsoleWrite($sFuncName & ": Params:" & @TAB & $_WD_DRIVER_PARAMS)
 		EndIf
 		__WD_ConsoleWrite($sFuncName & ": Port:" & @TAB & $_WD_PORT & $sPortAvailable)
-		If Not $bBidiOnly Then		
+		If Not $bBidiOnly Then
 			__WD_ConsoleWrite($sFuncName & ": Command:" & @TAB & (($sExistingDriver) ? $sExistingDriver : $sCommand))
 		EndIf
-		If $bBidiAvail Then
+		If $_WD_BiDiStatus Then
 			__WD_ConsoleWrite($sFuncName & ": Bidi Enabled" & (($bBidiOnly) ? " (Bidi only)" : ""))
 		EndIf
 	EndIf
@@ -1825,7 +1834,12 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 		EndIf
 
 		Local $oJSON = Json_Decode($vResult)
-		$vResult = Json_Get($oJSON, $_WD_JSON_Value)
+
+		If $oJSON.item('value') Then
+			$vResult = Json_Get($oJSON, $_WD_JSON_Value)
+		Else
+			$vResult = $oJSON
+		EndIf
 
 		If @error Or $vResult == Null Then Return
 	EndIf
@@ -1873,6 +1887,9 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 			Case $_WD_ErrorWindowNotFound
 				$iErr = $_WD_ERROR_ContextInvalid
+				
+			Case $_WD_ErrorUnsupported
+				$iErr = $_WD_ERROR_NotSupported
 
 			Case Else
 				$iErr = $_WD_ERROR_Exception
