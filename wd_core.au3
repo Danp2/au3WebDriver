@@ -305,14 +305,18 @@ Global $_WD_BiDiStatus = 0
 ; ===============================================================================================================================
 Func _WD_CreateSession($sCapabilities = Default)
 	Local Const $sFuncName = "_WD_CreateSession"
-	Local $sSession = "", $sMessage = ''
+	Local $sSession = "", $sMessage = '', $iErr = $_WD_ERROR_Success
+	Local $sCommand, $oParams, $oJSON, $sResponse
 
 	If $sCapabilities = Default Then $sCapabilities = $_WD_EmptyCaps
 
 	$_WD_SESSION_DETAILS = '' ; resetting saved response details before making new request
-	Local $sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
-	Local $iErr = @error
-	Local $oJSON = Json_Decode($sResponse)
+
+	; Classic webdriver session
+	If $_WD_BiDiStatus <> $_WD_BiDiStatus_BiDiOnly Then
+		$sResponse = __WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session", $sCapabilities)
+		$iErr = @error
+		$oJSON = Json_Decode($sResponse)
 
 		If $iErr = $_WD_ERROR_Success Then
 			$sSession = Json_Get($oJSON, "[value][sessionId]")
@@ -325,6 +329,10 @@ Func _WD_CreateSession($sCapabilities = Default)
 
 				; Save response details for future use
 				$_WD_SESSION_DETAILS = $sResponse
+
+				If $_WD_BiDiStatus = $_WD_BiDiStatus_BiDiAvail Then
+					_WD_BidiConnect($sSession)
+				EndIf
 			EndIf
 		Else
 			If $iErr = $_WD_ERROR_SessionNotCreated Then
@@ -333,6 +341,27 @@ Func _WD_CreateSession($sCapabilities = Default)
 				$iErr = $_WD_ERROR_Exception
 			EndIf
 		EndIf
+	Else
+		; BiDi session
+		If $iErr = $_WD_ERROR_Success And $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
+			_WD_BidiConnect($sSession)
+	
+			$sCommand = 'session.new'
+			$oParams = Json_Decode($sCapabilities)
+			$sResponse = _WD_BidiExecute($sCommand, $oParams)
+			$iErr = @error
+	
+			If $_WD_BiDiStatus = $_WD_BiDiStatus_BiDiOnly Then
+				If $iErr = $_WD_ERROR_Success Then
+					$sSession = Json_Get($oJSON, "[value][sessionId]")
+					$sMessage = $sSession
+	
+					$_WD_SESSION_DETAILS = $sResponse
+				EndIf
+			Endif
+		EndIf
+	EndIf
+
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage), 0, $sSession)
 EndFunc   ;==>_WD_CreateSession
