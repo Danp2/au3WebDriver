@@ -421,7 +421,7 @@ EndFunc   ;==>_WD_DeleteSession
 ; ===============================================================================================================================
 Func _WD_Status()
 	Local Const $sFuncName = "_WD_Status"
-	Local $sResponse, $iErr, $sKey, $oResult = ""
+	Local $sCommand, $oParams, $sResponse, $iErr, $sKey, $oResult = ""
 
 	; BiDi session
 	If $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
