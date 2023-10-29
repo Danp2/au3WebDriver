@@ -36,7 +36,7 @@
 #ce
 #EndRegion Copyright
 
-#ignorefunc _WD_BidiIsConnected, _WD_BidiConnect, _WD_BidiExecute
+#ignorefunc _WD_BidiIsConnected, _WD_BidiConnect, _WD_BidiExecute, _WD_BidiGetContextID
 #Tidy_Parameters=/tcb=-1
 
 #Region Description
@@ -525,13 +525,16 @@ EndFunc   ;==>_WD_Timeouts
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_Navigate
 ; Description ...: Navigate to the designated URL.
-; Syntax ........: _WD_Navigate($sSession, $sURL)
+; Syntax ........: _WD_Navigate($sSession, $sURL[, $sContext = Default])
 ; Parameters ....: $sSession - Session ID from _WD_CreateSession
 ;                  $sURL     - Destination URL
+;                  $sContext - [optional] Browsing context (BiDi only)
 ; Return values .: Success - 1.
 ;                  Failure - 0 and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
 ;                  - $_WD_ERROR_Timeout
+;                  - $_WD_ERROR_NotFound
+;                  - $_WD_ERROR_InvalidArgue
 ; Author ........: Danp2
 ; Modified ......:
 ; Remarks .......:
@@ -539,11 +542,34 @@ EndFunc   ;==>_WD_Timeouts
 ; Link ..........: https://www.w3.org/TR/webdriver#navigate-to
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Navigate($sSession, $sURL)
+Func _WD_Navigate($sSession, $sURL, $sContext = Default)
 	Local Const $sFuncName = "_WD_Navigate"
-	Local Const $sParameters = 'Parameters:   URL=' & $sURL
+	Local Const $sParameters = 'Parameters:   URL=' & $sURL & '   Context=' & $sContext
+	Local $iErr, $sCommand, $oParams
+
+	; BiDi session
+	If $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
+		If $sContext = Default Then
+			$sContext = _WD_BidiGetContextID()
+			$iErr = @error
+		EndIf
+
+		If $iErr = $_WD_ERROR_Success Then
+			$sCommand = 'browsingContext.navigate'
+			$oParams = Json_ObjCreate()
+			Json_ObjPut($oParams, 'context', $sContext)
+			Json_ObjPut($oParams, 'url', $sURL)
+			_WD_BidiExecute($sCommand, $oParams)
+			$iErr = @error
+		EndIf
+	Else
+		If $sContext = Default Then
 			__WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
-	Local $iErr = @error
+			$iErr = @error
+		Else
+			$iErr = $_WD_ERROR_InvalidArgue
+		Endif
+	EndIf
 
 	Local $iReturn = ($iErr) ? (0) : (1)
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $iReturn)
