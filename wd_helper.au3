@@ -692,7 +692,7 @@ Func _WD_GetFrameCount($sSession)
 	Local Const $sFuncName = "_WD_GetFrameCount"
 	Local $iValue = _WD_ExecuteScript($sSession, "return window.frames.length", Default, Default, $_WD_JSON_Value)
 	Local $iErr = @error
-	If @error Then $iValue = 0
+	If $iErr Then $iValue = 0
 	Return SetError(__WD_Error($sFuncName, $iErr), 0, Number($iValue))
 EndFunc   ;==>_WD_GetFrameCount
 
@@ -1984,7 +1984,7 @@ Func _WD_SelectFiles($sSession, $sStrategy, $sSelector, $sFilename)
 		If $iErr = $_WD_ERROR_Success Then
 			$sResult = _WD_ExecuteScript($sSession, "return arguments[0].files.length", __WD_JsonElement($sElement), Default, $_WD_JSON_Value)
 			$iErr = @error
-			If @error Then $sResult = "0"
+			If $iErr Then $sResult = "0"
 		EndIf
 	EndIf
 
@@ -2266,7 +2266,7 @@ Func _WD_GetBrowserVersion($sBrowser)
 	Local $sPath = _WD_GetBrowserPath($sBrowser)
 	$iErr = @error
 	$iExt = @extended
-	If @error Then
+	If $iErr Then
 		; as registry checks fails, now checking if file exist
 		If FileExists($sBrowser) Then
 			; Resetting as we are now checking file instead registry entries
