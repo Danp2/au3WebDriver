@@ -542,7 +542,7 @@ EndFunc   ;==>_WD_Timeouts
 Func _WD_Navigate($sSession, $sURL)
 	Local Const $sFuncName = "_WD_Navigate"
 	Local Const $sParameters = 'Parameters:   URL=' & $sURL
-	__WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
+			__WD_Post($_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/url", '{"url":"' & $sURL & '"}')
 	Local $iErr = @error
 
 	Local $iReturn = ($iErr) ? (0) : (1)
@@ -1889,67 +1889,64 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 		Local $oJSON = Json_Decode($vResult)
 
-		If $oJSON.item('value') Then
+		If Json_ObjExists($oJSON, 'value') Then
 			$vResult = Json_Get($oJSON, $_WD_JSON_Value)
-		Else
+		Else	
 			$vResult = $oJSON
 		EndIf
 
 		If @error Or $vResult == Null Then Return
 	EndIf
 
-	If (Not IsObj($vResult)) Or ObjName($vResult, $OBJ_STRING) <> 'Scripting.Dictionary' Then Return
+	If Not Json_IsObject($vResult) Or Not Json_ObjExists($vResult, 'error') Then Return
 
-	If $vResult.Exists('error') Then
+	Switch Json_ObjGet($vResult, 'error')
+		Case ""
 
-		Switch $vResult.item('error')
-			Case ""
+		Case $_WD_ErrorSessionNotCreated
+			$iErr = $_WD_ERROR_SessionNotCreated
 
-			Case $_WD_ErrorSessionNotCreated
-				$iErr = $_WD_ERROR_SessionNotCreated
+		Case $_WD_ErrorInvalidSession
+			$iErr = $_WD_ERROR_SessionInvalid
 
-			Case $_WD_ErrorInvalidSession
-				$iErr = $_WD_ERROR_SessionInvalid
+		Case $_WD_ErrorUnknownCommand
+			$iErr = $_WD_ERROR_UnknownCommand
 
-			Case $_WD_ErrorUnknownCommand
-				$iErr = $_WD_ERROR_UnknownCommand
+		Case $_WD_ErrorTimeout
+			$iErr = $_WD_ERROR_Timeout
 
-			Case $_WD_ErrorTimeout
-				$iErr = $_WD_ERROR_Timeout
+		Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale, $_WD_ErrorShadowRootNotFound, $_WD_ErrorFrameNotFound
+			$iErr = $_WD_ERROR_NoMatch
 
-			Case $_WD_ErrorElementNotFound, $_WD_ErrorElementStale, $_WD_ErrorShadowRootNotFound, $_WD_ErrorFrameNotFound
-				$iErr = $_WD_ERROR_NoMatch
+		Case $_WD_ErrorElementInvalid
+			$iErr = $_WD_ERROR_InvalidArgue
 
-			Case $_WD_ErrorElementInvalid
-				$iErr = $_WD_ERROR_InvalidArgue
+		Case $_WD_ErrorElementIntercept, $_WD_ErrorElementNotInteract
+			$iErr = $_WD_ERROR_ElementIssue
 
-			Case $_WD_ErrorElementIntercept, $_WD_ErrorElementNotInteract
-				$iErr = $_WD_ERROR_ElementIssue
+		Case $_WD_ErrorNoSuchAlert
+			$iErr = $_WD_ERROR_NoAlert
 
-			Case $_WD_ErrorNoSuchAlert
-				$iErr = $_WD_ERROR_NoAlert
-
-			Case $_WD_ErrorJavascript
-				If StringInStr($vResult.item('message'), 'expression') Then
-					$iErr = $_WD_ERROR_InvalidExpression
-				Else
-					$iErr = $_WD_ERROR_Javascript
-				EndIf
-
-			Case $_WD_ErrorInvalidSelector
+		Case $_WD_ErrorJavascript
+			If StringInStr($vResult.item('message'), 'expression') Then
 				$iErr = $_WD_ERROR_InvalidExpression
+			Else
+				$iErr = $_WD_ERROR_Javascript
+			EndIf
 
-			Case $_WD_ErrorWindowNotFound
-				$iErr = $_WD_ERROR_ContextInvalid
-				
-			Case $_WD_ErrorUnsupported
-				$iErr = $_WD_ERROR_NotSupported
+		Case $_WD_ErrorInvalidSelector
+			$iErr = $_WD_ERROR_InvalidExpression
 
-			Case Else
-				$iErr = $_WD_ERROR_Exception
+		Case $_WD_ErrorWindowNotFound
+			$iErr = $_WD_ERROR_ContextInvalid
+			
+		Case $_WD_ErrorUnsupported
+			$iErr = $_WD_ERROR_NotSupported
 
-		EndSwitch
-	EndIf
+		Case Else
+			$iErr = $_WD_ERROR_Exception
+
+	EndSwitch
 EndFunc   ;==>__WD_DetectError
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
