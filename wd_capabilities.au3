@@ -297,10 +297,10 @@ Func _WD_CapabilitiesGet()
 	Local $Data1 = Json_Encode($_WD_CAPS__OBJECT)
 
 	Local $Data2 = Json_Decode($Data1)
-	Local $Json2 = Json_Encode($Data2, $Json_UNQUOTED_STRING)
+	Local $Json2 = Json_Encode($Data2, $JSON_UNQUOTED_STRING)
 
 	Local $Data3 = Json_Decode($Json2)
-	Local $Json3 = Json_Encode($Data3, $Json_PRETTY_PRINT, "    ", ",\n", ",\n", ":")
+	Local $Json3 = Json_Encode($Data3, $JSON_PRETTY_PRINT, "    ", ",\n", ",\n", ":")
 
 	If $Json3 = '' Or $Json3 = '""' Or Not IsString($Json3) Then $Json3 = $_WD_EmptyDict
 
