@@ -309,7 +309,7 @@ EndFunc   ;==>_WD_BidiGetEvent
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiGetContextID
-; Description ...: Retrieve browsing context ID
+; Description ...: Retrieve browsing context ID of currently active window / tab
 ; Syntax ........: _WD_BidiGetContextID()
 ; Parameters ....: None
 ; Return values .: Success - string containing browsing context ID
@@ -325,17 +325,43 @@ EndFunc   ;==>_WD_BidiGetEvent
 ; ===============================================================================================================================
 Func _WD_BidiGetContextID()
 	Local Const $sFuncName = "_WD_BidiGetContextID"
-	Local $iErr = $_WD_ERROR_Success, $sContext = ''
+	Local $iErr = $_WD_ERROR_NotFound, $sTemp, $sContext = ''
 	Local $oParams = Json_ObjCreate()
+	Json_ObjPut($oParams, 'maxDepth', 0)
 
 	Local $sResult = _WD_BidiExecute('browsingContext.getTree', $oParams)
 	If @error Then
 		$iErr = $_WD_ERROR_Exception
 	Else
 		Local $oJSON = Json_Decode($sResult)
-		Local $sKey = '[result][contexts][0][context]'
-		$sContext = Json_Get($oJSON, $sKey)
-		If @error Then $iErr = $_WD_ERROR_NotFound
+		Local $sKey = '[result][contexts]'
+		Local $oContexts = Json_Get($oJSON, $sKey)
+
+		If UBound($oContexts) > 0 Then
+			Dim $aContexts[UBound($oContexts)]
+			$oParams = Json_ObjCreate()
+			Json_ObjPut($oParams, 'expression', 'document.hasFocus() && document.visibilityState == "visible"')
+			Json_ObjPut($oParams, 'awaitPromise', False)
+			
+			For $oContext In $oContexts
+				$sKey = "[context]"
+				$sTemp = Json_Get($oContext, $sKey)
+				Json_ObjPut($oParams, "target", json_decode('{"context":"' & $sTemp & '"}'))
+				$sResult = _WD_BidiExecute('script.evaluate', $oParams)
+
+				If @error = $_WD_ERROR_Success Then
+					$oJSON = Json_Decode($sResult)
+					$sKey = '[result][result][value]'
+					$sResult = Json_Get($oJSON, $sKey)
+
+					If $sResult Then
+						$sContext = $sTemp
+						$iErr = $_WD_ERROR_Success
+						ExitLoop
+					Endif
+				EndIf
+			Next
+		EndIf
 	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sContext), 0, $sContext)
