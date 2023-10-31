@@ -326,6 +326,11 @@ EndFunc   ;==>_WD_BidiGetEvent
 Func _WD_BidiGetContextID()
 	Local Const $sFuncName = "_WD_BidiGetContextID"
 	Local $iErr = $_WD_ERROR_NotFound, $sTemp, $sContext = ''
+	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
+
+	; Prevent logging from __WD_BidiActions if not in Full debug mode
+	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_Error
+
 	Local $oParams = Json_ObjCreate()
 	Json_ObjPut($oParams, 'maxDepth', 0)
 
@@ -363,6 +368,8 @@ Func _WD_BidiGetContextID()
 			Next
 		EndIf
 	EndIf
+
+	$_WD_DEBUG = $_WD_DEBUG_Saved ; restore DEBUG level
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sContext), 0, $sContext)
 EndFunc   ;==>_WD_BidiGetContextID
