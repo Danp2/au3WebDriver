@@ -386,7 +386,7 @@ Func _WD_DeleteSession($sSession)
 
 	; BiDi session
 	If $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
-		$sCommand = 'session.close'
+		$sCommand = 'session.end'
 		$oParams = Json_ObjCreate()
 		_WD_BidiExecute($sCommand, $oParams)
 		$iErr = @error
