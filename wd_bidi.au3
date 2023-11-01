@@ -222,10 +222,10 @@ EndFunc   ;==>_WD_BidiConfig
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_BidiExecute
 ; Description ...: Execute a Webdriver BiDi command
-; Syntax ........: _WD_BidiExecute($sCommand,  $oParams)
-; Parameters ....: $sCommand - Command to execute
-;                  $oParams  - Parameters for command
-;                  $bAsync   - Perform request asyncronously? Default is False
+; Syntax ........: _WD_BidiExecute($sCommand[, $oParams = Default[, $bAsync = Default]])
+; Parameters ....: $sCommand            - Command to execute
+;                  $oParams             - [optional] Parameters for BiDi Command. Default is {}.
+;                  $bAsync              - [optional] Perform request asyncronously? Default is False
 ; Return values .: Success - Response in JSON format (sync) or ID of request (async)
 ;                  Failure - "" and sets @error
 ; Author ........: Danp2
@@ -235,12 +235,13 @@ EndFunc   ;==>_WD_BidiConfig
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_BidiExecute($sCommand, $oParams, $bAsync = Default)
+Func _WD_BidiExecute($sCommand, $oParams = Default, $bAsync = Default)
 	Local Const $sFuncName = "_WD_BidiExecute"
-	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING))
+	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Params=' & (($oParams = Default) ? $oParams : Json_Encode($oParams, $Json_UNQUOTED_STRING)) & '   Params=' & $bAsync
 	Local $_WD_DEBUG_Saved = $_WD_DEBUG ; save current DEBUG level
 
 	If $bAsync = Default Then $bAsync = False
+	If $oParams = Default Then $oParams = Json_ObjCreate()
 
 	; Prevent logging from __WD_BidiActions if not in Full debug mode
 	If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
