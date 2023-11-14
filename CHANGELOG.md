@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [1.3.0]
+
+### Changed
+
+_WD_GetTable - Add parameter for selection strategy. `Script breaking change`
+
+### Project
+
+- Improved Tidy support
+- Fix Au3Check issues
+- Standardize naming of internal functions
+
 ## [1.2.0] 2023-08-17
 
 ### Changed
@@ -1149,7 +1161,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.3.0...HEAD
+[1.3.0]:     https://github.com/Danp2/au3WebDriver/compare/1.2.0...1.3.0
 [1.2.0]:     https://github.com/Danp2/au3WebDriver/compare/1.1.1...1.2.0
 [1.1.1]:     https://github.com/Danp2/au3WebDriver/compare/1.1.0...1.1.1
 [1.1.0]:     https://github.com/Danp2/au3WebDriver/compare/1.0.3...1.1.0
