@@ -345,20 +345,20 @@ Func _WD_CreateSession($sCapabilities = Default)
 		; BiDi session
 		If $iErr = $_WD_ERROR_Success And $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
 			_WD_BidiConnect($sSession)
-	
+
 			$sCommand = 'session.new'
 			$oParams = Json_Decode($sCapabilities)
 			$sResponse = _WD_BidiExecute($sCommand, $oParams)
 			$iErr = @error
-	
+
 			If $_WD_BiDiStatus = $_WD_BiDiStatus_BiDiOnly Then
 				If $iErr = $_WD_ERROR_Success Then
 					$sSession = Json_Get($oJSON, "[value][sessionId]")
 					$sMessage = $sSession
-	
+
 					$_WD_SESSION_DETAILS = $sResponse
 				EndIf
-			Endif
+			EndIf
 		EndIf
 	EndIf
 
@@ -568,7 +568,7 @@ Func _WD_Navigate($sSession, $sURL, $sContext = Default)
 			$iErr = @error
 		Else
 			$iErr = $_WD_ERROR_InvalidArgue
-		Endif
+		EndIf
 	EndIf
 
 	Local $iReturn = ($iErr) ? (0) : (1)
@@ -589,6 +589,7 @@ EndFunc   ;==>_WD_Navigate
 ;                  |TITLE   - Returns the document title of the current top-level browsing context
 ;                  |URL     - Protocol binding to load the URL of the browser. If a baseUrl is specified in the config, it will be prepended to the url parameter. Calling this function with the same url as last time will trigger a page reload
 ;                  $sOption  - [optional] a JSON string of actions to perform. Default is ""
+;                  $sContext - [optional] Browsing context (BiDi only)
 ; Return values .: Success - Return value from web driver (could be an empty string).
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_Exception
@@ -601,44 +602,101 @@ EndFunc   ;==>_WD_Navigate
 ;                  https://www.w3.org/TR/webdriver#actions
 ; Example .......: No
 ; ===============================================================================================================================
-Func _WD_Action($sSession, $sCommand, $sOption = Default)
+Func _WD_Action($sSession, $sCommand, $sOption = Default, $sContext = Default)
 	Local Const $sFuncName = "_WD_Action"
-	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
-	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand
+	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption & '   Context=' & $sContext
+	Local $sResponse, $sResult = "", $iErr, $oJSON, $sURLCommand, $oParams, $sKey
+
 	$_WD_HTTPRESULT = 0
 
 	If $sOption = Default Then $sOption = ''
 
-	$sCommand = StringLower($sCommand)
-	$sURLCommand = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
-
-	Switch $sCommand
-		Case 'actions'
-			If $sOption <> '' Then
-				$sResponse = __WD_Post($sURLCommand, $sOption)
-			Else
-				$sResponse = __WD_Delete($sURLCommand)
-			EndIf
-
+	; BiDi session
+	If $_WD_BiDiStatus <> $_WD_BiDiStatus_None Then
+		If $sContext = Default Then
+			$sContext = _WD_BidiGetContextID()
 			$iErr = @error
+		EndIf
 
-		Case 'back', 'forward', 'refresh'
-			$sResponse = __WD_Post($sURLCommand, $_WD_EmptyDict)
-			$iErr = @error
+		If $iErr = $_WD_ERROR_Success Then
+			$oParams = Json_ObjCreate()
 
-		Case 'title', 'url'
-			$sResponse = __WD_Get($sURLCommand)
-			$iErr = @error
+			Switch $sCommand
+				Case 'actions'
+					Json_ObjPut($oParams, 'context', $sContext)
+					If $sOption = '' Then
+						$sCommand = 'input.releaseActions'
+					Else
+						$sCommand = 'input.performActions'
+						; TODO What format does $sOption need to be in here?
+						Json_ObjPut($oParams, 'actions', $sOption)
+					EndIf
 
-			If $iErr = $_WD_ERROR_Success Then
-				$oJSON = Json_Decode($sResponse)
-				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
-			EndIf
+					_WD_BidiExecute($sCommand, $oParams)
+					$iErr = @error
 
-		Case Else
-			Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Actions|Back|Forward|Refresh|Title|Url) $sCommand=>" & $sCommand), 0, "")
+				Case 'back', 'forward'
+					; TODO browsingContext.traverseHistory
 
-	EndSwitch
+				Case 'refresh'
+					Json_ObjPut($oParams, 'context', $sContext)
+					$sCommand = 'browsingContext.reload '
+					_WD_BidiExecute($sCommand, $oParams)
+					$iErr = @error
+
+				Case 'url'
+					$sCommand = "URL"
+					ContinueCase
+
+				Case 'title'
+					Json_ObjPut($oParams, 'expression', 'document.' & $sCommand)
+					Json_ObjPut($oParams, 'awaitPromise', False)
+					Json_ObjPut($oParams, "target", json_decode('{"context":"' & $sContext & '"}'))
+					$sResult = _WD_BidiExecute('script.evaluate', $oParams)
+
+					If @error = $_WD_ERROR_Success Then
+						$oJSON = Json_Decode($sResult)
+						$sKey = '[result][result][value]'
+						$sResult = Json_Get($oJSON, $sKey)
+					EndIf
+
+				Case Else
+					Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Actions|Back|Forward|Refresh|Title|Url) $sCommand=>" & $sCommand), 0, "")
+
+			EndSwitch
+		EndIf
+	Else
+		$sCommand = StringLower($sCommand)
+		$sURLCommand = $_WD_BASE_URL & ":" & $_WD_PORT & "/session/" & $sSession & "/" & $sCommand
+
+		Switch $sCommand
+			Case 'actions'
+				If $sOption <> '' Then
+					$sResponse = __WD_Post($sURLCommand, $sOption)
+				Else
+					$sResponse = __WD_Delete($sURLCommand)
+				EndIf
+
+				$iErr = @error
+
+			Case 'back', 'forward', 'refresh'
+				$sResponse = __WD_Post($sURLCommand, $_WD_EmptyDict)
+				$iErr = @error
+
+			Case 'title', 'url'
+				$sResponse = __WD_Get($sURLCommand)
+				$iErr = @error
+
+				If $iErr = $_WD_ERROR_Success Then
+					$oJSON = Json_Decode($sResponse)
+					$sResult = Json_Get($oJSON, $_WD_JSON_Value)
+				EndIf
+
+			Case Else
+				Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, "(Actions|Back|Forward|Refresh|Title|Url) $sCommand=>" & $sCommand), 0, "")
+
+		EndSwitch
+	EndIf
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_Action
@@ -680,7 +738,8 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
 	Local $sResponse, $oJSON, $sResult = "", $iErr
 	$_WD_HTTPRESULT = 0
-
+	ConsoleWrite("(" & @ScriptLineNumber & ") : $_WD_DEBUG=" & $_WD_DEBUG & @CRLF)
+	
 	If $sOption = Default Then $sOption = ''
 
 	$sCommand = StringLower($sCommand)
@@ -762,6 +821,7 @@ Func _WD_Window($sSession, $sCommand, $sOption = Default)
 				$sResult = Json_Get($oJSON, $_WD_JSON_Value)
 		EndSwitch
 	EndIf
+	ConsoleWrite("(" & @ScriptLineNumber & ") : $_WD_DEBUG=" & $_WD_DEBUG & @CRLF)
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters), 0, $sResult)
 EndFunc   ;==>_WD_Window
@@ -1488,6 +1548,7 @@ Func _WD_Shutdown($vDriver = Default, $iDelay = Default)
 	; Not checking @error here because we aren't concerned
 	; with user abort during execution of shutdown
 
+;~ If $_WD_BiDiStatus Then _WD_BidiExecute('browser.close')
 	__WD_CloseDriver($vDriver)
 EndFunc   ;==>_WD_Shutdown
 
@@ -1917,7 +1978,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 		If Json_ObjExists($oJSON, 'value') Then
 			$vResult = Json_Get($oJSON, $_WD_JSON_Value)
-		Else	
+		Else
 			$vResult = $oJSON
 		EndIf
 
@@ -1965,7 +2026,7 @@ Func __WD_DetectError(ByRef $iErr, $vResult)
 
 		Case $_WD_ErrorWindowNotFound
 			$iErr = $_WD_ERROR_ContextInvalid
-			
+
 		Case $_WD_ErrorUnsupported
 			$iErr = $_WD_ERROR_NotSupported
 
