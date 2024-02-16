@@ -240,7 +240,6 @@ Func _RunDemo_Update($idUpdate, $sBrowserName)
 	If $sUpdate = 'Report only' Then $bForce = Null
 
 	Local $bUpdateResult = _WD_UpdateDriver($sBrowserName, @ScriptDir, $bFlag64, $bForce)
-	ConsoleWrite('> UpdateResult = ' & $bUpdateResult & @CRLF)
 	Local $iErr = @error, $iExt = @extended
 	ConsoleWrite('> UpdateResult = ' & $bUpdateResult & @CRLF)
 	Return SetError($iErr, $iExt, $bUpdateResult)
