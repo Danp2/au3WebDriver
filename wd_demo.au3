@@ -186,6 +186,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 
 	; Check & update WebDriver per user setting
 	_RunDemo_Update($idUpdate, $sBrowserName)
+	If @error Then Return SetError(@error, @extended, 0)
 
 	; Check and set desired headless mode
 	Local $bHeadless = _RunDemo_Headless($idHeadless)
@@ -239,7 +240,9 @@ Func _RunDemo_Update($idUpdate, $sBrowserName)
 	If $sUpdate = 'Report only' Then $bForce = Null
 
 	Local $bUpdateResult = _WD_UpdateDriver($sBrowserName, @ScriptDir, $bFlag64, $bForce)
+	Local $iErr = @error, $iExt = @extended
 	ConsoleWrite('> UpdateResult = ' & $bUpdateResult & @CRLF)
+	Return SetError($iErr, $iExt, $bUpdateResult)
 EndFunc   ;==>_RunDemo_Update
 
 Func _RunDemo_Headless($idHeadless)
