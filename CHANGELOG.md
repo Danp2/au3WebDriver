@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [1.3.1]
+
+### Changed
+
+- Improved wd_demo error handling
+
+### Fixed
+
+- Chromedriver revised download location
+
 ## [1.3.0]
 
 ### Changed
@@ -1161,7 +1171,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.3.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.3.1...HEAD
+[1.3.1]:     https://github.com/Danp2/au3WebDriver/compare/1.3.0...1.3.1
 [1.3.0]:     https://github.com/Danp2/au3WebDriver/compare/1.2.0...1.3.0
 [1.2.0]:     https://github.com/Danp2/au3WebDriver/compare/1.1.1...1.2.0
 [1.1.1]:     https://github.com/Danp2/au3WebDriver/compare/1.1.0...1.1.1
