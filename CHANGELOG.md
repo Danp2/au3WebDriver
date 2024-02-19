@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [1.3.1] 202-02-19
+## [1.3.1] 2024-02-19
 
 ### Changed
 
