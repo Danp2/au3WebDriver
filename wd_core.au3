@@ -195,7 +195,7 @@ Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 				"goog:chromeOptions", _
 				"https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json", _
 				'{"milestone":"%s","version":"(\d+.\d+.\d+.\d+)"', _
-				'"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" & $sDriverLatest & (($bFlag64) ? "/win64/chromedriver-win64.zip" : "/win32/chromedriver-win32.zip")' _
+				'"https://storage.googleapis.com/chrome-for-testing-public/" & $sDriverLatest & (($bFlag64) ? "/win64/chromedriver-win64.zip" : "/win32/chromedriver-win32.zip")' _
 			], _
 			[ _
 				"chrome_legacy", _ ; Prior to v115
