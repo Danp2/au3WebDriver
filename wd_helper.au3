@@ -2009,12 +2009,20 @@ EndFunc   ;==>_WD_SelectFiles
 ; ===============================================================================================================================
 Func _WD_IsLatestRelease()
 	Local Const $sFuncName = "_WD_IsLatestRelease"
-	Local Const $sGitURL = "https://github.com/Danp2/au3WebDriver/releases/latest"
+	Local Const $sURL = "https://github.com/Danp2/au3WebDriver/releases/latest"
 	Local $bResult = Null
 	Local $iErr = $_WD_ERROR_Success
 	Local $sRegex = '<a.*href="\/Danp2\/au3WebDriver\/releases\/tag\/(.*?)"'
 
-	Local $sResult = InetRead($sGitURL)
+	Local $sResult = InetRead($sURL)
+	If @error  Then
+		Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
+		$oHTTP.Open("GET", $sURL, False)
+		$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
+		$oHTTP.Send("")
+		$sResult = $oHTTP.ResponseBody
+	EndIf
+
 	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -2151,7 +2159,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$_WD_DEBUG = $WDDebugSave
 	EndIf
 
-	Local $sMessage = 'DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest
+	Local $sMessage = 'DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest & ' : $sInstallDir = ' & $sInstallDir
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
@@ -2431,6 +2439,13 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
+	If @error Then
+		Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
+		$oHTTP.Open("GET", $sURL, False)
+		$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
+		$oHTTP.Send("")
+		$sData = $oHTTP.ResponseBody
+	EndIf
 	If @error Then $iErr = $_WD_ERROR_NotFound
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -3520,7 +3535,7 @@ EndFunc   ;==>__WD_JsonElement
 ; Return values .: Success - Array containing [0] URL for downloading requested webdriver & [1] matching webdriver version
 ;                  Failure - Empty array and sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -3540,6 +3555,13 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 	EndIf
 
 	Local $sDriverLatest = InetRead($sURL)
+	If @error  Then
+		Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
+		$oHTTP.Open("GET", $sURL, False)
+		$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
+		$oHTTP.Send("")
+		$sDriverLatest = $oHTTP.ResponseBody
+	EndIf
 
 	If @error = $_WD_ERROR_Success Then
 		Select
