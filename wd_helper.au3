@@ -2019,14 +2019,6 @@ Func _WD_IsLatestRelease()
 	If @error Then
 		$iErr = $_WD_ERROR_GeneralError
 	Else
-		Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
-		$oHTTP.Open("GET", $sURL, False)
-		$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
-		$oHTTP.Send("")
-		$sResult = $oHTTP.ResponseBody
-	EndIf
-
-	If $iErr = $_WD_ERROR_Success Then
 		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), $sRegex, $STR_REGEXPARRAYMATCH)
 
 		If Not @error Then
