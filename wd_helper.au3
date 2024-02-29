@@ -2015,15 +2015,16 @@ Func _WD_IsLatestRelease()
 	Local $sRegex = '<a.*href="\/Danp2\/au3WebDriver\/releases\/tag\/(.*?)"'
 
 	Local $sResult = InetRead($sURL)
-	If @error  Then
+	If @error Then $sResult = _WD_DownloadAsBinary($sURL)
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+	Else
 		Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
 		$oHTTP.Open("GET", $sURL, False)
 		$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
 		$oHTTP.Send("")
 		$sResult = $oHTTP.ResponseBody
 	EndIf
-
-	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
 		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), $sRegex, $STR_REGEXPARRAYMATCH)
@@ -2439,16 +2440,10 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
+	If @error Then $sData = _WD_DownloadAsBinary($sURL)
 	If @error Then
-		Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
-		$oHTTP.Open("GET", $sURL, False)
-		$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
-		$oHTTP.Send("")
-		$sData = $oHTTP.ResponseBody
-	EndIf
-	If @error Then $iErr = $_WD_ERROR_NotFound
-
-	If $iErr = $_WD_ERROR_Success Then
+		$iErr = $_WD_ERROR_NotFound
+	Else
 		Local $hFile = FileOpen($sDest, $FO_OVERWRITE + $FO_BINARY)
 
 		If $hFile <> -1 Then
@@ -2483,6 +2478,40 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_DownloadFile
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DownloadAsBinary
+; Description ...: Download document (file or HTML content) as binary data from a given URL
+; Syntax ........: _WD_DownloadAsBinary($sURL)
+; Parameters ....: $sURL     - URL representing file to be downloaded
+; Return values .: Success - BinaryData (Download succeeded).
+;                  Failure - '' (Download failed) and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......: in case of error @extended will follow WinHttp.WinHttpRequest.5.1 @error number
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_DownloadAsBinary($sURL)
+	Local Const $sFuncName = "_WD_DownloadAsBinary"
+	Local Const $sParameters = 'Parameters:    URL=' & $sURL
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $dResult
+
+	Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
+	If Not @error Then $oHTTP.Open("GET", $sURL, False)
+	If Not @error Then $oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
+	If Not @error Then $oHTTP.Send("")
+	If Not @error Then $dResult = $oHTTP.ResponseBody
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+		$iExt = @error
+		$dResult = ''
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $dResult)
+EndFunc   ;==>_WD_DownloadAsBinary
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SetTimeouts
@@ -3548,20 +3577,14 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 	Local $sURL = $aBrowser[0][$_WD_BROWSER_LatestReleaseURL]
 	Local $sRegex = $aBrowser[0][$_WD_BROWSER_LatestReleaseRegex]
 	Local $sNewURL = $aBrowser[0][$_WD_BROWSER_NewDriverURL]
-	#forceref $sBrowserVersion, $bFlag64
+	#forceref $bFlag64
 
 	If StringRegExp($sURL, '["'']') Then
 		$sURL = Execute($sURL)
 	EndIf
 
 	Local $sDriverLatest = InetRead($sURL)
-	If @error  Then
-		Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
-		$oHTTP.Open("GET", $sURL, False)
-		$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
-		$oHTTP.Send("")
-		$sDriverLatest = $oHTTP.ResponseBody
-	EndIf
+	If @error Then $sDriverLatest = _WD_DownloadAsBinary($sURL)
 
 	If @error = $_WD_ERROR_Success Then
 		Select
