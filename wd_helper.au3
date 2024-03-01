@@ -2488,19 +2488,24 @@ EndFunc   ;==>_WD_DownloadFile
 ; ===============================================================================================================================
 Func _WD_DownloadAsBinary($sURL)
 	Local Const $sFuncName = "_WD_DownloadAsBinary"
-	Local Const $sParameters = 'Parameters:    URL=' & $sURL
+	Local Const $sParameters = "Parameters:    URL=" & $sURL
 	Local $iErr = $_WD_ERROR_Success, $iExt = 0
 	Local $dResult
 
+	; Handle COM Errors
+	Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+	#forceref $oErr
+
+
 	Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
-	If Not @error Then $oHTTP.Open("GET", $sURL, False)
-	If Not @error Then $oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
-	If Not @error Then $oHTTP.Send("")
+	$oHTTP.Open("GET", $sURL, False)
+	$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
+	$oHTTP.Send("")
 	If Not @error Then $dResult = $oHTTP.ResponseBody
 	If @error Then
 		$iErr = $_WD_ERROR_GeneralError
 		$iExt = @error
-		$dResult = ''
+		$dResult = ""
 	EndIf
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $dResult)
 EndFunc   ;==>_WD_DownloadAsBinary
