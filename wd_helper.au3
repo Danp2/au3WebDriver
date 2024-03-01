@@ -3478,19 +3478,22 @@ EndFunc   ;==>__WD_Base64Decode
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_ErrHnd
-; Description ...: Dummy error handler
-; Syntax ........: __WD_ErrHnd()
-; Parameters ....: None
+; Description ...: COM Error handler
+; Syntax ........: __WD_ErrHnd($oError)
+; Parameters ....: $oError              - Error object.
 ; Return values .: None
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
-; Related .......:
+; Related .......: __WD_UpdateExtractor, _WD_DownloadAsBinary
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_ErrHnd()
-
+Func __WD_ErrHnd($oError)
+	Local Const $sFuncName = "__WD_ErrHnd"
+	If $_WD_DEBUG = $_WD_DEBUG_None Then Return
+	__WD_Error($sFuncName, $oError.number, "err.windescription: " & $oError.windescription, $oError.scriptline)
+	__WD_Error($sFuncName, $oError.number, "err.description is: " & $oError.description, $oError.scriptline)
 EndFunc   ;==>__WD_ErrHnd
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
