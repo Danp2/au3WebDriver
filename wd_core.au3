@@ -592,7 +592,7 @@ EndFunc   ;==>_WD_Action
 Func _WD_Window($sSession, $sCommand, $sOption = Default)
 	Local Const $sFuncName = "_WD_Window"
 	Local Const $sParameters = 'Parameters:   Command=' & $sCommand & '   Option=' & $sOption
-	Local Const $sRestoreParameters = '{"value":{"height":0,"width":0,"x":0,"y":0}}'
+	Local Const $sRestoreParameters = '{"x": null, "y": null, "width": null, "height": null}'
 	Local $sResponse, $oJSON, $sResult = "", $iErr
 	$_WD_HTTPRESULT = 0
 
