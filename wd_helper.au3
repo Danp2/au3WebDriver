@@ -3485,7 +3485,7 @@ EndFunc   ;==>__WD_Base64Decode
 ; Author ........: mLipok
 ; Modified ......:
 ; Remarks .......:
-; Related .......: __WD_UpdateExtractor, _WD_DownloadAsBinary
+; Related .......:
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
