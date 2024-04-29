@@ -3490,9 +3490,8 @@ EndFunc   ;==>__WD_Base64Decode
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_ErrHnd($oError)
-	Local Const $sFuncName = "__WD_ErrHnd"
 	If $_WD_DEBUG = $_WD_DEBUG_None Then Return
-	__WD_Error($sFuncName, $oError.number, "err.windescription: " & $oError.windescription & " err.description: " & $oError.description, $oError.scriptline)
+	__WD_Error($oError.source, $oError.number, " err.number: " & $oError.number & " err.windescription: " & $oError.windescription & " err.description is: " & $oError.description, $oError.scriptline)
 EndFunc   ;==>__WD_ErrHnd
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
