@@ -1236,7 +1236,7 @@ EndFunc   ;==>SetupGecko
 Func SetupChrome($bHeadless)
 	_WD_Option('Driver', 'chromedriver.exe')
 	_WD_Option('Port', 9515)
-	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\chrome.log"')
+	_WD_Option('DriverParams', '--port=9515 --verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
@@ -1252,7 +1252,7 @@ EndFunc   ;==>SetupChrome
 Func SetupEdge($bHeadless)
 	_WD_Option('Driver', 'msedgedriver.exe')
 	_WD_Option('Port', 9515)
-	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\msedge.log"')
+	_WD_Option('DriverParams', '--port=9515 --verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
@@ -1267,7 +1267,7 @@ EndFunc   ;==>SetupEdge
 Func SetupOpera($bHeadless)
 	_WD_Option('Driver', 'operadriver.exe')
 	_WD_Option('Port', 9515)
-	_WD_Option('DriverParams', '--verbose --log-path="' & @ScriptDir & '\opera.log"')
+	_WD_Option('DriverParams', '--port=9515 --verbose --log-path="' & @ScriptDir & '\opera.log"')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch":{"goog:chromeOptions": {"w3c":true, "excludeSwitches":["enable-automation"], "binary":"C:\\Users\\......\\AppData\\Local\\Programs\\Opera\\opera.exe"}}}}'
 	_WD_CapabilitiesStartup()
@@ -1297,7 +1297,7 @@ Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	Local $iPort = _WD_GetFreePort(5555, 5600)
 	If @error Then Return SetError(@error, @extended, 0)
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '-log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $_WD_PORT & " -host=127.0.0.1")
+	_WD_Option('DriverParams', '--port=' & $iPort & ' -log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $_WD_PORT & " -host=127.0.0.1")
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
