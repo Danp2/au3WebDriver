@@ -1310,7 +1310,7 @@ Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	If @error Then Return SetError(@error, @extended, 0)
 
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '--port=' & $iPort & ' -log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $iPort & " -host=127.0.0.1")
+	_WD_Option('DriverParams', '--port=' & $iPort & " -host=127.0.0.1" & ' -log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
