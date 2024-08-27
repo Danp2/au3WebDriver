@@ -1209,12 +1209,11 @@ EndFunc   ;==>_Demo_NavigateCheckBanner
 
 Func SetupGecko($bHeadless)
 	_WD_Option('Driver', 'geckodriver.exe')
-	Local $iPort = _WD_GetFreePort(4444)
+	Local $iPort = _WD_GetFreePort(4444, 4500)
 	If @error Then Return SetError(@error, @extended, 0)
 
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '--port=' & $_WD_PORT)
-;~ 	_WD_Option('DriverParams', '--port=' & $_WD_PORT & ' --verbose --log-path="' & @ScriptDir & '\gecko.log"')
+	_WD_Option('DriverParams', '--port=' & $iPort)
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
 	_WD_CapabilitiesStartup()
@@ -1243,7 +1242,7 @@ Func SetupChrome($bHeadless)
 	If @error Then Return SetError(@error, @extended, 0)
 
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '--port=' & $_WD_PORT & ' --verbose --log-path="' & @ScriptDir & '\chrome.log"')
+	_WD_Option('DriverParams', '--port=' & $iPort & ' --verbose --log-path="' & @ScriptDir & '\chrome.log"')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"goog:chromeOptions": {"w3c": true, "excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
@@ -1258,11 +1257,11 @@ EndFunc   ;==>SetupChrome
 
 Func SetupEdge($bHeadless)
 	_WD_Option('Driver', 'msedgedriver.exe')
-	Local $iPort = _WD_GetFreePort(9515)
+	Local $iPort = _WD_GetFreePort(9515, 9600)
 	If @error Then Return SetError(@error, @extended, 0)
 
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '--port=' & $_WD_PORT & ' --verbose --log-path="' & @ScriptDir & '\msedge.log"')
+	_WD_Option('DriverParams', '--port=' & $iPort & ' --verbose --log-path="' & @ScriptDir & '\msedge.log"')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"ms:edgeOptions": {"excludeSwitches": [ "enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
@@ -1276,11 +1275,11 @@ EndFunc   ;==>SetupEdge
 
 Func SetupOpera($bHeadless)
 	_WD_Option('Driver', 'operadriver.exe')
-	Local $iPort = _WD_GetFreePort(9515)
+	Local $iPort = _WD_GetFreePort(9515, 9600)
 	If @error Then Return SetError(@error, @extended, 0)
 
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '--port=' & $_WD_PORT & ' --verbose --log-path="' & @ScriptDir & '\opera.log"')
+	_WD_Option('DriverParams', '--port=' & $iPort & ' --verbose --log-path="' & @ScriptDir & '\opera.log"')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch":{"goog:chromeOptions": {"w3c":true, "excludeSwitches":["enable-automation"], "binary":"C:\\Users\\......\\AppData\\Local\\Programs\\Opera\\opera.exe"}}}}'
 	_WD_CapabilitiesStartup()
@@ -1311,7 +1310,7 @@ Func SetupEdgeIEMode() ; this is for MS Edge IE Mode
 	If @error Then Return SetError(@error, @extended, 0)
 
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '--port=' & $_WD_PORT & ' -log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $_WD_PORT & " -host=127.0.0.1")
+	_WD_Option('DriverParams', '--port=' & $iPort & ' -log-file="' & @ScriptDir & '\log\' & $sTimeStamp & '_WebDriver_EdgeIEMode.log" -log-level=INFO' & " -port=" & $iPort & " -host=127.0.0.1")
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": { "se:ieOptions" : { "ie.edgepath":"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe", "ie.edgechromium":true, "ignoreProtectedModeSettings":true,"excludeSwitches": ["enable-automation"]}}}}'
 	_WD_CapabilitiesStartup()
