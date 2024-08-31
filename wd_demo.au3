@@ -1213,7 +1213,7 @@ Func SetupGecko($bHeadless)
 	If @error Then Return SetError(@error, @extended, 0)
 
 	_WD_Option('Port', $iPort)
-	_WD_Option('DriverParams', '--port=' & $iPort)
+	_WD_Option('DriverParams', '--port=' & $iPort & ' --log trace')
 
 ;~ 	Local $sCapabilities = '{"capabilities": {"alwaysMatch": {"browserName": "firefox", "acceptInsecureCerts":true}}}'
 	_WD_CapabilitiesStartup()
