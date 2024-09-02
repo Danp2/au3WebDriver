@@ -2913,7 +2913,7 @@ Func _WD_GetTable($sSession, $sStrategy, $sSelector, $sRowsSelector = Default, $
 		; https://stackoverflow.com/questions/64842157
 		Local $sScript = "return [...arguments[0].querySelectorAll(arguments[1])]" & _
 				".map(row => [...row.querySelectorAll(arguments[2])]" & _
-				".map(cell => cell.textContent));"
+				".map(cell => cell.textContent.trim()));"
 		Local $sArgs = __WD_JsonElement($sElement) & ', "' & $sRowsSelector & '", "' & $sColsSelector & '"'
 		Local $sResult = _WD_ExecuteScript($sSession, $sScript, $sArgs)
 		$iErr = @error
