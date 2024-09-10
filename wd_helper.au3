@@ -3221,6 +3221,12 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Json_Put($vData, '.actions[0].type', $sType)
 	Json_Put($vData, '.actions[0].value', $sKey)
 	Local $sJSON = Json_Encode($vData)
+
+	; Don't encode backslash of Unicode character
+	If StringLeft($sKey,2) = '\u' Then
+		$sJSON = StringReplace($sJSON, "\\u", "\u")
+	EndIf
+
 	Return SetError(__WD_Error($sFuncName, 0, $sJSON), 0, $sJSON)
 EndFunc   ;==>_WD_JsonActionKey
 
