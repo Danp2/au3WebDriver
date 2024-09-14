@@ -2035,12 +2035,13 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_UpdateDriver
 ; Description ...: Replace web driver with newer version, if available.
-; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default[, $bDowngrade = Default]]]])
-; Parameters ....: $sBrowser    - Browser name or full path to browser executable
-;                  $sInstallDir - [optional] Install directory. Default is @ScriptDir
-;                  $bFlag64     - [optional] Install 64bit version? Default is current driver architecture or False
-;                  $bForce      - [optional] Force update? Default is False
-;                  $bDowngrade  - [optional] Downgrade to match browser version if needed? Default is False
+; Syntax ........: _WD_UpdateDriver($sBrowser[, $sInstallDir = Default[, $bFlag64 = Default[, $bForce = Default[, $bDowngrade = Default[, $sBrowserVersion = Default]]]]])
+; Parameters ....: $sBrowser        - Browser name or full path to browser executable
+;                  $sInstallDir     - [optional] Install directory. Default is @ScriptDir
+;                  $bFlag64         - [optional] Install 64bit version? Default is current driver architecture or False
+;                  $bForce          - [optional] Force update? Default is False
+;                  $bDowngrade      - [optional] Downgrade to match browser version if needed? Default is False
+;                  $sBrowserVersion - [optional] Force desired browser version
 ; Return values .: Success - True (Driver was updated).
 ;                  Failure - False (Driver was not updated) and sets @error to one of the following values:
 ;                  - $_WD_ERROR_FileIssue
@@ -2055,13 +2056,14 @@ EndFunc   ;==>_WD_IsLatestRelease
 ; Remarks .......: When $bForce = Null, then the function will check for an updated webdriver without actually performing the update.
 ;                  This can be used in conjunction with $bDowngrade to determine if the existing webdriver is too new for the browser.
 ;                  In this scenario, the return value indicates if an update / downgrade is available.
+;                  Using $sBrowserVersion you can provide desired browser version from computer not connected to internet saved earlier by _WD_GetBrowserVersion()
 ; Related .......: _WD_GetBrowserVersion, _WD_GetWebDriverVersion
 ; Link ..........:
 ; Example .......: Local $bResult = _WD_UpdateDriver('FireFox')
 ; ===============================================================================================================================
-Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default, $bDowngrade = Default)
+Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bForce = Default, $bDowngrade = Default, $sBrowserVersion = Default)
 	Local Const $sFuncName = "_WD_UpdateDriver"
-	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $sBrowserVersion, $bResult = False
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0, $sDriverEXE, $bResult = False
 	Local $sDriverCurrent, $sDriverLatest, $sURLNewDriver
 	Local $sTempFile
 	Local $bKeepArch = False
@@ -2085,9 +2087,11 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		Local $WDDebugSave = $_WD_DEBUG
 		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
-		$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
-		$iErr = @error
-		$iExt = @extended
+		If $sBrowserVersion = Default then
+			$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
+			$iErr = @error
+			$iExt = @extended
+		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
 			Local $iIndex = @extended
@@ -2151,7 +2155,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		$_WD_DEBUG = $WDDebugSave
 	EndIf
 
-	Local $sMessage = 'DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest
+	Local $sMessage = 'DriverCurrent = ' & $sDriverCurrent & ' : DriverLatest = ' & $sDriverLatest & ' : $sInstallDir = ' & $sInstallDir
 	Return SetError(__WD_Error($sFuncName, $iErr, $sMessage, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_UpdateDriver
 
