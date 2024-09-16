@@ -3490,7 +3490,6 @@ EndFunc   ;==>__WD_Base64Decode
 ; Example .......: No
 ; ===============================================================================================================================
 Func __WD_ErrHnd($oError)
-	If $_WD_DEBUG = $_WD_DEBUG_None Then Return
 	__WD_Error($oError.source, $_WD_ERROR_GeneralError, " err.number: " & $oError.number & " err.windescription: " & $oError.windescription & " err.description is: " & $oError.description, $oError.scriptline)
 EndFunc   ;==>__WD_ErrHnd
 
