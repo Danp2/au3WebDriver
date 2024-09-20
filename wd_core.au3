@@ -500,7 +500,7 @@ EndFunc   ;==>_WD_Navigate
 ;                  |FORWARD - Causes the browser to traverse one step forwards in the joint session history of the current top-level browsing context
 ;                  |REFRESH - Causes the browser to reload the page in current top-level browsing context
 ;                  |TITLE   - Returns the document title of the current top-level browsing context
-;                  |URL     - Protocol binding to load the URL of the browser. If a baseUrl is specified in the config, it will be prepended to the url parameter. Calling this function with the same url as last time will trigger a page reload
+;                  |URL     - Returns the URL of the current top-level browsing context
 ;                  $sOption  - [optional] a JSON string of actions to perform. Default is ""
 ; Return values .: Success - Return value from web driver (could be an empty string).
 ;                  Failure - "" (empty string) and sets @error to one of the following values:
