@@ -2087,7 +2087,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		Local $WDDebugSave = $_WD_DEBUG
 		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
-		If $sBrowserVersion = Default then
+		If $sBrowserVersion = Default Then
 			$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 			$iErr = @error
 			$iExt = @extended
@@ -3227,7 +3227,7 @@ Func _WD_JsonActionKey($sType, $sKey, $iSuffix = Default)
 	Local $sJSON = Json_Encode($vData)
 
 	; Don't encode backslash of Unicode character
-	If StringLeft($sKey,2) = '\u' Then
+	If StringLeft($sKey, 2) = '\u' Then
 		$sJSON = StringReplace($sJSON, "\\u", "\u")
 	EndIf
 
