@@ -3487,9 +3487,9 @@ EndFunc   ;==>__WD_Base64Decode
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 ; Name ..........: __WD_ErrHnd
-; Description ...: Dummy error handler
-; Syntax ........: __WD_ErrHnd()
-; Parameters ....: None
+; Description ...: COM Error handler
+; Syntax ........: __WD_ErrHnd($oError)
+; Parameters ....: $oError              - Error object.
 ; Return values .: None
 ; Author ........: mLipok
 ; Modified ......:
@@ -3498,8 +3498,8 @@ EndFunc   ;==>__WD_Base64Decode
 ; Link ..........:
 ; Example .......: No
 ; ===============================================================================================================================
-Func __WD_ErrHnd()
-
+Func __WD_ErrHnd($oError)
+	__WD_Error($oError.source, $_WD_ERROR_GeneralError, " err.number: " & $oError.number & " err.windescription: " & $oError.windescription & " err.description is: " & $oError.description, $oError.scriptline)
 EndFunc   ;==>__WD_ErrHnd
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
