@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [1.4.0] 2024-09-21
+
+### Changed
+
+- WD_GetTable: Trim whitespace in cell contents
+- WD_Window: Add support for Restore option (@Sven-Seyfert)
+- _WD_UpdateDriver: Optionally specific target browser version (@mlipok)
+
+### Fixed
+
+- wd_demo: Pass port number in DriverParams
+- _WD_JsonActionKey: Don't encode Unicode characters
+
+### Project
+
+- __WD_ErrHnd: Enhance to handle COM errors (@mlipok)
+
 ## [1.3.1] 2024-02-19
 
 ### Changed
@@ -1171,7 +1188,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.3.1...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.4.0...HEAD
+[1.4.0]:     https://github.com/Danp2/au3WebDriver/compare/1.3.1...1.4.0
 [1.3.1]:     https://github.com/Danp2/au3WebDriver/compare/1.3.0...1.3.1
 [1.3.0]:     https://github.com/Danp2/au3WebDriver/compare/1.2.0...1.3.0
 [1.2.0]:     https://github.com/Danp2/au3WebDriver/compare/1.1.1...1.2.0
