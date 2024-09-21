@@ -2009,15 +2009,16 @@ EndFunc   ;==>_WD_SelectFiles
 ; ===============================================================================================================================
 Func _WD_IsLatestRelease()
 	Local Const $sFuncName = "_WD_IsLatestRelease"
-	Local Const $sGitURL = "https://github.com/Danp2/au3WebDriver/releases/latest"
+	Local Const $sURL = "https://github.com/Danp2/au3WebDriver/releases/latest"
 	Local $bResult = Null
 	Local $iErr = $_WD_ERROR_Success
 	Local $sRegex = '<a.*href="\/Danp2\/au3WebDriver\/releases\/tag\/(.*?)"'
 
-	Local $sResult = InetRead($sGitURL)
-	If @error Then $iErr = $_WD_ERROR_GeneralError
-
-	If $iErr = $_WD_ERROR_Success Then
+	Local $sResult = InetRead($sURL)
+	If @error Then $sResult = _WD_DownloadAsBinary($sURL)
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+	Else
 		Local $aLatestWDVersion = StringRegExp(BinaryToString($sResult), $sRegex, $STR_REGEXPARRAYMATCH)
 
 		If Not @error Then
@@ -2434,9 +2435,10 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 	If $iOptions = Default Then $iOptions = $INET_FORCERELOAD + $INET_IGNORESSL + $INET_BINARYTRANSFER
 
 	Local $sData = InetRead($sURL, $iOptions)
-	If @error Then $iErr = $_WD_ERROR_NotFound
-
-	If $iErr = $_WD_ERROR_Success Then
+	If @error Then $sData = _WD_DownloadAsBinary($sURL)
+	If @error Then
+		$iErr = $_WD_ERROR_NotFound
+	Else
 		Local $hFile = FileOpen($sDest, $FO_OVERWRITE + $FO_BINARY)
 
 		If $hFile <> -1 Then
@@ -2471,6 +2473,45 @@ Func _WD_DownloadFile($sURL, $sDest, $iOptions = Default)
 
 	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $bResult)
 EndFunc   ;==>_WD_DownloadFile
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _WD_DownloadAsBinary
+; Description ...: Download document (file or HTML content) as binary data from a given URL
+; Syntax ........: _WD_DownloadAsBinary($sURL)
+; Parameters ....: $sURL     - URL representing file to be downloaded
+; Return values .: Success - BinaryData (Download succeeded).
+;                  Failure - '' (Download failed) and sets @error to one of the following values:
+;                  - $_WD_ERROR_GeneralError
+; Author ........: mLipok
+; Modified ......:
+; Remarks .......: in case of error @extended will follow WinHttp.WinHttpRequest.5.1 @error number
+; Related .......:
+; Link ..........:
+; Example .......: No
+; ===============================================================================================================================
+Func _WD_DownloadAsBinary($sURL)
+	Local Const $sFuncName = "_WD_DownloadAsBinary"
+	Local Const $sParameters = "Parameters:    URL=" & $sURL
+	Local $iErr = $_WD_ERROR_Success, $iExt = 0
+	Local $dResult
+
+	; Handle COM Errors
+	Local $oErr = ObjEvent("AutoIt.Error", __WD_ErrHnd)
+	#forceref $oErr
+
+
+	Local $oHTTP = ObjCreate("WinHttp.WinHttpRequest.5.1")
+	$oHTTP.Open("GET", $sURL, False)
+	$oHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0")
+	$oHTTP.Send("")
+	If Not @error Then $dResult = $oHTTP.ResponseBody
+	If @error Then
+		$iErr = $_WD_ERROR_GeneralError
+		$iExt = @error
+		$dResult = ""
+	EndIf
+	Return SetError(__WD_Error($sFuncName, $iErr, $sParameters, $iExt), $iExt, $dResult)
+EndFunc   ;==>_WD_DownloadAsBinary
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_SetTimeouts
@@ -3529,7 +3570,7 @@ EndFunc   ;==>__WD_JsonElement
 ; Return values .: Success - Array containing [0] URL for downloading requested webdriver & [1] matching webdriver version
 ;                  Failure - Empty array and sets @error to $_WD_ERROR_GeneralError
 ; Author ........: Danp2
-; Modified ......:
+; Modified ......: mLipok
 ; Remarks .......:
 ; Related .......:
 ; Link ..........:
@@ -3542,13 +3583,14 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 	Local $sURL = $aBrowser[0][$_WD_BROWSER_LatestReleaseURL]
 	Local $sRegex = $aBrowser[0][$_WD_BROWSER_LatestReleaseRegex]
 	Local $sNewURL = $aBrowser[0][$_WD_BROWSER_NewDriverURL]
-	#forceref $sBrowserVersion, $bFlag64
+	#forceref $bFlag64
 
 	If StringRegExp($sURL, '["'']') Then
 		$sURL = Execute($sURL)
 	EndIf
 
 	Local $sDriverLatest = InetRead($sURL)
+	If @error Then $sDriverLatest = _WD_DownloadAsBinary($sURL)
 
 	If @error = $_WD_ERROR_Success Then
 		Select
