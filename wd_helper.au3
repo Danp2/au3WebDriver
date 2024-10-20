@@ -2014,7 +2014,7 @@ Func _WD_IsLatestRelease()
 	Local $iErr = $_WD_ERROR_Success
 	Local $sRegex = '<a.*href="\/Danp2\/au3WebDriver\/releases\/tag\/(.*?)"'
 
-	Local $sResult = InetRead($sGitURL)
+	Local $sResult = InetRead($sGitURL, $INET_FORCERELOAD)
 	If @error Then $iErr = $_WD_ERROR_GeneralError
 
 	If $iErr = $_WD_ERROR_Success Then
@@ -3548,7 +3548,7 @@ Func __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
 		$sURL = Execute($sURL)
 	EndIf
 
-	Local $sDriverLatest = InetRead($sURL)
+	Local $sDriverLatest = InetRead($sURL, $INET_FORCERELOAD)
 
 	If @error = $_WD_ERROR_Success Then
 		Select

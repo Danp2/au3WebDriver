@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
+## [Unreleased]
+
+### Changed
+
+- Use $INET_FORCERELOAD with InetRead (_WD_IsLatestRelease & __WD_GetLatestWebdriverInfo)
+
 ## [1.4.0] 2024-09-21
 
 ### Changed
