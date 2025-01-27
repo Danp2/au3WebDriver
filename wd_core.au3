@@ -878,7 +878,7 @@ EndFunc   ;==>_WD_ElementAction
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _WD_ExecuteScript
-; Description ...: Execute Javascipt commands.
+; Description ...: Execute Javascript commands.
 ; Syntax ........: _WD_ExecuteScript($sSession, $sScript[, $sArguments = Default[, $bAsync = Default[, $vSubNode = Default]]])
 ; Parameters ....: $sSession   - Session ID from _WD_CreateSession
 ;                  $sScript    - Javascript command(s) to run
