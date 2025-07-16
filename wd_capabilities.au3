@@ -175,6 +175,8 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 
 	If $value1 = Default Then $value1 = ''
 	If $value2 = Default Then $value2 = ''
+	If IsBool($value1) Then $value1 = StringLower($value1)
+	If IsBool($value2) Then $value2 = StringLower($value2)
 	Local Const $s_Parameters_Info = '     $key = ' & $key & '     $value1 = ' & $value1 & '     $value2 = ' & $value2
 	__WD_ConsoleWrite($sFuncName & ': #' & @ScriptLineNumber & ' : ' & $s_Parameters_Info, $_WD_DEBUG_Full)
 
@@ -277,7 +279,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 	__WD_ConsoleWrite($sFuncName & ": #" & $v_WatchPoint & ' #' & @ScriptLineNumber & ' : ' & $s_Parameters_Info & '    $s_Notation = ' & $s_Notation & '   <<<<  ' & $value1, $_WD_DEBUG_Full)
 	If @error Then Return SetError(__WD_Error($sFuncName, $_WD_ERROR_GeneralError, $s_Parameters_Info))
 	Json_Put($_WD_CAPS__OBJECT, $s_Notation, $value1)
-	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, 'Successfully added capability'))
+	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, 'Successfully added capability: ' & $s_Parameters_Info))
 EndFunc   ;==>_WD_CapabilitiesAdd
 
 ; #FUNCTION# ====================================================================================================================
