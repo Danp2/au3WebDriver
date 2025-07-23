@@ -368,7 +368,7 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
 	EndIf
 
-	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z' ; adding new
+	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
 
 	$sMessage = 'Capability: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityKeyName & ' = ' & $sCapabilityType
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage))
