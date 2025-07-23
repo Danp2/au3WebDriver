@@ -332,19 +332,20 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 	Local Const $sFuncName = "_WD_CapabilitiesDefine"
 	Local $sMessage = ''
 	Local $sCapabilityKeyName = ''
-	If $sCapabilityType = $_WD_KEYS__STANDARD_PRIMITIVE Then
-		$sCapabilityKeyName = 'STANDARD_PRIMITIVE'
-	ElseIf $sCapabilityType = $_WD_KEYS__STANDARD_OBJECT Then
-		$sCapabilityKeyName = 'STANDARD_OBJECT'
-	ElseIf $sCapabilityType = $_WD_KEYS__STANDARD_OBJECT_ARRAY Then
-		$sCapabilityKeyName = 'STANDARD_OBJECT_ARRAY'
-	ElseIf $sCapabilityType = $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE Then
-		$sCapabilityKeyName = 'SPECIFICVENDOR_PRIMITIVE'
-	ElseIf $sCapabilityType = $_WD_KEYS__SPECIFICVENDOR_ARRAY Then
-		$sCapabilityKeyName = 'SPECIFICVENDOR_ARRAY'
-	ElseIf $sCapabilityType = $_WD_KEYS__SPECIFICVENDOR_OBJECT Then
-		$sCapabilityKeyName = 'SPECIFICVENDOR_OBJECT'
-	EndIf
+	Switch $sCapabilityType
+		Case $_WD_KEYS__STANDARD_PRIMITIVE
+			$sCapabilityKeyName = 'STANDARD_PRIMITIVE'
+		Case $_WD_KEYS__STANDARD_OBJECT
+			$sCapabilityKeyName = 'STANDARD_OBJECT'
+		Case $_WD_KEYS__STANDARD_OBJECT_ARRAY
+			$sCapabilityKeyName = 'STANDARD_OBJECT_ARRAY'
+		Case $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE
+			$sCapabilityKeyName = 'SPECIFICVENDOR_PRIMITIVE'
+		Case $_WD_KEYS__SPECIFICVENDOR_ARRAY
+			$sCapabilityKeyName = 'SPECIFICVENDOR_ARRAY'
+		Case $_WD_KEYS__SPECIFICVENDOR_OBJECT
+			$sCapabilityKeyName = 'SPECIFICVENDOR_OBJECT'
+	EndSwitch
 
 	If $sCapabilityKeyName = '' Then
 		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
