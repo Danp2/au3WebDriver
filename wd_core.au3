@@ -223,9 +223,9 @@ Global Const $_WD_SupportedBrowsers[][$_WD_BROWSER__COUNTER] = _
 				"msedgedriver.exe", _
 				True,  _
 				"ms:edgeOptions", _
-				"'https://msedgedriver.azureedge.net/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1) & '_WINDOWS'", _
+				"'https://msedgewebdriverstorage.blob.core.windows.net/edgewebdriver/LATEST_RELEASE_' & StringLeft($sBrowserVersion, StringInStr($sBrowserVersion, '.') - 1) & '_WINDOWS'", _
 				"", _
-				'"https://msedgedriver.azureedge.net/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")' _
+				'"https://msedgedriver.microsoft.com/" & $sDriverLatest & "/edgedriver_" & (($bFlag64) ? "win64.zip" : "win32.zip")' _
 			], _
 			[ _
 				"opera", _
