@@ -114,6 +114,7 @@ Func _WD_Demo()
 	GUICtrlCreateLabel("ConsoleOut", 15, $iPos + 2)
 	Local $idOutput = GUICtrlCreateCombo("ConsoleWrite", 75, $iPos, 100, 20, $CBS_DROPDOWNLIST)
 	GUICtrlSetData($idOutput, "WD_Console.log|_DebugOut|Null", "ConsoleWrite")
+	If @Compiled Then GUICtrlSetData($idOutput, "_DebugOut") ; set the default value for the compiled version to be able to see the logs
 	#EndRegion - Output
 
 	#Region - demos
