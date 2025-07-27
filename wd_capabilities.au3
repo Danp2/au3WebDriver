@@ -333,22 +333,31 @@ EndFunc   ;==>_WD_CapabilitiesGet
 Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 	Local Const $sFuncName = "_WD_CapabilitiesDefine"
 	Local $sMessage = ''
-	If Not IsString($sCapabilityName) Then
+	Local $sCapabilityKeyName = ''
+	Switch $sCapabilityType
+		Case $_WD_KEYS__STANDARD_PRIMITIVE
+			$sCapabilityKeyName = 'STANDARD_PRIMITIVE'
+		Case $_WD_KEYS__STANDARD_OBJECT
+			$sCapabilityKeyName = 'STANDARD_OBJECT'
+		Case $_WD_KEYS__STANDARD_OBJECT_ARRAY
+			$sCapabilityKeyName = 'STANDARD_OBJECT_ARRAY'
+		Case $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE
+			$sCapabilityKeyName = 'SPECIFICVENDOR_PRIMITIVE'
+		Case $_WD_KEYS__SPECIFICVENDOR_ARRAY
+			$sCapabilityKeyName = 'SPECIFICVENDOR_ARRAY'
+		Case $_WD_KEYS__SPECIFICVENDOR_OBJECT
+			$sCapabilityKeyName = 'SPECIFICVENDOR_OBJECT'
+	EndSwitch
+
+	If $sCapabilityKeyName = '' Then
+		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
+		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
+	ElseIf Not IsString($sCapabilityName) Then
 		$sMessage = 'New CapabilityName must be string'
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidDataType, $sMessage))
 	ElseIf StringLen($sCapabilityName) = 0 Then
 		$sMessage = 'New CapabilityName must be non empty string'
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_InvalidValue, $sMessage))
-	ElseIf _
-			$sCapabilityType <> $_WD_KEYS__STANDARD_PRIMITIVE And _
-			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT And _
-			$sCapabilityType <> $_WD_KEYS__STANDARD_OBJECT_ARRAY And _
-			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE And _
-			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_ARRAY And _
-			$sCapabilityType <> $_WD_KEYS__SPECIFICVENDOR_OBJECT _
-			Then
-		$sMessage = 'Unsupported capability type: ' & $sCapabilityType
-		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_NotSupported, $sMessage))
 	ElseIf _
 			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
 			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__STANDARD_OBJECT, $STR_REGEXPMATCH) Or _
@@ -357,12 +366,13 @@ Func _WD_CapabilitiesDefine(ByRef $sCapabilityType, $sCapabilityName)
 			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_ARRAY, $STR_REGEXPMATCH) Or _
 			StringRegExp($sCapabilityName, '(?i)' & $_WD_KEYS__SPECIFICVENDOR_OBJECT, $STR_REGEXPMATCH) _
 			Then
-		$sMessage = 'New capability already defined: ' & $sCapabilityName
+		$sMessage = 'New capability already defined: ' & $sCapabilityName & ' in ' & $sCapabilityKeyName
 		Return SetError(__WD_Error($sFuncName, $_WD_ERROR_AlreadyDefined, $sMessage))
 	EndIf
+
 	$sCapabilityType = StringTrimRight($sCapabilityType, 3) & '|' & $sCapabilityName & ')\Z'
 
-	$sMessage = 'Capability: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityType
+	$sMessage = 'Capability: "' & $sCapabilityName & '"  Suplemented into: ' & $sCapabilityKeyName & ' = ' & $sCapabilityType
 	Return SetError(__WD_Error($sFuncName, $_WD_ERROR_Success, $sMessage))
 EndFunc   ;==>_WD_CapabilitiesDefine
 
