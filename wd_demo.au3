@@ -1,3 +1,8 @@
+#Region - using Au3Stripper to support @ScriptLineNumber in compiled mode
+#AutoIt3Wrapper_Run_Au3Stripper=Y
+#Au3Stripper_Parameters=/MO /RSLN
+#EndRegion - using Au3Stripper to support @ScriptLineNumber in compiled mode
+
 #Region - include files
 ; standard UDF's
 #include <ButtonConstants.au3>
