@@ -1251,6 +1251,7 @@ Func SetupChrome($bHeadless)
 	_WD_CapabilitiesAdd('w3c', True)
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
+	If IsAdmin() Then _WD_CapabilitiesAdd('args', '--do-not-de-elevate')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
@@ -1269,6 +1270,8 @@ Func SetupEdge($bHeadless)
 	_WD_CapabilitiesAdd('alwaysMatch', 'msedge')
 	_WD_CapabilitiesAdd('excludeSwitches', 'enable-automation')
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
+	If IsAdmin() Then _WD_CapabilitiesAdd('args', '--do-not-de-elevate')
+
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
@@ -1298,6 +1301,7 @@ Func SetupOpera($bHeadless)
 	EndIf
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
+	If IsAdmin() Then _WD_CapabilitiesAdd('args', '--do-not-de-elevate')
 	_WD_CapabilitiesDump(@ScriptLineNumber) ; dump current Capabilities setting to console - only for testing in this demo
 	Local $sCapabilities = _WD_CapabilitiesGet()
 	Return $sCapabilities
