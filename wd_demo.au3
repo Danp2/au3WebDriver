@@ -196,11 +196,11 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	Local $sCapabilities = Call($aBrowsers[_GUICtrlComboBox_GetCurSel($idBrowsers)][1], $bHeadless)
 	If @error Then Return SetError(@error, @extended, 0)
 
-	ConsoleWrite("> wd_demo.au3: _WD_Startup" & @CRLF)
+	__WD_ConsoleWrite("> wd_demo.au3: _WD_Startup" & @CRLF)
 	Local $iWebDriver_PID = _WD_Startup()
 	If _RunDemo_ErrorHander((@error <> $_WD_ERROR_Success), @error, @extended, $iWebDriver_PID, $sSession) Then Return
 
-	ConsoleWrite("> wd_demo.au3: _WD_CreateSession" & @CRLF)
+	__WD_ConsoleWrite("> wd_demo.au3: _WD_CreateSession" & @CRLF)
 	$sSession = _WD_CreateSession($sCapabilities)
 	If _RunDemo_ErrorHander((@error <> $_WD_ERROR_Success), @error, @extended, $iWebDriver_PID, $sSession) Then Return
 
@@ -208,7 +208,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 	For $iIndex = 0 To UBound($aDemoSuite, $UBOUND_ROWS) - 1
 		$sDemoName = $aDemoSuite[$iIndex][0]
 		If Not $aDemoSuite[$iIndex][1] Then
-			ConsoleWrite("> wd_demo.au3: Bypass: " & $sDemoName & @CRLF)
+			__WD_ConsoleWrite("> wd_demo.au3: Bypass: " & $sDemoName & @CRLF)
 			ContinueLoop
 		EndIf
 
@@ -216,7 +216,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 		$iError = @error
 		If @error Then ExitLoop ; return if session is NOT OK
 
-		ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
+		__WD_ConsoleWrite("+ wd_demo.au3: Running: " & $sDemoName & @CRLF)
 		If $aDemoSuite[$iIndex][2] Then
 			Call($sDemoName, $sBrowserName)
 		Else
@@ -224,7 +224,7 @@ Func RunDemo($idDebugging, $idBrowsers, $idUpdate, $idHeadless, $idOutput)
 		EndIf
 		$iError = @error
 		If $iError <> $_WD_ERROR_Success Then ExitLoop
-		ConsoleWrite("+ wd_demo.au3: Finished: " & $sDemoName & @CRLF)
+		__WD_ConsoleWrite("+ wd_demo.au3: Finished: " & $sDemoName & @CRLF)
 	Next
 
 	_RunDemo_ErrorHander(True, $iError, @extended, $iWebDriver_PID, $sSession, $sDemoName)
@@ -242,7 +242,7 @@ Func _RunDemo_Update($idUpdate, $sBrowserName)
 
 	Local $bUpdateResult = _WD_UpdateDriver($sBrowserName, @ScriptDir, $bFlag64, $bForce)
 	Local $iErr = @error, $iExt = @extended
-	ConsoleWrite('> UpdateResult = ' & $bUpdateResult & @CRLF)
+	__WD_ConsoleWrite('> UpdateResult = ' & $bUpdateResult & @CRLF)
 	Return SetError($iErr, $iExt, $bUpdateResult)
 EndFunc   ;==>_RunDemo_Update
 
@@ -290,13 +290,13 @@ Func _RunDemo_ErrorHander($bForceDispose, $iError, $iExtended, $iWebDriver_PID, 
 		Case $_WD_ERROR_Success
 			MsgBox($MB_ICONINFORMATION + $MB_TOPMOST, 'Demo complete!', 'Click "Ok" button to shutdown the browser and console')
 		Case $_WD_ERROR_UserAbort
-			ConsoleWrite("! wd_demo.au3: (" & @ScriptLineNumber & ") : Aborted: " & $sDemoName & @CRLF)
+			__WD_ConsoleWrite("! wd_demo.au3: (" & @ScriptLineNumber & ") : Aborted: " & $sDemoName & @CRLF)
 			MsgBox($MB_ICONINFORMATION, $sDemoName & ' aborted!', 'Click "Ok" button to shutdown the browser and console')
 		Case Else
-			ConsoleWrite("! Error = " & $iError & " occurred on: " & $sDemoName & @CRLF)
-			ConsoleWrite("! _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
-			ConsoleWrite("! _WD_LastHTTPResponse = " & _WD_LastHTTPResponse() & @CRLF)
-			ConsoleWrite("! _WD_GetSession = " & _WD_GetSession($sSession) & @CRLF)
+			__WD_ConsoleWrite("! Error = " & $iError & " occurred on: " & $sDemoName & @CRLF)
+			__WD_ConsoleWrite("! _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+			__WD_ConsoleWrite("! _WD_LastHTTPResponse = " & _WD_LastHTTPResponse() & @CRLF)
+			__WD_ConsoleWrite("! _WD_GetSession = " & _WD_GetSession($sSession) & @CRLF)
 			MsgBox($MB_ICONERROR + $MB_TOPMOST, $sDemoName & ' error!', 'Check logs')
 	EndSwitch
 
@@ -342,21 +342,21 @@ Func DemoNavigation()
 	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_NewTab($sSession)
 	_Demo_NavigateCheckBanner($sSession, "https://yahoo.com", '//body[contains(@class, "blur-preview-tpl")]')
 	If @error Then Return SetError(@error, @extended)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_NewTab($sSession, True, Default, 'https://bing.com', 'width=200,height=200')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_Attach($sSession, "google.com", "URL")
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 	_WD_Attach($sSession, "yahoo.com", "URL")
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : URL=" & _WD_Action($sSession, 'url') & @CRLF)
 
 EndFunc   ;==>DemoNavigation
 
@@ -373,7 +373,7 @@ Func DemoElements()
 	Local $oERect = _WD_ElementAction($sSession, $sElement, 'rect')
 
 	If IsObj($oERect) Then
-		ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Element Coords = " & $oERect.Item('x') & " / " & $oERect.Item('y') & " / " & $oERect.Item('width') & " / " & $oERect.Item('height') & @CRLF)
+		__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Element Coords = " & $oERect.Item('x') & " / " & $oERect.Item('y') & " / " & $oERect.Item('width') & " / " & $oERect.Item('height') & @CRLF)
 	EndIf
 
 	; Locate multiple matching elements
@@ -412,7 +412,7 @@ Func DemoElements()
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
 	$sValue = _WD_ElementAction($sSession, $sElement, 'property', 'value')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & @CRLF)
 
 	; Take element screenshot
 	$sResponse = _WD_ElementAction($sSession, $sElement, 'screenshot')
@@ -452,35 +452,35 @@ Func DemoScript()
 
 	; JavaScript example with arguments
 	$sValue = _WD_ExecuteScript($sSession, "return arguments[0].second;", '{"first": "1st", "second": "2nd", "third": "3rd"}', Default, $_WD_JSON_Value)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	; JavaScript example that fires error because of unknown function
 	$sValue = _WD_ExecuteScript($sSession, "dslfkjsdklfj;", Default, Default, $_WD_JSON_Value)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	; JavaScript example that writes to BrowserConsole
 	$sValue = _WD_ExecuteScript($sSession, "console.log('Hello world! (from DemoScript: Line #" & @ScriptLineNumber & ")');", Default, Default, $_WD_JSON_Value)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	; JavaScript example with SyntaxError: string literal contains an unescaped line break
 	$sValue = _WD_ExecuteScript($sSession, "console.log('Hello world", Default, Default, $_WD_JSON_Value)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 
 	; 2022-03-23 This website no longer exists
 	;$sValue = _WD_ExecuteScript($sSession, "return $.ajax({url:'https://hosting105782.a2f0c.netcup.net/test.php',type:'post',dataType: 'text', data:'getaccount=1',success : function(text){return text;}});", Default, $_WD_JSON_Value)
-	;ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
+	;__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : ERROR=" & @error & " $sValue = " & $sValue & " _WD_LastHTTPResult = " & _WD_LastHTTPResult() & @CRLF)
 EndFunc   ;==>DemoScript
 
 Func DemoCookies()
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Navigating:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Navigating:" & @CRLF)
 	_Demo_NavigateCheckBanner($sSession, "https://google.com", '//body/div[1][@aria-hidden="true"]')
 	If @error Then Return SetError(@error, @extended)
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
 	Local $sAllCookies = _WD_Cookies($sSession, 'getall')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained at start after navigate) : " & $sAllCookies & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained at start after navigate) : " & $sAllCookies & @CRLF)
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get 'NID' cookie:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get 'NID' cookie:" & @CRLF)
 	Local $hTimer = TimerInit()
 	Local $sNID
 	While 1
@@ -488,7 +488,7 @@ Func DemoCookies()
 		If Not @error Or TimerDiff($hTimer) > 5 * 1000 Then ExitLoop
 		Sleep(100) ; this cookie may not exist at start, may appear later when website will be estabilished, so there is need to wait on @error and try again
 	WEnd
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie obtained 'NID' : " & $sNID & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie obtained 'NID' : " & $sNID & @CRLF)
 
 	Local $sName = "TestName"
 	Local $sValue = "TestValue"
@@ -500,26 +500,26 @@ Func DemoCookies()
 	; create JSON string for cookie
 	Local $sCookie = _WD_JsonCookie($sName, $sValue, Default, 'www.google.com', True, False, $iDateCalc, "None")
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Add cookie:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Add cookie:" & @CRLF)
 	_WD_Cookies($sSession, 'add', $sCookie)
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Check cookie:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Check cookie:" & @CRLF)
 	Local $sResult = _WD_Cookies($sSession, 'get', $sName)
 
 	; compare results in console
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie added    : " & $sCookie & @CRLF)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie obtained : " & $sResult & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie added    : " & $sCookie & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookie obtained : " & $sResult & @CRLF)
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
 	$sAllCookies = _WD_Cookies($sSession, 'getall')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained before 'deleteall') : " & $sAllCookies & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained before 'deleteall') : " & $sAllCookies & @CRLF)
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Delete all cookies:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Delete all cookies:" & @CRLF)
 	_WD_Cookies($sSession, 'deleteall')
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : WD: Get all cookies:" & @CRLF)
 	$sAllCookies = _WD_Cookies($sSession, 'getall')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained after 'deleteall') : " & $sAllCookies & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Cookies (obtained after 'deleteall') : " & $sAllCookies & @CRLF)
 
 EndFunc   ;==>DemoCookies
 
@@ -528,7 +528,7 @@ Func DemoAlerts()
 
 	; check status before displaying Alert
 	$sStatus = _WD_Alert($sSession, 'status')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
 
 	; show Alert for testing
 	_WD_ExecuteScript($sSession, "alert('testing 123')")
@@ -536,8 +536,8 @@ Func DemoAlerts()
 	; get/check Alert status and text
 	$sStatus = _WD_Alert($sSession, 'status')
 	$sText = _WD_Alert($sSession, 'gettext')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Text Detected => ' & $sText & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Alert Detected => ' & $sStatus & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : " & 'Text Detected => ' & $sText & @CRLF)
 
 	Sleep(5000)
 	; close Alert by rejection
@@ -595,12 +595,12 @@ Func DemoFrames()
 
 	Local $iFrameCount = _WD_GetFrameCount($sSession)
 	If @error Then Return SetError(@error, @extended)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Frames=" & $iFrameCount & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Frames=" & $iFrameCount & @CRLF)
 
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	If @error Then Return SetError(@error, @extended)
 	; just after navigate current context should be on top level Window
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe[@id='iframeResult']")
 	; changing context to first frame
@@ -609,7 +609,7 @@ Func DemoFrames()
 
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after changing context to first frame the current context is not on top level Window
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
 	; changing context to first sub frame using iframe element specified ByXPath
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, "//iframe")
@@ -622,7 +622,7 @@ Func DemoFrames()
 
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after leaving sub frame, the current context is back to first frame but still is not on top level Window
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
 	; Leaving first frame
 	_WD_FrameLeave($sSession)
@@ -634,7 +634,7 @@ Func DemoFrames()
 	#Region - Example 1 ; from 'https://www.w3schools.com' get frame list as string
 	$bIsWindowTop = _WD_IsWindowTop($sSession)
 	; after leaving first frame, the current context should back on top level Window
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : TopWindow = " & $bIsWindowTop & @CRLF)
 
 	; now lets try to check frame list and using locations as path 'null/0'
 	; firstly go to website
@@ -642,29 +642,29 @@ Func DemoFrames()
 	_WD_LoadWait($sSession)
 
 	Local $sResult = _WD_FrameList($sSession, False)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 1" & @CRLF)
-	ConsoleWrite($sResult & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 1" & @CRLF)
+	__WD_ConsoleWrite($sResult & @CRLF)
 	#EndRegion - Example 1 ; from 'https://www.w3schools.com' get frame list as string
 
 	#Region - Example 2 ; from 'https://www.w3schools.com' get frame list as array
 	Local $aFrameList = _WD_FrameList($sSession, True)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 2" & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 2" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 2 - w3schools.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 
 	#EndRegion - Example 2 ; from 'https://www.w3schools.com' get frame list as array
 
 	#Region - Example 3 ; from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
 	; check if document context location is Top Window - should be as we are after navigation
-	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+	__WD_ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	; change document context location by path 'null/0'
 	_WD_FrameEnter($sSession, 'null/0')
 
 	; check if document context location is Top Window - should not be as we enter to frame 'null/0'
-	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+	__WD_ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	$aFrameList = _WD_FrameList($sSession, True)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 3" & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 3" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 3 - w3schools.com - relative to "null/0"', 0, 0, Default, $sArrayHeader)
 	#EndRegion - Example 3 ; from 'https://www.w3schools.com' get frame list as array, while current location is "null/0"
 
@@ -674,37 +674,37 @@ Func DemoFrames()
 	_WD_LoadWait($sSession)
 
 	$sResult = _WD_FrameList($sSession, False)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 4" & @CRLF)
-	ConsoleWrite($sResult & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 4" & @CRLF)
+	__WD_ConsoleWrite($sResult & @CRLF)
 	#EndRegion - Example 4 ; from 'https://stackoverflow.com' get frame list as string
 
 	#Region - Example 5 ; from 'https://stackoverflow.com' get frame list as array
 	$aFrameList = _WD_FrameList($sSession, True)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 5" & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 5" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 5 - stackoverflow.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 	#EndRegion - Example 5 ; from 'https://stackoverflow.com' get frame list as array
 
 	#Region - Example 6v1 ; from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
 	; check if document context location is Top Window - should be as we are after navigation
-	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+	__WD_ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	; change document context location by path 'null/2'
 	_WD_FrameEnter($sSession, 'null/2')
 
 	; check if document context location is Top Window - should not be as we enter to frame 'null/2'
-	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+	__WD_ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	$aFrameList = _WD_FrameList($sSession, True)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v1" & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v1" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 6v1 - stackoverflow.com - relative to "null/2"', 0, 0, Default, $sArrayHeader)
 	#EndRegion - Example 6v1 ; from 'https://stackoverflow.com' get frame list as array, while is current location is "null/2"
 
 	#Region - Example 6v2 ; from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 	; check if document context location is Top Window
-	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+	__WD_ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	$aFrameList = _WD_FrameList($sSession, True)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v2" & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example 6v2" & @CRLF)
 	_ArrayDisplay($aFrameList, 'Example 6v2 - stackoverflow.com - check if it is still relative to "null/2"', 0, 0, Default, $sArrayHeader)
 	#EndRegion - Example 6v2 ; from 'https://stackoverflow.com' get frame list as array, check if it is still relative to the same location as it was before recent _WD_FrameList() was used - still should be "null/2"
 
@@ -716,16 +716,16 @@ Func DemoFrames()
 	_WD_LoadWait($sSession)
 
 	; check if document context location is Top Window
-	ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
+	__WD_ConsoleWrite("> " & @ScriptLineNumber & " IsWindowTop = " & _WD_IsWindowTop($sSession) & @CRLF)
 
 	MsgBox($MB_TOPMOST, "", 'Before checking location of multiple elements on multiple frames' & @CRLF & 'Try the same example with and without waiting about 30 seconds in order to see that many frames should be fully loaded, and to check the differences')
 
 	$aFrameList = _WD_FrameList($sSession, True, 5000, Default)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example : Testing element location in frame set - after pre-checking list of frames" & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & " : Example : Testing element location in frame set - after pre-checking list of frames" & @CRLF)
 	_ArrayDisplay($aFrameList, @ScriptLineNumber & ' Before _WD_FrameListFindElement - www.tutorialspoint.com - get frame list as array', 0, 0, Default, $sArrayHeader)
 
 	Local $aLocationOfElement = _WD_FrameListFindElement($sSession, $_WD_LOCATOR_ByCSSSelector, "li.nav-item[data-bs-original-title='Home Page'] a.nav-link[href='https://www.tutorialspoint.com/index.htm']")
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $aLocationOfElement (" & UBound($aLocationOfElement) & ")=" & @CRLF & _ArrayToString($aLocationOfElement) & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $aLocationOfElement (" & UBound($aLocationOfElement) & ")=" & @CRLF & _ArrayToString($aLocationOfElement) & @CRLF)
 	_ArrayDisplay($aLocationOfElement, @ScriptLineNumber & ' $aLocationOfElement', 0, 0, Default, $sArrayHeader)
 
 	#EndRegion - Testing element location in frame set and iframe collecion
@@ -738,7 +738,7 @@ Func DemoActions()
 	If @error Then Return SetError(@error, @extended)
 
 	$sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, $sElementSelector)
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sElement = " & $sElement & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sElement = " & $sElement & @CRLF)
 
 	$sAction = StringReplace( _
 			'{' & _
@@ -757,7 +757,7 @@ Func DemoActions()
 			'}' & _
 			'', @TAB, '')
 
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sAction = " & $sAction & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : $sAction = " & $sAction & @CRLF)
 
 	; perform Action
 	_WD_Action($sSession, "actions", $sAction)
@@ -813,7 +813,7 @@ Func DemoWindows()
 
 	; Get window coordinates
 	$oWRect = _WD_Window($sSession, 'rect')
-	ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Window Coords = " & $oWRect.Item('x') & " / " & $oWRect.Item('y') & " / " & $oWRect.Item('width') & " / " & $oWRect.Item('height') & @CRLF)
+	__WD_ConsoleWrite("wd_demo.au3: (" & @ScriptLineNumber & ") : Window Coords = " & $oWRect.Item('x') & " / " & $oWRect.Item('y') & " / " & $oWRect.Item('width') & " / " & $oWRect.Item('height') & @CRLF)
 
 	; Take screenshot
 	_WD_Window($sSession, "switch", $sHnd1)
@@ -1087,34 +1087,34 @@ Func DemoStyles()
 
 	; get element
 	Local $sElement = _WD_FindElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#repository-container-header')
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", 'Focus on header (currently not changed)')
 
 	; add new fontFamily style
 	_WD_ElementStyle($sSession, $sElement, 'fontFamily', '"Lucida Console", "Courier New", monospace')
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
 
 	; check list of styles
 	Local $aListof_CSSProperties_v1 = _WD_ElementStyle($sSession, $sElement)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
 	_ArrayDisplay($aListof_CSSProperties_v1, '$aListof_CSSProperties_v1')
 
 	; check out a single specific style
 	Local $sFontFamily = _WD_ElementStyle($sSession, $sElement, "font-family")
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
 	MsgBox($MB_OK + $MB_TOPMOST + $MB_ICONINFORMATION, "Information", $sFontFamily)
 
 	; remove 'fontFamily' style
 	_WD_ElementStyle($sSession, $sElement, 'fontFamily', '')
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
 
 	; remove 'backgroundColor' style
 	_WD_ElementStyle($sSession, $sElement, 'backgroundColor', '')
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
 
 	; again - check list of styles
 	Local $aListof_CSSProperties_v2 = _WD_ElementStyle($sSession, $sElement)
-	ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
+	__WD_ConsoleWrite("! ---> @error=" & @error & "  @extended=" & @extended & @CRLF)
 	_ArrayDisplay($aListof_CSSProperties_v2, '$aListof_CSSProperties_v2')
 
 	; additional check
@@ -1132,11 +1132,11 @@ Func UserTesting()
 	$vResult = _WD_LoadWait($sSession, 10, Default, Default, $_WD_READYSTATE_Interactive)
 	If @error Then Return SetError(@error, @extended, $vResult)
 
-	ConsoleWrite("- Test 1:" & @CRLF)
+	__WD_ConsoleWrite("- Test 1:" & @CRLF)
 	_WD_FindElement($sSession, $_WD_LOCATOR_ByXPath, '')
 	If @error Then Return SetError(@error, @extended, $vResult)
 
-	ConsoleWrite("- Test 2:" & @CRLF)
+	__WD_ConsoleWrite("- Test 2:" & @CRLF)
 	$vResult = _WD_WaitElement($sSession, $_WD_LOCATOR_ByCSSSelector, '#fake', 1000, 3000, $_WD_OPTION_NoMatch)
 	If @error Then Return SetError(@error, @extended, $vResult)
 EndFunc   ;==>UserTesting
@@ -1172,7 +1172,7 @@ EndFunc   ;==>UserFile
 
 Func __SetVAR($IDX_VAR, $value)
 	$_VAR[$IDX_VAR] = $value
-	ConsoleWrite('- Setting $_VAR[' & $IDX_VAR & '] = ' & ((IsArray($value)) ? ('{array}') : ($value)) & @CRLF)
+	__WD_ConsoleWrite('- Setting $_VAR[' & $IDX_VAR & '] = ' & ((IsArray($value)) ? ('{array}') : ($value)) & @CRLF)
 EndFunc   ;==>__SetVAR
 
 Func _USER_WD_Sleep($iDelay)
@@ -1180,10 +1180,10 @@ Func _USER_WD_Sleep($iDelay)
 	Do
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE ; in case when X closing button on the "Webdriver Demo" GUI window was clicked
-				ConsoleWrite("! Abort by GUI Close button pressed." & @CRLF)
+				__WD_ConsoleWrite("! Abort by GUI Close button pressed." & @CRLF)
 				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
 			Case $__g_idButton_Abort ; in case when Abort button was clicked
-				ConsoleWrite("! Abort button pressed." & @CRLF)
+				__WD_ConsoleWrite("! Abort button pressed." & @CRLF)
 				Return SetError($_WD_ERROR_UserAbort) ; set specific error to end processing _WD_*** functions, without waiting for success or even for TimeOut
 		EndSwitch
 	Until TimerDiff($hTimer) > $iDelay ; check TimeOut
@@ -1200,7 +1200,7 @@ Func _Demo_NavigateCheckBanner($sSession, $sURL, $sXpath)
 	_WD_WaitElement($sSession, $_WD_LOCATOR_ByXPath, $sXpath, 0, 1000 * 60, $_WD_OPTION_NoMatch)
 	If @error Then
 		Local $iErr = @error, $iExt = @extended
-		ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
+		__WD_ConsoleWrite('wd_demo.au3: (' & @ScriptLineNumber & ') : "' & $sURL & '" page view is hidden - it is possible that the message about COOKIE files was not accepted')
 		Return SetError($iErr, $iExt)
 	EndIf
 
@@ -1228,7 +1228,7 @@ Func SetupGecko($bHeadless)
 	Local $sPath = _WD_GetBrowserPath("firefox")
 	If Not @error Then
 		_WD_CapabilitiesAdd('binary', $sPath)
-		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+		__WD_ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
 	EndIf
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
@@ -1294,7 +1294,7 @@ Func SetupOpera($bHeadless)
 	Local $sPath = _WD_GetBrowserPath("opera")
 	If Not @error Then
 		_WD_CapabilitiesAdd('binary', $sPath)
-		ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
+		__WD_ConsoleWrite("wd_demo.au3: _WD_GetBrowserPath() > " & $sPath & @CRLF)
 	EndIf
 
 	If $bHeadless Then _WD_CapabilitiesAdd('args', '--headless')
