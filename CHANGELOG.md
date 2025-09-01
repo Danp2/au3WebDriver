@@ -9,10 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Go to [legend](#legend---types-of-changes) for further information about the types of changes.
 
-## [Unreleased]
+## [1.5.0] 2025-09-01
+
+### Fixed
+
+- _WD_CapabilitiesAdd: Convert boolean values to lowercase
+- _WD_UpdateDriver: Corrected URL used to download Edgedriver
 
 ### Changed
 
+- _WD_CapabilitiesDefine: refactored and improved logging
+- wd_demo: Output to _DebugOut by default when script is compiled
 - Use $INET_FORCERELOAD with InetRead (_WD_IsLatestRelease & __WD_GetLatestWebdriverInfo)
 
 ## [1.4.0] 2024-09-21
@@ -1194,7 +1201,8 @@ _WD_CapabilitiesDisplay
 - Initial release
 
 
-[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/Danp2/au3WebDriver/compare/1.5.0...HEAD
+[1.5.0]:     https://github.com/Danp2/au3WebDriver/compare/1.4.0...1.5.0
 [1.4.0]:     https://github.com/Danp2/au3WebDriver/compare/1.3.1...1.4.0
 [1.3.1]:     https://github.com/Danp2/au3WebDriver/compare/1.3.0...1.3.1
 [1.3.0]:     https://github.com/Danp2/au3WebDriver/compare/1.2.0...1.3.0
