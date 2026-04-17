@@ -2095,6 +2095,7 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 
 		If $iErr = $_WD_ERROR_Success Then
 			Local $iIndex = @extended
+			Local $bIsEdge = ($_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName] = "msedgedriver.exe")
 			; Match exe file name in list of supported browsers
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
@@ -2111,11 +2112,23 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 			$sDriverCurrent = _WD_GetWebDriverVersion($sInstallDir, $sDriverEXE)
 			; Determine latest available webdriver version for the designated browser
 			Local $aBrowser = _ArrayExtract($_WD_SupportedBrowsers, $iIndex, $iIndex)
-			Local $aDriverInfo = __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
-			$iErr = @error
-			$iExt = @extended
-			$sDriverLatest = $aDriverInfo[1]
-			$sURLNewDriver = $aDriverInfo[0]
+			Local $aDriverInfo
+
+			If $bIsEdge Then
+				; Edge: no "latest driver lookup" anymore, derive from browser version
+				Local $aDriverInfo[2]
+
+				$sDriverLatest = $sBrowserVersion
+				$sURLNewDriver = Execute($aBrowser[0][$_WD_BROWSER_NewDriverURL])
+				$iErr = $_WD_ERROR_Success
+				$iExt = 0
+			Else
+				$aDriverInfo = __WD_GetLatestWebdriverInfo($aBrowser, $sBrowserVersion, $bFlag64)
+				$iErr = @error
+				$iExt = @extended
+				$sDriverLatest = $aDriverInfo[1]
+				$sURLNewDriver = $aDriverInfo[0]
+			EndIf
 
 			If $iErr = $_WD_ERROR_Success Then
 				Local $nStatus = _VersionCompare($sDriverCurrent, $sDriverLatest)  ; 0 - Both versions equal ; 1 - Version1 greater ; -1 - Version2 greater
