@@ -661,6 +661,10 @@ Func _WD_GetElementFromPoint($sSession, $iX, $iY)
 			EndIf
 
 			$oERect = _WD_ElementAction($sSession, $sElement, 'rect')
+			If @error Then
+				$iErr = $_WD_ERROR_RetValue
+				ExitLoop
+			EndIf
 
 			; changing the coordinates in relation to left top corner of frame
 			$iX -= ($oERect.Item('x') - Int($aCoords[0]))
