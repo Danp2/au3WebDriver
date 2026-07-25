@@ -261,8 +261,7 @@ Func _WD_CapabilitiesAdd($key, $value1 = Default, $value2 = Default)
 
 	ElseIf StringRegExp($key, $_WD_KEYS__SPECIFICVENDOR_PRIMITIVE, $STR_REGEXPMATCH) And $_WD_NOTATION__SPECIFICVENDOR <> '' Then ; add "JSON_BOOLEAN" value type in SPECIFIC/VENDOR part of Capabilities JSON Structure
 		$v_WatchPoint = @ScriptLineNumber
-		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR
-		If $value1 <> '' Then $s_Notation &= '["' & $key & '"]'
+		$s_Notation = $_WD_NOTATION__MATCHTYPE & $_WD_NOTATION__SPECIFICVENDOR & '["' & $key & '"]'
 
 	ElseIf _
 			StringRegExp($key, '(?i)' & $_WD_KEYS__STANDARD_PRIMITIVE, $STR_REGEXPMATCH) Or _
