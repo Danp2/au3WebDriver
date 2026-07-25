@@ -2087,14 +2087,22 @@ Func _WD_UpdateDriver($sBrowser, $sInstallDir = Default, $bFlag64 = Default, $bF
 		Local $WDDebugSave = $_WD_DEBUG
 		If $_WD_DEBUG <> $_WD_DEBUG_Full Then $_WD_DEBUG = $_WD_DEBUG_None
 
+		Local $iIndex = -1
+
 		If $sBrowserVersion = Default Then
 			$sBrowserVersion = _WD_GetBrowserVersion($sBrowser)
 			$iErr = @error
 			$iExt = @extended
+			$iIndex = $iExt
+		Else
+			; $iIndex isn't set via _WD_GetBrowserVersion() above, so resolve $sBrowser to its row in
+			; $_WD_SupportedBrowsers here (mirrors the fallback lookup inside _WD_GetBrowserVersion())
+			Local $sBrowserName = StringRegExpReplace($sBrowser, "^.*\\|\..*$", "")
+			$iIndex = _ArraySearch($_WD_SupportedBrowsers, $sBrowserName, Default, Default, Default, Default, Default, $_WD_BROWSER_Name)
+			If @error Then $iErr = $_WD_ERROR_NotSupported
 		EndIf
 
 		If $iErr = $_WD_ERROR_Success Then
-			Local $iIndex = @extended
 			; Match exe file name in list of supported browsers
 			$sDriverEXE = $_WD_SupportedBrowsers[$iIndex][$_WD_BROWSER_DriverName]
 
