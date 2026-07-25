@@ -145,6 +145,7 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 
 		If Not $iErr Then
 			_WinHttpCloseHandle($hRequest)
+			$hRequest = 0
 
 			$iID += 1
 			Json_ObjPut($vData, 'id', $iID)
@@ -224,6 +225,11 @@ Func _WD_CDPExecuteCommand($sSession, $sCommand, $oParams, $sWebSocketURL = Defa
 			EndIf
 		EndIf
 	EndIf
+
+	; Release WinHTTP handles regardless of whether the above succeeded or failed
+	If $hRequest Then _WinHttpCloseHandle($hRequest)
+	If $hConnect Then _WinHttpCloseHandle($hConnect)
+	If $hOpen Then _WinHttpCloseHandle($hOpen)
 
 	If $iErr Then
 		Return SetError(__WD_Error($sFuncName, $iErr, $sErrText), 0, "")
