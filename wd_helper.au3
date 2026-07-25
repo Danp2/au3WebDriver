@@ -2221,10 +2221,17 @@ Func __WD_UpdateExtractor($sTempFile, $sInstallDir, $sDriverEXE, $sSubDir = "")
 					EndIf
 				Else
 					If StringRight($FileItem.Name, 4) = ".exe" Or StringRight($FileItem.Path, 4) = ".exe" Then     ; extract only EXE files
-						$bEXEWasFound = True
 						; delete webdriver from disk before unpacking to avoid potential problems
 						FileDelete($sInstallDir & $sDriverEXE)
 						$oNameSpace_Install.CopyHere($FileItem, 20)     ; 20 = (4) Do not display a progress dialog box. + (16) Respond with "Yes to All" for any dialog box that is displayed.
+
+						; CopyHere() runs asynchronously, so wait (bounded) for the extracted file to actually land before declaring success
+						Local $hCopyTimer = TimerInit()
+						Do
+							Sleep(100)
+						Until FileExists($sInstallDir & $sDriverEXE) Or TimerDiff($hCopyTimer) > 10000
+
+						$bEXEWasFound = FileExists($sInstallDir & $sDriverEXE)
 						ExitLoop
 					EndIf
 				EndIf
