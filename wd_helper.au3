@@ -1709,10 +1709,12 @@ Func _WD_ElementSelectAction($sSession, $sSelectElement, $sCommand, $vLabels = D
 							"", @TAB, '')
 					$vResult = _WD_ExecuteScript($sSession, $sScript_SelectAllTemplate, __WD_JsonElement($sSelectElement), Default, $_WD_JSON_Value)
 					$iErr = @error
-					If Not @error And $vResult == '' Then
-						$iErr = $_WD_ERROR_ElementIssue
-					ElseIf $vResult = False Then
-						$iErr = $_WD_ERROR_NoMatch
+					If Not @error Then
+						If $vResult == '' Then
+							$iErr = $_WD_ERROR_ElementIssue
+						ElseIf $vResult = False Then
+							$iErr = $_WD_ERROR_NoMatch
+						EndIf
 					EndIf
 
 				Case 'selectedIndex'
