@@ -1720,7 +1720,9 @@ Func __WD_CloseDriver($vDriver = Default)
 	Else
 		; No, close all matching driver instances
 		$sFile = __WD_StripPath($vDriver)
-		$aProcessList = ProcessList($sFile)
+
+		; Guard against an empty $sFile, which ProcessList() would treat as "match all processes"
+		If $sFile <> '' Then $aProcessList = ProcessList($sFile)
 	EndIf
 
 	For $i = 1 To $aProcessList[0][0]
