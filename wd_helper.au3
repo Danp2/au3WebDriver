@@ -3186,7 +3186,7 @@ Func _WD_Storage($sSession, $vKey, $vValue = Default, $nType = Default)
 			$sJavaScript &= '.removeItem(arguments[0])'
 			$sParams = '"' & $vKey & '"'
 
-		Case $vKey And $vValue ; Set key
+		Case Else ; Set key
 			$sJavaScript &= '.setItem(arguments[0], arguments[1])'
 			$sParams = '"' & $vKey & '","' & $vValue & '"'
 	EndSelect
